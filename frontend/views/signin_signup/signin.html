@@ -18,34 +18,34 @@
             </div>
 
             <div class="text-center">
-                <h1 class="text-2xl font-semibold font-heading mb-2">Welcome</h1>
-                <p class="text-xl mb-4">Log in to Patient Portal</p>
+                <h1 class="text-3xl font-semibold font-heading mb-2">Welcome</h1>
+                <p class="text-md mb-4">Log in to Patient Portal</p>
             </div>
             
             <form class="max-w-[500px] w-[800px] p-[2.9rem] border border-gray-300 rounded-lg">
                 <div class="mb-6">
                     <label for="username" class="block text-lg font-medium">Username</label>
                     <div class="relative">
-                        <input type="text" id="username" name="username" required class="w-full py-3 px-3 border border-black rounded-md text-base">
+                        <input type="text" id="username" name="username" required class="w-full py-3 px-3 border border-black rounded-md text-base focus:outline-none focus:border-primary-blue focus:border-2">
                     </div>
                 </div>
-
+                
                 <div class="mb-6">
                     <label for="password" class="block text-lg font-medium">Password</label>
                     <div class="relative">
-                        <input type="password" id="password" name="password" required class="w-full py-3 px-3 border border-black rounded-md text-base">
-                        <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600 bg-transparent border-none cursor-pointer text-sm font-medium">SHOW</button>
+                        <input type="password" id="password" name="password" required class="w-full py-3 px-3 border border-black rounded-md text-base focus:outline-none focus:border-primary-blue focus:border-2">
+                        <button type="button" id="togglePassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600 bg-transparent border-none cursor-pointer text-sm font-medium">SHOW</button>
                     </div>
                 </div>
 
                 <button type="submit" class="w-full py-3.5 bg-blue-600 text-white border-none rounded-full text-base font-medium cursor-pointer hover:bg-blue-700">Log in</button>
 
                 <div class="text-center my-4 text-sm">
-                    <a href="#" class="text-blue-600">Forgot username or password?</a>
+                    <a href="#" class="text-blue-600 underline">Forgot username or password?</a>
                 </div>
 
                 <div class="text-center mb-4 text-sm">
-                    Don't have an account? <a href="#" class="text-blue-600">Create one now</a>.
+                    Don't have an account? <a href="#" class="text-blue-600 underline">Create one now</a>.
                 </div>
             </form>
         </div>
@@ -66,16 +66,19 @@
     </div>
 
     <script>
-        // Show/Hide Password functionality
-        document.querySelector('.font-medium').addEventListener('click', function() {
+        // Password visibility toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const togglePasswordButton = document.getElementById('togglePassword');
             const passwordInput = document.getElementById('password');
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                this.textContent = 'HIDE';
-            } else {
-                passwordInput.type = 'password';
-                this.textContent = 'SHOW';
-            }
+            
+            togglePasswordButton.addEventListener('click', function() {
+                // Toggle the type attribute
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Toggle the button text
+                this.textContent = type === 'password' ? 'SHOW' : 'HIDE';
+            });
         });
     </script>
 </body>

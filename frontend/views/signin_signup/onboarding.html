@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,228 +7,49 @@
     <title>Patient Online Services</title>
     <link rel="stylesheet" href="../../node_modules/boxicons/css/boxicons.min.css">
     <link rel="stylesheet" href="../../globals.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--font-heading);
-            color: #333333;
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .header {
-            margin-bottom: 3rem;
-        }
-
-        .main-content {
-            max-width: 1200px;
-            margin-left: 5rem;
-        }
-
-        .left-section {
-            margin-bottom: 2rem;
-        }
-
-        .left-section p:first-child {
-            color: #0066cc;
-            font-weight: 600;
-            margin-bottom: 2rem;
-            font-size: .7rem;
-            text-transform: uppercase;
-        }
-
-        h1 {
-            font-family: var(--font-heading);
-            font-size: 3.3rem;
-            font-weight: 500;
-            line-height: 1.2;
-            color: #000;
-        }
-        
-        .left-section p:nth-child(3) {
-            font-size: 1.2rem;
-            color: #000;
-            margin-bottom: 1.4rem;
-        }
-
-        .left-section p:nth-child(5) {
-            font-family: var(--font-heading);
-            font-size: 1.5rem;
-            color: #000;
-        }
-        .buttons a{
-            text-decoration: none;
-        }
-        
-        .buttons {
-            display: flex;
-            gap: .8rem;
-            margin-bottom: 5rem;
-            align-items: stretch;
-            justify-content: flex-start;
-            
-        }
-
-        .btn {
-            padding: 0.65rem 3rem;
-            border-radius: 2rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: .9rem;
-            border: none;
-            min-width: 150px;
-            text-align: center;
-            width: 200px;
-            box-sizing: border-box; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-        }
-
-
-        .btn.primary {
-            background-color: #0057B8;
-            color: white;
-        }
-
-        .btn.primary:hover {
-            background-color: #004C9E;
-        }
-
-        .btn.secondary {
-            background-color: transparent;
-            color: #0057B8;
-            border: 1px solid #0057B8;
-        }
-
-        .btn.secondary:hover {
-            background-color: #E6F0FA;
-        }
-
-        .bottom-section {
-            max-width: 1100px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 3rem;
-        }
-
-        .option {
-            border-top: 1px solid #000;
-            padding-top: 1rem;
-            width: 90%;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .option:hover h3 {
-            color: #0057B8;
-        }
-
-        .option h3 {
-            font-size: 1.25rem;
-            color: #000;
-            margin-bottom: 0.75rem;
-            padding-right: 2rem;
-            font-weight: lighter;
-            transition: color 0.2s ease;
-        }
-
-        .option p {
-            font-size: 0.95rem;
-            color: #707070;
-            margin-bottom: 1rem;
-        }
-
-        .arrow {
-            position: absolute;
-            top: 1rem;
-            right: 0.5rem;
-            transition: color 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .arrow i {
-            font-size: 1.7rem; 
-            color: #000;
-            font-weight: lighter;
-        }
-
-        .option:hover .arrow {
-            color: #0057B8;
-        }
-    
-        @media (max-width: 768px) {
-            .container {
-                padding: 1.5rem;
-            }
-
-            h1 {
-                font-size: 2.5rem;
-            }
-
-            .buttons {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-
-            .bottom-section {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="../../output.css">
 </head>
-<body>
-    <div class="container">
-        <div class="header">
+<body class="bg-white text-dark-gray leading-normal overflow-x-hidden">
+    <div class="max-w-[1300px] mx-auto p-xxl">
+        <div class="mb-xxxl">
             <div class="logo">
-                <div style="border: 2px solid #333; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; font-weight: bold;">LOGO</div>
+                <div class="border-2 border-dark-gray w-[50px] h-[50px] flex justify-center items-center font-bold">LOGO</div>
             </div>
         </div>
         
-        <div class="main-content">
-            <div class="left-section">
-                <p>Patient Online Services</p>
-                <h1>Log in</h1>
-                <p class="secondary">Or create new account</p>
-                <div class="buttons">
-                    <a href="signin.html" class="btn primary">Login</a>
-                    <a href="signup.html" class="btn secondary">Create account</a>
+        <div class="max-w-[1200px] ml-[5rem]">
+            <div class="mb-xl">
+                <p class="text-text-accent font-semibold mb-xl text-xs uppercase">Patient Online Services</p>
+                <h1 class="font-heading text-xxl font-medium leading-tight text-black">Log in</h1>
+                <p class="text-lg text-black mb-[1.4rem]">Or create new account</p>
+                <div class="flex gap-sm mb-xxxl items-stretch justify-start">
+                    <a href="signin.html" class="py-[0.65rem] px-[3rem] rounded-pill cursor-pointer transition duration-fast text-sm border-none min-w-[150px] text-center w-[200px] box-border flex items-center justify-center h-full bg-primary-blue text-white hover:bg-primary-blue-dark">Login</a>
+                    <a href="signup.html" class="py-[0.65rem] px-[3rem] rounded-pill cursor-pointer transition duration-fast text-sm min-w-[150px] text-center w-[200px] box-border flex items-center justify-center h-full bg-transparent text-primary-blue border border-primary-blue">Create account</a>
                 </div>
-                <p class="secondary">Or would you like to</p>
+                <p class="font-heading text-xl text-black">Or would you like to</p>
             </div>
-            <div class="bottom-section">
-                <div class="option">
-                    <h3>Pay your bill online</h3>
-                    <p>You will either need the billing account number and the patient's date of birth or the guarantor ID to make a payment.</p>
-                    <span class="arrow"><i class='bx bx-chevron-right'></i></span>
+            <div class="max-w-[1100px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xxl">
+                <div class="border-t border-black pt-md w-[90%] relative cursor-pointer transition duration-fast group">
+                    <h3 class="text-[1.25rem] text-black mb-[0.75rem] pr-xl font-bold[600] transition-colors duration-fast group-hover:text-primary-blue">Pay your bill online</h3>
+                    <p class="text-[0.95rem] text-medium-gray mb-md">You will either need the billing account number and the patient's date of birth or the guarantor ID to make a payment.</p>
+                    <span class="absolute top-md right-[0.5rem] transition-colors duration-fast flex items-center justify-center group-hover:text-primary-blue">
+                        <i class='bx bx-chevron-right text-[1.7rem] text-black font-light'></i>
+                    </span>
                 </div>
-                <div class="option">
-                    <h3>Refill your prescription</h3>
-                    <p>Refill Test Clinic prescriptions at select Test Clinic pharmacies.</p>
-                    <span class="arrow"><i class='bx bx-chevron-right'></i></span>
+                <div class="border-t border-black pt-md w-[90%] relative cursor-pointer transition duration-fast group">
+                    <h3 class="text-[1.25rem] text-black mb-[0.75rem] pr-xl font-bold[600] transition-colors duration-fast group-hover:text-primary-blue">Refill your prescription</h3>
+                    <p class="text-[0.95rem] text-medium-gray mb-md">Refill Test Clinic prescriptions at select Test Clinic pharmacies.</p>
+                    <span class="absolute top-md right-[0.5rem] transition-colors duration-fast flex items-center justify-center group-hover:text-primary-blue">
+                        <i class='bx bx-chevron-right text-[1.7rem] text-black font-light'></i>
+                    </span>
                 </div>
-                <div class="option">
-                    <h3>Submit your symptoms</h3>
-                    <p>Describe your symptoms and receive preliminary guidance. Our system will help assess your condition and suggest appropriate next steps.</p>
-                    <span class="arrow"><i class='bx bx-chevron-right'></i></span>
+                <div class="border-t border-black pt-md w-[90%] relative cursor-pointer transition duration-fast group">
+                    <h3 class="text-[1.25rem] text-black mb-[0.75rem] pr-xl font-bold[600] transition-colors duration-fast group-hover:text-primary-blue">Submit your symptoms</h3>
+                    <p class="text-[0.95rem] text-medium-gray mb-md">Describe your symptoms and receive preliminary guidance. Our system will help assess your condition and suggest appropriate next steps.</p>
+                    <span class="absolute top-md right-[0.5rem] transition-colors duration-fast flex items-center justify-center group-hover:text-primary-blue">
+                        <i class='bx bx-chevron-right text-[1.7rem] text-black font-light'></i>
+                    </span>
                 </div>
             </div>
         </div>
