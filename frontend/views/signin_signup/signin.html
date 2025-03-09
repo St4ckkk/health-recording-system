@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,252 +7,59 @@
     <title>Clinic Patient Portal</title>
     <link rel="stylesheet" href="../../globals.css">
     <link rel="stylesheet" href="../../node_modules/boxicons/css/boxicons.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0; 
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: var(--font-body);
-            line-height: 1.5;
-            background-color: #fff;
-            min-height: 100vh;
-            display: flex;
-        }
-
-        .main-container {
-            display: flex;
-            width: 100%;
-            min-height: 100vh;
-        }
-
-        .login-section {
-            padding: 1rem;
-            margin: 0 auto;
-        }
-
-        .sidebar {
-            background-color: #0057B8;
-            color: white;
-            padding: 2rem;
-            width: 500px;
-            display: flex;
-            align-items: flex-end;
-        }
-
-        .logo {
-            width: 80px;
-            margin-bottom: 3rem;
-        }
-
-        .login-header {
-            text-align: center;
-        }
-
-        .login-header h1 {
-            font-size: 2rem;
-            font-weight: 600;
-            font-family: var(--font-heading);
-            margin-bottom: 0.5rem;
-        }
-
-        .login-header p {
-            font-size: 1.2rem; 
-            margin-bottom: 1rem;
-        }
-
-        .login-form {
-            max-width: 500px;
-            width: 800px;
-            padding: 2.9rem;
-            border: 1px solid #d5d5d5;
-            border-radius: 8px;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-
-        .input-wrapper {
-            position: relative;
-        }
-
-        input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #000;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-
-        .show-password {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #0057B8;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
-        .login-button {
-            width: 100%;
-            padding: 0.875rem;
-            background-color: #0057B8;
-            color: white;
-            border: none;
-            border-radius: 9999px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-        .login-button:hover {
-            background-color: #004C9E;
-        }
-
-        .forgot-credentials {
-            text-align: center;
-            margin: 1rem 0;
-            font-size: .9rem;
-
-        }
-
-        .create-account {
-            text-align: center;
-            margin-bottom: 1rem;
-            font-size: .9rem;
-        }
-
-        a {
-            color: #0057B8;
-        }
-
-        /* Sidebar Styles */
-        .quick-access {
-            margin-bottom: 3rem;
-            padding: 2rem;
-        }
-
-        .quick-access h2 {
-            font-size: 1rem;
-            font-family: var(--font-heading);
-            margin-bottom: 1.5rem;
-            
-        }
-        
-        .quick-link {
-            display: flex;
-            align-items: center;
-            color: white;
-            text-decoration: none;
-            margin-bottom: 1rem;
-            font-weight: 500;
-        }
-        
-        .quick-link i {
-            margin-right: 10px; 
-            font-size: 1.5rem;
-            font-weight: 300;
-        }
-            
-       
-        .quick-link span {
-            font-size: 1rem;
-            position: relative;
-            text-decoration: underline;
-            font-weight: 500;
-        }
-     
-
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .main-container {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-            }
-
-            .login-section {
-                padding: 2rem 1rem;
-            }
-
-            .app-buttons {
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .app-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="../../output.css">
 </head>
-<body>
-    <div class="main-container">
-        <div class="login-section">
-            <div class="logo">
-                <div style="border: 2px solid #333; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; font-weight: bold;">LOGO</div>
+<body class="font-body leading-normal bg-white min-h-screen flex">
+    <div class="flex w-full min-h-screen">
+        <div class="p-4 mx-auto">
+            <div class="w-20 mb-12">
+                <div class="border-2 border-gray-800 w-[50px] h-[50px] flex justify-center items-center font-bold">LOGO</div>
             </div>
 
-            <div class="login-header">
-                <h1>Welcome</h1>
-            <p class="subtitle">Log in to Patient Portal</p>
+            <div class="text-center">
+                <h1 class="text-2xl font-semibold font-heading mb-2">Welcome</h1>
+                <p class="text-xl mb-4">Log in to Patient Portal</p>
             </div>
-            <form class="login-form">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <div class="input-wrapper">
-                        <input type="text" id="username" name="username" required>
+            
+            <form class="max-w-[500px] w-[800px] p-[2.9rem] border border-gray-300 rounded-lg">
+                <div class="mb-6">
+                    <label for="username" class="block text-lg font-medium">Username</label>
+                    <div class="relative">
+                        <input type="text" id="username" name="username" required class="w-full py-3 px-3 border border-black rounded-md text-base">
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="password" name="password" required>
-                        <button type="button" class="show-password">SHOW</button>
+                <div class="mb-6">
+                    <label for="password" class="block text-lg font-medium">Password</label>
+                    <div class="relative">
+                        <input type="password" id="password" name="password" required class="w-full py-3 px-3 border border-black rounded-md text-base">
+                        <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600 bg-transparent border-none cursor-pointer text-sm font-medium">SHOW</button>
                     </div>
                 </div>
 
-                <button type="submit" class="login-button">Log in</button>
+                <button type="submit" class="w-full py-3.5 bg-blue-600 text-white border-none rounded-full text-base font-medium cursor-pointer hover:bg-blue-700">Log in</button>
 
-                <div class="forgot-credentials">
-                    <a href="#">Forgot username or password?</a>
+                <div class="text-center my-4 text-sm">
+                    <a href="#" class="text-blue-600">Forgot username or password?</a>
                 </div>
 
-                <div class="create-account">
-                    Don't have an account? <a href="#">Create one now</a>.
+                <div class="text-center mb-4 text-sm">
+                    Don't have an account? <a href="#" class="text-blue-600">Create one now</a>.
                 </div>
             </form>
-
         </div>
 
-        <div class="sidebar">
-            <div class="quick-access">
-                <h2>Quick access</h2>
-                <a href="#" class="quick-link">
-                    <i class='bx bx-money-withdraw'></i>
-                    <span>Pay a bill</span>
+        <div class="bg-blue-600 text-white p-8 w-[500px] flex items-end">
+            <div class="mb-12 p-8">
+                <h2 class="text-base font-heading mb-6">Quick access</h2>
+                <a href="#" class="flex items-center text-white no-underline mb-4 font-medium">
+                    <i class='bx bx-money-withdraw mr-2.5 text-2xl font-light'></i>
+                    <span class="text-base relative underline font-medium">Pay a bill</span>
                 </a>
-                <a href="#" class="quick-link">
-                    <i class='bx bx-capsule'></i>
-                    <span>Refill a prescription</span>
+                <a href="#" class="flex items-center text-white no-underline mb-4 font-medium">
+                    <i class='bx bx-capsule mr-2.5 text-2xl font-light'></i>
+                    <span class="text-base relative underline font-medium">Refill a prescription</span>
                 </a>
             </div>
         </div>
@@ -259,7 +67,7 @@
 
     <script>
         // Show/Hide Password functionality
-        document.querySelector('.show-password').addEventListener('click', function() {
+        document.querySelector('.font-medium').addEventListener('click', function() {
             const passwordInput = document.getElementById('password');
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
