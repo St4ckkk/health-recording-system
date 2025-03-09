@@ -1,0 +1,78 @@
+:root {
+  /* Primary Colors */
+  --primary-blue: #0057b8;
+  --primary-blue-dark: #004c9e;
+  --primary-blue-light: #e6f0fa;
+
+  /* Neutral Colors */
+  --black: #000000;
+  --dark-gray: #333333;
+  --medium-gray: #666666;
+  --light-gray: #999999;
+  --ultra-light-gray: #e0e0e0;
+  --white: #ffffff;
+
+  /* Semantic Colors */
+  --text-primary: var(--dark-gray);
+  --text-secondary: var(--medium-gray);
+  --text-accent: var(--primary-blue);
+  --border-color: var(--ultra-light-gray);
+
+  /* Font Families */
+  --font-heading: 'Merriweather', serif;
+  --font-body: Arial, sans-serif;
+
+  /* Font Sizes */
+  --font-size-xs: 0.7rem;
+  --font-size-sm: 0.9rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.2rem;
+  --font-size-xl: 1.5rem;
+  --font-size-xxl: 3.3rem;
+
+  /* Spacing */
+  --space-xs: 0.5rem;
+  --space-sm: 0.8rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-xxl: 3rem;
+  --space-xxxl: 5rem;
+
+  /* Border Radius */
+  --radius-pill: 9999px;
+  --radius-md: 0.5rem;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+}
+
+/* Font Face Declarations */
+@font-face {
+  font-family: 'Merriweather';
+  src: url('./public/fonts/Merriweather-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Merriweather';
+  src: url('./public/fonts/Merriweather-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Merriweather';
+  src: url('./public/fonts/Merriweather-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Merriweather';
+  src: url('./public/fonts/Merriweather-UltraBold.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
