@@ -1,5 +1,10 @@
 module.exports = {
-  content: ["./**/*.html"], // Scan all HTML files in subdirectories
+  content: [
+    "./views/**/*.html",
+    "./components/**/*.html",
+    "./index.html",
+    "./*.html"
+  ],
   theme: {
     extend: {
       colors: {
