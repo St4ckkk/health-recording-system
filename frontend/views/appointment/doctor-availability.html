@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,15 +10,15 @@
     <link rel="stylesheet" href="../../style.css">
     <link rel="stylesheet" href="../../output.css">
 </head>
-<body class="p-5 ">
+<body class="p-5">
     <div class="logo"> 
         <div style="border: 2px solid #333; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; font-weight: bold;">LOGO</div>
     </div>
     <div class="max-w-7xl mx-auto">
         <!-- Search Section -->
-        <div class="mb-8 ">
+        <div class="mb-8">
             <div class="flex justify-between items-center mb-4">
-                <h1 class="font-heading text-3xl font-regular">Available Doctor</h1> 
+                <h1 class="font-heading text-3xl font-regular">Available Doctor</h1>
             </div>
             <div class="bg-primary-blue-dark rounded-lg p-6 shadow-sm border border-gray-200">
                 <h2 class="text-lg font-semibold text-white mb-2">Search Doctors</h2>
@@ -44,134 +45,305 @@
                     </button>
                 </div>
             </div>
-        </div>
-
-       <!-- Doctor Cards Section -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-    <!-- Doctor Card 1 -->
-    <div class="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm">
-        <div class="bg-primary-blue-dark p-5 border-b border-gray-200">
-            <div class="flex justify-between items-center">
-            </div>
-        </div>
-        <!-- Card Body - Existing Content -->
-        <div class="p-4">
-            <div class="flex flex-col items-start">
-                <div class="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mb-3 m-auto">
-                    <i class="bx bx-user text-3xl text-gray-500"></i>
-                </div>
-                <div class="text-center w-full">
-                    <h3 class="font-semibold">Dr. Abdul Marot</h3>
-                    <p class="text-gray-600 text-sm mb-3">Cardio Specialist</p>
-                </div>
-                <div class="flex items-center space-x-2 text-xs text-gray-700 mb-2">
-                    <i class="bx bx-calendar"></i>
-                    <span>Monday, Wednesday, Friday</span>
-                </div>
-                <div class="flex items-center space-x-2 text-xs text-gray-700 mb-4">
-                    <i class="bx bx-check-circle text-green-500"></i>
-                    <span>Available</span>
-                </div>
-                <button class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full text-sm font-medium">
-                    Schedule Appointment
+              <!-- View toggle buttons moved to right side -->
+              <div class="flex items-center space-x-2 mt-2 justify-end">
+                <button id="cardView" class="bg-primary-blue text-white px-3 py-1 rounded-md text-sm flex items-center">
+                    <i class="bx bxs-grid-alt mr-1"></i> Card View
+                </button>
+                <button id="listView" class="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm flex items-center">
+                    <i class="bx bx-list-ul mr-1"></i> List View
                 </button>
             </div>
         </div>
+
+        <!-- Doctor Cards Section - Card View (Default) -->
+        <div id="doctorCardView" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Doctor Card 1 -->
+            <div class="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                <div class="bg-primary-blue-dark p-5 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                    </div>
+                </div>
+                <!-- Card Body - Existing Content -->
+                <div class="p-4">
+                    <div class="flex flex-col items-start">
+                        <div class="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mb-3 m-auto">
+                            <i class="bx bx-user text-3xl text-gray-500"></i>
+                        </div>
+                        <div class="text-center w-full">
+                            <h3 class="font-semibold">Dr. Abdul Marot</h3>
+                            <p class="text-gray-600 text-sm mb-3">Cardio Specialist</p>
+                        </div>
+                        <div class="flex items-center space-x-2 text-xs text-gray-700 mb-2">
+                            <i class="bx bx-calendar"></i>
+                            <span>Monday, Wednesday, Friday</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-xs text-gray-700 mb-4">
+                            <i class="bx bx-check-circle text-green-500"></i>
+                            <span>Available</span>
+                        </div>
+                        <button class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full text-sm font-medium">
+                            Schedule Appointment
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doctor Card 2 -->
+            <div class="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                <div class="bg-primary-blue-dark p-5 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                    </div>
+                </div>
+                <!-- Card Body - Existing Content -->
+                <div class="p-4">
+                    <div class="flex flex-col items-start">
+                        <div class="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mb-3 m-auto">
+                            <i class="bx bx-user text-3xl text-gray-500"></i>
+                        </div>
+                        <div class="text-center w-full">
+                            <h3 class="font-semibold">Dr. Abdul Marot</h3>
+                            <p class="text-gray-600 text-sm mb-3">Cardio Specialist</p>
+                        </div>
+                        <div class="flex items-center space-x-2 text-xs text-gray-700 mb-2">
+                            <i class="bx bx-calendar"></i>
+                            <span>Monday, Wednesday, Friday</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-xs text-gray-700 mb-4">
+                            <i class="bx bx-check-circle text-green-500"></i>
+                            <span>Available</span>
+                        </div>
+                        <button class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full text-sm font-medium">
+                            Schedule Appointment
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doctor Card 3 -->
+            <div class="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                <div class="bg-primary-blue-dark p-5 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                    </div>
+                </div>
+                <!-- Card Body - Existing Content -->
+                <div class="p-4">
+                    <div class="flex flex-col items-start">
+                        <div class="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mb-3 m-auto">
+                            <i class="bx bx-user text-3xl text-gray-500"></i>
+                        </div>
+                        <div class="text-center w-full">
+                            <h3 class="font-semibold">Dr. Abdul Marot</h3>
+                            <p class="text-gray-600 text-sm mb-3">Cardio Specialist</p>
+                        </div>
+                        <div class="flex items-center space-x-2 text-xs text-gray-700 mb-2">
+                            <i class="bx bx-calendar"></i>
+                            <span>Monday, Wednesday, Friday</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-xs text-gray-700 mb-4">
+                            <i class="bx bx-check-circle text-green-500"></i>
+                            <span>Available</span>
+                        </div>
+                        <button class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full text-sm font-medium">
+                            Schedule Appointment
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doctor Card 4 -->
+            <div class="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                <div class="bg-primary-blue-dark p-5 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                    </div>
+                </div>
+                <!-- Card Body - Existing Content -->
+                <div class="p-4">
+                    <div class="flex flex-col items-start">
+                        <div class="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mb-3 m-auto">
+                            <i class="bx bx-user text-3xl text-gray-500"></i>
+                        </div>
+                        <div class="text-center w-full">
+                            <h3 class="font-semibold">Dr. Abdul Marot</h3>
+                            <p class="text-gray-600 text-sm mb-3">Cardio Specialist</p>
+                        </div>
+                        <div class="flex items-center space-x-2 text-xs text-gray-700 mb-2">
+                            <i class="bx bx-calendar"></i>
+                            <span>Monday, Wednesday, Friday</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-xs text-gray-700 mb-4">
+                            <i class="bx bx-check-circle text-green-500"></i>
+                            <span>Available</span>
+                        </div>
+                        <button class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full text-sm font-medium">
+                            Schedule Appointment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Doctor List View (Hidden by default) -->
+        <div id="doctorListView" class="hidden flex flex-col gap-4">
+            <!-- Doctor List Item 1 -->
+            <div class="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                <div class="p-4 flex items-center">
+                    <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mr-4 shrink-0">
+                        <i class="bx bx-user text-2xl text-gray-500"></i>
+                    </div>
+                    <div class="flex-grow">
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                            <div>
+                                <h3 class="font-semibold">Dr. Abdul Marot</h3>
+                                <p class="text-gray-600 text-sm">Cardio Specialist</p>
+                                <div class="flex items-center space-x-2 text-xs text-gray-700 mr-4">
+                                    <i class="bx bx-calendar"></i>
+                                    <span class="hidden sm:inline">Monday, Wednesday, Friday</span>
+                                    <span class="sm:hidden">Mon, Wed, Fri</span>
+                                </div>
+                                <div class="flex items-center space-x-2 text-xs text-gray-700 mr-4">
+                                    <i class="bx bx-check-circle text-green-500"></i>
+                                    <span>Available</span>
+                                </div>
+                            </div>
+                            <div class="mt-2 sm:mt-0 flex flex-wrap gap-2 items-center">
+                            
+                                <button class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-full text-sm font-medium">
+                                    Schedule
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Doctor List Item 2 -->
+            <div class="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                <div class="p-4 flex items-center">
+                    <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mr-4 shrink-0">
+                        <i class="bx bx-user text-2xl text-gray-500"></i>
+                    </div>
+                    <div class="flex-grow">
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                            <div>
+                                <h3 class="font-semibold">Dr. Sarah Johnson</h3>
+                                <p class="text-gray-600 text-sm">Neurologist</p>
+                                <div class="flex items-center space-x-2 text-xs text-gray-700 mr-4">
+                                    <i class="bx bx-calendar"></i>
+                                    <span class="hidden sm:inline">Tuesday, Thursday</span>
+                                    <span class="sm:hidden">Tue, Thu</span>
+                                </div>
+                                <div class="flex items-center space-x-2 text-xs text-gray-700 mr-4">
+                                    <i class="bx bx-check-circle text-green-500"></i>
+                                    <span>Available</span>
+                                </div>
+                            </div>
+                            <div class="mt-2 sm:mt-0 flex flex-wrap gap-2 items-center">
+                                
+                                <button class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-full text-sm font-medium">
+                                    Schedule
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Doctor List Item 3 -->
+            <div class="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                <div class="p-4 flex items-center">
+                    <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mr-4 shrink-0">
+                        <i class="bx bx-user text-2xl text-gray-500"></i>
+                    </div>
+                    <div class="flex-grow">
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                            <div>
+                                <h3 class="font-semibold">Dr. Michael Chen</h3>
+                                <p class="text-gray-600 text-sm">Pediatrician</p>
+                                <div class="flex items-center space-x-2 text-xs text-gray-700 mr-4">
+                                    <i class="bx bx-calendar"></i>
+                                    <span class="hidden sm:inline">Monday, Tuesday, Friday</span>
+                                    <span class="sm:hidden">Mon, Tue, Fri</span>
+                                </div>
+                                <div class="flex items-center space-x-2 text-xs text-gray-700 mr-4">
+                                    <i class="bx bx-check-circle text-green-500"></i>
+                                    <span>Available</span>
+                                </div>
+                            </div>
+                            <div class="mt-2 sm:mt-0 flex flex-wrap gap-2 items-center">
+                                
+                                <button class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-full text-sm font-medium">
+                                    Schedule
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Doctor List Item 4 -->
+            <div class="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                <div class="p-4 flex items-center">
+                    <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mr-4 shrink-0">
+                        <i class="bx bx-user text-2xl text-gray-500"></i>
+                    </div>
+                    <div class="flex-grow">
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                            <div>
+                                <h3 class="font-semibold">Dr. Emily Rodriguez</h3>
+                                <p class="text-gray-600 text-sm">Dermatologist</p>
+                                <div class="flex items-center space-x-2 text-xs text-gray-700 mr-4">
+                                    <i class="bx bx-calendar"></i>
+                                    <span class="hidden sm:inline">Wednesday, Thursday</span>
+                                    <span class="sm:hidden">Wed, Thu</span>
+                                </div>
+                                <div class="flex items-center space-x-2 text-xs text-gray-700 mr-4">
+                                    <i class="bx bx-check-circle text-green-500"></i>
+                                    <span>Available</span>
+                                </div>
+                            </div>
+                            <div class="mt-2 sm:mt-0 flex flex-wrap gap-2 items-center">
+                                <button class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-full text-sm font-medium">
+                                    Schedule
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Doctor Card 2 -->
-    <div class="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm">
-        <div class="bg-primary-blue-dark p-5 border-b border-gray-200">
-            <div class="flex justify-between items-center">
-            </div>
-        </div>
-        <!-- Card Body - Existing Content -->
-        <div class="p-4">
-            <div class="flex flex-col items-start">
-                <div class="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mb-3 m-auto">
-                    <i class="bx bx-user text-3xl text-gray-500"></i>
-                </div>
-                <div class="text-center w-full">
-                    <h3 class="font-semibold">Dr. Abdul Marot</h3>
-                    <p class="text-gray-600 text-sm mb-3">Cardio Specialist</p>
-                </div>
-                <div class="flex items-center space-x-2 text-xs text-gray-700 mb-2">
-                    <i class="bx bx-calendar"></i>
-                    <span>Monday, Wednesday, Friday</span>
-                </div>
-                <div class="flex items-center space-x-2 text-xs text-gray-700 mb-4">
-                    <i class="bx bx-check-circle text-green-500"></i>
-                    <span>Available</span>
-                </div>
-                <button class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full text-sm font-medium">
-                    Schedule Appointment
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Doctor Card 3 -->
-    <div class="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm">
-        <div class="bg-primary-blue-dark p-5 border-b border-gray-200">
-            <div class="flex justify-between items-center">
-            </div>
-        </div>
-        <!-- Card Body - Existing Content -->
-        <div class="p-4">
-            <div class="flex flex-col items-start">
-                <div class="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mb-3 m-auto">
-                    <i class="bx bx-user text-3xl text-gray-500"></i>
-                </div>
-                <div class="text-center w-full">
-                    <h3 class="font-semibold">Dr. Abdul Marot</h3>
-                    <p class="text-gray-600 text-sm mb-3">Cardio Specialist</p>
-                </div>
-                <div class="flex items-center space-x-2 text-xs text-gray-700 mb-2">
-                    <i class="bx bx-calendar"></i>
-                    <span>Monday, Wednesday, Friday</span>
-                </div>
-                <div class="flex items-center space-x-2 text-xs text-gray-700 mb-4">
-                    <i class="bx bx-check-circle text-green-500"></i>
-                    <span>Available</span>
-                </div>
-                <button class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full text-sm font-medium">
-                    Schedule Appointment
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Doctor Card 4 -->
-    <div class="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm">
-        <div class="bg-primary-blue-dark p-5 border-b border-gray-200">
-            <div class="flex justify-between items-center">
-            </div>
-        </div>
-        <!-- Card Body - Existing Content -->
-        <div class="p-4">
-            <div class="flex flex-col items-start">
-                <div class="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mb-3 m-auto">
-                    <i class="bx bx-user text-3xl text-gray-500"></i>
-                </div>
-                <div class="text-center w-full">
-                    <h3 class="font-semibold">Dr. Abdul Marot</h3>
-                    <p class="text-gray-600 text-sm mb-3">Cardio Specialist</p>
-                </div>
-                <div class="flex items-center space-x-2 text-xs text-gray-700 mb-2">
-                    <i class="bx bx-calendar"></i>
-                    <span>Monday, Wednesday, Friday</span>
-                </div>
-                <div class="flex items-center space-x-2 text-xs text-gray-700 mb-4">
-                    <i class="bx bx-check-circle text-green-500"></i>
-                    <span>Available</span>
-                </div>
-                <button class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full text-sm font-medium">
-                    Schedule Appointment
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-    </div>
+    <!-- JavaScript for view switching -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cardViewBtn = document.getElementById('cardView');
+            const listViewBtn = document.getElementById('listView');
+            const cardView = document.getElementById('doctorCardView');
+            const listView = document.getElementById('doctorListView');
+            
+            // Set initial state - card view active
+            cardViewBtn.classList.add('bg-primary-blue', 'text-white');
+            cardViewBtn.classList.remove('bg-gray-200', 'text-gray-700');
+            
+            cardViewBtn.addEventListener('click', function() {
+                cardView.classList.remove('hidden');
+                listView.classList.add('hidden');
+                cardViewBtn.classList.add('bg-primary-blue', 'text-white');
+                cardViewBtn.classList.remove('bg-gray-200', 'text-gray-700');
+                listViewBtn.classList.add('bg-gray-200', 'text-gray-700');
+                listViewBtn.classList.remove('bg-primary-blue', 'text-white');
+            });
+            
+            listViewBtn.addEventListener('click', function() {
+                listView.classList.remove('hidden');
+                cardView.classList.add('hidden');
+                listViewBtn.classList.add('bg-primary-blue', 'text-white');
+                listViewBtn.classList.remove('bg-gray-200', 'text-gray-700');
+                cardViewBtn.classList.add('bg-gray-200', 'text-gray-700');
+                cardViewBtn.classList.remove('bg-primary-blue', 'text-white');
+            });
+        });
+    </script>
 </body>
 </html>
