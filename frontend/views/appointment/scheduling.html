@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Your Appointment</title>
+    <link rel="stylesheet" href="../../node_modules/boxicons/css/boxicons.min.css">
+    <link rel="stylesheet" href="../../globals.css">
+    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="../../output.css">
+</head>
+<body class="bg-primary-blue-light gray-50 min-h-screen flex items-center justify-center p-4">
+    <div class="flex flex-col md:flex-row w-full bg-white max-w-6xl rounded-lg shadow-lg overflow-hidden">
+        <!-- Left panel - Company info -->
+        <div class="w-full md:w-2/5 p-8 border-b md:border-b-0 md:border-r border-gray-200">
+            <div class="mb-8">  
+                <div class="w-64 h-16 mb-12">
+                    <div class="bg-primary-blue-dark text-white p-4 rounded-lg inline-flex items-center">
+                        <div class="mr-2">
+                            <div class="logo"> 
+                                <div style="border: 2px solid #333; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; font-weight: bold;">LOGO</div>
+                            </div>
+                        </div>
+                        <span class="text-2xl font-bold">Test Clinic</span>
+                    </div>
+                </div>
+                
+                <div class="mt-16">
+                    <div class="flex items-center mb-2">
+                        <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mr-4 shrink-0">
+                            <i class="bx bx-user text-2xl text-gray-500"></i>
+                        </div>
+                    </div>
+                    <h2 class="text-xl font-bold mt-2">Dr. Abdul</h2>
+                    <h1 class="text-gray-500 text-sm">Pulmonologist</h1>
+                </div>
+
+                <!-- Add selected appointment time display -->
+                <div id="selectedAppointmentTime" class="hidden mt-8 text-gray-600">
+                    <div class="flex items-start">
+                        <i class="bx bx-calendar-alt text-xl mt-1 mr-3"></i>
+                        <div>
+                            <span id="appointmentTimeRange" class="block font-medium"></span>
+                            <span id="appointmentFullDate" class="block"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right panel - Calendar and Form -->
+        <div class="w-full md:w-3/5 p-8 relative">
+            <!-- Step 1: Calendar View -->
+            <div id="calendarView" class="block">
+                <div class="flex flex-col md:flex-row md:space-x-8">
+                    <!-- Calendar Column -->
+                    <div class="flex-1">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6">Select a Date & Time</h2>
+                        
+                        <div class="flex items-center justify-between mb-6">
+                            <button id="prevMonth" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100">
+                                <i class="bx bx-chevron-left text-2xl"></i>
+                            </button>
+                            
+                            <span id="currentMonthYear" class="text-lg font-medium">March 2025</span>
+                            
+                            <button id="nextMonth" class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                                <i class="bx bx-chevron-right text-2xl"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Calendar grid - Will be generated dynamically -->
+                        <div class="mb-4">
+                            <div class="grid grid-cols-7 gap-2 mb-2">
+                                <div class="text-center text-sm font-medium text-gray-600">SUN</div>
+                                <div class="text-center text-sm font-medium text-gray-600">MON</div>
+                                <div class="text-center text-sm font-medium text-gray-600">TUE</div>
+                                <div class="text-center text-sm font-medium text-gray-600">WED</div>
+                                <div class="text-center text-sm font-medium text-gray-600">THU</div>
+                                <div class="text-center text-sm font-medium text-gray-600">FRI</div>
+                                <div class="text-center text-sm font-medium text-gray-600">SAT</div>
+                            </div>
+                            
+                            <div id="calendarGrid" class="grid grid-cols-7 gap-2">
+                                <!-- Calendar days will be generated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Time Slots Column - Initially hidden -->
+                    <div id="timeSlotContainer" class="hidden md:w-64 mt-8 md:mt-16">
+                        <h3 id="selectedDate" class="text-lg font-semibold text-gray-800 mb-4"></h3>
+                        
+                        <div class="space-y-2">
+                            <button class="w-full p-3 text-center border rounded-lg hover:border-blue-500 hover:text-blue-600 transition-colors" data-time="2:00pm">
+                                2:00pm
+                            </button>
+                            <button class="w-full p-3 text-center border rounded-lg hover:border-blue-500 hover:text-blue-600 transition-colors" data-time="2:30pm">
+                                2:30pm
+                            </button>
+                            <button class="w-full p-3 text-center border rounded-lg hover:border-blue-500 hover:text-blue-600 transition-colors" data-time="3:00pm">
+                                3:00pm
+                            </button>
+                            <button class="w-full p-3 text-center border rounded-lg hover:border-blue-500 hover:text-blue-600 transition-colors" data-time="3:30pm">
+                                3:30pm
+                            </button>
+                            <button class="w-full p-3 text-center border rounded-lg hover:border-blue-500 hover:text-blue-600 transition-colors" data-time="4:00pm">
+                                4:00pm
+                            </button>
+                        </div>
+
+                        <!-- Next button - Initially hidden -->
+                        <button id="nextButton" class="hidden w-full mt-4 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
+                            Next
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Patient Information Form (Initially Hidden) -->
+            <div id="patientFormView" class="hidden">
+                <div class="flex items-center mb-6">
+                    <button id="backToCalendar" class="flex items-center text-blue-600 hover:text-blue-800">
+                        <i class="bx bx-arrow-back mr-2"></i>
+                        Back
+                    </button>
+                </div>
+
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Patient Information</h2>
+                
+                <!-- Selected Date and Time Display -->
+                <div class="bg-blue-50 p-4 rounded-lg mb-6">
+                    <div class="flex items-center mb-2">
+                        <i class="bx bx-calendar text-blue-600 mr-2"></i>
+                        <span class="font-medium">Appointment Details:</span>
+                    </div>
+                </div>
+
+                <form id="patientForm" class="space-y-6">
+                    <!-- Patient Name Section -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-medium text-gray-700">Patient Name</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First Name*</label>
+                                <input type="text" id="firstName" name="firstName" required class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label for="middleName" class="block text-sm font-medium text-gray-700 mb-1">Middle Name</label>
+                                <input type="text" id="middleName" name="middleName" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label for="surname" class="block text-sm font-medium text-gray-700 mb-1">Surname*</label>
+                                <input type="text" id="surname" name="surname" required class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label for="suffix" class="block text-sm font-medium text-gray-700 mb-1">Suffix</label>
+                                <select id="suffix" name="suffix" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">None</option>
+                                    <option value="Jr.">Jr.</option>
+                                    <option value="Sr.">Sr.</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Appointment Details -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-medium text-gray-700">Appointment Details</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="appointmentType" class="block text-sm font-medium text-gray-700 mb-1">Appointment Type*</label>
+                                <select id="appointmentType" name="appointmentType" required class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Select Type</option>
+                                    <option value="New Patient">New Patient</option>
+                                    <option value="Follow-up">Follow-up</option>
+                                    <option value="Consultation">Consultation</option>
+                                    <option value="Procedure">Procedure</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="appointmentReason" class="block text-sm font-medium text-gray-700 mb-1">Reason for Appointment*</label>
+                                <textarea id="appointmentReason" name="appointmentReason" required rows="3" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Patient Information -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-medium text-gray-700">Patient Information</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="dateOfBirth" class="block text-sm font-medium text-gray-700 mb-1">Date of Birth*</label>
+                                <input type="date" id="dateOfBirth" name="dateOfBirth" required class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label for="legalSex" class="block text-sm font-medium text-gray-700 mb-1">Legal Sex*</label>
+                                <select id="legalSex" name="legalSex" required class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Select</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Address*</label>
+                                <textarea id="address" name="address" required rows="3" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Guardian Information -->
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="isGuardian" name="isGuardian" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            <label for="isGuardian" class="ml-2 block text-sm text-gray-700">I am not the patient (booking for someone else)</label>
+                        </div>
+                        
+                        <div id="guardianFields" class="hidden space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="guardianName" class="block text-sm font-medium text-gray-700 mb-1">Guardian Name*</label>
+                                    <input type="text" id="guardianName" name="guardianName" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label for="relationship" class="block text-sm font-medium text-gray-700 mb-1">Relationship to Patient*</label>
+                                    <select id="relationship" name="relationship" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">Select</option>
+                                        <option value="Parent">Parent</option>
+                                        <option value="Spouse">Spouse</option>
+                                        <option value="Child">Child</option>
+                                        <option value="Sibling">Sibling</option>
+                                        <option value="Caregiver">Caregiver</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="pt-4">
+                        <button type="submit" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
+                            Submit Appointment
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Time zone selector - Only visible in calendar view -->
+            <div id="timezoneSelector" class="mt-8">
+                <h3 class="text-gray-700 mb-2">Time zone</h3>
+                <div class="relative">
+                    <select class="w-full p-3 pr-10 border border-gray-300 rounded-md appearance-none bg-white">
+                        <option>Philippine Time (9:31am)</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <i class="bx bx-chevron-down text-gray-500"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Troubleshoot button - Only visible in calendar view -->
+            <div id="troubleshootSection" class="mt-6 flex items-center">
+                <button class="border border-gray-300 rounded-full py-2 px-6 flex items-center text-gray-700">
+                    <i class="bx bx-wrench mr-2"></i>
+                    Troubleshoot
+                </button>
+                <button class="ml-4 text-gray-500">
+                    <i class="bx bx-help-circle text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Calendar state
+            let currentDate = new Date();
+            let currentMonth = 2; // March (0-based)
+            let currentYear = 2025;
+            let selectedDay = null;
+            let selectedMonth = null;
+            let selectedYear = null;
+            let selectedTime = null;
+            
+            // DOM elements
+            const calendarGrid = document.getElementById('calendarGrid');
+            const currentMonthYearElement = document.getElementById('currentMonthYear');
+            const prevMonthButton = document.getElementById('prevMonth');
+            const nextMonthButton = document.getElementById('nextMonth');
+            const timeSlotContainer = document.getElementById('timeSlotContainer');
+            const selectedDateElement = document.getElementById('selectedDate');
+            const timeSlotButtons = document.querySelectorAll('[data-time]');
+            const nextButton = document.getElementById('nextButton');
+            
+            // Form view elements
+            const calendarView = document.getElementById('calendarView');
+            const patientFormView = document.getElementById('patientFormView');
+            const backToCalendarButton = document.getElementById('backToCalendar');
+            const appointmentDateTimeElement = document.getElementById('appointmentDateTime');
+            const isGuardianCheckbox = document.getElementById('isGuardian');
+            const guardianFields = document.getElementById('guardianFields');
+            const timezoneSelector = document.getElementById('timezoneSelector');
+            const troubleshootSection = document.getElementById('troubleshootSection');
+            const patientForm = document.getElementById('patientForm');
+            
+            // Selected appointment time display elements
+            const selectedAppointmentTime = document.getElementById('selectedAppointmentTime');
+            const appointmentTimeRange = document.getElementById('appointmentTimeRange');
+            const appointmentFullDate = document.getElementById('appointmentFullDate');
+            
+            // Mock data for available dates
+            // Format: { year: { month: [days] } }
+            const availableDates = {
+                2025: {
+                    2: [11, 12, 13, 14, 17, 18, 19, 20, 21, 24, 25, 26, 27, 28, 31], // March
+                    3: [1, 2, 3, 7, 8, 9, 10, 14, 15, 16, 17], // April
+                    1: [24, 25, 26, 27, 28] // February
+                }
+            };
+            
+            // Initialize calendar
+            generateCalendar(currentMonth, currentYear);
+            
+            // Event listeners for month navigation
+            prevMonthButton.addEventListener('click', function() {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                generateCalendar(currentMonth, currentYear);
+                
+                // Hide time slots when changing months
+                timeSlotContainer.classList.add('hidden');
+                nextButton.classList.add('hidden');
+            });
+            
+            nextMonthButton.addEventListener('click', function() {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                generateCalendar(currentMonth, currentYear);
+                
+                // Hide time slots when changing months
+                timeSlotContainer.classList.add('hidden');
+                nextButton.classList.add('hidden');
+            });
+            
+            // Time slot selection handling
+            timeSlotButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove selection from all time slots
+                    timeSlotButtons.forEach(btn => {
+                        btn.classList.remove('bg-gray-600', 'text-white');
+                    });
+                    
+                    // Add selection to clicked time slot
+                    this.classList.add('bg-gray-600', 'text-white');
+                    
+                    // Store selected time
+                    selectedTime = this.getAttribute('data-time');
+                    
+                    // Show next button
+                    nextButton.classList.remove('hidden');
+                    
+                    // Update appointment time display
+                    updateAppointmentTimeDisplay();
+                });
+            });
+            
+            // Function to update appointment time display
+            function updateAppointmentTimeDisplay() {
+                if (selectedDay && selectedMonth !== null && selectedYear && selectedTime) {
+                    const selectedDate = new Date(selectedYear, selectedMonth, selectedDay);
+                    
+                    // Calculate end time (15 minutes after start time)
+                    const startTime = selectedTime;
+                    let endTime = "";
+                    
+                    // Parse the time string to get hours and minutes
+                    const timeMatch = startTime.match(/(\d+):(\d+)([ap]m)/);
+                    if (timeMatch) {
+                        const [_, hours, minutes, ampm] = timeMatch;
+                        const hour = parseInt(hours);
+                        const minute = parseInt(minutes);
+                        
+                        // Create a new date object for end time calculation
+                        const endDate = new Date(selectedDate);
+                        
+                        // Set hours (convert to 24-hour format if needed)
+                        if (ampm.toLowerCase() === 'pm' && hour < 12) {
+                            endDate.setHours(hour + 12);
+                        } else if (ampm.toLowerCase() === 'am' && hour === 12) {
+                            endDate.setHours(0);
+                        } else {
+                            endDate.setHours(hour);
+                        }
+                        
+                        // Set minutes and add 15 minutes
+                        endDate.setMinutes(minute + 15);
+                        
+                        // Format the end time
+                        endTime = endDate.toLocaleTimeString('en-US', { 
+                            hour: 'numeric', 
+                            minute: '2-digit', 
+                            hour12: true 
+                        }).toLowerCase();
+                    } else {
+                        // Fallback if time parsing fails
+                        endTime = "15 minutes later";
+                    }
+                    
+                    // Format the full date
+                    const formattedDate = selectedDate.toLocaleDateString('en-US', { 
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                    
+                    // Update the display
+                    appointmentTimeRange.textContent = `${startTime} - ${endTime}`;
+                    appointmentFullDate.textContent = formattedDate;
+                    selectedAppointmentTime.classList.remove('hidden');
+                }
+            }
+            
+            // Next button click - Show patient form
+            nextButton.addEventListener('click', function() {
+                if (selectedDay && selectedMonth !== null && selectedYear && selectedTime) {
+                    // Hide calendar view and show form view
+                    calendarView.classList.add('hidden');
+                    patientFormView.classList.remove('hidden');
+                    timezoneSelector.classList.add('hidden');
+                    troubleshootSection.classList.add('hidden');
+                    
+                    // Set appointment date and time in the form
+                    const selectedDate = new Date(selectedYear, selectedMonth, selectedDay);
+                    const formattedDate = selectedDate.toLocaleDateString('en-US', { 
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                    appointmentDateTimeElement.textContent = `${formattedDate} at ${selectedTime}`;
+                }
+            });
+            
+            // Back button click - Return to calendar
+            backToCalendarButton.addEventListener('click', function() {
+                patientFormView.classList.add('hidden');
+                calendarView.classList.remove('hidden');
+                timezoneSelector.classList.remove('hidden');
+                troubleshootSection.classList.remove('hidden');
+            });
+            
+            // Guardian checkbox toggle
+            isGuardianCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    guardianFields.classList.remove('hidden');
+                    document.getElementById('guardianName').setAttribute('required', 'required');
+                    document.getElementById('relationship').setAttribute('required', 'required');
+                } else {
+                    guardianFields.classList.add('hidden');
+                    document.getElementById('guardianName').removeAttribute('required');
+                    document.getElementById('relationship').removeAttribute('required');
+                }
+            });
+            
+            // Form submission
+            patientForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Here you would typically send the form data to your server
+                alert('Appointment submitted successfully!');
+                
+                // For demo purposes, reset the form and go back to calendar
+                this.reset();
+                guardianFields.classList.add('hidden');
+                patientFormView.classList.add('hidden');
+                calendarView.classList.remove('hidden');
+                timezoneSelector.classList.remove('hidden');
+                troubleshootSection.classList.remove('hidden');
+                
+                // Reset selected time
+                selectedTime = null;
+                selectedAppointmentTime.classList.add('hidden');
+            });
+            
+            // Function to generate calendar
+            function generateCalendar(month, year) {
+                // Update month/year display
+                const monthNames = ["January", "February", "March", "April", "May", "June",
+                                    "July", "August", "September", "October", "November", "December"];
+                currentMonthYearElement.textContent = `${monthNames[month]} ${year}`;
+                
+                // Clear previous calendar
+                calendarGrid.innerHTML = '';
+                
+                // Get first day of month and total days in month
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                
+                // Add empty cells for days before the 1st of the month
+                for (let i = 0; i < firstDay; i++) {
+                    const emptyCell = document.createElement('div');
+                    emptyCell.className = 'h-10';
+                    calendarGrid.appendChild(emptyCell);
+                }
+                
+                // Add days of the month
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayCell = document.createElement('div');
+                    dayCell.className = 'text-center';
+                    
+                    const dayButton = document.createElement('button');
+                    dayButton.textContent = day;
+                    
+                    // Check if this date is available
+                    const isAvailable = availableDates[year]?.[month]?.includes(day) || false;
+                    const isSelected = selectedDay === day && selectedMonth === month && selectedYear === year;
+                    
+                    // Set appropriate classes
+                    dayButton.className = 'w-10 h-10 rounded-full flex items-center justify-center text-sm';
+                    
+                    if (isAvailable) {
+                        if (isSelected) {
+                            dayButton.classList.add('bg-blue-100', 'text-blue-600');
+                        } else {
+                            dayButton.classList.add('bg-blue-50', 'text-blue-600');
+                        }
+                    } else {
+                        dayButton.classList.add('text-gray-400');
+                    }
+                    
+                    // Add click event only for available dates
+                    if (isAvailable) {
+                        dayButton.addEventListener('click', function() {
+                            // Update selected date
+                            selectedDay = day;
+                            selectedMonth = month;
+                            selectedYear = year;
+                            
+                            // Update calendar UI
+                            updateCalendarSelection();
+                            
+                            // Show time slots
+                            timeSlotContainer.classList.remove('hidden');
+                            
+                            // Update selected date text
+                            const selectedDate = new Date(year, month, day);
+                            const formattedDate = selectedDate.toLocaleDateString('en-US', { 
+                                weekday: 'long',
+                                month: 'long',
+                                day: 'numeric'
+                            });
+                            selectedDateElement.textContent = formattedDate;
+                            
+                            // Reset time slot selections
+                            timeSlotButtons.forEach(btn => {
+                                btn.classList.remove('bg-gray-600', 'text-white');
+                            });
+                            selectedTime = null;
+                            nextButton.classList.add('hidden');
+                            
+                            // Hide appointment time display until a time is selected
+                            selectedAppointmentTime.classList.add('hidden');
+                        });
+                    }
+                    
+                    dayCell.appendChild(dayButton);
+                    calendarGrid.appendChild(dayCell);
+                }
+            }
+            
+            // Function to update calendar selection UI
+            function updateCalendarSelection() {
+                const dayButtons = calendarGrid.querySelectorAll('button');
+                
+                dayButtons.forEach(button => {
+                    const day = parseInt(button.textContent);
+                    const isAvailable = availableDates[currentYear]?.[currentMonth]?.includes(day) || false;
+                    const isSelected = selectedDay === day && selectedMonth === currentMonth && selectedYear === currentYear;
+                    
+                    // Reset classes
+                    button.classList.remove('bg-blue-100', 'bg-blue-50');
+                    
+                    if (isAvailable) {
+                        if (isSelected) {
+                            button.classList.add('bg-blue-100');
+                        } else {
+                            button.classList.add('bg-blue-50');
+                        }
+                    }
+                });
+                
+                // Update appointment time display if time is already selected
+                if (selectedTime) {
+                    updateAppointmentTimeDisplay();
+                }
+            }
+
+            // Initial selection (day 11 of March 2025)
+            selectedDay = 11;
+            selectedMonth = 2; // March
+            selectedYear = 2025;
+            
+            // Generate initial calendar and show time slots for day 11
+            generateCalendar(currentMonth, currentYear);
+            
+            // Show time slots for initial selection
+            timeSlotContainer.classList.remove('hidden');
+            selectedDateElement.textContent = "Tuesday, March 11";
+            
+            // If we want to show the appointment time initially, we can set a default time
+            // selectedTime = "2:30pm";
+            // updateAppointmentTimeDisplay();
+        });
+    </script>
+</body>
+</html>
