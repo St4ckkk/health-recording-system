@@ -226,12 +226,11 @@
         .detail-label {
             color: #6b7280;
             font-size: 0.875rem;
-            margin-bottom: 0.25rem;
+            font-weight: 500;
         }
 
         .detail-value {
             color: #111827;
-            font-weight: 500;
         }
 
         .detail-section {
@@ -241,7 +240,6 @@
         .detail-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
         }
 
         .action-button {
@@ -323,10 +321,13 @@
             position: absolute;
             left: 8rem;
         }
+        .space {
+            margin-bottom: 1.5rem;
+        }
     </style>
 </head>
 
-<body class="font-body bg-gray-50">
+<body class="font-body">
     <div class="flex">
         <nav class="bg-white p-4 sidebar border border-gray-200">
             <div class="logo-container text-white p-4 mb-6">
@@ -455,7 +456,7 @@
                     <div class="card bg-white shadow-sm rounded-lg w-[450px]">
                         <div class="p-4">
                             <h2 class="text-md font-semibold">Appointments</h2>
-                            <p class="text-sm text-gray-500">View and manage patient appointments</p>
+                            <p class="text-sm text-gray-400">View and manage patient appointments</p>
 
                             <div class="relative w-full mt-3">
                                 <input type="text" placeholder="Search by patient name or ID..."
@@ -532,7 +533,10 @@
                                 </div>
                                 <div>
                                     <span class="status-badge completed">
-                                        <i class="bx bx-check-circle mr-1"></i> Completed
+                                        <i class="bx bx-check-circle mr-1"></i>
+                                        <span class="text-xs">
+                                            Completed
+                                        </span>
                                     </span>
                                 </div>
                             </div>
@@ -555,7 +559,10 @@
                                 </div>
                                 <div>
                                     <span class="status-badge no-show">
-                                        <i class="bx bx-error-circle mr-1"></i> No-show
+                                        <i class="bx bx-error-circle mr-1"></i> 
+                                        <span class="text-xs">
+                                            No show
+                                        </span>
                                     </span>
                                 </div>
                             </div>
@@ -578,7 +585,10 @@
                                 </div>
                                 <div>
                                     <span class="status-badge cancelled">
-                                        <i class="bx bx-x-circle mr-1"></i> Cancelled
+                                        <i class="bx bx-x-circle mr-1"></i> 
+                                        <span class="text-xs">
+                                            Cancelled
+                                        </span>
                                     </span>
                                 </div>
                             </div>
@@ -601,7 +611,10 @@
                                 </div>
                                 <div>
                                     <span class="status-badge scheduled">
-                                        <i class="bx bx-time mr-1"></i> Scheduled
+                                        <i class="bx bx-time mr-1 "></i> 
+                                        <span class="text-xs">
+                                            Scheduled
+                                        </span>
                                     </span>
                                 </div>
                             </div>
@@ -612,18 +625,18 @@
                     <div class="card bg-white shadow-sm rounded-lg p-6 flex-1">
                         <div class="flex justify-between items-center mb-6">
                             <div>
-                                <h3 class="text-xl font-bold text-gray-900">David Wilson</h3>
-                                <p class="text-sm text-gray-500">Appointment Details</p>
+                                <h3 class="text-md font-medium text-gray-900">David Wilson</h3>
+                                <p class="text-sm text-gray-400">Appointment Details</p>
                             </div>
                             <div class="flex gap-2">
-                                <span class="appointment-type checkup">Checkup</span>
-                                <span class="bg-green-500 text-white px-3 py-1 rounded text-sm">Completed</span>
+                                <span class="appointment-type checkup px-1 py-1">Checkup</span>
+                                <span class="appointment-type border border-blue-primary px-1 py-1 rounded text-sm">Completed</span>
                             </div>
                         </div>
 
                         <div class="detail-grid">
-                            <div class="detail-section">
-                                <p class="detail-label">Appointment ID</p>
+                            <div class="detail-section">    
+                                <p class="detail-label font-medium">Appointment ID</p>
                                 <p class="detail-value">A1005</p>
                             </div>
                             <div class="detail-section">
@@ -640,27 +653,33 @@
                             </div>
                         </div>
 
-                        <hr class="border-gray-200 my-6">
+                        <hr class="border-gray-200 my-6 mt-5 mb-4 space">
 
                         <div class="mb-6">
-                            <p class="text-sm text-gray-500 mb-4">Appointment Information</p>
-
-                            <div class="grid grid-cols-[100px_1fr] gap-y-3">
-                                <p class="font-medium text-gray-900">Reason</p>
-                                <p class="text-gray-900">Diabetes monitoring</p>
-
-                                <p class="font-medium text-gray-900">Location</p>
-                                <p class="text-gray-900">Main Clinic, Room 105</p>
-
-                                <p class="font-medium text-gray-900">Notes</p>
-                                <p class="text-gray-900">A1C test performed</p>
-
-                                <p class="font-medium text-gray-900">Insurance</p>
-                                <p class="text-gray-900">Cigna #C1234567</p>
-                            </div>
+                            <p class="text-sm mb-2 font-medium">Appointment Information</p>
+                           <div class="ml-4">
+                            <table class="w-full border-collapse">
+                                <tr class="border-b border-gray-200">
+                                    <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Reason</td>
+                                    <td class="text-sm text-gray-900 py-2">Annual physical examination</td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Location</td>
+                                    <td class="text-sm text-gray-900 py-2">Main Clinic, Room 101</td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Notes</td>
+                                    <td class="text-sm text-gray-900 py-2">Patient has history of hypertension</td>
+                                </tr>
+                                <tr class="">
+                                    <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Insurance</td>
+                                    <td class="text-sm text-gray-900 py-2">Blue Cross #BC987654</td>
+                                </tr>
+                            </table>
+                           </div>
                         </div>
 
-                        <hr class="border-gray-200 my-6">
+                        <hr class="border-gray-200 my-6 mt-5">
 
                         <div class="mb-6">
                             <p class="text-sm text-gray-500 mb-4">Patient Contact Information</p>
@@ -701,8 +720,6 @@
             altFormat: "F j, Y",
             nextArrow: '<i class="bx bx-chevron-right"></i>',
             prevArrow: '<i class="bx bx-chevron-left"></i>',
-            // Uncomment if you want to use a specific locale
-            // locale: "fr",
             onChange: function(selectedDates, dateStr) {
                 console.log("Selected date:", dateStr);
             }
