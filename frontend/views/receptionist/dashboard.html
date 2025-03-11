@@ -21,6 +21,32 @@
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        .fade-out {
+            animation: fadeOut 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(10px); }
+        }
+        
+        .appointment-item {
+            transition: background-color 0.2s ease, border-left 0.2s ease;
+        }
+        
+        .detail-section {
+            transition: opacity 0.2s ease;
+        }
+
         .logo-container {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             border-radius: 0.75rem;
@@ -395,7 +421,7 @@
                 </div>
                 <div class="flex gap-2">
                     <!-- Upcoming Appointments -->
-                    <div class="card card-upcoming bg-white shadow-md rounded-lg p-4 w-full max-w-full">
+                    <div class="card card-upcoming bg-white shadow-md rounded-lg p-4 w-full max-w-full  fade-in">
                         <h3 class="text-medium font-medium text-gray-900">Upcoming Appointments</h3>
                         <p class="text-sm text-gray-500">Future scheduled visits</p>
                         <div class="mt-2 space-y-6">
@@ -420,7 +446,7 @@
                     </div>
 
                     <!-- Today's Appointments -->
-                    <div class="card card-today bg-white shadow-md rounded-lg p-4 w-full max-w-full">
+                    <div class="card card-today bg-white shadow-md rounded-lg p-4 w-full max-w-full  fade-in">
                         <h3 class="text-medium font-medium text-gray-900">Today's Appointments</h3>
                         <p class="text-sm text-gray-500">Current day's appointments</p>
                         <div class="mt-2 space-y-6">
@@ -443,7 +469,7 @@
                     </div>
 
                     <!-- Past Appointments -->
-                    <div class="card card-past bg-white shadow-md rounded-lg p-4 w-full max-w-full">
+                    <div class="card card-past bg-white shadow-md rounded-lg p-4 w-full max-w-full  fade-in">
                         <h3 class="text-medium font-medium text-gray-900">Past Appointments</h3>
                         <p class="text-sm text-gray-500">Previously completed visits</p>
                         <div class="mt-2 space-y-6">
@@ -471,7 +497,7 @@
                 <h2 class="text-2xl font-medium font-heading mb-2">Patient Appointments</h2>
                 <div class="flex gap-6 w-full">
                     <!-- Left: Appointment List -->
-                    <div class="card bg-white shadow-sm rounded-lg w-[450px]">
+                    <div class="card bg-white shadow-sm rounded-lg w-[450px]  fade-in">
                         <div class="p-4">
                             <h2 class="text-md font-semibold">Appointments</h2>
                             <p class="text-sm text-gray-400">View and manage patient appointments</p>
@@ -640,7 +666,7 @@
                     </div>
 
                     <!-- Right: Appointment Details -->
-                    <div class="card bg-white shadow-sm rounded-lg p-6 flex-1">
+                    <div class="card bg-white shadow-sm rounded-lg p-6 flex-1  fade-in">
                         <div class="flex justify-between items-center mb-6">
                             <div>
                                 <h3 class="text-md font-medium text-gray-900">David Wilson</h3>
