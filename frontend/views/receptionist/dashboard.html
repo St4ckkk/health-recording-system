@@ -30,18 +30,30 @@
             align-items: center;
             justify-content: center;
         }
-
+  
         .sidebar {
-            width: 300px;
-            display: flex;
-            flex-direction: column;
+            width: 270px;
+            position: fixed;
             height: 100vh;
+            z-index: 10;
+            background-color: white;
         }
 
         .sidebar-content {
             flex: 1;
             overflow-y: auto;
             padding: 1.2rem;
+            height: calc(100% - 180px); /* Adjusting height to account for logo and logout */
+        }
+
+        .main-content {
+            margin-left: 270px; /* Match sidebar width */
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .content-wrapper {
+            min-height: 100vh;
         }
 
         .logout-container {
@@ -324,6 +336,10 @@
         .space {
             margin-bottom: 1.5rem;
         }
+        .status {
+            color: #059669;
+            
+        }
     </style>
 </head>
 
@@ -357,7 +373,7 @@
                 </div>
             </div>
         </nav>
-        <main class="flex-1">
+        <main class="flex-1 main-content">
             <header class="p-5 flex justify-end items-center border-b border-gray-200 bg-white">
                 <div class="flex items-center gap-2">
                     <i class='bx bx-bell text-gray-900' style="font-size: 1.4rem;"></i>
@@ -370,14 +386,16 @@
                     </div>
                 </div>
             </header>
+
+        <div class="content-wrapper">
             <section class="p-6">
                 <div class="mb-4">
                     <h2 class="text-3xl font-bold text-gray-900 font-heading">Receptionist Dashboard</h2>
                     <p class="text-sm text-gray-500">Manage patient appointments and schedule</p>
                 </div>
-                <div class="flex gap-4">
+                <div class="flex gap-2">
                     <!-- Upcoming Appointments -->
-                    <div class="card card-upcoming bg-white shadow-md rounded-lg p-4 w-full max-w-xs">
+                    <div class="card card-upcoming bg-white shadow-md rounded-lg p-4 w-full max-w-full">
                         <h3 class="text-medium font-medium text-gray-900">Upcoming Appointments</h3>
                         <p class="text-sm text-gray-500">Future scheduled visits</p>
                         <div class="mt-2 space-y-6">
@@ -402,7 +420,7 @@
                     </div>
 
                     <!-- Today's Appointments -->
-                    <div class="card card-today bg-white shadow-md rounded-lg p-4 w-full max-w-xs">
+                    <div class="card card-today bg-white shadow-md rounded-lg p-4 w-full max-w-full">
                         <h3 class="text-medium font-medium text-gray-900">Today's Appointments</h3>
                         <p class="text-sm text-gray-500">Current day's appointments</p>
                         <div class="mt-2 space-y-6">
@@ -425,7 +443,7 @@
                     </div>
 
                     <!-- Past Appointments -->
-                    <div class="card card-past bg-white shadow-md rounded-lg p-4 w-full max-w-xs">
+                    <div class="card card-past bg-white shadow-md rounded-lg p-4 w-full max-w-full">
                         <h3 class="text-medium font-medium text-gray-900">Past Appointments</h3>
                         <p class="text-sm text-gray-500">Previously completed visits</p>
                         <div class="mt-2 space-y-6">
@@ -629,8 +647,8 @@
                                 <p class="text-sm text-gray-400">Appointment Details</p>
                             </div>
                             <div class="flex gap-2">
-                                <span class="appointment-type checkup px-1 py-1">Checkup</span>
-                                <span class="appointment-type border border-blue-primary px-1 py-1 rounded text-sm">Completed</span>
+                                <span class="appointment-type checkup px-2 py-2">Checkup</span>
+                                <span class="appointment-type border border-success px-1 py-1 rounded text-sm text-success status">Completed</span>
                             </div>
                         </div>
 
@@ -655,9 +673,9 @@
 
                         <hr class="border-gray-200 my-6 mt-5 mb-4 space">
 
-                        <div class="mb-6">
+                        <div class="">
                             <p class="text-sm mb-2 font-medium">Appointment Information</p>
-                           <div class="ml-4">
+                           <div class="ml-1">
                             <table class="w-full border-collapse">
                                 <tr class="border-b border-gray-200">
                                     <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Reason</td>
@@ -679,10 +697,10 @@
                            </div>
                         </div>
 
-                        <hr class="border-gray-200 my-6 mt-5">
+                        <hr class="border-gray-200 my-4">
 
                         <div class="mb-6">
-                            <p class="text-sm text-gray-500 mb-4">Patient Contact Information</p>
+                            <p class="text-sm mb-2 font-medium mb-2">Patient Contact Information</p>
 
                             <div class="space-y-2">
                                 <p class="contact-info">
@@ -697,18 +715,31 @@
                         </div>
 
                         <div class="flex gap-3 mt-6">
+                            <div class="flex-1">
+                                <button class="action-button border border-danger text-danger">  
+                                    <i class="bx bx-x-circle text-danger mr-2 text-md"></i>
+                                    Cancel Appointment
+                                </button>
+                            </div>
                             <button class="action-button secondary">
-                                <i class="bx bx-calendar text-gray-500 mr-2"></i>
+                                <i class="bx bx-check-circle mr-2 text-md"></i>
+                                Confirm
+                            </button>
+                            <button class="action-button secondary">
+                                <i class="bx bx-calendar mr-2 text-md"></i>
                                 Reschedule
                             </button>
-                            <button class="action-button primary">
-                                <i class="bx bx-file mr-2"></i>
-                                Patient Record
+                            <button class="action-button bg-gray-900">
+                                <i class="bx bx-file mr-2 text-white text-md"></i>
+                                <span class="text-white">
+                                    Patient Record  
+                                </span>
                             </button>
                         </div>
                     </div>
                 </div>
             </section>
+           </div>
         </main>
     </div>
     <script>
