@@ -8,23 +8,25 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'primary-blue': '#0057b8',
-        'primary-blue-dark': '#004c9e',
-        'primary-blue-light': '#e1f0ff',
-        'black': '#000000',
-        'dark-gray': '#333333',
-        'medium-gray': '#666666',
-        'light-gray': '#999999',
-        'ultra-light-gray': '#e0e0e0',
-        'white': '#ffffff',
-        'text-primary': '#333333', // using var(--dark-gray)
-        'text-secondary': '#666666', // using var(--medium-gray)
-        'text-accent': '#0057b8', // using var(--primary-blue)
-        'border-color': '#e0e0e0', // using var(--ultra-light-gray)
+        'primary': '#4f46e5',
+        'primary-light': '#eef2ff',
+        'primary-dark': '#3730a3',
+        'success': '#10b981',
+        'danger': '#ef4444',
+        'gray-50': '#f9fafb',
+        'gray-100': '#f3f4f6',
+        'gray-200': '#e5e7eb',
+        'gray-300': '#d1d5db',
+        'gray-400': '#9ca3af',
+        'gray-500': '#6b7280',
+        'gray-600': '#4b5563',
+        'gray-700': '#374151',
+        'gray-800': '#1f2937',
+        'gray-900': '#111827',
       },
       fontFamily: {
         'heading': ['Merriweather', 'serif'],
-        'body': ['Arial', 'sans-serif'],
+        'body': ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Open Sans', 'Helvetica Neue', 'sans-serif'],
       },
       fontSize: {
         'xs': '0.7rem',
