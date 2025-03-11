@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +9,18 @@
     <link rel="stylesheet" href="../../globals.css">
     <link rel="stylesheet" href="../../style.css">
     <link rel="stylesheet" href="../../output.css">
+    <link rel="stylesheet" href="../../node_modules/flatpickr/dist/flatpickr.min.css">
+    <script src="../../node_modules/flatpickr/dist/flatpickr.min.js"></script>
+    <script src="../../node_modules/flatpickr/dist/l10n/fr.js"></script>
     <style>
+        .card {
+            border-radius: 1rem;
+            border: 1px solid #eee;
+            box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
         .logo-container {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             border-radius: 0.75rem;
@@ -19,19 +30,20 @@
             align-items: center;
             justify-content: center;
         }
+
         .sidebar {
             width: 300px;
             display: flex;
             flex-direction: column;
             height: 100vh;
         }
-        
+
         .sidebar-content {
             flex: 1;
             overflow-y: auto;
             padding: 1.2rem;
         }
-        
+
         .logout-container {
             margin-top: auto;
             border-top: 1px solid #eee;
@@ -47,14 +59,275 @@
             align-items: center;
             justify-content: center;
         }
+
+        .card-upcoming {
+            border-left: 4px solid #3B82F6;
+            /* blue-500 */
+        }
+
+        .card-today {
+            border-left: 4px solid #10B981;
+            /* green-500 */
+        }
+
+        .card-past {
+            border-left: 4px solid #9CA3AF;
+            /* gray-400 */
+        }
+
+        /* Style for appointment status badges */
+        .badge-upcoming {
+            background-color: #3B82F6;
+            /* blue-500 */
+        }
+
+        .badge-today {
+            background-color: #10B981;
+            /* green-500 */
+        }
+
+        .badge-past {
+            background-color: #9CA3AF;
+            /* gray-400 */
+        }
+
+        .search-container {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-input {
+            border-radius: 0.5rem;
+            padding: 0.4rem 0.4rem 0.6rem 2.2rem;
+            border: 1px solid var(--gray-300);
+            transition: all 0.2s ease;
+        }
+
+        .select-input {
+            border-radius: 0.5rem;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid var(--gray-300);
+            transition: all 0.2s ease;
+            appearance: none;
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1rem;
+        }
+
+        /* New styles for the updated design */
+        .appointment-list {
+            background-color: white;
+            border-radius: 0.5rem;
+            border: 1px solid #eee;
+            overflow: hidden;
+        }
+
+        .appointment-item {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .appointment-item:hover {
+            background-color: #f9fafb;
+        }
+
+        .appointment-item.active {
+            background-color: #f0f7ff;
+            border-left: 3px solid #3B82F6;
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+        }
+
+        .tab-button.active {
+            background-color: #f0f0f0;
+            font-weight: 500;
+        }
+
+        .tab-container {
+            display: flex;
+            background-color: #f9fafb;
+            border-radius: 0.375rem;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-badge.completed i{
+            color: #059669;
+            font-size: 1rem;
+        }
+
+        .status-badge.no-show i{
+            color: #d97706;
+            font-size: 1rem;
+          
+        }
+
+        .status-badge.cancelled i{
+            color: #dc2626;
+            font-size: 1rem;
+            
+        }
+
+        .status-badge.scheduled i{
+            color: #3b82f6;
+            font-size: 1rem;
+
+        }
+
+        .appointment-type {
+            display: inline-block;
+            padding: 0.1rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: white;
+        }
+
+        .appointment-type.checkup {
+            background-color: #3b82f6;
+        }
+
+        .appointment-type.follow-up {
+            background-color: #10b981;
+        }
+
+        .appointment-type.procedure {
+            background-color: #f59e0b;
+        }
+
+        .appointment-type.specialist {
+            background-color: #8b5cf6;
+        }
+
+        .detail-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            color: #111827;
+            font-weight: 500;
+        }
+
+        .detail-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .action-button.primary {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+        }
+
+        .action-button.primary:hover {
+            background-color: #2563eb;
+        }
+
+        .action-button.secondary {
+            background-color: white;
+            color: #111827;
+            border: 1px solid #d1d5db;
+        }
+
+        .action-button.secondary:hover {
+            background-color: #f9fafb;
+        }
+
+        .clear-filters-button {
+            background: none;
+            border: none;
+            color: #3b82f6;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 0.5rem;
+            cursor: pointer;
+        }
+
+        .clear-filters-button:hover {
+            text-decoration: underline;
+        }
+
+        .filter-container {
+            margin-top: 1rem;
+        }
+
+        .filter-label {
+            margin-bottom: 0.25rem;
+            color: #374151;
+        }
+
+        .filter-input {
+            width: 100%;
+            padding: 0.4rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+
+        .contact-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-info i {
+            color: #6b7280;
+            margin-right: 0.5rem;
+        }
+
+        .calendar-icon {
+            position: absolute;
+            left: 8rem;
+        }
     </style>
 </head>
-<body class="font-body">
+
+<body class="font-body bg-gray-50">
     <div class="flex">
         <nav class="bg-white p-4 sidebar border border-gray-200">
             <div class="logo-container text-white p-4 mb-6">
                 <div class="mr-3">
-                    <div class="logo"> 
+                    <div class="logo">
                         <div class="w-12 h-12 flex justify-center items-center font-bold text-white">TC</div>
                     </div>
                 </div>
@@ -73,13 +346,14 @@
                 </ul>
             </div>
             <div class="logout-container">
-                <div class="px-sm py-2 rounded-md hover:bg-primary-light flex items-center text-gray-900 cursor-pointer">
+                <div
+                    class="px-sm py-2 rounded-md hover:bg-primary-light flex items-center text-gray-900 cursor-pointer">
                     <i class='bx bx-log-out text-lg mr-2'></i> Logout
                 </div>
             </div>
         </nav>
         <main class="flex-1">
-            <header class="p-5 flex justify-end items-center border-b border-gray-200">
+            <header class="p-5 flex justify-end items-center border-b border-gray-200 bg-white">
                 <div class="flex items-center gap-2">
                     <i class='bx bx-bell text-gray-900' style="font-size: 1.4rem;"></i>
                     <div class="avatar w-12 h-12">
@@ -91,13 +365,354 @@
                     </div>
                 </div>
             </header>
-            <div class="flex justify-between items-center mb-6 p-6">
-                <div>
+            <section class="p-6">
+                <div class="mb-4">
                     <h2 class="text-3xl font-bold text-gray-900 font-heading">Receptionist Dashboard</h2>
                     <p class="text-sm text-gray-500">Manage patient appointments and schedule</p>
                 </div>
-            </div>
+                <div class="flex gap-4">
+                    <!-- Upcoming Appointments -->
+                    <div class="card card-upcoming bg-white shadow-md rounded-lg p-4 w-full max-w-xs">
+                        <h3 class="text-medium font-medium text-gray-900">Upcoming Appointments</h3>
+                        <p class="text-sm text-gray-500">Future scheduled visits</p>
+                        <div class="mt-2 space-y-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-900">Dr. Sarah Johnson</p>
+                                    <p class="text-sm text-gray-500">Annual Checkup</p>
+                                </div>
+                                <span class="badge-upcoming text-white px-3 py-1 rounded text-xs">May 15, 10:00
+                                    AM</span>
+                            </div>
+                            <hr class="border-gray-200 my-2">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-900">Dr. Michael Chen</p>
+                                    <p class="text-sm text-gray-500">Dental Cleaning</p>
+                                </div>
+                                <span class="badge-upcoming text-white px-3 py-1 rounded text-xs">May 15, 10:00
+                                    AM</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Today's Appointments -->
+                    <div class="card card-today bg-white shadow-md rounded-lg p-4 w-full max-w-xs">
+                        <h3 class="text-medium font-medium text-gray-900">Today's Appointments</h3>
+                        <p class="text-sm text-gray-500">Current day's appointments</p>
+                        <div class="mt-2 space-y-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-900">Dr. Sarah Johnson</p>
+                                    <p class="text-sm text-gray-500">Annual Checkup</p>
+                                </div>
+                                <span class="badge-today text-white px-3 py-1 rounded text-xs">Today, 10:00 AM</span>
+                            </div>
+                            <hr class="border-gray-200 my-2">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-900">Dr. Michael Chen</p>
+                                    <p class="text-sm text-gray-500">Dental Cleaning</p>
+                                </div>
+                                <span class="badge-today text-white px-3 py-1 rounded text-xs">Today, 2:30 PM</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Past Appointments -->
+                    <div class="card card-past bg-white shadow-md rounded-lg p-4 w-full max-w-xs">
+                        <h3 class="text-medium font-medium text-gray-900">Past Appointments</h3>
+                        <p class="text-sm text-gray-500">Previously completed visits</p>
+                        <div class="mt-2 space-y-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-900">Dr. Sarah Johnson</p>
+                                    <p class="text-sm text-gray-500">Annual Checkup</p>
+                                </div>
+                                <span class="badge-past text-white px-3 py-1 rounded text-xs">Apr 22, 10:00 AM</span>
+                            </div>
+                            <hr class="border-gray-200 my-2">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-900">Dr. Michael Chen</p>
+                                    <p class="text-sm text-gray-500">Dental Cleaning</p>
+                                </div>
+                                <span class="badge-past text-white px-3 py-1 rounded text-xs">Mar 15, 10:00 AM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mb-6 p-6">
+                <h2 class="text-2xl font-medium font-heading mb-2">Patient Appointments</h2>
+                <div class="flex gap-6 w-full">
+                    <!-- Left: Appointment List -->
+                    <div class="card bg-white shadow-sm rounded-lg w-[450px]">
+                        <div class="p-4">
+                            <h2 class="text-md font-semibold">Appointments</h2>
+                            <p class="text-sm text-gray-500">View and manage patient appointments</p>
+
+                            <div class="relative w-full mt-3">
+                                <input type="text" placeholder="Search by patient name or ID..."
+                                    class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                                    <i class="bx bx-search text-gray-400"></i>
+                                </span>
+                            </div>
+
+                            <div class="tab-container">
+                                <button class="tab-button active">Upcoming</button>
+                                <button class="tab-button">Past</button>
+                                <button class="tab-button">All</button>
+                            </div>
+
+                            <div class="filter-container flex justify-between gap-2">
+                                <div class="w-full">
+                                    <p class="filter-label text-xs font-medium mb-1">Date Filter</p>
+                                    <div class="relative">
+                                        <input type="text" id="dateFilter" placeholder="Select date" class="filter-input w-full border rounded-md px-3 py-2 pl-9 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 calendar-icon">
+                                            <i class="bx bx-calendar text-gray-400"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                                            
+                                <div class="w-full">
+                                    <p class="filter-label text-xs font-medium mb-1">Type Filter</p>
+                                    <div class="relative">
+                                        <select id="typeFilter" class="filter-input w-full border rounded-md px-3 py-2 pl-9 pr-4 appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option>All Types</option>
+                                            <option>Checkup</option>
+                                            <option>Follow-up</option>
+                                            <option>Procedure</option>
+                                            <option>Specialist</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-2">
+                                <button class="flex items-center justify-center w-full px-2 py-2 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" onclick="clearFilters()">
+                                    <i class='bx bx-filter-alt mr-1 text-lg'></i>
+                                    <span class="text-xs font-medium">
+                                        Clear Filters
+                                    </span>
+                                </button>
+                            </div>
+                            
+                            <script>
+                                function clearFilters() {
+                                    document.getElementById('dateFilter').value = '';
+                                    document.getElementById('typeFilter').value = '';
+                                }
+                            </script>
+                           
+                        </div>
+                        <div>
+                            <!-- David Wilson -->
+                            <div class="appointment-item active">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="text-gray-900 font-medium">David Wilson</h4>
+                                        <p class="text-xs  text-gray-500">Patient ID: P12349</p>
+                                        <div class="flex items-center mt-1">
+                                            <i class="bx bx-calendar text-gray-400 text-sm mr-1"></i>
+                                            <span class="text-sm">Saturday, May 20, 2023</span>
+                                            <span class="mx-2 text-sm mr-1 ml-2">•</span>
+                                            <i class="bx bx-time text-gray-400 text-sm mr-1"></i>
+                                            <span class="text-sm">01:15 PM</span>
+                                        </div>
+                                    </div>
+                                    <span class="appointment-type checkup">Checkup</span>
+                                </div>
+                                <div>
+                                    <span class="status-badge completed">
+                                        <i class="bx bx-check-circle mr-1"></i> Completed
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Sarah Brown -->
+                            <div class="appointment-item">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="text-gray-900 font-medium">Sarah Brown</h4>
+                                        <p class="text-xs text-gray-500">Patient ID: P12350</p>
+                                        <div class="flex items-center mt-1">
+                                            <i class="bx bx-calendar text-gray-400 text-sm mr-1"></i>
+                                            <span class="text-sm">Saturday, May 20, 2023</span>
+                                            <span class="mx-2 text-sm mr-1 ml-2">•</span>
+                                            <i class="bx bx-time text-gray-400 text-sm mr-1"></i>
+                                            <span class="text-sm">01:15 PM</span>
+                                        </div>
+                                    </div>
+                                    <span class="appointment-type follow-up">Follow-up</span>
+                                </div>
+                                <div>
+                                    <span class="status-badge no-show">
+                                        <i class="bx bx-error-circle mr-1"></i> No-show
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- James Anderson -->
+                            <div class="appointment-item">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="text-gray-900 font-medium">James Anderson</h4>
+                                        <p class="text-xs  text-gray-500">Patient ID: P12353</p>
+                                        <div class="flex items-center mt-1">
+                                            <i class="bx bx-calendar text-gray-400 text-sm mr-1"></i>
+                                            <span class="text-sm">Saturday, May 20, 2023</span>
+                                            <span class="mx-2 text-sm mr-1 ml-2">•</span>
+                                            <i class="bx bx-time text-gray-400 text-sm mr-1"></i>
+                                            <span class="text-sm">01:15 PM</span>
+                                        </div>
+                                    </div>
+                                    <span class="appointment-type procedure">Procedure</span>
+                                </div>
+                                <div>
+                                    <span class="status-badge cancelled">
+                                        <i class="bx bx-x-circle mr-1"></i> Cancelled
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Robert Johnson -->
+                            <div class="appointment-item">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="text-gray-900 font-medium">Robert Johnson</h4>
+                                        <p class="text-xs  text-gray-500">Patient ID: P12347</p>
+                                        <div class="flex items-center mt-1">
+                                            <i class="bx bx-calendar text-gray-400 text-sm mr-1"></i>
+                                            <span class="text-sm">Saturday, May 20, 2023</span>
+                                            <span class="mx-2 text-sm mr-1 ml-2">•</span>
+                                            <i class="bx bx-time text-gray-400 text-sm mr-1"></i>
+                                            <span class="text-sm">01:15 PM</span>
+                                        </div>
+                                    </div>
+                                    <span class="appointment-type specialist">Specialist</span>
+                                </div>
+                                <div>
+                                    <span class="status-badge scheduled">
+                                        <i class="bx bx-time mr-1"></i> Scheduled
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Appointment Details -->
+                    <div class="card bg-white shadow-sm rounded-lg p-6 flex-1">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900">David Wilson</h3>
+                                <p class="text-sm text-gray-500">Appointment Details</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="appointment-type checkup">Checkup</span>
+                                <span class="bg-green-500 text-white px-3 py-1 rounded text-sm">Completed</span>
+                            </div>
+                        </div>
+
+                        <div class="detail-grid">
+                            <div class="detail-section">
+                                <p class="detail-label">Appointment ID</p>
+                                <p class="detail-value">A1005</p>
+                            </div>
+                            <div class="detail-section">
+                                <p class="detail-label">Patient ID</p>
+                                <p class="detail-value">P12349</p>
+                            </div>
+                            <div class="detail-section">
+                                <p class="detail-label">Date</p>
+                                <p class="detail-value">Friday, May 19, 2023</p>
+                            </div>
+                            <div class="detail-section">
+                                <p class="detail-label">Time</p>
+                                <p class="detail-value">03:30 PM</p>
+                            </div>
+                        </div>
+
+                        <hr class="border-gray-200 my-6">
+
+                        <div class="mb-6">
+                            <p class="text-sm text-gray-500 mb-4">Appointment Information</p>
+
+                            <div class="grid grid-cols-[100px_1fr] gap-y-3">
+                                <p class="font-medium text-gray-900">Reason</p>
+                                <p class="text-gray-900">Diabetes monitoring</p>
+
+                                <p class="font-medium text-gray-900">Location</p>
+                                <p class="text-gray-900">Main Clinic, Room 105</p>
+
+                                <p class="font-medium text-gray-900">Notes</p>
+                                <p class="text-gray-900">A1C test performed</p>
+
+                                <p class="font-medium text-gray-900">Insurance</p>
+                                <p class="text-gray-900">Cigna #C1234567</p>
+                            </div>
+                        </div>
+
+                        <hr class="border-gray-200 my-6">
+
+                        <div class="mb-6">
+                            <p class="text-sm text-gray-500 mb-4">Patient Contact Information</p>
+
+                            <div class="space-y-2">
+                                <p class="contact-info">
+                                    <i class="bx bx-phone text-gray-500 mr-2"></i>
+                                    (555) 567-8901
+                                </p>
+                                <p class="contact-info">
+                                    <i class="bx bx-envelope text-gray-500 mr-2"></i>
+                                    david.wilson@example.com
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3 mt-6">
+                            <button class="action-button secondary">
+                                <i class="bx bx-calendar text-gray-500 mr-2"></i>
+                                Reschedule
+                            </button>
+                            <button class="action-button primary">
+                                <i class="bx bx-file mr-2"></i>
+                                Patient Record
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
+    <script>
+        flatpickr("#dateFilter", {
+            dateFormat: "d/m/Y",
+            allowInput: true,
+            disableMobile: "true",
+            altInput: true,
+            altFormat: "F j, Y",
+            nextArrow: '<i class="bx bx-chevron-right"></i>',
+            prevArrow: '<i class="bx bx-chevron-left"></i>',
+            // Uncomment if you want to use a specific locale
+            // locale: "fr",
+            onChange: function(selectedDates, dateStr) {
+                console.log("Selected date:", dateStr);
+            }
+        });
+        
+        function clearFilters() {
+            document.getElementById('dateFilter').value = '';
+            const dateFilterInstance = document.getElementById('dateFilter')._flatpickr;
+            if (dateFilterInstance) {
+                dateFilterInstance.clear();
+            }
+            document.getElementById('typeFilter').value = '';
+        }
+    </script>
 </body>
+
 </html>
