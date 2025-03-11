@@ -127,15 +127,6 @@
                 </div>
 
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Patient Information</h2>
-                
-                <!-- Selected Date and Time Display -->
-                <div class="bg-blue-50 p-4 rounded-lg mb-6">
-                    <div class="flex items-center mb-2">
-                        <i class="bx bx-calendar text-blue-600 mr-2"></i>
-                        <span class="font-medium">Appointment Details:</span>
-                    </div>
-                </div>
-
                 <form id="patientForm" class="space-y-6">
                     <!-- Patient Name Section -->
                     <div class="space-y-4">
@@ -248,30 +239,6 @@
                     </div>
                 </form>
             </div>
-
-            <!-- Time zone selector - Only visible in calendar view -->
-            <div id="timezoneSelector" class="mt-8">
-                <h3 class="text-gray-700 mb-2">Time zone</h3>
-                <div class="relative">
-                    <select class="w-full p-3 pr-10 border border-gray-300 rounded-md appearance-none bg-white">
-                        <option>Philippine Time (9:31am)</option>
-                    </select>
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                        <i class="bx bx-chevron-down text-gray-500"></i>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Troubleshoot button - Only visible in calendar view -->
-            <div id="troubleshootSection" class="mt-6 flex items-center">
-                <button class="border border-gray-300 rounded-full py-2 px-6 flex items-center text-gray-700">
-                    <i class="bx bx-wrench mr-2"></i>
-                    Troubleshoot
-                </button>
-                <button class="ml-4 text-gray-500">
-                    <i class="bx bx-help-circle text-xl"></i>
-                </button>
-            </div>
         </div>
     </div>
 
@@ -279,8 +246,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Calendar state
             let currentDate = new Date();
-            let currentMonth = 2; // March (0-based)
-            let currentYear = 2025;
+            let currentMonth = currentDate.getMonth(); // Get current month dynamically
+            let currentYear = currentDate.getFullYear(); // Get current year dynamically
             let selectedDay = null;
             let selectedMonth = null;
             let selectedYear = null;
@@ -303,8 +270,6 @@
             const appointmentDateTimeElement = document.getElementById('appointmentDateTime');
             const isGuardianCheckbox = document.getElementById('isGuardian');
             const guardianFields = document.getElementById('guardianFields');
-            const timezoneSelector = document.getElementById('timezoneSelector');
-            const troubleshootSection = document.getElementById('troubleshootSection');
             const patientForm = document.getElementById('patientForm');
             
             // Selected appointment time display elements
@@ -312,18 +277,48 @@
             const appointmentTimeRange = document.getElementById('appointmentTimeRange');
             const appointmentFullDate = document.getElementById('appointmentFullDate');
             
-            // Mock data for available dates
+            // Mock data for available dates - adjusted to include current year/month
             // Format: { year: { month: [days] } }
-            const availableDates = {
-                2025: {
-                    2: [11, 12, 13, 14, 17, 18, 19, 20, 21, 24, 25, 26, 27, 28, 31], // March
-                    3: [1, 2, 3, 7, 8, 9, 10, 14, 15, 16, 17], // April
-                    1: [24, 25, 26, 27, 28] // February
+            const availableDates = {};
+            
+            // Add current year if not present
+            if (!availableDates[currentYear]) {
+                availableDates[currentYear] = {};
+            }
+            
+            // Add some sample available dates for current month and next month
+            if (!availableDates[currentYear][currentMonth]) {
+                // Get current day
+                const today = currentDate.getDate();
+                // Add some available dates starting from tomorrow
+                const availableDaysThisMonth = [];
+                for (let i = today + 1; i <= Math.min(today + 15, 28); i += 2) {
+                    availableDaysThisMonth.push(i);
                 }
-            };
+                availableDates[currentYear][currentMonth] = availableDaysThisMonth;
+            }
+            
+            // Add some dates for next month
+            const nextMonth = currentMonth + 1 > 11 ? 0 : currentMonth + 1;
+            const nextMonthYear = nextMonth === 0 ? currentYear + 1 : currentYear;
+            
+            if (!availableDates[nextMonthYear]) {
+                availableDates[nextMonthYear] = {};
+            }
+            
+            if (!availableDates[nextMonthYear][nextMonth]) {
+                const availableDaysNextMonth = [];
+                for (let i = 1; i <= 15; i += 2) {
+                    availableDaysNextMonth.push(i);
+                }
+                availableDates[nextMonthYear][nextMonth] = availableDaysNextMonth;
+            }
             
             // Initialize calendar
             generateCalendar(currentMonth, currentYear);
+            
+            // Make sure time slots are hidden initially
+            timeSlotContainer.classList.add('hidden');
             
             // Event listeners for month navigation
             prevMonthButton.addEventListener('click', function() {
@@ -437,8 +432,6 @@
                     // Hide calendar view and show form view
                     calendarView.classList.add('hidden');
                     patientFormView.classList.remove('hidden');
-                    timezoneSelector.classList.add('hidden');
-                    troubleshootSection.classList.add('hidden');
                     
                     // Set appointment date and time in the form
                     const selectedDate = new Date(selectedYear, selectedMonth, selectedDay);
@@ -448,7 +441,19 @@
                         day: 'numeric',
                         year: 'numeric'
                     });
-                    appointmentDateTimeElement.textContent = `${formattedDate} at ${selectedTime}`;
+                    
+                    // Update the appointment details section in the form
+                    const appointmentDetailsSection = document.querySelector('.bg-blue-50.p-4');
+                    appointmentDetailsSection.innerHTML = `
+                        <div class="flex items-center mb-2">
+                            <i class="bx bx-calendar text-blue-600 mr-2"></i>
+                            <span class="font-medium">Appointment Details:</span>
+                        </div>
+                        <div class="pl-6">
+                            <p class="text-gray-700"><strong>Date:</strong> ${formattedDate}</p>
+                            <p class="text-gray-700"><strong>Time:</strong> ${selectedTime}</p>
+                        </div>
+                    `;
                 }
             });
             
@@ -456,8 +461,6 @@
             backToCalendarButton.addEventListener('click', function() {
                 patientFormView.classList.add('hidden');
                 calendarView.classList.remove('hidden');
-                timezoneSelector.classList.remove('hidden');
-                troubleshootSection.classList.remove('hidden');
             });
             
             // Guardian checkbox toggle
@@ -485,8 +488,6 @@
                 guardianFields.classList.add('hidden');
                 patientFormView.classList.add('hidden');
                 calendarView.classList.remove('hidden');
-                timezoneSelector.classList.remove('hidden');
-                troubleshootSection.classList.remove('hidden');
                 
                 // Reset selected time
                 selectedTime = null;
@@ -553,7 +554,7 @@
                             // Show time slots
                             timeSlotContainer.classList.remove('hidden');
                             
-                            // Update selected date text
+                            // Update selected date text with dynamic date formatting
                             const selectedDate = new Date(year, month, day);
                             const formattedDate = selectedDate.toLocaleDateString('en-US', { 
                                 weekday: 'long',
@@ -605,22 +606,11 @@
                     updateAppointmentTimeDisplay();
                 }
             }
-
-            // Initial selection (day 11 of March 2025)
-            selectedDay = 11;
-            selectedMonth = 2; // March
-            selectedYear = 2025;
             
-            // Generate initial calendar and show time slots for day 11
+            // Generate initial calendar with current date
             generateCalendar(currentMonth, currentYear);
             
-            // Show time slots for initial selection
-            timeSlotContainer.classList.remove('hidden');
-            selectedDateElement.textContent = "Tuesday, March 11";
-            
-            // If we want to show the appointment time initially, we can set a default time
-            // selectedTime = "2:30pm";
-            // updateAppointmentTimeDisplay();
+            // Don't set any initial selection - make user click on a date
         });
     </script>
 </body>
