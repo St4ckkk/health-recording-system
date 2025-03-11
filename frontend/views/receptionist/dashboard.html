@@ -115,6 +115,10 @@
             background-position: right 0.75rem center;
             background-size: 1rem;
         }
+        .appointment-list-container {
+            max-height: 430px;
+            overflow-y: auto;
+        }
 
         /* New styles for the updated design */
         .appointment-list {
@@ -509,7 +513,7 @@
                             </script>
                            
                         </div>
-                        <div>
+                        <div class="appointment-list-container max-h-[430px] overflow-y-auto">
                             <!-- David Wilson -->
                             <div class="appointment-item active">
                                 <div class="flex justify-between items-start">
