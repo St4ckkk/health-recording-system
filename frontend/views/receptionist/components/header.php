@@ -1,4 +1,4 @@
-<header class="p-5 flex justify-end items-center border-b border-gray-200">
+<header class="p-5 flex justify-end items-center border-b border-gray-200 bg-white">
     <div class="flex items-center gap-2">
         <i class='bx bx-bell text-gray-900' style="font-size: 1.4rem;"></i>
         <div class="avatar w-12 h-12">
