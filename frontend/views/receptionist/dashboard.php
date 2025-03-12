@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="../../node_modules/flatpickr/dist/flatpickr.min.css">
     <script src="../../node_modules/flatpickr/dist/flatpickr.min.js"></script>
     <script src="../../node_modules/flatpickr/dist/l10n/fr.js"></script>
-
 </head>
 
 <body class="font-body">
@@ -107,7 +106,7 @@
                 <section class="p-6">
                     <div class="flex gap-6 w-full">
                         <!-- Left: Appointment List -->
-                        <div class="card bg-white shadow-sm rounded-lg w-[450px]  fade-in">
+                        <div class="card bg-primary shadow-sm rounded-lg w-[450px]  fade-in">
                             <div class="p-4">
                                 <h2 class="text-md font-medium">Appointments</h2>
                                 <p class="text-sm text-gray-400">View and manage patient appointments</p>

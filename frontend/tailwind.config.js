@@ -24,6 +24,8 @@ module.exports = {
         'gray-700': '#374151',
         'gray-800': '#1f2937',
         'gray-900': '#111827',
+        'dark': '#000',
+        'white': '#fff',
       },
       fontFamily: {
         'heading': ['Merriweather', 'serif'],

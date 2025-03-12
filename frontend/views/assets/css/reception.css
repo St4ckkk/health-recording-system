@@ -175,6 +175,7 @@
   cursor: pointer;
   flex: 1;
   text-align: center;
+  color: black;
 }
 
 .tab-button.active {
