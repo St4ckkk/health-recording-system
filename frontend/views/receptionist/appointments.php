@@ -51,6 +51,47 @@
                 justify-content: stretch;
             }
         }
+
+        /* Add styles for view transitions */
+        .view-transition {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .hidden-view {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .visible-view {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Back button styles */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background-color: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 1rem;
+        }
+
+        .back-button:hover {
+            background-color: #e5e7eb;
+        }
+
+        .back-button i {
+            margin-right: 0.5rem;
+        }
     </style>
 </head>
 
@@ -60,7 +101,18 @@
         <div class="flex-1 main-content">
             <?php include('components/header.php') ?>
             <div class="content-wrapper">
-                <section class="p-6">
+                <!-- Patient App View (initially hidden) -->
+                <div id="patientAppView" class="view-transition hidden-view">
+                    <div class="p-6">
+                        <button id="backToAppointments" class="back-button">
+                            <i class="bx bx-arrow-back"></i> Back to Appointments
+                        </button>
+                        <?php include('components/patient_app.php') ?>
+                    </div>
+                </div>
+
+                <!-- Appointments Overview (initially visible) -->
+                <section id="appointmentsView" class="p-6 view-transition visible-view">
                     <!-- Header section -->
                     <div class="mb-4">
                         <h2 class="text-3xl font-bold text-gray-900 font-heading">Appointments Overview</h2>
@@ -116,8 +168,8 @@
                                 <button
                                     class="flex items-center justify-center px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     onclick="clearFilters()">
-                                    <i class='bx bx-filter-alt mr-1 text-lg'></i>
-                                    <span class="text-xs font-medium">
+                                    <i class='bx bx-filter-alt mr-2 text-lg'></i>
+                                    <span class="text-xs font-medium mr-2">
                                         Clear Filters
                                     </span>
                                 </button>
@@ -157,9 +209,8 @@
                                         <td>Diabetes monitoring</td>
                                         <td><span class="status-badge completed">Completed</span></td>
                                         <td>
-                                            <a href="test_patient_app.php">
-                                                <button class="action-button secondary">View</button>
-                                            </a>
+                                            <button class="action-button secondary view-patient-btn"
+                                                data-patient-id="P12349">View</button>
                                         </td>
                                     </tr>
                                     <tr>
@@ -178,7 +229,8 @@
                                         <td><span class="appointment-type follow-up">Follow-up</span></td>
                                         <td>Follow-up on lab results</td>
                                         <td><span class="status-badge no-show">No-Show</span></td>
-                                        <td><button class="action-button secondary">View</button></td>
+                                        <td><button class="action-button secondary view-patient-btn"
+                                                data-patient-id="P12350">View</button></td>
                                     </tr>
                                     <tr>
                                         <td>
@@ -196,7 +248,8 @@
                                         <td><span class="appointment-type procedure">Procedure</span></td>
                                         <td>Colonoscopy</td>
                                         <td><span class="status-badge cancelled">Cancelled</span></td>
-                                        <td><button class="action-button secondary">View</button></td>
+                                        <td><button class="action-button secondary view-patient-btn"
+                                                data-patient-id="P12351">View</button></td>
                                     </tr>
                                     <tr>
                                         <td>
@@ -215,7 +268,8 @@
                                         <td>Cardiology consultation</td>
                                         <td><span class="status-badge scheduled">Scheduled</span></td>
                                         <td>
-                                            <button class="action-button secondary">View</button>
+                                            <button class="action-button secondary view-patient-btn"
+                                                data-patient-id="P12352">View</button>
                                             <button class="action-button secondary"
                                                 style="background-color: #fee2e2; color: #dc2626; border-color: #dc2626;">Cancel</button>
                                         </td>
@@ -233,7 +287,8 @@
                                         <td>Annual physical examination</td>
                                         <td><span class="status-badge scheduled">Scheduled</span></td>
                                         <td>
-                                            <button class="action-button secondary">View</button>
+                                            <button class="action-button secondary view-patient-btn"
+                                                data-patient-id="P12353">View</button>
                                             <button class="action-button secondary"
                                                 style="background-color: #fee2e2; color: #dc2626; border-color: #dc2626;">Cancel</button>
                                         </td>
@@ -250,6 +305,60 @@
         </div>
     </div>
     <script src="../assets/js/reception.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // View switching functionality
+            const appointmentsView = document.getElementById('appointmentsView');
+            const patientAppView = document.getElementById('patientAppView');
+            const viewButtons = document.querySelectorAll('.view-patient-btn');
+            const backButton = document.getElementById('backToAppointments');
+
+            // Function to show patient details
+            function showPatientDetails(patientId) {
+                // Hide appointments view
+                appointmentsView.classList.remove('visible-view');
+                appointmentsView.classList.add('hidden-view');
+
+                // Show patient app view
+                patientAppView.classList.remove('hidden-view');
+                patientAppView.classList.add('visible-view');
+
+                // You can use patientId to load specific patient data if needed
+                console.log('Viewing patient:', patientId);
+
+                // Scroll to top
+                window.scrollTo(0, 0);
+            }
+
+            // Function to go back to appointments
+            function showAppointments() {
+                // Hide patient app view
+                patientAppView.classList.remove('visible-view');
+                patientAppView.classList.add('hidden-view');
+
+                // Show appointments view
+                appointmentsView.classList.remove('hidden-view');
+                appointmentsView.classList.add('visible-view');
+
+                // Scroll to top
+                window.scrollTo(0, 0);
+            }
+
+            // Add click event to all view buttons
+            viewButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const patientId = this.getAttribute('data-patient-id');
+                    showPatientDetails(patientId);
+                });
+            });
+
+            // Add click event to back button
+            if (backButton) {
+                backButton.addEventListener('click', showAppointments);
+            }
+        });
+    </script>
 </body>
 
 </html>

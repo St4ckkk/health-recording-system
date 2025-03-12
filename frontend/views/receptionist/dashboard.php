@@ -24,7 +24,7 @@
             <div class="content-wrapper">
                 <section class="p-6">
                     <div class="mb-3">
-                        <h2 class="text-3xl font-medium text-gray-900 font-heading">Receptionist Dashboard</h2>
+                        <h2 class="text-3xl font-bold text-gray-900 font-heading">Receptionist Dashboard</h2>
                         <p class="text-sm text-gray-500">Manage patient appointments and schedule</p>
                     </div>
                     <div class="flex gap-2">
@@ -109,7 +109,7 @@
                         <!-- Left: Appointment List -->
                         <div class="card bg-white shadow-sm rounded-lg w-[450px]  fade-in">
                             <div class="p-4">
-                                <h2 class="text-md font-bold">Appointments</h2>
+                                <h2 class="text-md font-medium">Appointments</h2>
                                 <p class="text-sm text-gray-400">View and manage patient appointments</p>
 
                                 <div class="relative w-full mt-3">
