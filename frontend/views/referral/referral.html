@@ -352,6 +352,14 @@
                     </div>
 
                     <div class="section">
+                        <div class="section-header">REASON FOR CONSULTATION:</div>
+                        <textarea placeholder="Please provide detailed information about the reason for this referral, including relevant symptoms, duration, and any previous treatments."></textarea>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div>
+                    <div class="section">
                         <div class="section-header">REFERRING PHYSICIAN</div>
                         <div class="form-row">
                             <div class="form-group">
@@ -382,72 +390,62 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Right Column -->
-                <div>
-                    <div class="consultation-section">
-                        <div class="reason-section">
-                            <div class="section-header">REASON FOR CONSULTATION:</div>
-                            <textarea placeholder="Please provide detailed information about the reason for this referral, including relevant symptoms, duration, and any previous treatments."></textarea>
+                    <div class="section">
+                        <div class="section-header">MEDICAL REPORT ATTACHED</div>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="xray">
+                                <label for="xray">X-ray</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="ct">
+                                <label for="ct">CT Scan</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="micro">
+                                <label for="micro">Microbiological Tests</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="allergy">
+                                <label for="allergy">Allergy</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="medical">
+                                <label for="medical">Medical Notes</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="blood">
+                                <label for="blood">Immunological & Blood Tests</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="bronch">
+                                <label for="bronch">Bronchoscopy with BAL</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="oral">
+                                <label for="oral">Oral Test</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="lumbar">
+                                <label for="lumbar">Lumbar Puncture</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="other">
+                                <label for="other">Other</label>
+                            </div>
                         </div>
 
-                        <div class="reports-section">
-                            <div class="section-header">MEDICAL REPORT ATTACHED</div>
-                            <div class="checkbox-group">
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="xray">
-                                    <label for="xray">X-ray</label>
+                        <div class="additional-question">
+                            <p>Is the patient booked for consultation with another specialist?</p>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="yes" name="otherConsult" value="yes">
+                                    <label for="yes">Yes</label>
                                 </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="ct">
-                                    <label for="ct">CT Scan</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="micro">
-                                    <label for="micro">Microbiological Tests</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="allergy">
-                                    <label for="allergy">Allergy</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="medical">
-                                    <label for="medical">Medical Notes</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="blood">
-                                    <label for="blood">Immunological & Blood Tests</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="bronch">
-                                    <label for="bronch">Bronchoscopy with BAL</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="oral">
-                                    <label for="oral">Oral Test</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="lumbar">
-                                    <label for="lumbar">Lumbar Puncture</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="other">
-                                    <label for="other">Other</label>
-                                </div>
-                            </div>
-
-                            <div class="additional-question">
-                                <p>Is the patient booked for consultation with another specialist?</p>
-                                <div class="radio-group">
-                                    <div class="radio-item">
-                                        <input type="radio" id="yes" name="otherConsult" value="yes">
-                                        <label for="yes">Yes</label>
-                                    </div>
-                                    <div class="radio-item">
-                                        <input type="radio" id="no" name="otherConsult" value="no">
-                                        <label for="no">No</label>
-                                    </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="no" name="otherConsult" value="no">
+                                    <label for="no">No</label>
                                 </div>
                             </div>
                         </div>
