@@ -1,6 +1,6 @@
 body {
   font-family: Arial, sans-serif;
-  background: var(--primary-blue);
+  background: var(--primary-ligth);
   padding: 20px;
   margin: 0;
 }
@@ -15,7 +15,13 @@ body {
   position: relative;
   overflow: hidden;
 }
-
+.container {
+  display: flex;
+  flex-direction: row;
+  max-width: 800px;
+  margin: auto;
+  gap: 10em;
+}
 .logo {
   position: absolute;
   top: 20px;
@@ -95,7 +101,9 @@ body {
   margin-bottom: 25px;
   position: relative;
 }
-
+#reason{
+  max-height: 300px;
+}
 .section-title {
   color: #666;
   font-weight: bold;
@@ -117,6 +125,7 @@ body {
   min-width: 200px;
   margin-right: 15px;
   margin-bottom: 10px;
+  
 }
 
 .form-group:last-child {
@@ -203,4 +212,23 @@ input[type='radio'] {
   color: #1a75bb;
   pointer-events: none;
   white-space: nowrap;
+}
+.button {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
 }
