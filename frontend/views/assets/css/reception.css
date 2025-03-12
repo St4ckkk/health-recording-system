@@ -97,21 +97,6 @@
   justify-content: center;
 }
 
-.card-upcoming {
-  border-left: 4px solid #3b82f6;
-  /* blue-500 */
-}
-
-.card-today {
-  border-left: 4px solid #10b981;
-  /* green-500 */
-}
-
-.card-past {
-  border-left: 4px solid #9ca3af;
-  /* gray-400 */
-}
-
 /* Style for appointment status badges */
 .badge-upcoming {
   background-color: #3b82f6;
@@ -179,7 +164,7 @@
 
 .appointment-item.active {
   background-color: #f0f7ff;
-  border-left: 3px solid #3b82f6;
+  border-left: 3px solid var(--primary);
 }
 
 .tab-button {
@@ -375,9 +360,9 @@
 }
 
 .appointments-table th {
-  background-color: #f9fafb;
+  background: var(--primary);
   font-weight: 500;
-  color: #374151;
+  color: #fff;
 }
 
 .appointments-table td {
@@ -396,22 +381,22 @@
 }
 
 .appointments-table .status-badge.completed {
-  background-color: #d1fae5;
+  border: 1px solid #d1fae5;
   color: #059669;
 }
 
 .appointments-table .status-badge.no-show {
-  background-color: #feebd3;
+  border: 1px solid #feebd3;
   color: #d97706;
 }
 
 .appointments-table .status-badge.cancelled {
-  background-color: #fee2e2;
+  border: 1px solid #fee2e2;
   color: #dc2626;
 }
 
 .appointments-table .status-badge.scheduled {
-  background-color: #dbeafe;
+  border: 1px solid#dbeafe;
   color: #3b82f6;
 }
 
