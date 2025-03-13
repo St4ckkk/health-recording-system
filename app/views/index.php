@@ -45,7 +45,8 @@
             <h1 class="hero-title">Transforming your care</h1>
             <div class="hero-actions">
                 <a href="#" class="learn-more">Learn how we drive innovation <i class='bx bx-right-arrow-alt'></i></a>
-                <a href="<?= BASE_URL ?>/views/appointment/doctor-availability.html" class="hero-request-btn">Request appointment</a>
+                <a href="<?= BASE_URL ?>/views/appointment/doctor-availability.html" class="hero-request-btn">Request
+                    appointment</a>
             </div>
         </div>
     </section>

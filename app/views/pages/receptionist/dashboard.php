@@ -7,7 +7,7 @@
     <title>
         <?= $title ?>
     </title>
-      <link rel="stylesheet" href="<?= BASE_URL ?>/node_modules/boxicons/css/boxicons.min.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/node_modules/boxicons/css/boxicons.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/globals.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/output.css">
