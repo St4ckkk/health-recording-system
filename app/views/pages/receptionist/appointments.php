@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Receptionist</title>
-    <link rel="stylesheet" href="../../node_modules/boxicons/css/boxicons.min.css">
-    <link rel="stylesheet" href="../../globals.css">
-    <link rel="stylesheet" href="../../style.css">
-    <link rel="stylesheet" href="../../output.css">
-    <link rel="stylesheet" href="../assets/css/reception.css">
-    <link rel="stylesheet" href="../../node_modules/flatpickr/dist/flatpickr.min.css">
-    <script src="../../node_modules/flatpickr/dist/flatpickr.min.js"></script>
-    <script src="../../node_modules/flatpickr/dist/l10n/fr.js"></script>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/node_modules/boxicons/css/boxicons.min.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/globals.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/output.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/reception.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/node_modules/flatpickr/dist/flatpickr.min.css">
+    <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/flatpickr.min.js"></script>
+    <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/l10n/fr.js"></script>
     <style>
         .filter-section {
             background-color: white;
@@ -304,7 +304,7 @@
             </div>
         </div>
     </div>
-    <script src="../assets/js/reception.js"></script>
+    <script src="<?= BASE_URL ?>/js/reception.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 
