@@ -15,4 +15,10 @@ class ReceptionistController extends Controller {
             'title' => 'Appointments'
         ]);
     }
+
+    public function notification() {
+        $this->view('pages/receptionist/notification', [
+            'title' => 'Notification'
+        ]);
+    }
 }
