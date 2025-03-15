@@ -5,15 +5,16 @@ module.exports = {
     "./app/views/components/**/*.php",
     "./app/views/pages/**/*.php",
     "./public/**/*.php",
-    "./public/**/*.js"
+    // More specific pattern for JS files    avoid matching node_modules
+    "./public/js/**/*.js"
   ],
   theme: {
     extend: {
       colors: {
-        'primary': '#4f46e5',
-        'primary-light': '#eef2ff',
-        'primary-lighter': '#6366f1',
-        'primary-dark': '#3730a3',
+        'primary': '#003963',
+        'primary-light': '#e6f0f7',
+        'primary-lighter': '#3a7ca5',
+        'primary-dark': '#002e4d',
         'success': '#10b981',
         'danger': '#ef4444',
         'gray-50': '#f9fafb',

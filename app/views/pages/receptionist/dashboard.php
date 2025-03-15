@@ -377,12 +377,6 @@
                                         <i class="bx bx-calendar mr-2 text-md"></i>
                                         Reschedule
                                     </button>
-                                    <button class="action-button bg-gray-900">
-                                        <i class="bx bx-file mr-2 text-white text-md"></i>
-                                        <span class="text-white">
-                                            Patient Record
-                                        </span>
-                                    </button>
                                 </div>
                             </div>
 
