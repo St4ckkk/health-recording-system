@@ -338,6 +338,20 @@
                                     <option value="Female">Female</option>
                                 </select>
                             </div>
+                            <!-- New Email Field -->
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email
+                                    Address*</label>
+                                <input type="email" id="email" name="email" required class="form-input w-full"
+                                    placeholder="example@email.com">
+                            </div>
+                            <!-- New Contact Number Field -->
+                            <div>
+                                <label for="contactNumber" class="block text-sm font-medium text-gray-700 mb-1">Contact
+                                    Number*</label>
+                                <input type="tel" id="contactNumber" name="contactNumber" required
+                                    class="form-input w-full" placeholder="e.g., 0123456789">
+                            </div>
                             <div class="md:col-span-2">
                                 <label for="address"
                                     class="block text-sm font-medium text-gray-700 mb-1">Address*</label>
@@ -622,10 +636,40 @@
             patientForm.addEventListener('submit', function (e) {
                 e.preventDefault();
 
+                // Collect form data
+                const formData = {
+                    // Patient details
+                    firstName: document.getElementById('firstName').value,
+                    middleName: document.getElementById('middleName').value,
+                    surname: document.getElementById('surname').value,
+                    suffix: document.getElementById('suffix').value,
+
+                    // Appointment details
+                    appointmentType: document.getElementById('appointmentType').value,
+                    appointmentReason: document.getElementById('appointmentReason').value,
+                    appointmentDate: `${selectedYear}-${selectedMonth + 1}-${selectedDay}`,
+                    appointmentTime: selectedTime,
+
+                    // Patient information
+                    dateOfBirth: document.getElementById('dateOfBirth').value,
+                    legalSex: document.getElementById('legalSex').value,
+                    email: document.getElementById('email').value,
+                    contactNumber: document.getElementById('contactNumber').value,
+                    address: document.getElementById('address').value,
+
+                    // Guardian information (if applicable)
+                    isGuardian: document.getElementById('isGuardian').checked,
+                    guardianName: document.getElementById('isGuardian').checked ? document.getElementById('guardianName').value : '',
+                    relationship: document.getElementById('isGuardian').checked ? document.getElementById('relationship').value : ''
+                };
+
                 // Here you would typically send the form data to your server
+                console.log('Appointment data:', formData);
+
+                // For demo purposes
                 alert('Appointment submitted successfully!');
 
-                // For demo purposes, reset the form and go back to calendar
+                // Reset form and go back to calendar
                 this.reset();
                 guardianFields.classList.add('hidden');
                 patientFormView.classList.add('hidden');

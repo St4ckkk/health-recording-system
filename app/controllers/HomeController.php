@@ -1,30 +1,64 @@
 <?php
 
-
 namespace app\controllers;
 
-class HomeController extends Controller {
-    public function index() {
+use app\models\Doctor;
+use app\models\DoctorTimeSlot;
+
+class HomeController extends Controller
+{
+    private $doctorModel;
+    private $timeSlotModel;
+
+    public function __construct()
+    {
+        // Initialize models in the constructor
+        $this->doctorModel = new Doctor();
+        $this->timeSlotModel = new DoctorTimeSlot();
+    }
+
+    public function index()
+    {
         $this->view('index', [
             'title' => 'Health Recording System'
         ]);
     }
 
-    public function appointment() {
-        $this->view('pages/appointment/doctor-availability', [
-            'title' => 'Schedule Your Appointment'
-        ]);
+    public function appointment()
+    {
+        // Get all doctors with their details including time slots
+        $doctors = $this->doctorModel->getAllDoctorsWithDetails();
+        
+        // Get unique specializations
+        $specializations = [];
+        if (!empty($doctors)) {
+            $specializations = array_unique(array_column($doctors, 'specialization'));
+        }
+
+        $data = [
+            'title' => 'Doctor Availability',
+            'doctors' => $doctors,
+            'specializations' => $specializations,
+            'doctorModel' => $this->doctorModel,
+            'timeSlotModel' => $this->timeSlotModel
+        ];
+
+        $this->view('pages/appointment/doctor-availability', $data);
     }
 
-    public function scheduling() {
+    public function scheduling()
+    {
         $this->view('pages/appointment/scheduling', [
             'title' => 'Schedule Your Appointment'
         ]);
     }
 
-    public function referral() {
+    public function referral()
+    {
         $this->view('pages/referral/referral', [
             'title' => 'Referral'
         ]);
     }
+
+
 }

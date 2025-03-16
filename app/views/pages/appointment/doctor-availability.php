@@ -146,27 +146,21 @@
             }
         }
 
-        /* Enhanced doctor card header */
+        /* Modified doctor card header - solid primary color instead of image */
         .doctor-card-header {
             height: 100px;
             position: relative;
             overflow: hidden;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .doctor-card-header-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-        }
-
-        .doctor-card-header-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
+        .doctor-card-header-icon {
+            color: white;
+            font-size: 24px;
+            opacity: 0.8;
         }
 
         .doctor-card-header-specialty {
@@ -177,15 +171,6 @@
             font-size: 12px;
             font-weight: 500;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-            z-index: 3;
-        }
-
-        .doctor-card-header-icon {
-            position: absolute;
-            top: 8px;
-            left: 12px;
-            color: white;
-            font-size: 20px;
             z-index: 3;
         }
 
@@ -380,11 +365,11 @@
 
                 <div class="image-header-stats">
                     <div class="stat-item">
-                        <div class="stat-number">50+</div>
-                        <div class="stat-label">Specialists</div>
+                        <div class="stat-number"><?= count($data['doctors']) ?>+</div>
+                        <div class="stat-label">Doctors</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-number">15+</div>
+                        <div class="stat-number"><?= count($data['specializations']) ?>+</div>
                         <div class="stat-label">Specialties</div>
                     </div>
                     <div class="stat-item">
@@ -398,26 +383,35 @@
         <!-- Search Section -->
         <div class="mb-8">
             <div class="search-container border border-gray-300">
-                <h2 class="text-lg font-semibold  mb-2">Search Doctors</h2>
+                <h2 class="text-lg font-semibold mb-2">Search Doctors</h2>
                 <p class="text-sm text-gray-400 mb-4">Find doctor by name and speciality</p>
-                <div class="flex flex-col sm:flex-row gap-4">
+
+
+                <form action="<?= BASE_URL ?>/appointment/search" method="GET" class="flex flex-col sm:flex-row gap-4">
                     <div class="relative w-full sm:w-[42.5%]">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3">
                             <i class="bx bx-search text-gray-400"></i>
                         </span>
-                        <input type="text" placeholder="Search by name, specialty, or hospital..."
-                            class="search-input w-full">
+                        <input type="text" name="search" placeholder="Search by name, specialty, or hospital..."
+                            class="search-input w-full"
+                            value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
                     </div>
-                    <select class="select-input w-full sm:w-[42.5%]">
+                    <select name="specialization" class="select-input w-full sm:w-[42.5%]">
                         <option>All Specialties</option>
-                        <option>Cardiology</option>
-                        <option>Neurology</option>
-                        <option>Pediatrics</option>
+                        <?php
+                        // Get unique specializations directly from doctors table
+                        $specializations = array_unique(array_column($data['doctors'], 'specialization'));
+                        foreach ($specializations as $specialization):
+                            ?>
+                            <option value="<?= $specialization ?>" <?= (isset($_GET['specialization']) && $_GET['specialization'] == $specialization) ? 'selected' : '' ?>>
+                                <?= $specialization ?>
+                            </option>
+                        <?php endforeach; ?>
                     </select>
-                    <button class="btn-primary w-full sm:w-[15%] bg-gray-800 hover:bg-gray-900">
+                    <button type="submit" class="btn-primary w-full sm:w-[15%] bg-gray-800 hover:bg-gray-900">
                         Search
                     </button>
-                </div>
+                </form>
             </div>
             <!-- View toggle buttons moved to right side -->
             <div class="flex items-center space-x-2 mt-4 justify-end">
@@ -432,272 +426,118 @@
 
         <!-- Doctor Cards Section - Card View (Default) -->
         <div id="doctorCardView" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 fade-in">
-            <!-- Doctor Card 1 -->
-            <div class="card bg-white">
-                <div class="doctor-card-header">
-                    <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
-                        class="doctor-card-header-img" alt="Cardiology">
-                    <div class="doctor-card-header-overlay"></div>
-                    <div class="doctor-card-header-pattern"></div>
+            <?php if (empty($data['doctors'])): ?>
+                <div class="col-span-full text-center py-8">
+                    <i class="bx bx-search-alt text-5xl text-gray-400 mb-2"></i>
+                    <h3 class="text-xl font-semibold text-gray-700">No doctors found</h3>
+                    <p class="text-gray-500">Try adjusting your search criteria</p>
                 </div>
-                <!-- Card Body -->
-                <div class="p-6">
-                    <div class="flex flex-col items-start">
-                        <div class="avatar-wrapper">
-                            <div class="avatar w-20 h-20">
-                                <i class="bx bx-user text-3xl"></i>
+            <?php else: ?>
+                <?php foreach ($data['doctors'] as $doctor): ?>
+                    <!-- Doctor Card -->
+                    <div class="card bg-white">
+                        <!-- Replaced image header with solid primary color background -->
+                        <div class="doctor-card-header">
+                        </div>
+                        <!-- Card Body -->
+                        <div class="p-6">
+                            <div class="flex flex-col items-start">
+                                <div class="avatar-wrapper">
+                                    <div class="avatar w-20 h-20">
+                                        <?php if (!empty($doctor->profile)): ?>
+                                            <img src="<?= BASE_URL . '/uploads/doctors/' . $doctor->profile ?>"
+                                                class="w-full h-full object-cover rounded-full"
+                                                alt="Dr. <?= $data['doctorModel']->getFullName($doctor) ?>">
+                                        <?php else: ?>
+                                            <i class="bx bx-user text-3xl"></i>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <div class="text-center w-full">
+                                    <h3 class="font-semibold text-gray-800">Dr.
+                                        <?= $data['doctorModel']->getFullName($doctor) ?>
+                                    </h3>
+                                    <p class="text-gray-600 text-sm mb-3"><?= $doctor->specialization ?></p>
+                                </div>
+                                <div class="flex items-center space-x-2 text-sm text-gray-700 mb-2">
+                                    <i class="bx bx-calendar text-primary"></i>
+                                    <span><?= $data['timeSlotModel']->formatAvailableDays($data['timeSlotModel']->getDoctorAvailableDays($doctor->id)) ?></span>
+                                </div>
+                                <div class="flex items-center space-x-2 text-sm text-gray-700 mr-4 mb-3">
+                                    <?php if ($doctor->status === 'available'): ?>
+                                        <i class="bx bx-check-circle text-success"></i>
+                                        <span>Available Today</span>
+                                    <?php else: ?>
+                                        <i class="bx bx-x-circle text-gray-400"></i>
+                                        <span>Not Available Today</span>
+                                    <?php endif; ?>
+                                </div>
+                                <a href="<?= BASE_URL ?>/appointment/schedule/<?= $doctor->id ?>"
+                                    class="schedule-btn w-full text-center">
+                                    Schedule Appointment
+                                </a>
                             </div>
                         </div>
-                        <div class="text-center w-full">
-                            <h3 class="font-semibold text-gray-800">Dr. Abdul Marot</h3>
-                            <p class="text-gray-600 text-sm mb-3">Cardio Specialist</p>
-                        </div>
-                        <div class="flex items-center space-x-2 text-sm text-gray-700 mb-2">
-                            <i class="bx bx-calendar text-primary"></i>
-                            <span>Monday, Wednesday, Friday</span>
-                        </div>
-                        <div class="flex items-center space-x-2 text-sm text-gray-700 mb-4">
-                            <i class="bx bx-check-circle text-success"></i>
-                            <span>Available</span>
-                        </div>
-                        <button class="schedule-btn w-full">
-                            Schedule Appointment
-                        </button>
                     </div>
-                </div>
-            </div>
-
-            <!-- Doctor Card 2 -->
-            <div class="card bg-white">
-                <div class="doctor-card-header">
-                    <img src="https://images.unsplash.com/photo-1559757175-7cb036e0159b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
-                        class="doctor-card-header-img" alt="Neurology">
-                    <div class="doctor-card-header-overlay"></div>
-                    <div class="doctor-card-header-pattern"></div>
-                </div>
-                <!-- Card Body -->
-                <div class="p-6">
-                    <div class="flex flex-col items-start">
-                        <div class="avatar-wrapper">
-                            <div class="avatar w-20 h-20">
-                                <i class="bx bx-user text-3xl"></i>
-                            </div>
-                        </div>
-                        <div class="text-center w-full">
-                            <h3 class="font-semibold text-gray-800">Dr. Sarah Johnson</h3>
-                            <p class="text-gray-600 text-sm mb-3">Neurologist</p>
-                        </div>
-                        <div class="flex items-center space-x-2 text-sm text-gray-700 mb-2">
-                            <i class="bx bx-calendar text-primary"></i>
-                            <span>Tuesday, Thursday</span>
-                        </div>
-                        <div class="flex items-center space-x-2 text-sm text-gray-700 mb-4">
-                            <i class="bx bx-check-circle text-success"></i>
-                            <span>Available</span>
-                        </div>
-                        <button class="schedule-btn w-full">
-                            Schedule Appointment
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Doctor Card 3 -->
-            <div class="card bg-white">
-                <div class="doctor-card-header">
-                    <img src="https://images.unsplash.com/photo-1581056771107-24ca5f033842?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
-                        class="doctor-card-header-img" alt="Pediatrics">
-                    <div class="doctor-card-header-overlay"></div>
-                    <div class="doctor-card-header-pattern"></div>
-                </div>
-                <!-- Card Body -->
-                <div class="p-6">
-                    <div class="flex flex-col items-start">
-                        <div class="avatar-wrapper">
-                            <div class="avatar w-20 h-20">
-                                <i class="bx bx-user text-3xl"></i>
-                            </div>
-                        </div>
-                        <div class="text-center w-full">
-                            <h3 class="font-semibold text-gray-800">Dr. Michael Chen</h3>
-                            <p class="text-gray-600 text-sm mb-3">Pediatrician</p>
-                        </div>
-                        <div class="flex items-center space-x-2 text-sm text-gray-700 mb-2">
-                            <i class="bx bx-calendar text-primary"></i>
-                            <span>Monday, Tuesday, Friday</span>
-                        </div>
-                        <div class="flex items-center space-x-2 text-sm text-gray-700 mb-4">
-                            <i class="bx bx-check-circle text-success"></i>
-                            <span>Available</span>
-                        </div>
-                        <button class="schedule-btn w-full">
-                            Schedule Appointment
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Doctor Card 4 -->
-            <div class="card bg-white">
-                <div class="doctor-card-header">
-                    <img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
-                        class="doctor-card-header-img" alt="Dermatology">
-                    <div class="doctor-card-header-overlay"></div>
-                    <div class="doctor-card-header-pattern"></div>
-                </div>
-                <!-- Card Body -->
-                <div class="p-6">
-                    <div class="flex flex-col items-start">
-                        <div class="avatar-wrapper">
-                            <div class="avatar w-20 h-20">
-                                <i class="bx bx-user text-3xl"></i>
-                            </div>
-                        </div>
-                        <div class="text-center w-full">
-                            <h3 class="font-semibold text-gray-800">Dr. Emily Rodriguez</h3>
-                            <p class="text-gray-600 text-sm mb-3">Dermatologist</p>
-                        </div>
-                        <div class="flex items-center space-x-2 text-sm text-gray-700 mb-2">
-                            <i class="bx bx-calendar text-primary"></i>
-                            <span>Wednesday, Thursday</span>
-                        </div>
-                        <div class="flex items-center space-x-2 text-sm text-gray-700 mb-4">
-                            <i class="bx bx-check-circle text-success"></i>
-                            <span>Available</span>
-                        </div>
-                        <button class="schedule-btn w-full">
-                            Schedule Appointment
-                        </button>
-                    </div>
-                </div>
-            </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
 
         <!-- Doctor List View (Hidden by default) -->
         <div id="doctorListView" class="hidden flex flex-col gap-4 fade-in">
-            <!-- Doctor List Item 1 -->
-            <div class="list-item card bg-white">
-                <div class="p-4 flex items-center">
-                    <div class="avatar w-16 h-16 mr-4 shrink-0">
-                        <i class="bx bx-user text-2xl"></i>
-                    </div>
-                    <div class="flex-grow">
-                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                            <div>
-                                <h3 class="font-semibold text-gray-800">Dr. Abdul Marot</h3>
-                                <p class="text-gray-600 text-sm">Cardio Specialist</p>
-                                <div class="flex items-center space-x-2 text-sm text-gray-700 mr-4">
-                                    <i class="bx bx-calendar text-primary"></i>
-                                    <span class="hidden sm:inline">Monday, Wednesday, Friday</span>
-                                    <span class="sm:hidden">Mon, Wed, Fri</span>
-                                </div>
-                                <div class="flex items-center space-x-2 text-sm text-gray-700 mr-4">
-                                    <i class="bx bx-check-circle text-success"></i>
-                                    <span>Available</span>
-                                </div>
+            <?php if (empty($data['doctors'])): ?>
+                <div class="text-center py-8">
+                    <i class="bx bx-search-alt text-5xl text-gray-400 mb-2"></i>
+                    <h3 class="text-xl font-semibold text-gray-700">No doctors found</h3>
+                    <p class="text-gray-500">Try adjusting your search criteria</p>
+                </div>
+            <?php else: ?>
+                <?php foreach ($data['doctors'] as $doctor): ?>
+                    <!-- Doctor List Item -->
+                    <div class="list-item card bg-white">
+                        <div class="p-4 flex items-center">
+                            <div class="avatar w-16 h-16 mr-4 shrink-0">
+                                <?php if (!empty($doctor->profile)): ?>
+                                    <img src="<?= BASE_URL . '/uploads/doctors/' . $doctor->profile ?>"
+                                        class="w-full h-full object-cover rounded-full"
+                                        alt="Dr. <?= $data['doctorModel']->getFullName($doctor) ?>">
+                                <?php else: ?>
+                                    <i class="bx bx-user text-2xl"></i>
+                                <?php endif; ?>
                             </div>
-                            <div class="mt-2 sm:mt-0 flex flex-wrap gap-2 items-center">
-                                <button class="schedule-btn">
-                                    Schedule
-                                </button>
+                            <div class="flex-grow">
+                                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                                    <div>
+                                        <h3 class="font-semibold text-gray-800">Dr.
+                                            <?= $data['doctorModel']->getFullName($doctor) ?>
+                                        </h3>
+                                        <p class="text-gray-600 text-sm"><?= $doctor->specialization ?></p>
+                                        <div class="flex items-center space-x-2 text-sm text-gray-700 mr-4">
+                                            <i class="bx bx-calendar text-primary"></i>
+                                            <span
+                                                class=""><?= substr($data['timeSlotModel']->formatAvailableDays($data['timeSlotModel']->getDoctorAvailableDays($doctor->id)), 0, 15) ?>...</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2 text-sm text-gray-700 mr-4">
+                                            <?php if ($doctor->status === 'available'): ?>
+                                                <i class="bx bx-check-circle text-success"></i>
+                                                <span>Available Today</span>
+                                            <?php else: ?>
+                                                <i class="bx bx-x-circle text-gray-400"></i>
+                                                <span>Not Available Today</span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2 sm:mt-0 flex flex-wrap gap-2 items-center">
+                                        <a href="<?= BASE_URL ?>/appointment/schedule/<?= $doctor->id ?>" class="schedule-btn">
+                                            Schedule
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Doctor List Item 2 -->
-            <div class="list-item card bg-white">
-                <div class="p-4 flex items-center">
-                    <div class="avatar w-16 h-16 mr-4 shrink-0">
-                        <i class="bx bx-user text-2xl"></i>
-                    </div>
-                    <div class="flex-grow">
-                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                            <div>
-                                <h3 class="font-semibold text-gray-800">Dr. Sarah Johnson</h3>
-                                <p class="text-gray-600 text-sm">Neurologist</p>
-                                <div class="flex items-center space-x-2 text-sm text-gray-700 mr-4">
-                                    <i class="bx bx-calendar text-primary"></i>
-                                    <span class="hidden sm:inline">Tuesday, Thursday</span>
-                                    <span class="sm:hidden">Tue, Thu</span>
-                                </div>
-                                <div class="flex items-center space-x-2 text-sm text-gray-700 mr-4">
-                                    <i class="bx bx-check-circle text-success"></i>
-                                    <span>Available</span>
-                                </div>
-                            </div>
-                            <div class="mt-2 sm:mt-0 flex flex-wrap gap-2 items-center">
-                                <button class="schedule-btn">
-                                    Schedule
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Doctor List Item 3 -->
-            <div class="list-item card bg-white">
-                <div class="p-4 flex items-center">
-                    <div class="avatar w-16 h-16 mr-4 shrink-0">
-                        <i class="bx bx-user text-2xl"></i>
-                    </div>
-                    <div class="flex-grow">
-                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                            <div>
-                                <h3 class="font-semibold text-gray-800">Dr. Michael Chen</h3>
-                                <p class="text-gray-600 text-sm">Pediatrician</p>
-                                <div class="flex items-center space-x-2 text-sm text-gray-700 mr-4">
-                                    <i class="bx bx-calendar text-primary"></i>
-                                    <span class="hidden sm:inline">Monday, Tuesday, Friday</span>
-                                    <span class="sm:hidden">Mon, Tue, Fri</span>
-                                </div>
-                                <div class="flex items-center space-x-2 text-sm text-gray-700 mr-4">
-                                    <i class="bx bx-check-circle text-success"></i>
-                                    <span>Available</span>
-                                </div>
-                            </div>
-                            <div class="mt-2 sm:mt-0 flex flex-wrap gap-2 items-center">
-                                <button class="schedule-btn">
-                                    Schedule
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Doctor List Item 4 -->
-            <div class="list-item card bg-white">
-                <div class="p-4 flex items-center">
-                    <div class="avatar w-16 h-16 mr-4 shrink-0">
-                        <i class="bx bx-user text-2xl"></i>
-                    </div>
-                    <div class="flex-grow">
-                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                            <div>
-                                <h3 class="font-semibold text-gray-800">Dr. Emily Rodriguez</h3>
-                                <p class="text-gray-600 text-sm">Dermatologist</p>
-                                <div class="flex items-center space-x-2 text-sm text-gray-700 mr-4">
-                                    <i class="bx bx-calendar text-primary"></i>
-                                    <span class="hidden sm:inline">Wednesday, Thursday</span>
-                                    <span class="sm:hidden">Wed, Thu</span>
-                                </div>
-                                <div class="flex items-center space-x-2 text-sm text-gray-700 mr-4">
-                                    <i class="bx bx-check-circle text-success"></i>
-                                    <span>Available</span>
-                                </div>
-                            </div>
-                            <div class="mt-2 sm:mt-0 flex flex-wrap gap-2 items-center">
-                                <button class="schedule-btn">
-                                    Schedule
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
     </div>
 
