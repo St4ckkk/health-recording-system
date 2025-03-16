@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doctor Availability</title>
+    <title><?= $title ?></title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/node_modules/boxicons/css/boxicons.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/index.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/globals.css">
@@ -124,7 +124,6 @@
         .logo-container {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             border-radius: 0.75rem;
-            padding: 1rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             display: inline-flex;
             align-items: center;
@@ -364,12 +363,15 @@
     </style>
 </head>
 
-<body class="p-5 bg">
-    <div class="logo-container text-white p-4 inline-flex items-center mb-6">
-        <div class="mr-3">
-            <div class="logo">
-                <div class="w-12 h-12 flex justify-center items-center font-bold text-white">TC</div>
+<body class="p-5">
+    <div class="w-64 h-16 mb-12">
+        <div class="logo-container text-white p-4 inline-flex items-center">
+            <div class="mr-2">
+                <div class="logo">
+                    <div class="w-12 h-12 flex justify-center items-center font-bold text-white">TC</div>
+                </div>
             </div>
+            <span class="text-2xl font-bold">Test Clinic</span>
         </div>
     </div>
 

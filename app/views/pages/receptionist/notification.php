@@ -76,7 +76,7 @@
 
                 <!-- Notifications View (initially visible) -->
                 <section id="notificationsView" class="p-6 view-transition visible-view">
-                    <div class="mb-6">
+                    <div class="mb-3">
                         <h2 class="text-3xl font-bold text-gray-900 font-heading">Notifications</h2>
                         <p class="text-sm text-gray-500">Updates about patient appointments</p>
                     </div>
