@@ -111,12 +111,21 @@
                     </div>
                 </div>
 
+                <div id="rescheduleAppView" class="view-transition hidden-view">
+                    <div class="p-6">
+                        <button id="backFromReschedule" class="back-button">
+                            <i class="bx bx-arrow-back"></i> Back to Appointments
+                        </button>
+                        <?php include('components/reschedule_app.php') ?>
+                    </div>
+                </div>
+
                 <!-- Appointments Overview (initially visible) -->
                 <section id="appointmentsView" class="p-6 view-transition visible-view">
                     <!-- Header section -->
                     <div class="mb-4">
-                        <h2 class="text-3xl font-bold text-gray-900 font-heading">Appointments Overview</h2>
-                        <p class="text-sm text-gray-500">Summary of all scheduled appointments</p>
+                        <h2 class="text-2xl font-bold text-gray-900">Appointments</h2>
+                        <p class="text-sm text-gray-500">View and manage appointments</p>
                     </div>
                     <div class="filter-section">
                         <div class="tab-container mb-4">
@@ -311,8 +320,10 @@
             // View switching functionality
             const appointmentsView = document.getElementById('appointmentsView');
             const patientAppView = document.getElementById('patientAppView');
+            const rescheduleAppView = document.getElementById('rescheduleAppView');
             const viewButtons = document.querySelectorAll('.view-patient-btn');
             const backButton = document.getElementById('backToAppointments');
+            const backFromRescheduleButton = document.getElementById('backFromReschedule');
 
             // Function to show patient details
             function showPatientDetails(patientId) {
@@ -331,11 +342,32 @@
                 window.scrollTo(0, 0);
             }
 
-            // Function to go back to appointments
-            function showAppointments() {
-                // Hide patient app view
+            // Function to show reschedule interface
+            function showRescheduleInterface(appointmentId) {
+                // Hide appointments view and patient view
+                appointmentsView.classList.remove('visible-view');
+                appointmentsView.classList.add('hidden-view');
                 patientAppView.classList.remove('visible-view');
                 patientAppView.classList.add('hidden-view');
+
+                // Show reschedule view
+                rescheduleAppView.classList.remove('hidden-view');
+                rescheduleAppView.classList.add('visible-view');
+
+                // You can use appointmentId to load specific appointment data if needed
+                console.log('Rescheduling appointment:', appointmentId);
+
+                // Scroll to top
+                window.scrollTo(0, 0);
+            }
+
+            // Function to go back to appointments
+            function showAppointments() {
+                // Hide patient app view and reschedule view
+                patientAppView.classList.remove('visible-view');
+                patientAppView.classList.add('hidden-view');
+                rescheduleAppView.classList.remove('visible-view');
+                rescheduleAppView.classList.add('hidden-view');
 
                 // Show appointments view
                 appointmentsView.classList.remove('hidden-view');
@@ -353,10 +385,40 @@
                 });
             });
 
-            // Add click event to back button
+            // Add click event to back buttons
             if (backButton) {
                 backButton.addEventListener('click', showAppointments);
             }
+
+            if (backFromRescheduleButton) {
+                backFromRescheduleButton.addEventListener('click', showAppointments);
+            }
+
+            // Add event listener for reschedule buttons in patient details
+            // This needs to be done after the patient details are loaded
+            document.addEventListener('click', function (event) {
+                // Check if the clicked element is a reschedule button
+                if (event.target.matches('.action-button') &&
+                    event.target.textContent.trim() === 'Reschedule' ||
+                    (event.target.closest('.action-button') &&
+                        event.target.closest('.action-button').textContent.trim() === 'Reschedule')) {
+
+                    // Get the button element (could be the target or its parent)
+                    const button = event.target.matches('.action-button') ?
+                        event.target :
+                        event.target.closest('.action-button');
+
+                    // Get the appointment ID from the parent container
+                    // This assumes there's a data attribute or we can find it in the DOM
+                    // For now, we'll use a placeholder
+                    const appointmentId = button.getAttribute('data-appointment-id') ||
+                        document.querySelector('.detail-value')?.textContent ||
+                        'A1005';
+
+                    // Show the reschedule interface
+                    showRescheduleInterface(appointmentId);
+                }
+            });
         });
     </script>
 </body>

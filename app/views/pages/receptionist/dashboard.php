@@ -15,6 +15,139 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/node_modules/flatpickr/dist/flatpickr.min.css">
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/flatpickr.min.js"></script>
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/l10n/fr.js"></script>
+    <style>
+        /* Image header styling */
+        .image-header {
+            position: relative;
+            height: 250px;
+            width: 100%;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        .image-header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-header-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+
+        .image-header-content {
+            position: relative;
+            z-index: 3;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem 3rem;
+            color: white;
+        }
+
+        .image-header-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
+            max-width: 600px;
+        }
+
+        .image-header-subtitle {
+            font-size: 1.125rem;
+            font-weight: 400;
+            margin-bottom: 1.25rem;
+            max-width: 500px;
+            opacity: 0.9;
+        }
+
+        .image-header-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 0.5rem;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            min-width: 110px;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .image-header {
+                height: 350px;
+            }
+
+            .image-header-content {
+                padding: 1.5rem;
+            }
+
+            .image-header-title {
+                font-size: 1.75rem;
+            }
+
+            .image-header-subtitle {
+                font-size: 1rem;
+            }
+
+            .image-header-stats {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .stat-item {
+                min-width: 100px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .image-header {
+                height: 400px;
+            }
+
+            .image-header-title {
+                font-size: 1.5rem;
+            }
+
+            .stat-item {
+                min-width: 90px;
+                padding: 0.75rem;
+            }
+
+            .stat-number {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
 </head>
 
 <body class="font-body">
@@ -24,9 +157,31 @@
             <?php include(VIEW_ROOT . '/pages/receptionist/components/header.php') ?>
             <div class="content-wrapper">
                 <section class="p-6">
-                    <div class="mb-3">
-                        <h2 class="text-3xl font-bold text-gray-900 font-heading">Receptionist Dashboard</h2>
-                        <p class="text-sm text-gray-500">Manage patient appointments and schedule</p>
+                    <!-- Image Header for Receptionist Dashboard -->
+                    <div class="image-header">
+                        <img src="<?= BASE_URL ?>/images/receptionist-header.png" class="image-header-bg"
+                            alt="Reception Desk">
+                        <div class="image-header-overlay"></div>
+                        <div class="image-header-pattern"></div>
+                        <div class="image-header-content">
+                            <h1 class="image-header-title">Receptionist Dashboard</h1>
+                            <p class="image-header-subtitle">Efficiently manage patient appointments and schedules</p>
+
+                            <div class="image-header-stats">
+                                <div class="stat-item">
+                                    <div class="stat-number">12</div>
+                                    <div class="stat-label">Today's Appointments</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">3</div>
+                                    <div class="stat-label">Pending Appointments</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">2 </div>
+                                    <div class="stat-label">Cancelled Appointments</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="flex gap-2">
                         <!-- Upcoming Appointments -->
@@ -357,7 +512,8 @@
                                         </p>
                                         <p class="contact-info">
                                             <i class="bx bx-envelope text-gray-500 mr-2"></i>
-                                            david.wilson@example.com
+                                            <a href="/cdn-cgi/l/email-protection" class="__cf_email__"
+                                                data-cfemail="7e1a1f08171a500917120d11103e1b061f130e121b501d1113">[email&#160;protected]</a>
                                         </p>
                                     </div>
                                 </div>
@@ -456,7 +612,8 @@
                                         </p>
                                         <p class="contact-info">
                                             <i class="bx bx-envelope text-gray-500 mr-2"></i>
-                                            sarah.brown@example.com
+                                            <a href="/cdn-cgi/l/email-protection" class="__cf_email__"
+                                                data-cfemail="9eedffecfff6b0fcecf1e9f0defbe6fff3eef2fbb0fdf1f3">[email&#160;protected]</a>
                                         </p>
                                     </div>
                                 </div>
@@ -556,7 +713,8 @@
                                         </p>
                                         <p class="contact-info">
                                             <i class="bx bx-envelope text-gray-500 mr-2"></i>
-                                            james.anderson@example.com
+                                            <a href="/cdn-cgi/l/email-protection" class="__cf_email__"
+                                                data-cfemail="adc7ccc0c8de83ccc3c9c8dfdec2c3edc8d5ccc0ddc1c883cec2c0">[email&#160;protected]</a>
                                         </p>
                                     </div>
                                 </div>
@@ -656,7 +814,8 @@
                                         </p>
                                         <p class="contact-info">
                                             <i class="bx bx-envelope text-gray-500 mr-2"></i>
-                                            robert.johnson@example.com
+                                            <a href="/cdn-cgi/l/email-protection" class="__cf_email__"
+                                                data-cfemail="c2b0ada0a7b0b6eca8adaaacb1adac82a7baa3afb2aea7eca1adaf">[email&#160;protected]</a>
                                         </p>
                                     </div>
                                 </div>
@@ -690,6 +849,7 @@
             </div>
         </main>
     </div>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script src="<?= BASE_URL ?>/js/reception.js"></script>
 </body>
 

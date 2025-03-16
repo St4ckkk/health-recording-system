@@ -1,24 +1,35 @@
-<?php 
+<?php
 
 namespace app\controllers;
 
-class ReceptionistController extends Controller {
-    
-    public function dashboard() {
+class ReceptionistController extends Controller
+{
+
+    public function dashboard()
+    {
         $this->view('pages/receptionist/dashboard', [
             'title' => 'Receptionist'
         ]);
     }
 
-    public function appointments() {
+    public function appointments()
+    {
         $this->view('pages/receptionist/appointments', [
             'title' => 'Appointments'
         ]);
     }
 
-    public function notification() {
+    public function notification()
+    {
         $this->view('pages/receptionist/notification', [
             'title' => 'Notification'
+        ]);
+    }
+
+    public function doctor_schedules()
+    {
+        $this->view('pages/receptionist/doctor_schedules', [
+            'title' => 'Doctor Schedules'
         ]);
     }
 }

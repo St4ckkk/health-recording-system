@@ -74,11 +74,21 @@
                     </div>
                 </div>
 
+                <!-- Reschedule App View (initially hidden) -->
+                <div id="rescheduleAppView" class="view-transition hidden-view">
+                    <div class="p-6">
+                        <button id="backFromReschedule" class="back-button">
+                            <i class="bx bx-arrow-back"></i> Back to Notifications
+                        </button>
+                        <?php include('components/reschedule_app.php') ?>
+                    </div>
+                </div>
+
                 <!-- Notifications View (initially visible) -->
                 <section id="notificationsView" class="p-6 view-transition visible-view">
                     <div class="mb-3">
-                        <h2 class="text-3xl font-bold text-gray-900 font-heading">Notifications</h2>
-                        <p class="text-sm text-gray-500">Updates about patient appointments</p>
+                        <h2 class="text-2xl font-bold text-gray-900">Notifications</h2>
+                        <p class="text-sm text-gray-500">View and manage notifications</p>
                     </div>
                     <div class="p-4 card bg-white shadow-sm rounded-lg w-full fade-in">
                         <div class="space-y-4">
@@ -104,6 +114,11 @@
                                                     class="view-patient-btn px-3 py-1.5 bg-primary text-white border border-primary rounded-md hover:bg-primary-dark transition-colors duration-fast"
                                                     data-patient-id="P12345">
                                                     View
+                                                </button>
+                                                <button
+                                                    class="reschedule-btn px-3 py-1.5 bg-white border border-primary-lighter text-primary rounded-md hover:bg-primary-light transition-colors duration-fast"
+                                                    data-appointment-id="A12345" data-patient-name="John Smith">
+                                                    Reschedule
                                                 </button>
                                             </div>
                                         </div>
@@ -133,6 +148,11 @@
                                                     data-patient-id="P12346">
                                                     View
                                                 </button>
+                                                <button
+                                                    class="reschedule-btn px-3 py-1.5 bg-white border border-primary-lighter text-primary rounded-md hover:bg-primary-light transition-colors duration-fast"
+                                                    data-appointment-id="A12346" data-patient-name="Emma Wilson">
+                                                    Reschedule
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -158,6 +178,11 @@
                                                     data-patient-id="P12347">
                                                     View
                                                 </button>
+                                                <button
+                                                    class="reschedule-btn px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100 transition-colors duration-fast"
+                                                    data-appointment-id="A12347" data-patient-name="Robert Johnson">
+                                                    Reschedule
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -176,8 +201,11 @@
             // View switching functionality
             const notificationsView = document.getElementById('notificationsView');
             const patientAppView = document.getElementById('patientAppView');
+            const rescheduleAppView = document.getElementById('rescheduleAppView');
             const viewButtons = document.querySelectorAll('.view-patient-btn');
+            const rescheduleButtons = document.querySelectorAll('.reschedule-btn');
             const backButton = document.getElementById('backToNotifications');
+            const backFromRescheduleButton = document.getElementById('backFromReschedule');
             const confirmButtons = document.querySelectorAll('.confirm-btn');
 
             // Function to show patient details
@@ -197,11 +225,32 @@
                 window.scrollTo(0, 0);
             }
 
-            // Function to go back to notifications
-            function showNotifications() {
-                // Hide patient app view
+            // Function to show reschedule interface
+            function showRescheduleInterface(appointmentId, patientName) {
+                // Hide notifications view and patient view
+                notificationsView.classList.remove('visible-view');
+                notificationsView.classList.add('hidden-view');
                 patientAppView.classList.remove('visible-view');
                 patientAppView.classList.add('hidden-view');
+
+                // Show reschedule view
+                rescheduleAppView.classList.remove('hidden-view');
+                rescheduleAppView.classList.add('visible-view');
+
+                // You can use appointmentId to load specific appointment data if needed
+                console.log('Rescheduling appointment:', appointmentId, 'for patient:', patientName);
+
+                // Scroll to top
+                window.scrollTo(0, 0);
+            }
+
+            // Function to go back to notifications
+            function showNotifications() {
+                // Hide patient app view and reschedule view
+                patientAppView.classList.remove('visible-view');
+                patientAppView.classList.add('hidden-view');
+                rescheduleAppView.classList.remove('visible-view');
+                rescheduleAppView.classList.add('hidden-view');
 
                 // Show notifications view
                 notificationsView.classList.remove('hidden-view');
@@ -219,6 +268,15 @@
                 });
             });
 
+            // Add click event to all reschedule buttons
+            rescheduleButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const appointmentId = this.getAttribute('data-appointment-id');
+                    const patientName = this.getAttribute('data-patient-name');
+                    showRescheduleInterface(appointmentId, patientName);
+                });
+            });
+
             // Add click event to all confirm buttons
             confirmButtons.forEach(button => {
                 button.addEventListener('click', function () {
@@ -232,9 +290,41 @@
                 });
             });
 
+            // Add click event to back buttons
             if (backButton) {
                 backButton.addEventListener('click', showNotifications);
             }
+
+            if (backFromRescheduleButton) {
+                backFromRescheduleButton.addEventListener('click', showNotifications);
+            }
+
+            // Add event listener for reschedule buttons in patient details
+            // This needs to be done after the patient details are loaded
+            document.addEventListener('click', function (event) {
+                // Check if the clicked element is a reschedule button in the patient details view
+                if (event.target.matches('.action-button') &&
+                    event.target.textContent.trim() === 'Reschedule' ||
+                    (event.target.closest('.action-button') &&
+                        event.target.closest('.action-button').textContent.trim() === 'Reschedule')) {
+
+                    // Get the button element (could be the target or its parent)
+                    const button = event.target.matches('.action-button') ?
+                        event.target :
+                        event.target.closest('.action-button');
+
+                    // Get the appointment ID from the parent container
+                    const appointmentId = button.getAttribute('data-appointment-id') ||
+                        document.querySelector('.detail-value')?.textContent ||
+                        'A1005';
+
+                    // Get patient name if available
+                    const patientName = document.querySelector('.text-md.font-medium.text-gray-900')?.textContent || 'Patient';
+
+                    // Show the reschedule interface
+                    showRescheduleInterface(appointmentId, patientName);
+                }
+            });
         });
     </script>
 </body>

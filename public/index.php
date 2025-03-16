@@ -14,6 +14,7 @@ $router->add('/referral', 'HomeController@referral');
 $router->add('/receptionist/dashboard', 'ReceptionistController@dashboard');
 $router->add('/receptionist/appointments', 'ReceptionistController@appointments');
 $router->add('/receptionist/notification', 'ReceptionistController@notification');
+$router->add('/receptionist/doctor_schedules', 'ReceptionistController@doctor_schedules');
 
 
 $router->dispatch($_SERVER['REQUEST_URI']);
