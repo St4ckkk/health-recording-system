@@ -3,16 +3,26 @@
 
 namespace app\core;
 
-class Router {
-    private $routes = [];
+class Router
+{
+    protected $routes = [
+        'GET' => [],
+        'POST' => [],
+        'PUT' => [],
+        'DELETE' => []
+    ];
 
-    public function add($route, $controllerAction) {
+    public function add($route, $controllerAction)
+    {
         $this->routes[$route] = $controllerAction;
     }
 
-    public function dispatch($uri) {
-        foreach ($this->routes as $route => $controllerAction) {
-            if ($route === $uri) {
+    public function dispatch($uri)
+    {
+        foreach ($this->routes as $route => $controllerAction)
+        {
+            if ($route === $uri)
+            {
                 list($controller, $action) = explode('@', $controllerAction);
                 $controller = "app\\controllers\\$controller"; 
                 $controller = new $controller();
@@ -24,5 +34,42 @@ class Router {
         // Handle 404
         http_response_code(404);
         echo '404 - Page not found';
+    }
+
+    public function get($uri, $controller)
+    {
+        $this->routes['GET'][$uri] = $controller;
+    }
+
+    public function post($uri, $controller)
+    {
+        $this->routes['POST'][$uri] = $controller;
+    }
+
+    public function direct($uri, $requestType)
+    {
+        if (array_key_exists($uri, $this->routes[$requestType])) {
+            return $this->callAction(
+                ...explode('@', $this->routes[$requestType][$uri])
+            );
+        }
+
+        // Change from app\core\Exception to \Exception
+        throw new \Exception('No route defined for this URI: ' . $uri);
+    }
+
+    protected function callAction($controller, $action)
+    {
+        $controller = "app\\controllers\\{$controller}";
+        $controller = new $controller();
+
+        if (!method_exists($controller, $action)) {
+            // Change from app\core\Exception to \Exception
+            throw new \Exception(
+                "{$controller} does not respond to the {$action} action."
+            );
+        }
+
+        return $controller->$action();
     }
 }
