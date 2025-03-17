@@ -72,25 +72,12 @@ class HomeController extends Controller
     }
 
     public function track_appointment() {
-        // Enable error logging
-        error_reporting(E_ALL);
-        ini_set('display_errors', 1);
-        ini_set('log_errors', 1);
-        ini_set('error_log', 'php_errors.log');
-        
         try {
             // Check if this is an AJAX request
             if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
-                error_log('Non-AJAX request received for track_appointment');
-                // If not AJAX request, redirect to tracking page
                 header('Location: ' . BASE_URL . '/appointment-tracking');
                 exit;
             }
-            
-            // Log all request data for debugging
-            error_log('Track appointment request received');
-            error_log('POST data: ' . print_r($_POST, true));
-            error_log('Raw input: ' . file_get_contents('php://input'));
             
             // Get tracking number from POST data or raw input
             $trackingNumber = isset($_POST['tracking_number']) ? trim($_POST['tracking_number']) : '';
@@ -102,8 +89,6 @@ class HomeController extends Controller
                 $trackingNumber = isset($parsedInput['tracking_number']) ? trim($parsedInput['tracking_number']) : '';
             }
             
-            error_log('Extracted tracking number: "' . $trackingNumber . '"');
-            
             // Validate tracking number
             if (empty($trackingNumber)) {
                 $this->jsonResponse([
@@ -113,25 +98,8 @@ class HomeController extends Controller
                 return;
             }
             
-            // Check if appointmentModel is initialized
-            if (!isset($this->appointmentModel) || !is_object($this->appointmentModel)) {
-                error_log('Appointment model not initialized');
-                $this->appointmentModel = new \app\models\Appointment();
-            }
-            
             // Get appointment details from the model
-            try {
-                $appointment = $this->appointmentModel->getAppointmentByTrackingNumber($trackingNumber);
-                error_log('Appointment query executed. Result: ' . ($appointment ? json_encode($appointment) : 'No appointment found'));
-            } catch (\Exception $e) {
-                error_log('Error getting appointment: ' . $e->getMessage());
-                error_log('SQL Error: ' . json_encode($this->appointmentModel->getLastError()));
-                $this->jsonResponse([
-                    'success' => false,
-                    'message' => 'Error retrieving appointment data: ' . $e->getMessage()
-                ]);
-                return;
-            }
+            $appointment = $this->appointmentModel->getAppointmentByTrackingNumber($trackingNumber);
             
             if (!$appointment) {
                 $this->jsonResponse([
@@ -147,45 +115,9 @@ class HomeController extends Controller
             }
             
             // Get doctor details
-            try {
-                if (!isset($this->doctorModel) || !is_object($this->doctorModel)) {
-                    error_log('Doctor model not initialized');
-                    $this->doctorModel = new \app\models\Doctor();
-                }
-                
-                $doctor = $this->doctorModel->getDoctorById($appointment['doctor_id']);
-                
-                // Convert doctor object to array if needed
-                if (is_object($doctor)) {
-                    $doctor = (array) $doctor;
-                }
-                
-                error_log('Doctor found: ' . ($doctor ? json_encode($doctor) : 'No'));
-                
-                // Generate full doctor name
-                $doctorName = '';
-                if ($doctor) {
-                    // Use first_name and last_name to create full name
-                    $doctorName = $doctor['first_name'];
-                    if (!empty($doctor['middle_name'])) {
-                        $doctorName .= ' ' . $doctor['middle_name'];
-                    }
-                    $doctorName .= ' ' . $doctor['last_name'];
-                    if (!empty($doctor['suffix'])) {
-                        $doctorName .= ', ' . $doctor['suffix'];
-                    }
-                }
-            } catch (\Exception $e) {
-                error_log('Error getting doctor: ' . $e->getMessage());
-                $doctor = [
-                    'id' => null,
-                    'first_name' => 'Unknown',
-                    'last_name' => 'Doctor',
-                    'specialization' => 'Not specified'
-                ];
-                $doctorName = 'Unknown Doctor';
-            }
+            $doctor = $this->doctorModel->getDoctorById($appointment['doctor_id']);
             
+            // Set default doctor info if not found
             if (!$doctor) {
                 $doctor = [
                     'id' => null,
@@ -194,6 +126,21 @@ class HomeController extends Controller
                     'specialization' => 'Not specified'
                 ];
                 $doctorName = 'Unknown Doctor';
+            } else {
+                // Convert doctor object to array if needed
+                if (is_object($doctor)) {
+                    $doctor = (array) $doctor;
+                }
+                
+                // Generate full doctor name
+                $doctorName = $doctor['first_name'];
+                if (!empty($doctor['middle_name'])) {
+                    $doctorName .= ' ' . $doctor['middle_name'];
+                }
+                $doctorName .= ' ' . $doctor['last_name'];
+                if (!empty($doctor['suffix'])) {
+                    $doctorName .= ', ' . $doctor['suffix'];
+                }
             }
             
             // Format the appointment data for the response
@@ -221,14 +168,10 @@ class HomeController extends Controller
                 'appointment' => $formattedAppointment
             ]);
         } catch (\Exception $e) {
-            // Log the error
-            error_log('Error in track_appointment: ' . $e->getMessage());
-            error_log('Stack trace: ' . $e->getTraceAsString());
-            
             // Return a JSON error response
             $this->jsonResponse([
                 'success' => false,
-                'message' => 'An error occurred while processing your request: ' . $e->getMessage()
+                'message' => 'An error occurred while processing your request'
             ]);
         }
     }
