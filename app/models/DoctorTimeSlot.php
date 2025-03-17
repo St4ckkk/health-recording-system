@@ -13,13 +13,6 @@ class DoctorTimeSlot extends Model
         parent::__construct();
     }
 
-    public function getTimeSlotsByDoctorId($doctorId)
-    {
-        $this->db->query('SELECT * FROM doctor_time_slots WHERE doctor_id = :doctor_id ORDER BY FIELD(day, "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"), start_time ASC');
-        $this->db->bind(':doctor_id', $doctorId);
-        return $this->db->resultSet();
-    }
-
     public function getDoctorAvailableDays($doctorId)
     {
         $this->db->query('SELECT DISTINCT day FROM doctor_time_slots WHERE doctor_id = :doctor_id ORDER BY FIELD(day, "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")');
@@ -48,4 +41,43 @@ class DoctorTimeSlot extends Model
         return implode(', ', $days);
     }
 
+    public function getDoctorAvailableDaysFormatted($doctorId)
+    {
+        $days = $this->getDoctorAvailableDays($doctorId);
+        return $this->formatAvailableDays($days);
+    }
+
+    public function getDoctorsWithAvailability($status = null)
+    {
+        $sql = "
+            SELECT d.*, 
+                   COUNT(DISTINCT ts.day) as available_days,
+                   GROUP_CONCAT(DISTINCT ts.day ORDER BY 
+                     CASE ts.day
+                       WHEN 'Monday' THEN 1
+                       WHEN 'Tuesday' THEN 2
+                       WHEN 'Wednesday' THEN 3
+                       WHEN 'Thursday' THEN 4
+                       WHEN 'Friday' THEN 5
+                       WHEN 'Saturday' THEN 6
+                       WHEN 'Sunday' THEN 7
+                     END SEPARATOR ', ') as days
+            FROM doctors d
+            LEFT JOIN doctor_time_slots ts ON d.id = ts.doctor_id
+        ";
+
+        if ($status !== null) {
+            $sql .= " WHERE d.status = :status";
+        }
+
+        $sql .= " GROUP BY d.id ORDER BY d.last_name, d.first_name";
+
+        $this->db->query($sql);
+
+        if ($status !== null) {
+            $this->db->bind(':status', $status);
+        }
+
+        return $this->db->resultSet();
+    }
 }

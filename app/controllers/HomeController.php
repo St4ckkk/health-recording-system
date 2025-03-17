@@ -26,9 +26,8 @@ class HomeController extends Controller
 
     public function appointment()
     {
-        // Get all doctors with their details including time slots
-        $doctors = $this->doctorModel->getAllDoctorsWithDetails();
-        
+        $doctors = $this->doctorModel->getAllDoctors();
+
         // Get unique specializations
         $specializations = [];
         if (!empty($doctors)) {

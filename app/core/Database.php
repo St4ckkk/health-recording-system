@@ -1,5 +1,4 @@
 <?php
-// Include the config file to access database constants
 require_once dirname(__DIR__) . '/config/config.php';
 
 class Database
@@ -30,13 +29,11 @@ class Database
         return self::$instance;
     }
 
-    // Add query method
     public function query($sql)
     {
         $this->stmt = $this->connection->prepare($sql);
     }
 
-    // Add bind method
     public function bind($param, $value, $type = null)
     {
         if (is_null($type)) {
@@ -57,20 +54,20 @@ class Database
         $this->stmt->bindValue($param, $value, $type);
     }
 
-    // Add execute method
+
     public function execute()
     {
         return $this->stmt->execute();
     }
 
-    // Add resultSet method
+
     public function resultSet()
     {
         $this->execute();
         return $this->stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
-    // Add single method
+
     public function single()
     {
         $this->execute();
