@@ -18,11 +18,22 @@ class Doctor extends Model
 
     public function getAllDoctors($status = null)
     {
-        if ($status) {
-            return $this->timeSlotModel->getDoctorsWithAvailabilityByStatus($status);
-        } else {
-            return $this->timeSlotModel->getDoctorsWithAvailability();
-        }
+        return $this->timeSlotModel->getDoctorsWithAvailability($status);
+    }
+
+    public function getDoctorById($id)
+    {
+        return $this->getById($id);
+    }
+
+    public function getDoctorsByStatus($status)
+    {
+        return $this->getByField('status', $status);
+    }
+
+    public function getDoctorByEmail($email)
+    {
+        return $this->getSingleByField('email', $email);
     }
 
     public function getFullName($doctor)

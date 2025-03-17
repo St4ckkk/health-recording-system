@@ -13,6 +13,21 @@ class DoctorTimeSlot extends Model
         parent::__construct();
     }
 
+    public function getTimeSlotById($id)
+    {
+        return $this->getById($id);
+    }
+
+    public function getTimeSlotsByDoctorId($doctorId)
+    {
+        return $this->getByField('doctor_id', $doctorId);
+    }
+
+    public function getTimeSlotsByDay($day)
+    {
+        return $this->getByField('day', $day);
+    }
+
     public function getDoctorAvailableDays($doctorId)
     {
         $this->db->query('SELECT DISTINCT day FROM doctor_time_slots WHERE doctor_id = :doctor_id ORDER BY FIELD(day, "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")');
