@@ -16,7 +16,7 @@ header {
   width: 100%;
   background-color: white;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   padding: 25px;
   z-index: 1000;

@@ -19,17 +19,11 @@
                 style="border: 2px solid #333; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; font-weight: bold;">
                 LOGO</div>
         </div>
-        <nav>
-            <ul>
-                <li><a href="#">Care at Test Clinic <i class='bx bx-chevron-down'></i></a></li>
-                <li><a href="#">Health Library<i class='bx bx-chevron-down'></i></a></li>
-                <li><a href="#">For Medical Professionals <i class='bx bx-chevron-down'></i></a></li>
-                <li><a href="#">Research & Education at Test Clinic <i class='bx bx-chevron-down'></i></a></li>
-                <li><a href="#">Giving to Test Clinic <i class='bx bx-chevron-down'></i></a></li>
-            </ul>
-        </nav>
         <div class="header-right">
             <a href="<?= BASE_URL ?>/appointment/doctor-availability" class="request-link">Request appointment</a>
+            <a href="<?= BASE_URL ?>/appointment/appointment-tracking" class="track-link"><i
+                    class='bx bx-calendar-check'></i>Track
+                appointment</a>
             <a href="#" class="login-link"><i class='bx bx-user'></i>Log in</a>
             <a href="#" class="search-link"><i class='bx bx-search'></i></a>
         </div>

@@ -19,7 +19,7 @@ class HomeController extends Controller
 
     public function index()
     {
-        $this->view('index', [
+        $this->view('index.view', [
             'title' => 'Health Recording System'
         ]);
     }
@@ -28,7 +28,6 @@ class HomeController extends Controller
     {
         $doctors = $this->doctorModel->getAllDoctors();
 
-        // Get unique specializations
         $specializations = [];
         if (!empty($doctors)) {
             $specializations = array_unique(array_column($doctors, 'specialization'));
@@ -42,12 +41,12 @@ class HomeController extends Controller
             'timeSlotModel' => $this->timeSlotModel
         ];
 
-        $this->view('pages/appointment/doctor-availability', $data);
+        $this->view('pages/appointment/doctor-availability.view', $data);
     }
 
     public function scheduling()
     {
-        $this->view('pages/appointment/scheduling', [
+        $this->view('pages/appointment/scheduling.view', [
             'title' => 'Schedule Your Appointment'
         ]);
     }
@@ -59,5 +58,11 @@ class HomeController extends Controller
         ]);
     }
 
+    public function appointment_tracking()
+    {
+        $this->view('pages/appointment/appointment-tracking.view', [
+            'title' => 'Appointment Tracking'
+        ]);
+    }
 
 }

@@ -9,6 +9,7 @@ $router = new app\core\Router();
 $router->add('/', 'HomeController@index');
 $router->add('/appointment/doctor-availability', 'HomeController@appointment');
 $router->add('/appointment/scheduling', 'HomeController@scheduling');
+$router->add('/appointment/appointment-tracking', 'HomeController@appointment_tracking');
 $router->add('/referral', 'HomeController@referral');
 
 $router->add('/receptionist/dashboard', 'ReceptionistController@dashboard');
