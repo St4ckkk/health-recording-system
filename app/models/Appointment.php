@@ -34,4 +34,35 @@ class Appointment extends Model {
         }
         return null;
     }
+
+   
+    
+    /**
+     * 
+     * 
+     * @param int 
+     * @param string 
+     * @param int|null $
+     * @return bool 
+     */
+    public function updateStatus($appointmentId, $status, $changedBy = null) {
+        $sql = "UPDATE {$this->table} SET status = :status, updated_at = NOW() WHERE id = :id";
+        
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':status', $status, \PDO::PARAM_STR);
+            $stmt->bindParam(':id', $appointmentId, \PDO::PARAM_INT);
+            $success = $stmt->execute();
+            
+            if ($success) {
+                $historyModel = new \app\models\AppointmentStatusHistory();
+                return $historyModel->addStatusChange($appointmentId, $status, $changedBy);
+            }
+            
+            return false;
+        } catch (\PDOException $e) {
+            error_log("Database error in updateStatus: " . $e->getMessage());
+            return false;
+        }
+    }
 }
