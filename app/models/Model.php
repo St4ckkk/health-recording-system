@@ -78,7 +78,7 @@ class Model
 
         $this->db->query("UPDATE {$this->table} SET $setClause WHERE id = :id");
 
-        // Bind all values
+
         foreach ($data as $key => $value) {
             $this->db->bind(":$key", $value);
         }
@@ -94,32 +94,32 @@ class Model
         return $this->db->execute();
     }
 
-    public function count($conditions = [])
-    {
-        $sql = "SELECT COUNT(*) as count FROM {$this->table}";
+    // public function count($conditions = [])
+    // {
+    //     $sql = "SELECT COUNT(*) as count FROM {$this->table}";
 
-        if (!empty($conditions)) {
-            $sql .= " WHERE ";
-            $parts = [];
+    //     if (!empty($conditions)) {
+    //         $sql .= " WHERE ";
+    //         $parts = [];
 
-            foreach ($conditions as $key => $value) {
-                $parts[] = "$key = :$key";
-            }
+    //         foreach ($conditions as $key => $value) {
+    //             $parts[] = "$key = :$key";
+    //         }
 
-            $sql .= implode(' AND ', $parts);
-        }
+    //         $sql .= implode(' AND ', $parts);
+    //     }
 
-        $this->db->query($sql);
+    //     $this->db->query($sql);
 
-        if (!empty($conditions)) {
-            foreach ($conditions as $key => $value) {
-                $this->db->bind(":$key", $value);
-            }
-        }
+    //     if (!empty($conditions)) {
+    //         foreach ($conditions as $key => $value) {
+    //             $this->db->bind(":$key", $value);
+    //         }
+    //     }
 
-        $result = $this->db->single();
-        return $result->count;
-    }
+    //     $result = $this->db->single();
+    //     return $result->count;
+    // }
 
     public function getByField($field, $value)
     {

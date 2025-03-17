@@ -17,6 +17,8 @@ module.exports = {
         'primary-dark': '#002e4d',
         'success': '#10b981',
         'danger': '#ef4444',
+        'warning': '#f59e0b',
+        'info': '#0ea5e9',
         'gray-50': '#f9fafb',
         'gray-100': '#f3f4f6',
         'gray-200': '#e5e7eb',

@@ -11,24 +11,6 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/output.css">
     <style>
-        :root {
-            --primary: #0a3161;
-            --primary-dark: #002147;
-            --primary-light: #e0f2fe;
-            --primary-lighter: #f0f9ff;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-            --gray-900: #111827;
-            --primary-rgb: 10, 49, 97;
-        }
-
         .logo-container {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             border-radius: 0.75rem;
@@ -80,9 +62,9 @@
         }
 
         .btn-danger {
-            background-color: #FEF2F2;
-            color: #B91C1C;
-            border: 1px solid #FEE2E2;
+            background-color: var(--danger-light, #FEF2F2);
+            color: var(--danger, #ef4444);
+            border: 1px solid var(--danger-lighter, #FEE2E2);
             transition: all 0.2s ease;
             border-radius: 0.5rem;
             padding: 0.75rem 1.5rem;
@@ -90,7 +72,37 @@
         }
 
         .btn-danger:hover {
-            background-color: #FEE2E2;
+            background-color: var(--danger-lighter, #FEE2E2);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background-color: var(--success-light, #ECFDF5);
+            color: var(--success, #10b981);
+            border: 1px solid var(--success-lighter, #D1FAE5);
+            transition: all 0.2s ease;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+        }
+
+        .btn-success:hover {
+            background-color: var(--success-lighter, #D1FAE5);
+            transform: translateY(-1px);
+        }
+
+        .btn-warning {
+            background-color: var(--warning-light, #FFF7ED);
+            color: var(--warning, #f59e0b);
+            border: 1px solid var(--warning-lighter, #FFEDD5);
+            transition: all 0.2s ease;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+        }
+
+        .btn-warning:hover {
+            background-color: var(--warning-lighter, #FFEDD5);
             transform: translateY(-1px);
         }
 
@@ -157,27 +169,27 @@
 
         .status-scheduled {
             background-color: #EFF6FF;
-            color: #1E40AF;
+            color: var(--info);
         }
 
         .status-confirmed {
             background-color: #ECFDF5;
-            color: #065F46;
+            color: var(--success);
         }
 
         .status-completed {
             background-color: #F3F4F6;
-            color: #1F2937;
+            color: var(--success-dark);
         }
 
         .status-cancelled {
             background-color: #FEF2F2;
-            color: #B91C1C;
+            color: var(--danger);
         }
 
         .status-rescheduled {
             background-color: #FFF7ED;
-            color: #9A3412;
+            color: var(--danger-light);
         }
 
         /* Timeline styles */
@@ -926,7 +938,7 @@
         /* Success message */
         .success-message {
             display: none;
-            color: #065F46;
+            color: var(--success-dark);
             background-color: #ECFDF5;
             border: 1px solid #D1FAE5;
             border-radius: 0.75rem;
@@ -980,7 +992,6 @@
         <div class="split-layout">
             <!-- Hero Section (Left Side) -->
             <div class="hero-section">
-                <div class="hero-pattern"></div>
                 <img src="<?= BASE_URL ?>/images/image-header.jpg" class="hero-image" alt="Medical Appointment">
                 <div class="hero-content">
                     <h1 class="hero-title">Track Your Appointment</h1>
@@ -989,7 +1000,7 @@
                     <div class="flex items-center">
                         <div
                             class="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">
-                            <i class="bx bx-info-circle text-white text-xl"></i>
+                            <i class="bx bx-info-circle text-danger text-xl"></i>
                         </div>
                         <p class="text-sm opacity-80">Your tracking number can be found in your confirmation email or
                             SMS</p>
@@ -1039,6 +1050,8 @@
                                 <h2 class="text-xl font-bold text-gray-900">Appointment Details</h2>
                                 <p class="text-sm text-gray-500">Appointment ID: <span
                                         id="appointmentId">APP-12345</span></p>
+                                <p class="text-sm font-medium text-gray-700 mt-1">Scheduled for: <span
+                                        id="appointmentDateTime">May 15, 2023 at 10:00 AM</span></p>
                             </div>
                             <span class="status-badge status-confirmed" id="statusBadge">
                                 <i class="bx bx-check-circle mr-1"></i> Confirmed
@@ -1065,6 +1078,7 @@
                                     </div>
                                     <div class="info-card-label">Date & Time</div>
                                     <div class="info-card-value" id="dateTime">May 15, 2023 at 10:00 AM</div>
+                                    <div class="text-sm font-bold text-primary mt-1" id="timeOnly">10:00 AM</div>
                                 </div>
 
                                 <div class="info-card">
@@ -1487,6 +1501,13 @@
 
                 // Update appointment information
                 document.getElementById('dateTime').textContent = appointment.dateTime;
+                document.getElementById('appointmentDateTime').textContent = appointment.dateTime;
+
+                // Extract and set just the time
+                const timeMatch = appointment.dateTime.match(/at\s+(.+)$/);
+                if (timeMatch && timeMatch[1]) {
+                    document.getElementById('timeOnly').textContent = timeMatch[1];
+                }
                 document.getElementById('location').textContent = appointment.location;
                 document.getElementById('reason').textContent = appointment.reason;
                 document.getElementById('scheduledDate').textContent = appointment.scheduledDate;
