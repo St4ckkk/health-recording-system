@@ -14,6 +14,72 @@
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/flatpickr.min.js"></script>
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/l10n/fr.js"></script>
     <style>
+        /* Make action buttons more compact in table */
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: auto;
+            padding: 0.375rem 0.5rem;
+            font-size: 0.7rem;
+            border-radius: 0.375rem;
+            white-space: nowrap;
+        }
+
+        /* Add table header styling for smaller text */
+        .appointments-table thead th {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .action-button i {
+            margin-right: 0.25rem;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1rem;
+            height: 1rem;
+            vertical-align: middle;
+        }
+
+        /* Action buttons container to ensure consistent spacing */
+        .action-buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        /* Status badge alignment */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        /* Appointment type alignment */
+        .appointment-type {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        /* Ensure text doesn't overflow */
+        .max-w-reason {
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Existing styles continue below */
         .filter-section {
             background-color: white;
             border-radius: 0.75rem;
@@ -93,39 +159,9 @@
             margin-right: 0.5rem;
         }
 
-        /* Action buttons container */
-        .action-buttons-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
 
-        /* Consistent button styling */
-        .action-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 110px;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.375rem;
-            font-size: 0.75rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
 
-        .action-button i {
-            font-size: 1rem;
-            margin-right: 0.375rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
 
-        /* Status-specific button styles */
-        .action-button.full-width {
-            width: 100%;
-        }
 
         .action-button.secondary {
             background-color: var(--neutral-light);
@@ -151,7 +187,8 @@
         .status-badge {
             display: inline-flex;
             align-items: center;
-            padding: 0.25rem 0.75rem;
+            padding: 0.15rem 0.5rem;
+            /* Reduced padding from 0.25rem 0.75rem */
             border-radius: var(--radius-pill);
             font-size: var(--font-size-xs);
             font-weight: 500;
@@ -231,98 +268,110 @@
 
         /* Action button styles */
         .action-button.danger {
-            background-color: var(--danger-light);
+            background-color: transparent;
             color: var(--danger-dark);
-            border-color: var(--danger-light);
+            border: 1px solid var(--danger-dark);
         }
 
         .action-button.danger:hover {
             background-color: var(--danger-lighter);
         }
 
-        /* Add pagination styles */
-        .pagination-container {
-            padding: 1rem 0;
-            border-top: 1px solid var(--border-color, #e5e7eb);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 1.5rem;
+        /* Add styles for view, reschedule and confirm buttons */
+        .action-button.view {
+            background-color: transparent;
+            color: var(--info-dark);
+            border: 1px solid var(--info-dark);
         }
 
-        .pagination-controls {
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
+        .action-button.view:hover {
+            background-color: var(--info-lighter);
         }
 
-        .pagination-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 2.25rem;
-            height: 2.25rem;
-            padding: 0 0.5rem;
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text-color, #374151);
-            background-color: var(--bg-color, white);
-            border: 1px solid var(--border-color, #e5e7eb);
-            transition: all 0.2s ease;
+        .action-button.reschedule {
+            background-color: transparent;
+            color: var(--warning-dark);
+            border: 1px solid var(--warning-dark);
         }
 
-        .pagination-btn:hover:not(.disabled):not(.active) {
-            background-color: var(--hover-bg, #f3f4f6);
-            border-color: var(--hover-border, #d1d5db);
+        .action-button.reschedule:hover {
+            background-color: var(--warning-lighter);
         }
 
-        .pagination-btn.active {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
+        .action-button.confirm {
+            background-color: transparent;
+            color: var(--success-dark);
+            border: 1px solid var(--success-dark);
         }
 
-        .pagination-btn.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .action-button.confirm:hover {
+            background-color: var(--success-lighter);
         }
 
-        .pagination-ellipsis {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 2rem;
+        /* Add delete button style */
+        .action-button.delete {
+            background-color: transparent;
+            color: var(--danger-dark);
+            border: 1px solid var(--danger-dark);
+        }
+
+        .action-button.delete:hover {
+            background-color: var(--danger-lighter);
+        }
+
+        /* Icon-only button styles */
+        .action-button.icon-only {
+            width: 2rem;
             height: 2rem;
-            font-size: 0.875rem;
-            color: var(--text-color, #374151);
-            margin: 0 0.125rem;
+            padding: 0.375rem;
+            position: relative;
         }
 
-        .pagination-per-page {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .action-button.icon-only i {
+            margin-right: 0;
+            font-size: 1rem;
         }
 
-        .pagination-select {
-            padding: 0.375rem 0.75rem;
-            border-radius: 0.375rem;
-            border: 1px solid var(--border-color, #e5e7eb);
-            font-size: 0.875rem;
-            background-color: white;
-            min-width: 4.5rem;
+        /* Tooltip styles */
+        .tooltip {
+            position: relative;
+            display: inline-block;
         }
 
-        @media (max-width: 768px) {
-            .pagination-container {
-                flex-direction: column;
-                gap: 1rem;
-            }
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: auto;
+            min-width: 80px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 5px 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
 
-            .pagination-per-page {
-                order: -1;
-            }
+        .tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
         }
     </style>
 </head>
@@ -418,7 +467,6 @@
                         </div>
                     </div>
 
-                    <!-- Table section -->
                     <div class="card bg-white shadow-sm rounded-lg w-full fade-in">
                         <div class="p-4">
                             <table class="appointments-table">
@@ -439,7 +487,7 @@
                                         foreach ($displayAppointments as $appointment):
                                             ?>
                                             <tr>
-                                                <td class="whitespace-nowrap">
+                                                <td class="text-xs">
                                                     <?= htmlspecialchars($appointment->reference_number) ?>
                                                 </td>
                                                 <td>
@@ -460,49 +508,77 @@
                                                 <td><span
                                                         class="appointment-type <?= strtolower($appointment->type) ?>"><?= htmlspecialchars($appointment->appointment_type) ?></span>
                                                 </td>
-                                                <td class="max-w-[200px] truncate"><?= htmlspecialchars($appointment->reason) ?>
+                                                <td class="text-xs"><?= htmlspecialchars($appointment->reason) ?>
                                                 </td>
                                                 <td><span
                                                         class="status-badge <?= strtolower($appointment->status) ?>"><?= ucfirst(htmlspecialchars($appointment->status)) ?></span>
                                                 </td>
                                                 <td>
                                                     <div class="action-buttons-container">
-                                                        <button class="action-button secondary view-patient-btn"
-                                                            data-patient-id="<?= htmlspecialchars($appointment->patient_id) ?>"
-                                                            data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
-                                                            <i class="bx bx-user"></i> View
-                                                        </button>
+                                                        <div class="tooltip">
+                                                            <button class="action-button view icon-only view-patient-btn"
+                                                                data-patient-id="<?= htmlspecialchars($appointment->patient_id) ?>"
+                                                                data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
+                                                                <i class="bx bx-show"></i>
+                                                                <span class="tooltip-text">View Details</span>
+                                                            </button>
+                                                        </div>
+
+                                                        <!-- Add delete button -->
+                                                        <div class="tooltip">
+                                                            <button
+                                                                class="action-button delete icon-only delete-appointment-btn"
+                                                                data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
+                                                                <i class="bx bx-trash"></i>
+                                                                <span class="tooltip-text">Delete</span>
+                                                            </button>
+                                                        </div>
 
                                                         <?php if ($appointment->status == 'scheduled' || $appointment->status == 'pending'): ?>
-                                                            <button class="action-button danger"
-                                                                data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
-                                                                <i class="bx bx-x-circle"></i> Cancel
-                                                            </button>
+                                                            <div class="tooltip">
+                                                                <button class="action-button danger icon-only"
+                                                                    data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
+                                                                    <i class="bx bx-x-circle"></i>
+                                                                    <span class="tooltip-text">Cancel Appointment</span>
+                                                                </button>
+                                                            </div>
                                                         <?php endif; ?>
 
                                                         <?php if ($appointment->status == 'no-show'): ?>
-                                                            <button class="action-button secondary"
-                                                                data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
-                                                                <i class="bx bx-calendar-edit"></i> Reschedule
-                                                            </button>
+                                                            <div class="tooltip">
+                                                                <button class="action-button reschedule icon-only"
+                                                                    data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
+                                                                    <i class="bx bx-calendar-edit"></i>
+                                                                    <span class="tooltip-text">Reschedule Appointment</span>
+                                                                </button>
+                                                            </div>
                                                         <?php endif; ?>
 
                                                         <?php if ($appointment->status == 'cancelled'): ?>
-                                                            <button class="action-button secondary"
-                                                                data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
-                                                                <i class="bx bx-calendar-edit"></i> Reschedule
-                                                            </button>
-                                                            <button class="action-button secondary"
-                                                                data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
-                                                                <i class="bx bx-check-circle"></i> Confirm
-                                                            </button>
+                                                            <div class="tooltip">
+                                                                <button class="action-button reschedule icon-only"
+                                                                    data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
+                                                                    <i class="bx bx-calendar-edit"></i>
+                                                                    <span class="tooltip-text">Reschedule</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="tooltip">
+                                                                <button class="action-button confirm icon-only"
+                                                                    data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
+                                                                    <i class="bx bx-check-circle"></i>
+                                                                    <span class="tooltip-text">Confirm</span>
+                                                                </button>
+                                                            </div>
                                                         <?php endif; ?>
 
                                                         <?php if ($appointment->status == 'rescheduled'): ?>
-                                                            <button class="action-button secondary"
-                                                                data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
-                                                                <i class="bx bx-check-circle"></i> Confirm
-                                                            </button>
+                                                            <div class="tooltip">
+                                                                <button class="action-button confirm icon-only"
+                                                                    data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
+                                                                    <i class="bx bx-check-circle"></i>
+                                                                    <span class="tooltip-text">Confirm</span>
+                                                                </button>
+                                                            </div>
                                                         <?php endif; ?>
                                                     </div>
                                                 </td>
@@ -517,291 +593,18 @@
                                     <?php endif; ?>
                                 </tbody>
                             </table>
-                            <!-- Replace the simple "View All Appointments" link with a proper pagination component -->
-                            <div class="pagination-container">
-                                <div class="text-sm text-gray-500">
-                                    Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of
-                                    <span class="font-medium">24</span> appointments
-                                </div>
-                                <div class="pagination-controls">
-                                    <button class="pagination-btn disabled" disabled aria-label="Previous page">
-                                        <i class="bx bx-chevron-left"></i>
-                                    </button>
-                                    <button class="pagination-btn active" aria-label="Page 1">1</button>
-                                    <button class="pagination-btn" aria-label="Page 2">2</button>
-                                    <button class="pagination-btn" aria-label="Page 3">3</button>
-                                    <div class="pagination-ellipsis" aria-hidden="true">...</div>
-                                    <button class="pagination-btn" aria-label="Page 5">5</button>
-                                    <button class="pagination-btn" aria-label="Next page">
-                                        <i class="bx bx-chevron-right"></i>
-                                    </button>
-                                </div>
-                                <div class="pagination-per-page">
-                                    <span class="text-sm text-gray-500">Show</span>
-                                    <select class="pagination-select" aria-label="Items per page">
-                                        <option>10</option>
-                                        <option>25</option>
-                                        <option>50</option>
-                                        <option>100</option>
-                                    </select>
-                                    <span class="text-sm text-gray-500">per page</span>
-                                </div>
-                            </div>
                         </div>
                     </div>
+
+
                 </section>
+                <!-- Table section -->
+
             </div>
         </div>
     </div>
     <script src="<?= BASE_URL ?>/js/reception.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Initialize flatpickr for date filter
-            flatpickr("#dateFilter", {
-                dateFormat: "Y-m-d",
-                altInput: true,
-                altFormat: "F j, Y",
-                locale: "en"
-            });
-
-            // Tab switching functionality
-            const tabButtons = document.querySelectorAll('.tab-button');
-
-            tabButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    // Remove active class from all buttons
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-
-                    // Add active class to clicked button
-                    this.classList.add('active');
-
-                    // Get the tab type
-                    const tabType = this.textContent.trim().toLowerCase();
-
-                    // Reload the page with the appropriate filter
-                    window.location.href = '<?= BASE_URL ?>/receptionist/appointments?tab=' + tabType;
-                });
-            });
-
-            // View switching functionality
-            const appointmentsView = document.getElementById('appointmentsView');
-            const patientAppView = document.getElementById('patientAppView');
-            const rescheduleAppView = document.getElementById('rescheduleAppView');
-            const viewButtons = document.querySelectorAll('.view-patient-btn');
-            const backButton = document.getElementById('backToAppointments');
-            const backFromRescheduleButton = document.getElementById('backFromReschedule');
-
-            // Function to show patient details
-            function showPatientDetails(patientId) {
-                // Hide appointments view
-                appointmentsView.classList.remove('visible-view');
-                appointmentsView.classList.add('hidden-view');
-
-                // Show patient app view
-                patientAppView.classList.remove('hidden-view');
-                patientAppView.classList.add('visible-view');
-
-                // You can use patientId to load specific patient data if needed
-                console.log('Viewing patient:', patientId);
-
-                // Scroll to top
-                window.scrollTo(0, 0);
-            }
-
-            // Function to show reschedule interface
-            function showRescheduleInterface(appointmentId) {
-                // Hide appointments view and patient view
-                appointmentsView.classList.remove('visible-view');
-                appointmentsView.classList.add('hidden-view');
-                patientAppView.classList.remove('visible-view');
-                patientAppView.classList.add('hidden-view');
-
-                // Show reschedule view
-                rescheduleAppView.classList.remove('hidden-view');
-                rescheduleAppView.classList.add('visible-view');
-
-                // You can use appointmentId to load specific appointment data if needed
-                console.log('Rescheduling appointment:', appointmentId);
-
-                // Scroll to top
-                window.scrollTo(0, 0);
-            }
-
-            // Function to go back to appointments
-            function showAppointments() {
-                // Hide patient app view and reschedule view
-                patientAppView.classList.remove('visible-view');
-                patientAppView.classList.add('hidden-view');
-                rescheduleAppView.classList.remove('visible-view');
-                rescheduleAppView.classList.add('hidden-view');
-
-                // Show appointments view
-                appointmentsView.classList.remove('hidden-view');
-                appointmentsView.classList.add('visible-view');
-
-                // Scroll to top
-                window.scrollTo(0, 0);
-            }
-
-            // Add click event to all view buttons
-            viewButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    const patientId = this.getAttribute('data-patient-id');
-                    showPatientDetails(patientId);
-                });
-            });
-
-            // Add click event to back buttons
-            if (backButton) {
-                backButton.addEventListener('click', showAppointments);
-            }
-
-            if (backFromRescheduleButton) {
-                backFromRescheduleButton.addEventListener('click', showAppointments);
-            }
-
-            // Add event listener for reschedule buttons in patient details
-            document.addEventListener('click', function (event) {
-                // Check if the clicked element is a reschedule button
-                if (event.target.matches('.action-button') &&
-                    event.target.textContent.includes('Reschedule') ||
-                    (event.target.closest('.action-button') &&
-                        event.target.closest('.action-button').textContent.includes('Reschedule'))) {
-
-                    // Get the button element (could be the target or its parent)
-                    const button = event.target.matches('.action-button') ?
-                        event.target :
-                        event.target.closest('.action-button');
-
-                    // Get the appointment ID from the data attribute
-                    const appointmentId = button.getAttribute('data-appointment-id');
-
-                    // Show the reschedule interface
-                    showRescheduleInterface(appointmentId);
-                }
-            });
-
-            // Function to clear filters
-            window.clearFilters = function () {
-                document.getElementById('dateFilter').value = '';
-                document.getElementById('typeFilter').selectedIndex = 0;
-                // Reload the page without filters
-                window.location.href = '<?= BASE_URL ?>/receptionist/appointments';
-            }
-
-            // Action functions
-            window.cancelAppointment = function (appointmentId) {
-                console.log('Cancelling appointment:', appointmentId);
-                // Implement AJAX call to cancel appointment
-            }
-
-            // Add pagination functionality
-            const paginationButtons = document.querySelectorAll('.pagination-btn');
-            const paginationSelect = document.querySelector('.pagination-select');
-
-            // Handle pagination button clicks
-            paginationButtons.forEach(button => {
-                if (!button.classList.contains('disabled')) {
-                    button.addEventListener('click', function () {
-                        // Remove active class from all buttons
-                        paginationButtons.forEach(btn => {
-                            if (!btn.querySelector('i')) { // Skip the prev/next buttons
-                                btn.classList.remove('active');
-                            }
-                        });
-
-                        // If this is a numbered button (not prev/next), add active class
-                        if (!this.querySelector('i')) {
-                            this.classList.add('active');
-                        }
-
-                        // Get the page number or direction
-                        const pageValue = this.textContent.trim();
-                        const isNext = this.querySelector('.bx-chevron-right');
-                        const isPrev = this.querySelector('.bx-chevron-left');
-
-                        let page = 1;
-
-                        if (isNext) {
-                            // Get current active page and increment
-                            const activePage = document.querySelector('.pagination-btn.active');
-                            page = parseInt(activePage.textContent) + 1;
-                        } else if (isPrev) {
-                            // Get current active page and decrement
-                            const activePage = document.querySelector('.pagination-btn.active');
-                            page = parseInt(activePage.textContent) - 1;
-                        } else {
-                            page = parseInt(pageValue);
-                        }
-
-                        // Here you would typically load the data for the selected page
-                        console.log('Loading page:', page);
-
-                        // For demo purposes, we'll just update the "Showing X to Y" text
-                        const perPage = parseInt(paginationSelect.value);
-                        const start = (page - 1) * perPage + 1;
-                        const end = Math.min(start + perPage - 1, 24); // Assuming 24 total items
-
-                        document.querySelector('.pagination-container .text-sm.text-gray-500 span:nth-child(1)').textContent = start;
-                        document.querySelector('.pagination-container .text-sm.text-gray-500 span:nth-child(2)').textContent = end;
-
-                        // Update prev/next button states
-                        const prevButton = document.querySelector('.pagination-btn:first-child');
-                        const nextButton = document.querySelector('.pagination-btn:last-child');
-
-                        prevButton.disabled = page === 1;
-                        prevButton.classList.toggle('disabled', page === 1);
-
-                        nextButton.disabled = page === 5; // Assuming 5 total pages
-                        nextButton.classList.toggle('disabled', page === 5);
-                    });
-                }
-            });
-
-            // Handle per-page selection change
-            if (paginationSelect) {
-                paginationSelect.addEventListener('change', function () {
-                    const perPage = parseInt(this.value);
-                    console.log('Items per page changed to:', perPage);
-
-                    // Here you would typically reload the data with the new per-page setting
-                    // For demo purposes, we'll just update the "Showing X to Y" text
-                    document.querySelector('.pagination-container .text-sm.text-gray-500 span:nth-child(2)').textContent =
-                        Math.min(perPage, 24); // Assuming 24 total items
-                });
-            }
-
-            window.confirmAppointment = function (appointmentId) {
-                console.log('Confirming appointment:', appointmentId);
-                // Implement AJAX call to confirm appointment
-            }
-
-            window.sendReminder = function (appointmentId) {
-                console.log('Sending reminder for appointment:', appointmentId);
-                // Implement AJAX call to send reminder
-            }
-
-            window.rescheduleAppointment = function (appointmentId) {
-                console.log('Rescheduling appointment:', appointmentId);
-                showRescheduleInterface(appointmentId);
-            }
-
-            window.confirmCancellation = function (appointmentId) {
-                console.log('Confirming cancellation for appointment:', appointmentId);
-                // Implement AJAX call to confirm cancellation
-            }
-
-            window.confirmReschedule = function (appointmentId) {
-                console.log('Confirming reschedule for appointment:', appointmentId);
-                // Implement AJAX call to confirm reschedule
-            }
-
-            window.viewPatientRecord = function (appointmentId) {
-                console.log('Viewing patient record for appointment:', appointmentId);
-                // Implement navigation to patient record
-            }
-        });
-    </script>
+    <script src="<?= BASE_URL ?>/js/appointments.js"></script>
 </body>
 
 </html>
