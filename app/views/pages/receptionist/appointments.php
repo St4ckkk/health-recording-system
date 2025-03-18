@@ -393,10 +393,12 @@
                     <div class="filter-section">
                         <!-- In the tab container section -->
                         <div class="tab-container mb-4">
-                            <button
-                                class="tab-button <?= $activeTab === 'upcoming' ? 'active' : '' ?>">Upcoming</button>
-                            <button class="tab-button <?= $activeTab === 'past' ? 'active' : '' ?>">Past</button>
-                            <button class="tab-button <?= $activeTab === 'all' ? 'active' : '' ?>">All</button>
+                            <a href="<?= BASE_URL ?>/receptionist/appointments?tab=upcoming"
+                                class="tab-button <?= $activeTab === 'upcoming' ? 'active' : '' ?>">Upcoming</a>
+                            <a href="<?= BASE_URL ?>/receptionist/appointments?tab=past"
+                                class="tab-button <?= $activeTab === 'past' ? 'active' : '' ?>">Past</a>
+                            <a href="<?= BASE_URL ?>/receptionist/appointments?tab=all"
+                                class="tab-button <?= $activeTab === 'all' ? 'active' : '' ?>">All</a>
                         </div>
                         <div class="filter-row">
                             <div class="filter-group" style="flex: 2;">
@@ -489,7 +491,7 @@
                                                     </div>
                                                 </td>
                                                 <td><span
-                                                        class="appointment-type <?= strtolower($appointment->type) ?>"><?= htmlspecialchars($appointment->appointment_type) ?></span>
+                                                        class="appointment-type <?= strtolower($appointment->appointment_type) ?>"><?= htmlspecialchars($appointment->appointment_type) ?></span>
                                                 </td>
                                                 <td class="text-xs"><?= htmlspecialchars($appointment->reason) ?>
                                                 </td>
