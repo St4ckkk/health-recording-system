@@ -152,6 +152,8 @@
             display: inline-flex;
             align-items: center;
             padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-pill);
+            font-size: var(--font-size-xs);
             font-weight: 500;
             text-transform: capitalize;
             border: 1px solid currentColor;
@@ -437,26 +439,29 @@
                                         foreach ($displayAppointments as $appointment):
                                             ?>
                                             <tr>
-                                                <td><?= htmlspecialchars($appointment->reference_number) ?></td>
+                                                <td class="whitespace-nowrap">
+                                                    <?= htmlspecialchars($appointment->reference_number) ?>
+                                                </td>
                                                 <td>
-                                                    <span class="patient-info">
+                                                    <div class="flex flex-col">
                                                         <span
                                                             class="font-medium text-md"><?= htmlspecialchars($appointment->first_name . ' ' . $appointment->last_name) ?></span>
                                                         <span
                                                             class="patient-id text-xs text-gray-500"><?= htmlspecialchars($appointment->patient_id) ?></span>
-                                                    </span>
+                                                    </div>
                                                 </td>
                                                 <td>
-                                                    <span class="date-time">
-                                                        <?= date('m/d/Y', strtotime($appointment->appointment_date)) ?>
+                                                    <div class="flex flex-col">
+                                                        <span><?= date('m/d/Y', strtotime($appointment->appointment_date)) ?></span>
                                                         <span
                                                             class="text-xs text-gray-500"><?= date('g:i A', strtotime($appointment->appointment_time)) ?></span>
-                                                    </span>
+                                                    </div>
                                                 </td>
                                                 <td><span
                                                         class="appointment-type <?= strtolower($appointment->type) ?>"><?= htmlspecialchars($appointment->appointment_type) ?></span>
                                                 </td>
-                                                <td><?= htmlspecialchars($appointment->reason) ?></td>
+                                                <td class="max-w-[200px] truncate"><?= htmlspecialchars($appointment->reason) ?>
+                                                </td>
                                                 <td><span
                                                         class="status-badge <?= strtolower($appointment->status) ?>"><?= ucfirst(htmlspecialchars($appointment->status)) ?></span>
                                                 </td>
@@ -465,38 +470,38 @@
                                                         <button class="action-button secondary view-patient-btn"
                                                             data-patient-id="<?= htmlspecialchars($appointment->patient_id) ?>"
                                                             data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
-                                                            <i class="bx bx-user mr-2"></i> View
+                                                            <i class="bx bx-user"></i> View
                                                         </button>
 
                                                         <?php if ($appointment->status == 'scheduled' || $appointment->status == 'pending'): ?>
                                                             <button class="action-button danger"
                                                                 data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
-                                                                <i class="bx bx-x-circle mr-2"></i> Cancel
+                                                                <i class="bx bx-x-circle"></i> Cancel
                                                             </button>
                                                         <?php endif; ?>
 
                                                         <?php if ($appointment->status == 'no-show'): ?>
                                                             <button class="action-button secondary"
                                                                 data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
-                                                                <i class="bx bx-calendar-edit mr-2"></i> Reschedule
+                                                                <i class="bx bx-calendar-edit"></i> Reschedule
                                                             </button>
                                                         <?php endif; ?>
 
                                                         <?php if ($appointment->status == 'cancelled'): ?>
                                                             <button class="action-button secondary"
                                                                 data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
-                                                                <i class="bx bx-calendar-edit mr-2"></i> Reschedule
+                                                                <i class="bx bx-calendar-edit"></i> Reschedule
                                                             </button>
                                                             <button class="action-button secondary"
                                                                 data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
-                                                                <i class="bx bx-check-circle mr-2"></i> Confirm Cancellation
+                                                                <i class="bx bx-check-circle"></i> Confirm
                                                             </button>
                                                         <?php endif; ?>
 
                                                         <?php if ($appointment->status == 'rescheduled'): ?>
                                                             <button class="action-button secondary"
                                                                 data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
-                                                                <i class="bx bx-check-circle mr-2"></i> Confirm Reschedule
+                                                                <i class="bx bx-check-circle"></i> Confirm
                                                             </button>
                                                         <?php endif; ?>
                                                     </div>
@@ -507,7 +512,7 @@
                                     else:
                                         ?>
                                         <tr>
-                                            <td colspan="6" class="text-center py-4">No appointments found</td>
+                                            <td colspan="7" class="text-center py-4">No appointments found</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
