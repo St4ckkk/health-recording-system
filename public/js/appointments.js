@@ -22,7 +22,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const tabType = this.textContent.trim().toLowerCase();
 
             // Reload the page with the appropriate filter
-            window.location.href = '<?= BASE_URL ?>/receptionist/appointments?tab=' + tabType;
+            // Use the meta tag for base URL instead of PHP variable
+            const baseUrl = document.querySelector('meta[name="base-url"]').content;
+            window.location.href = `${baseUrl}/receptionist/appointments?tab=${tabType}`;
         });
     });
 
@@ -89,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Error: ' + data.error);
             return;
         }
-    
+
         // Extract patient data from appointment if patient data is not available
         let patientData = data.patient;
         if (!patientData || patientData === false) {
@@ -104,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Add any other patient fields you need
             };
         }
-    
+
         // Get elements from patient_app.php
         const patientName = document.getElementById('patient-name');
         const patientId = document.getElementById('patient-id');
@@ -119,12 +121,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const patientPhone = document.getElementById('patient-phone');
         const patientEmail = document.getElementById('patient-email');
         const patientInsurance = document.getElementById('patient-insurance');
-    
+
         // Populate elements with data
         if (patientName) patientName.textContent = `${patientData.first_name} ${patientData.last_name}`;
         if (patientId) patientId.textContent = patientData.patient_id || 'N/A';
         if (refNumber) refNumber.textContent = data.appointment.reference_number || 'N/A';
-    
+
         // Format date
         if (appointmentDate) {
             const date = new Date(data.appointment.appointment_date);
@@ -135,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             appointmentDate.textContent = formattedDate;
         }
-    
+
         // Format time
         if (appointmentTime) {
             appointmentTime.textContent = data.appointment.appointment_time || 'N/A';
@@ -228,28 +230,28 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: `appointmentId=${appointmentId}&patientId=${patientId}`
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.text().then(text => {
-                try {
-                    return JSON.parse(text);
-                } catch (e) {
-                    console.error('Error parsing JSON:', e);
-                    console.error('Response text:', text);
-                    throw new Error('Invalid JSON response from server');
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
                 }
+                return response.text().then(text => {
+                    try {
+                        return JSON.parse(text);
+                    } catch (e) {
+                        console.error('Error parsing JSON:', e);
+                        console.error('Response text:', text);
+                        throw new Error('Invalid JSON response from server');
+                    }
+                });
+            })
+            .then(data => {
+                // Populate the patient_app.php with the fetched data
+                populateAppointmentDetails(data);
+            })
+            .catch(error => {
+                console.error('Error fetching appointment details:', error);
+                alert('Failed to load appointment details. Please try again.');
             });
-        })
-        .then(data => {
-            // Populate the patient_app.php with the fetched data
-            populateAppointmentDetails(data);
-        })
-        .catch(error => {
-            console.error('Error fetching appointment details:', error);
-            alert('Failed to load appointment details. Please try again.');
-        });
 
         // Scroll to top
         window.scrollTo(0, 0);
