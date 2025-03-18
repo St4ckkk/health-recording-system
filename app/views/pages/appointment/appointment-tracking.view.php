@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/output.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/app-tracking.css">
-    
+
 
 <body>
     <div class="p-5">
@@ -56,7 +56,8 @@
                         <div class="tracking-input-container mb-4">
                             <i class="bx bx-search tracking-input-icon text-xl"></i>
                             <input type="text" id="trackingNumber" class="search-input tracking-input"
-                                placeholder="Enter your appointment tracking number (e.g., APT-19990101-XXXXXX)" required>
+                                placeholder="Enter your appointment tracking number (e.g., APT-19990101-XXXXXX)"
+                                required>
                         </div>
                         <div class="text-center">
                             <button type="submit" class="btn-primary">
@@ -75,7 +76,9 @@
 
                 <!-- Loading Indicator -->
                 <div id="loadingIndicator" class="loading-indicator">
-                    <div class="spinner"></div>
+                    <div class="search-animation">
+                        <i class="bx bx-search-alt"></i>
+                    </div>
                     <p class="mt-4 text-gray-600">Looking up your appointment...</p>
                 </div>
 
@@ -298,6 +301,35 @@
         </div>
     </div>
 
+    <!-- Reschedule Confirmation Modal -->
+    <div class="modal-overlay confirmation-modal" id="rescheduleConfirmModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirm Reschedule</h3>
+                <button class="modal-close" id="closeRescheduleConfirmModal">
+                    <i class="bx bx-x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="confirmation-icon warning">
+                    <i class="bx bx-calendar-exclamation"></i>
+                </div>
+                <h4 class="confirmation-title">Are you sure you want to reschedule?</h4>
+                <p class="confirmation-message">You are about to reschedule your appointment to:</p>
+                <div class="p-4 my-3 bg-gray-50 rounded-lg text-center">
+                    <p class="font-bold text-lg text-primary" id="newAppointmentDate">Tuesday, March 18, 2025</p>
+                    <p class="font-medium text-gray-700" id="newAppointmentTime">4:00 PM</p>
+                </div>
+                <p class="text-sm text-gray-600 mt-2">Your current appointment will be cancelled and a new appointment
+                    will be created.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelRescheduleConfirmation">No, Keep Current Appointment</button>
+                <button class="btn-primary" id="confirmRescheduleConfirmation">Yes, Reschedule Appointment</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Cancel Confirmation Modal -->
     <div class="modal-overlay confirmation-modal" id="cancelConfirmModal">
         <div class="modal">
@@ -314,6 +346,30 @@
                 <h4 class="confirmation-title">Are you sure you want to cancel?</h4>
                 <p class="confirmation-message">This action cannot be undone. Your appointment slot will be released and
                     made available to other patients.</p>
+
+                <div class="mt-4">
+                    <label for="cancellationReason" class="block text-sm font-medium text-gray-700 mb-2">
+                        Please provide a reason for cancellation:
+                    </label>
+                    <select id="cancellationReason" class="search-input w-full">
+                        <option value="">-- Select a reason --</option>
+                        <option value="schedule_conflict">Schedule conflict</option>
+                        <option value="feeling_better">Feeling better, no longer need appointment</option>
+                        <option value="found_another_provider">Found another healthcare provider</option>
+                        <option value="transportation_issues">Transportation issues</option>
+                        <option value="financial_reasons">Financial reasons</option>
+                        <option value="other">Other reason</option>
+                    </select>
+                    <div id="otherReasonContainer" class="mt-3 hidden">
+                        <label for="otherReason" class="block text-sm font-medium text-gray-700 mb-2">
+                            Please specify:
+                        </label>
+                        <textarea id="otherReason" class="search-input w-full" rows="3"
+                            placeholder="Please provide details..."></textarea>
+                    </div>
+                    <p id="cancellationReasonError" class="text-red-600 text-sm mt-1 hidden">Please select a reason for
+                        cancellation</p>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" id="cancelCancellation">No, Keep Appointment</button>
@@ -321,6 +377,65 @@
             </div>
         </div>
     </div>
+
+    <style>
+        /* Loading indicator */
+        .loading-indicator {
+            display: none;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .loading-indicator.visible {
+            display: block;
+        }
+
+        .search-animation {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+
+        .search-animation i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            animation: hover 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(var(--primary-rgb), 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0);
+            }
+        }
+
+        @keyframes hover {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+    </style>
 
     <script src="<?= BASE_URL ?>/js/app-tracking.js"></script>
 </body>

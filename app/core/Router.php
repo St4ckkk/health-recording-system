@@ -19,12 +19,14 @@ class Router
 
     public function dispatch($uri)
     {
-        foreach ($this->routes as $route => $controllerAction)
-        {
-            if ($route === $uri)
-            {
-                list($controller, $action) = explode('@', $controllerAction);
-                $controller = "app\\controllers\\$controller"; 
+        foreach ($this->routes as $route => $controllerAction) {
+            if ($route === $uri) {
+                if (is_string($controllerAction)) {
+                    list($controller, $action) = explode('@', $controllerAction);
+                } else {
+                    throw new \Exception('Controller action must be a string');
+                }
+                $controller = "app\\controllers\\$controller";
                 $controller = new $controller();
                 $controller->$action();
                 return;

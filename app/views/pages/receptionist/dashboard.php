@@ -169,15 +169,15 @@
 
                             <div class="image-header-stats">
                                 <div class="stat-item">
-                                    <div class="stat-number">12</div>
+                                    <div class="stat-number"><?= $stats['today'] ?></div>
                                     <div class="stat-label">Today's Appointments</div>
                                 </div>
                                 <div class="stat-item">
-                                    <div class="stat-number">3</div>
+                                    <div class="stat-number"><?= $stats['pending'] ?></div>
                                     <div class="stat-label">Pending Appointments</div>
                                 </div>
                                 <div class="stat-item">
-                                    <div class="stat-number">2 </div>
+                                    <div class="stat-number"><?= $stats['cancelled'] ?></div>
                                     <div class="stat-label">Cancelled Appointments</div>
                                 </div>
                             </div>
@@ -185,76 +185,95 @@
                     </div>
                     <div class="flex gap-2">
                         <!-- Upcoming Appointments -->
-                        <div class="card card-upcoming bg-white shadow-md rounded-lg p-4 w-full max-w-full  fade-in">
+                        <!-- Fix for the appointment type issue in the upcoming appointments section -->
+                        <div class="card card-upcoming bg-white shadow-md rounded-lg p-4 w-full max-w-full fade-in">
                             <h3 class="text-medium font-medium text-gray-900">Upcoming Appointments</h3>
                             <p class="text-sm text-gray-500">Future scheduled visits</p>
                             <div class="mt-2 space-y-6">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <p class="text-gray-900">Dr. Sarah Johnson</p>
-                                        <p class="text-sm text-gray-500">Annual Checkup</p>
-                                    </div>
-                                    <span class="badge-upcoming text-white px-3 py-1 rounded text-xs">May 15, 10:00
-                                        AM</span>
-                                </div>
-                                <hr class="border-gray-200 my-2">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <p class="text-gray-900">Dr. Michael Chen</p>
-                                        <p class="text-sm text-gray-500">Dental Cleaning</p>
-                                    </div>
-                                    <span class="badge-upcoming text-white px-3 py-1 rounded text-xs">May 15, 10:00
-                                        AM</span>
-                                </div>
+                                <?php if (!empty($upcomingAppointments)): ?>
+                                    <?php foreach (array_slice($upcomingAppointments, 0, 2) as $index => $appointment): ?>
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-gray-900">Dr. <?= $appointment->doctor_first_name ?>
+                                                    <?= $appointment->doctor_last_name ?>
+                                                </p>
+                                                <p class="text-sm text-gray-500">
+                                                    <?= $appointment->reason ?? 'General appointment' ?>
+                                                </p>
+                                            </div>
+                                            <span class="badge-upcoming text-white px-3 py-1 rounded text-xs">
+                                                <?= date('M d', strtotime($appointment->appointment_date)) ?>,
+                                                <?= date('h:i A', strtotime($appointment->appointment_time)) ?>
+                                            </span>
+                                        </div>
+                                        <?php if ($index < count(array_slice($upcomingAppointments, 0, 2)) - 1): ?>
+                                            <hr class="border-gray-200 my-2">
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <p class="text-sm text-gray-500">No upcoming appointments</p>
+                                <?php endif; ?>
                             </div>
                         </div>
 
-                        <!-- Today's Appointments -->
-                        <div class="card card-today bg-white shadow-md rounded-lg p-4 w-full max-w-full  fade-in">
+                        <!-- Fix for Today's Appointments section -->
+                        <div class="card card-today bg-white shadow-md rounded-lg p-4 w-full max-w-full fade-in">
                             <h3 class="text-medium font-medium text-gray-900">Today's Appointments</h3>
                             <p class="text-sm text-gray-500">Current day's appointments</p>
                             <div class="mt-2 space-y-6">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <p class="text-gray-900">Dr. Sarah Johnson</p>
-                                        <p class="text-sm text-gray-500">Annual Checkup</p>
-                                    </div>
-                                    <span class="badge-today text-white px-3 py-1 rounded text-xs">Today, 10:00
-                                        AM</span>
-                                </div>
-                                <hr class="border-gray-200 my-2">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <p class="text-gray-900">Dr. Michael Chen</p>
-                                        <p class="text-sm text-gray-500">Dental Cleaning</p>
-                                    </div>
-                                    <span class="badge-today text-white px-3 py-1 rounded text-xs">Today, 2:30 PM</span>
-                                </div>
+                                <?php if (!empty($todayAppointments)): ?>
+                                    <?php foreach (array_slice($todayAppointments, 0, 2) as $index => $appointment): ?>
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-gray-900">Dr. <?= $appointment->doctor_first_name ?>
+                                                    <?= $appointment->doctor_last_name ?>
+                                                </p>
+                                                <p class="text-sm text-gray-500">
+                                                    <?= $appointment->reason ?? 'General appointment' ?>
+                                                </p>
+                                            </div>
+                                            <span class="badge-today text-white px-3 py-1 rounded text-xs">
+                                                Today, <?= date('h:i A', strtotime($appointment->appointment_time)) ?>
+                                            </span>
+                                        </div>
+                                        <?php if ($index < count(array_slice($todayAppointments, 0, 2)) - 1): ?>
+                                            <hr class="border-gray-200 my-2">
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <p class="text-sm text-gray-500">No appointments today</p>
+                                <?php endif; ?>
                             </div>
                         </div>
 
-                        <!-- Past Appointments -->
-                        <div class="card card-past bg-white shadow-md rounded-lg p-4 w-full max-w-full  fade-in">
+                        <!-- Fix for Past Appointments section -->
+                        <div class="card card-past bg-white shadow-md rounded-lg p-4 w-full max-w-full fade-in">
                             <h3 class="text-medium font-medium text-gray-900">Past Appointments</h3>
                             <p class="text-sm text-gray-500">Previously completed visits</p>
                             <div class="mt-2 space-y-6">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <p class="text-gray-900">Dr. Sarah Johnson</p>
-                                        <p class="text-sm text-gray-500">Annual Checkup</p>
-                                    </div>
-                                    <span class="badge-past text-white px-3 py-1 rounded text-xs">Apr 22, 10:00
-                                        AM</span>
-                                </div>
-                                <hr class="border-gray-200 my-2">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <p class="text-gray-900">Dr. Michael Chen</p>
-                                        <p class="text-sm text-gray-500">Dental Cleaning</p>
-                                    </div>
-                                    <span class="badge-past text-white px-3 py-1 rounded text-xs">Mar 15, 10:00
-                                        AM</span>
-                                </div>
+                                <?php if (!empty($pastAppointments)): ?>
+                                    <?php foreach (array_slice($pastAppointments, 0, 2) as $index => $appointment): ?>
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-gray-900">Dr. <?= $appointment->doctor_first_name ?>
+                                                    <?= $appointment->doctor_last_name ?>
+                                                </p>
+                                                <p class="text-sm text-gray-500">
+                                                    <?= $appointment->reason ?? 'General appointment' ?>
+                                                </p>
+                                            </div>
+                                            <span class="badge-past text-white px-3 py-1 rounded text-xs">
+                                                <?= date('M d', strtotime($appointment->appointment_date)) ?>,
+                                                <?= date('h:i A', strtotime($appointment->appointment_time)) ?>
+                                            </span>
+                                        </div>
+                                        <?php if ($index < count(array_slice($pastAppointments, 0, 2)) - 1): ?>
+                                            <hr class="border-gray-200 my-2">
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <p class="text-sm text-gray-500">No past appointments</p>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -328,529 +347,493 @@
                                     }
                                 </script>
                             </div>
-                            <div class="appointment-list-container max-h-[430px] overflow-y-auto">
-                                <!-- David Wilson -->
-                                <div class="appointment-item active" data-patient="david">
-                                    <div class="flex justify-between items-start">
-                                        <div>
-                                            <h4 class="text-gray-900 font-medium">David Wilson</h4>
-                                            <p class="text-xs  text-gray-500">Patient ID: P12349</p>
-                                            <div class="flex items-center mt-1">
-                                                <i class="bx bx-calendar text-gray-400 text-sm mr-1"></i>
-                                                <span class="text-sm">Saturday, May 20, 2023</span>
-                                                <span class="mx-2 text-sm mr-1 ml-2">•</span>
-                                                <i class="bx bx-time text-gray-400 text-sm mr-1"></i>
-                                                <span class="text-sm">01:15 PM</span>
-                                            </div>
-                                        </div>
-                                        <span class="appointment-type checkup">Checkup</span>
-                                    </div>
-                                    <div>
-                                        <span class="status-badge completed">
-                                            <i class="bx bx-check-circle mr-1"></i>
-                                            <span class="text-xs">
-                                                Completed
-                                            </span>
-                                        </span>
-                                    </div>
-                                </div>
+                            <!-- Fix for the appointment type in the appointment list -->
+                            <div class="appointment-list-container">
+                                <?php if (!empty($allAppointments)): ?>
+                                    <?php foreach ($allAppointments as $index => $appointment): ?>
+                                        <div class="appointment-item <?= $index === 0 ? 'active' : '' ?>"
+                                            data-patient="patient-<?= $appointment->id ?>">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <h4 class="text-gray-900 font-medium"><?= $appointment->first_name ?>
+                                                        <?= $appointment->last_name ?>
+                                                    </h4>
+                                                    <p class="text-xs text-gray-500"><?= $appointment->patient_id ?>
+                                                    </p>
+                                                    <div class="flex items-center mt-2">
+                                                        <i class="bx bx-calendar text-gray-400 text-sm mr-1"></i>
+                                                        <span
+                                                            class="text-sm"><?= date('l, F j, Y', strtotime($appointment->appointment_date)) ?></span>
+                                                        <span class="mx-2 text-sm mr-1 ml-2">•</span>
+                                                        <i class="bx bx-time text-gray-400 text-sm mr-1"></i>
+                                                        <span
+                                                            class="text-sm"><?= date('h:i A', strtotime($appointment->appointment_time)) ?></span>
+                                                    </div>
+                                                </div>
+                                                <?php
+                                                $appointmentType = 'general-appointment';
+                                                if (!empty($appointment->appointment_type)) {
+                                                    $appointmentType = $appointment->appointment_type;
+                                                } else if (!empty($appointment->type)) {
+                                                    $appointmentType = $appointment->type;
+                                                }
 
-                                <!-- Sarah Brown -->
-                                <div class="appointment-item" data-patient="sarah">
-                                    <div class="flex justify-between items-start">
-                                        <div>
-                                            <h4 class="text-gray-900 font-medium">Sarah Brown</h4>
-                                            <p class="text-xs text-gray-500">Patient ID: P12350</p>
-                                            <div class="flex items-center mt-1">
-                                                <i class="bx bx-calendar text-gray-400 text-sm mr-1"></i>
-                                                <span class="text-sm">Saturday, May 20, 2023</span>
-                                                <span class="mx-2 text-sm mr-1 ml-2">•</span>
-                                                <i class="bx bx-time text-gray-400 text-sm mr-1"></i>
-                                                <span class="text-sm">01:15 PM</span>
+                                                // Ensure the type is one of the valid types
+                                                $validTypes = ['checkup', 'follow-up', 'general-appointment', 'emergency', 'consultation'];
+                                                if (!in_array($appointmentType, $validTypes)) {
+                                                    $appointmentType = 'general-appointment';
+                                                }
+                                                ?>
+                                                <span
+                                                    class="appointment-type <?= strtolower($appointmentType) ?>"><?= ucfirst(str_replace('-', ' ', $appointmentType)) ?></span>
                                             </div>
-                                        </div>
-                                        <span class="appointment-type follow-up">Follow-up</span>
-                                    </div>
-                                    <div>
-                                        <span class="status-badge no-show">
-                                            <i class="bx bx-error-circle mr-1"></i>
-                                            <span class="text-xs">
-                                                No show
-                                            </span>
-                                        </span>
-                                    </div>
-                                </div>
+                                            <div>
+                                                <?php
+                                                $statusClass = '';
+                                                $statusIcon = '';
 
-                                <!-- James Anderson -->
-                                <div class="appointment-item" data-patient="james">
-                                    <div class="flex justify-between items-start">
-                                        <div>
-                                            <h4 class="text-gray-900 font-medium">James Anderson</h4>
-                                            <p class="text-xs  text-gray-500">Patient ID: P12353</p>
-                                            <div class="flex items-center mt-1">
-                                                <i class="bx bx-calendar text-gray-400 text-sm mr-1"></i>
-                                                <span class="text-sm">Saturday, May 20, 2023</span>
-                                                <span class="mx-2 text-sm mr-1 ml-2">•</span>
-                                                <i class="bx bx-time text-gray-400 text-sm mr-1"></i>
-                                                <span class="text-sm">01:15 PM</span>
+                                                switch ($appointment->status) {
+                                                    case 'completed':
+                                                        $statusClass = '';
+                                                        $statusIcon = 'bx-check-circle';
+                                                        break;
+                                                    case 'scheduled':
+                                                        $statusClass = 'scheduled';
+                                                        $statusIcon = 'bx-time';
+                                                        break;
+                                                    case 'cancelled':
+                                                        $statusClass = 'cancelled';
+                                                        $statusIcon = 'bx-x-circle';
+                                                        break;
+                                                    case 'no-show':
+                                                        $statusClass = 'no-show';
+                                                        $statusIcon = 'bx-error-circle';
+                                                        break;
+                                                    case 'pending':
+                                                        $statusClass = 'pending';
+                                                        $statusIcon = 'bx-hourglass';
+                                                        break;
+                                                    case 'confirmed':
+                                                        $statusClass = 'confirmed';
+                                                        $statusIcon = 'bx-calendar-check';
+                                                        break;
+                                                    case 'check-in':
+                                                        $statusClass = 'check-in';
+                                                        $statusIcon = 'bx-log-in-circle';
+                                                        break;
+                                                    case 'rescheduled':
+                                                        $statusClass = 'rescheduled';
+                                                        $statusIcon = 'bx-calendar-exclamation';
+                                                        break;
+                                                    default:
+                                                        $statusClass = 'scheduled';
+                                                        $statusIcon = 'bx-time';
+                                                        break;
+                                                }
+                                                ?>
+                                                <span class="status-badge <?= $statusClass ?>">
+                                                    <i class="bx <?= $statusIcon ?> mr-1"></i>
+                                                    <span class="text-xs">
+                                                        <?= ucfirst($appointment->status ?? 'Scheduled') ?>
+                                                    </span>
+                                                </span>
                                             </div>
                                         </div>
-                                        <span class="appointment-type procedure">Procedure</span>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <div class="p-4 text-center">
+                                        <p class="text-gray-500">No appointments found</p>
                                     </div>
-                                    <div>
-                                        <span class="status-badge cancelled">
-                                            <i class="bx bx-x-circle mr-1"></i>
-                                            <span class="text-xs">
-                                                Cancelled
-                                            </span>
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <!-- Robert Johnson -->
-                                <div class="appointment-item" data-patient="robert">
-                                    <div class="flex justify-between items-start">
-                                        <div>
-                                            <h4 class="text-gray-900 font-medium">Robert Johnson</h4>
-                                            <p class="text-xs  text-gray-500">Patient ID: P12347</p>
-                                            <div class="flex items-center mt-1">
-                                                <i class="bx bx-calendar text-gray-400 text-sm mr-1"></i>
-                                                <span class="text-sm">Saturday, May 20, 2023</span>
-                                                <span class="mx-2 text-sm mr-1 ml-2">•</span>
-                                                <i class="bx bx-time text-gray-400 text-sm mr-1"></i>
-                                                <span class="text-sm">01:15 PM</span>
-                                            </div>
-                                        </div>
-                                        <span class="appointment-type specialist">Specialist</span>
-                                    </div>
-                                    <div>
-                                        <span class="status-badge scheduled">
-                                            <i class="bx bx-time mr-1 "></i>
-                                            <span class="text-xs">
-                                                Scheduled
-                                            </span>
-                                        </span>
-                                    </div>
-                                </div>
+                                <?php endif; ?>
                             </div>
                         </div>
 
                         <!-- Right: Appointment Details -->
                         <div id="appointmentDetails" class="card bg-white shadow-sm rounded-lg p-6 flex-1 fade-in">
-                            <!-- David Wilson's details (default) -->
-                            <div id="david-details" class="patient-details">
-                                <div class="flex justify-between items-center mb-6">
-                                    <div>
-                                        <h3 class="text-md font-medium text-gray-900">David Wilson</h3>
-                                        <p class="text-sm text-gray-400">Appointment Details</p>
+                            <?php if (!empty($allAppointments)): ?>
+                                <?php foreach ($allAppointments as $index => $appointment): ?>
+                                    <div id="patient-<?= $appointment->id ?>-details"
+                                        class="patient-details <?= $index === 0 ? '' : 'hidden' ?>">
+                                        <div class="flex justify-between items-center mb-6">
+                                            <div>
+                                                <h3 class="text-md font-medium text-gray-900"><?= $appointment->first_name ?>
+                                                    <?= $appointment->last_name ?>
+                                                </h3>
+                                                <p class="text-sm text-gray-400">Appointment Details</p>
+                                            </div>
+                                            <div class="flex gap-2">
+                                                <?php
+                                                $appointmentType = 'general-appointment';
+                                                if (!empty($appointment->appointment_type)) {
+                                                    $appointmentType = $appointment->appointment_type;
+                                                } else if (!empty($appointment->type)) {
+                                                    $appointmentType = $appointment->type;
+                                                }
+
+                                                // Ensure the type is one of the valid types
+                                                $validTypes = ['checkup', 'follow-up', 'general-appointment', 'emergency', 'consultation'];
+                                                if (!in_array($appointmentType, $validTypes)) {
+                                                    $appointmentType = 'general-appointment';
+                                                }
+
+                                                $statusClass = '';
+                                                switch ($appointment->status) {
+                                                    case 'completed':
+                                                        $statusClass = 'border-success text-success';
+                                                        break;
+                                                    case 'scheduled':
+                                                        $statusClass = 'border-primary text-primary';
+                                                        break;
+                                                    case 'cancelled':
+                                                        $statusClass = 'border-danger text-danger';
+                                                        break;
+                                                    case 'no-show':
+                                                        $statusClass = 'border-warning text-warning';
+                                                        break;
+                                                    case 'pending':
+                                                        $statusClass = 'border-info text-info';
+                                                        break;
+                                                    case 'confirmed':
+                                                        $statusClass = 'border-success text-success';
+                                                        break;
+                                                    case 'check-in':
+                                                        $statusClass = 'border-primary text-primary';
+                                                        break;
+                                                    case 'rescheduled':
+                                                        $statusClass = 'border-warning text-warning';
+                                                        break;
+                                                    default:
+                                                        $statusClass = 'border-primary text-primary';
+                                                        break;
+                                                }
+                                                ?>
+                                                <span
+                                                    class="appointment-type <?= strtolower($appointmentType) ?> px-2 py-2"><?= ucfirst(str_replace('-', ' ', $appointmentType)) ?></span>
+                                                <span
+                                                    class="appointment-type border <?= $statusClass ?> px-1 py-1 rounded text-sm status">
+                                                    <?= ucfirst($appointment->status ?? 'Scheduled') ?>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="detail-grid">
+                                            <div class="detail-section">
+                                                <p class="detail-label">Date</p>
+                                                <p class="detail-value">
+                                                    <?= date('l, F j, Y', strtotime($appointment->appointment_date)) ?>
+                                                </p>
+                                            </div>
+                                            <div class="detail-section">
+                                                <p class="detail-label">Time</p>
+                                                <p class="detail-value">
+                                                    <?= date('h:i A', strtotime($appointment->appointment_time)) ?>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <hr class="border-gray-200 my-6 mt-5 mb-4 space">
+
+                                        <div class="">
+                                            <p class="text-sm mb-2 font-medium">Appointment Information</p>
+                                            <div class="ml-1">
+                                                <table class="w-full border-collapse">
+                                                    <tr class="border-b border-gray-200">
+                                                        <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Reason
+                                                        </td>
+                                                        <td class="text-sm text-gray-900 py-2">
+                                                            <?= $appointment->reason ?? 'General appointment' ?>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="border-b border-gray-200">
+                                                        <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Location
+                                                        </td>
+                                                        <td class="text-sm text-gray-900 py-2">
+                                                            <?= $appointment->location ?? 'Main Clinic' ?>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="border-b border-gray-200">
+                                                        <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Notes</td>
+                                                        <td class="text-sm text-gray-900 py-2">
+                                                            <?= $appointment->special_instructions ?? 'No notes available' ?>
+                                                        </td>
+                                                    </tr>
+                                                    <?php if ($appointment->status == 'cancelled' && (!empty($appointment->cancellation_reason) || !empty($appointment->cancellation_details))): ?>
+                                                        <tr class="border-b border-gray-200">
+                                                            <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">
+                                                                Cancellation Reason</td>
+                                                            <td class="text-sm text-gray-900 py-2">
+                                                                <?= $appointment->cancellation_reason ?? 'No reason provided' ?>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="border-b border-gray-200">
+                                                            <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">
+                                                                Cancellation Details</td>
+                                                            <td class="text-sm text-gray-900 py-2">
+                                                                <?= $appointment->cancellation_details ?? 'No details available' ?>
+                                                            </td>
+                                                        </tr>
+                                                    <?php endif; ?>
+                                                    <tr class="">
+                                                        <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Insurance
+                                                        </td>
+                                                        <td class="text-sm text-gray-900 py-2">
+                                                            <?= $appointment->insurance_provider ?? 'Not specified' ?>
+                                                            <?= !empty($appointment->insurance_id) ? '#' . $appointment->insurance_id : '' ?>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <hr class="border-gray-200 my-4">
+
+                                        <div class="mb-6">
+                                            <p class="text-sm mb-2 font-medium mb-2">Patient Contact Information</p>
+
+                                            <div class="space-y-2">
+                                                <p class="contact-info">
+                                                    <i class="bx bx-phone text-gray-500 mr-2"></i>
+                                                    <?= $appointment->contact_number ?? 'Not available' ?>
+                                                </p>
+                                                <p class="contact-info">
+                                                    <i class="bx bx-envelope text-gray-500 mr-2"></i>
+                                                    <?= $appointment->email ?? 'Not available' ?>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex gap-3 mt-6">
+                                            <?php if ($appointment->status == 'scheduled'): ?>
+                                                <div class="flex-1">
+                                                    <button class="action-button border border-danger text-danger"
+                                                        onclick="cancelAppointment(<?= $appointment->id ?>)">
+                                                        <i class="bx bx-x-circle text-danger mr-2 text-md"></i>
+                                                        Cancel Appointment
+                                                    </button>
+                                                </div>
+                                                <button class="action-button secondary"
+                                                    onclick="confirmAppointment(<?= $appointment->id ?>)">
+                                                    <i class="bx bx-check-circle mr-2 text-md"></i>
+                                                    Confirm
+                                                </button>
+                                                <button class="action-button secondary"
+                                                    onclick="sendReminder(<?= $appointment->id ?>)">
+                                                    <i class="bx bx-bell mr-2 text-md"></i>
+                                                    Send Reminder
+                                                </button>
+                                            <?php elseif ($appointment->status == 'no-show'): ?>
+                                                <div class="flex-1">
+                                                    <button class="action-button secondary"
+                                                        onclick="rescheduleAppointment(<?= $appointment->id ?>)">
+                                                        <i class="bx bx-calendar mr-2 text-md"></i>
+                                                        Reschedule
+                                                    </button>
+                                                </div>
+                                            <?php elseif ($appointment->status == 'cancelled'): ?>
+                                                <div class="flex-1">
+                                                    <button class="action-button secondary"
+                                                        onclick="rescheduleAppointment(<?= $appointment->id ?>)">
+                                                        <i class="bx bx-calendar mr-2 text-md"></i>
+                                                        Reschedule
+                                                    </button>
+                                                </div>
+                                                <button class="action-button secondary"
+                                                    onclick="confirmCancellation(<?= $appointment->id ?>)">
+                                                    <i class="bx bx-check-circle mr-2 text-md"></i>
+                                                    Confirm Cancellation
+                                                </button>
+                                            <?php elseif ($appointment->status == 'rescheduled'): ?>
+                                                <div class="flex-1">
+                                                    <button class="action-button secondary"
+                                                        onclick="confirmReschedule(<?= $appointment->id ?>)">
+                                                        <i class="bx bx-check-circle mr-2 text-md"></i>
+                                                        Confirm Reschedule
+                                                    </button>
+                                                </div>
+                                            <?php endif; ?>
+                                            <button class="action-button bg-gray-900"
+                                                onclick="viewPatientRecord(<?= $appointment->id ?>)">
+                                                <i class="bx bx-file mr-2 text-white text-md"></i>
+                                                <span class="text-white">
+                                                    Patient Record
+                                                </span>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div class="flex gap-2">
-                                        <span class="appointment-type checkup px-2 py-2">Checkup</span>
-                                        <span
-                                            class="appointment-type border border-success px-1 py-1 rounded text-sm text-success status">Completed</span>
-                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="p-4 text-center">
+                                    <p class="text-gray-500">No appointment details available</p>
                                 </div>
-
-                                <div class="detail-grid">
-                                    <div class="detail-section">
-                                        <p class="detail-label font-medium">Appointment ID</p>
-                                        <p class="detail-value">A1005</p>
-                                    </div>
-                                    <div class="detail-section">
-                                        <p class="detail-label">Patient ID</p>
-                                        <p class="detail-value">P12349</p>
-                                    </div>
-                                    <div class="detail-section">
-                                        <p class="detail-label">Date</p>
-                                        <p class="detail-value">Friday, May 19, 2023</p>
-                                    </div>
-                                    <div class="detail-section">
-                                        <p class="detail-label">Time</p>
-                                        <p class="detail-value">03:30 PM</p>
-                                    </div>
-                                </div>
-
-                                <hr class="border-gray-200 my-6 mt-5 mb-4 space">
-
-                                <div class="">
-                                    <p class="text-sm mb-2 font-medium">Appointment Information</p>
-                                    <div class="ml-1">
-                                        <table class="w-full border-collapse">
-                                            <tr class="border-b border-gray-200">
-                                                <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Reason
-                                                </td>
-                                                <td class="text-sm text-gray-900 py-2">Annual physical examination</td>
-                                            </tr>
-                                            <tr class="border-b border-gray-200">
-                                                <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Location
-                                                </td>
-                                                <td class="text-sm text-gray-900 py-2">Main Clinic, Room 101</td>
-                                            </tr>
-                                            <tr class="border-b border-gray-200">
-                                                <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Notes</td>
-                                                <td class="text-sm text-gray-900 py-2">Patient has history of
-                                                    hypertension</td>
-                                            </tr>
-                                            <tr class="">
-                                                <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Insurance
-                                                </td>
-                                                <td class="text-sm text-gray-900 py-2">Blue Cross #BC987654</td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                </div>
-
-                                <hr class="border-gray-200 my-4">
-
-                                <div class="mb-6">
-                                    <p class="text-sm mb-2 font-medium mb-2">Patient Contact Information</p>
-
-                                    <div class="space-y-2">
-                                        <p class="contact-info">
-                                            <i class="bx bx-phone text-gray-500 mr-2"></i>
-                                            (555) 567-8901
-                                        </p>
-                                        <p class="contact-info">
-                                            <i class="bx bx-envelope text-gray-500 mr-2"></i>
-                                            <a href="/cdn-cgi/l/email-protection" class="__cf_email__"
-                                                data-cfemail="7e1a1f08171a500917120d11103e1b061f130e121b501d1113">[email&#160;protected]</a>
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div class="flex gap-3 mt-6">
-                                    <div class="flex-1">
-                                        <button class="action-button border border-danger text-danger">
-                                            <i class="bx bx-x-circle text-danger mr-2 text-md"></i>
-                                            Cancel Appointment
-                                        </button>
-                                    </div>
-                                    <button class="action-button secondary">
-                                        <i class="bx bx-check-circle mr-2 text-md"></i>
-                                        Confirm
-                                    </button>
-                                    <button class="action-button secondary">
-                                        <i class="bx bx-calendar mr-2 text-md"></i>
-                                        Reschedule
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Sarah Brown's details (hidden by default) -->
-                            <div id="sarah-details" class="patient-details hidden">
-                                <div class="flex justify-between items-center mb-6">
-                                    <div>
-                                        <h3 class="text-md font-medium text-gray-900">Sarah Brown</h3>
-                                        <p class="text-sm text-gray-400">Appointment Details</p>
-                                    </div>
-                                    <div class="flex gap-2">
-                                        <span class="appointment-type follow-up px-2 py-2">Follow-up</span>
-                                        <span
-                                            class="appointment-type border border-warning px-1 py-1 rounded text-sm text-warning status">No
-                                            show</span>
-                                    </div>
-                                </div>
-
-                                <div class="detail-grid">
-                                    <div class="detail-section">
-                                        <p class="detail-label font-medium">Appointment ID</p>
-                                        <p class="detail-value">A1006</p>
-                                    </div>
-                                    <div class="detail-section">
-                                        <p class="detail-label">Patient ID</p>
-                                        <p class="detail-value">P12350</p>
-                                    </div>
-                                    <div class="detail-section">
-                                        <p class="detail-label">Date</p>
-                                        <p class="detail-value">Saturday, May 20, 2023</p>
-                                    </div>
-                                    <div class="detail-section">
-                                        <p class="detail-label">Time</p>
-                                        <p class="detail-value">01:15 PM</p>
-                                    </div>
-                                </div>
-
-                                <hr class="border-gray-200 my-6 mt-5 mb-4 space">
-
-                                <div class="">
-                                    <p class="text-sm mb-2 font-medium">Appointment Information</p>
-                                    <div class="ml-1">
-                                        <table class="w-full border-collapse">
-                                            <tr class="border-b border-gray-200">
-                                                <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Reason
-                                                </td>
-                                                <td class="text-sm text-gray-900 py-2">Follow-up after surgery</td>
-                                            </tr>
-                                            <tr class="border-b border-gray-200">
-                                                <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Location
-                                                </td>
-                                                <td class="text-sm text-gray-900 py-2">Main Clinic, Room 205</td>
-                                            </tr>
-                                            <tr class="border-b border-gray-200">
-                                                <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Notes</td>
-                                                <td class="text-sm text-gray-900 py-2">Patient had appendectomy 2 weeks
-                                                    ago</td>
-                                            </tr>
-                                            <tr class="">
-                                                <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Insurance
-                                                </td>
-                                                <td class="text-sm text-gray-900 py-2">Aetna #AE456789</td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                </div>
-
-                                <hr class="border-gray-200 my-4">
-
-                                <div class="mb-6">
-                                    <p class="text-sm mb-2 font-medium mb-2">Patient Contact Information</p>
-
-                                    <div class="space-y-2">
-                                        <p class="contact-info">
-                                            <i class="bx bx-phone text-gray-500 mr-2"></i>
-                                            (555) 234-5678
-                                        </p>
-                                        <p class="contact-info">
-                                            <i class="bx bx-envelope text-gray-500 mr-2"></i>
-                                            <a href="/cdn-cgi/l/email-protection" class="__cf_email__"
-                                                data-cfemail="9eedffecfff6b0fcecf1e9f0defbe6fff3eef2fbb0fdf1f3">[email&#160;protected]</a>
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div class="flex gap-3 mt-6">
-                                    <div class="flex-1">
-                                        <button class="action-button border border-primary text-primary">
-                                            <i class="bx bx-phone text-primary mr-2 text-md"></i>
-                                            Contact Patient
-                                        </button>
-                                    </div>
-                                    <button class="action-button secondary">
-                                        <i class="bx bx-calendar mr-2 text-md"></i>
-                                        Reschedule
-                                    </button>
-                                    <button class="action-button bg-gray-900">
-                                        <i class="bx bx-file mr-2 text-white text-md"></i>
-                                        <span class="text-white">
-                                            Patient Record
-                                        </span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- James Anderson's details (hidden by default) -->
-                            <div id="james-details" class="patient-details hidden">
-                                <div class="flex justify-between items-center mb-6">
-                                    <div>
-                                        <h3 class="text-md font-medium text-gray-900">James Anderson</h3>
-                                        <p class="text-sm text-gray-400">Appointment Details</p>
-                                    </div>
-                                    <div class="flex gap-2">
-                                        <span class="appointment-type procedure px-2 py-2">Procedure</span>
-                                        <span
-                                            class="appointment-type border border-danger px-1 py-1 rounded text-sm text-danger status">Cancelled</span>
-                                    </div>
-                                </div>
-
-                                <div class="detail-grid">
-                                    <div class="detail-section">
-                                        <p class="detail-label font-medium">Appointment ID</p>
-                                        <p class="detail-value">A1007</p>
-                                    </div>
-                                    <div class="detail-section">
-                                        <p class="detail-label">Patient ID</p>
-                                        <p class="detail-value">P12353</p>
-                                    </div>
-                                    <div class="detail-section">
-                                        <p class="detail-label">Date</p>
-                                        <p class="detail-value">Saturday, May 20, 2023</p>
-                                    </div>
-                                    <div class="detail-section">
-                                        <p class="detail-label">Time</p>
-                                        <p class="detail-value">01:15 PM</p>
-                                    </div>
-                                </div>
-
-                                <hr class="border-gray-200 my-6 mt-5 mb-4 space">
-
-                                <div class="">
-                                    <p class="text-sm mb-2 font-medium">Appointment Information</p>
-                                    <div class="ml-1">
-                                        <table class="w-full border-collapse">
-                                            <tr class="border-b border-gray-200">
-                                                <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Reason
-                                                </td>
-                                                <td class="text-sm text-gray-900 py-2">Colonoscopy procedure</td>
-                                            </tr>
-                                            <tr class="border-b border-gray-200">
-                                                <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Location
-                                                </td>
-                                                <td class="text-sm text-gray-900 py-2">Surgical Center, Room 3</td>
-                                            </tr>
-                                            <tr class="border-b border-gray-200">
-                                                <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Notes</td>
-                                                <td class="text-sm text-gray-900 py-2">Patient cancelled due to illness
-                                                </td>
-                                            </tr>
-                                            <tr class="">
-                                                <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Insurance
-                                                </td>
-                                                <td class="text-sm text-gray-900 py-2">United Health #UH789012</td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                </div>
-
-                                <hr class="border-gray-200 my-4">
-
-                                <div class="mb-6">
-                                    <p class="text-sm mb-2 font-medium mb-2">Patient Contact Information</p>
-
-                                    <div class="space-y-2">
-                                        <p class="contact-info">
-                                            <i class="bx bx-phone text-gray-500 mr-2"></i>
-                                            (555) 345-6789
-                                        </p>
-                                        <p class="contact-info">
-                                            <i class="bx bx-envelope text-gray-500 mr-2"></i>
-                                            <a href="/cdn-cgi/l/email-protection" class="__cf_email__"
-                                                data-cfemail="adc7ccc0c8de83ccc3c9c8dfdec2c3edc8d5ccc0ddc1c883cec2c0">[email&#160;protected]</a>
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div class="flex gap-3 mt-6">
-                                    <div class="flex-1">
-                                        <button class="action-button border border-primary text-primary">
-                                            <i class="bx bx-calendar text-primary mr-2 text-md"></i>
-                                            Reschedule Appointment
-                                        </button>
-                                    </div>
-                                    <button class="action-button secondary">
-                                        <i class="bx bx-phone mr-2 text-md"></i>
-                                        Contact Patient
-                                    </button>
-                                    <button class="action-button bg-gray-900">
-                                        <i class="bx bx-file mr-2 text-white text-md"></i>
-                                        <span class="text-white">
-                                            Patient Record
-                                        </span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Robert Johnson's details (hidden by default) -->
-                            <div id="robert-details" class="patient-details hidden">
-                                <div class="flex justify-between items-center mb-6">
-                                    <div>
-                                        <h3 class="text-md font-medium text-gray-900">Robert Johnson</h3>
-                                        <p class="text-sm text-gray-400">Appointment Details</p>
-                                    </div>
-                                    <div class="flex gap-2">
-                                        <span class="appointment-type specialist px-2 py-2">Specialist</span>
-                                        <span
-                                            class="appointment-type border border-info px-1 py-1 rounded text-sm text-info status">Scheduled</span>
-                                    </div>
-                                </div>
-
-                                <div class="detail-grid">
-                                    <div class="detail-section">
-                                        <p class="detail-label font-medium">Appointment ID</p>
-                                        <p class="detail-value">A1008</p>
-                                    </div>
-                                    <div class="detail-section">
-                                        <p class="detail-label">Patient ID</p>
-                                        <p class="detail-value">P12347</p>
-                                    </div>
-                                    <div class="detail-section">
-                                        <p class="detail-label">Date</p>
-                                        <p class="detail-value">Saturday, May 20, 2023</p>
-                                    </div>
-                                    <div class="detail-section">
-                                        <p class="detail-label">Time</p>
-                                        <p class="detail-value">01:15 PM</p>
-                                    </div>
-                                </div>
-
-                                <hr class="border-gray-200 my-6 mt-5 mb-4 space">
-
-                                <div class="">
-                                    <p class="text-sm mb-2 font-medium">Appointment Information</p>
-                                    <div class="ml-1">
-                                        <table class="w-full border-collapse">
-                                            <tr class="border-b border-gray-200">
-                                                <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Reason
-                                                </td>
-                                                <td class="text-sm text-gray-900 py-2">Cardiology consultation</td>
-                                            </tr>
-                                            <tr class="border-b border-gray-200">
-                                                <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Location
-                                                </td>
-                                                <td class="text-sm text-gray-900 py-2">Specialist Wing, Room 405</td>
-                                            </tr>
-                                            <tr class="border-b border-gray-200">
-                                                <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Notes</td>
-                                                <td class="text-sm text-gray-900 py-2">Patient has reported chest pain
-                                                </td>
-                                            </tr>
-                                            <tr class="">
-                                                <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Insurance
-                                                </td>
-                                                <td class="text-sm text-gray-900 py-2">Medicare #MC123456</td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                </div>
-
-                                <hr class="border-gray-200 my-4">
-
-                                <div class="mb-6">
-                                    <p class="text-sm mb-2 font-medium mb-2">Patient Contact Information</p>
-
-                                    <div class="space-y-2">
-                                        <p class="contact-info">
-                                            <i class="bx bx-phone text-gray-500 mr-2"></i>
-                                            (555) 456-7890
-                                        </p>
-                                        <p class="contact-info">
-                                            <i class="bx bx-envelope text-gray-500 mr-2"></i>
-                                            <a href="/cdn-cgi/l/email-protection" class="__cf_email__"
-                                                data-cfemail="c2b0ada0a7b0b6eca8adaaacb1adac82a7baa3afb2aea7eca1adaf">[email&#160;protected]</a>
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div class="flex gap-3 mt-6">
-                                    <div class="flex-1">
-                                        <button class="action-button border border-danger text-danger">
-                                            <i class="bx bx-x-circle text-danger mr-2 text-md"></i>
-                                            Cancel Appointment
-                                        </button>
-                                    </div>
-                                    <button class="action-button secondary">
-                                        <i class="bx bx-check-circle mr-2 text-md"></i>
-                                        Confirm
-                                    </button>
-                                    <button class="action-button secondary">
-                                        <i class="bx bx-bell mr-2 text-md"></i>
-                                        Send Reminder
-                                    </button>
-                                    <button class="action-button bg-gray-900">
-                                        <i class="bx bx-file mr-2 text-white text-md"></i>
-                                        <span class="text-white">
-                                            Patient Record
-                                        </span>
-                                    </button>
-                                </div>
-                            </div>
+                            <?php endif; ?>
                         </div>
-                    </div>
                 </section>
             </div>
         </main>
     </div>
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script src="<?= BASE_URL ?>/js/reception.js"></script>
+    <script>
+        flatpickr("#dateFilter", {
+            dateFormat: "d/m/Y",
+            allowInput: true,
+            disableMobile: "true",
+            altInput: true,
+            altFormat: "F j, Y",
+            nextArrow: '<i class="bx bx-chevron-right"></i>',
+            prevArrow: '<i class="bx bx-chevron-left"></i>',
+            onChange: function (selectedDates, dateStr) {
+                console.log("Selected date:", dateStr);
+            }
+        });
+
+        function clearFilters() {
+            document.getElementById('dateFilter').value = '';
+            const dateFilterInstance = document.getElementById('dateFilter')._flatpickr;
+            if (dateFilterInstance) {
+                dateFilterInstance.clear();
+            }
+            document.getElementById('typeFilter').value = '';
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Clear filters functionality
+            const clearFiltersBtn = document.querySelector('button[onclick="clearFilters()"]');
+            if (clearFiltersBtn) {
+                clearFiltersBtn.addEventListener('click', function () {
+                    document.getElementById('dateFilter').value = '';
+                    document.getElementById('typeFilter').selectedIndex = 0;
+                });
+            }
+
+            // Tab switching functionality
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Appointment selection functionality
+            const appointmentItems = document.querySelectorAll('.appointment-item');
+            const patientDetails = document.querySelectorAll('.patient-details');
+
+            appointmentItems.forEach(item => {
+                item.addEventListener('click', function () {
+                    // Remove active class from all items
+                    appointmentItems.forEach(i => i.classList.remove('active'));
+
+                    // Add active class to clicked item
+                    this.classList.add('active');
+
+                    // Get patient identifier
+                    const patientId = this.getAttribute('data-patient');
+
+                    // Hide all patient details
+                    patientDetails.forEach(detail => detail.classList.add('hidden'));
+
+                    // Show selected patient details
+                    const selectedDetails = document.getElementById(`${patientId}-details`);
+                    if (selectedDetails) {
+                        selectedDetails.classList.remove('hidden');
+
+                        // Add fade-in animation
+                        selectedDetails.classList.add('fade-in');
+
+                        // Remove animation class after animation completes
+                        setTimeout(() => {
+                            selectedDetails.classList.remove('fade-in');
+                        }, 300);
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get all appointment items
+            const appointmentItems = document.querySelectorAll('.appointment-item');
+
+            // Add click event to each appointment item
+            appointmentItems.forEach(item => {
+                item.addEventListener('click', function () {
+                    // Remove active class from all items
+                    appointmentItems.forEach(i => i.classList.remove('active'));
+
+                    // Add active class to clicked item
+                    this.classList.add('active');
+
+                    // Get patient ID from data attribute
+                    const patientId = this.getAttribute('data-patient');
+
+                    // Hide all patient details
+                    document.querySelectorAll('.patient-details').forEach(detail => {
+                        detail.classList.add('hidden');
+                    });
+
+                    // Show selected patient details
+                    const detailElement = document.getElementById(patientId + '-details');
+                    if (detailElement) {
+                        detailElement.classList.remove('hidden');
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+        // Add these functions to handle the new buttons
+        function confirmCancellation(appointmentId) {
+            if (confirm('Are you sure you want to confirm this cancellation?')) {
+                // You can replace this with an AJAX call to your backend
+                alert('Cancellation confirmed for appointment #' + appointmentId);
+                // Example AJAX call:
+                // fetch('/receptionist/confirm-cancellation/' + appointmentId, {
+                //     method: 'POST',
+                // })
+                // .then(response => response.json())
+                // .then(data => {
+                //     if (data.success) {
+                //         alert('Cancellation confirmed successfully');
+                //         // Reload the page or update the UI
+                //         window.location.reload();
+                //     } else {
+                //         alert('Error: ' + data.message);
+                //     }
+                // })
+                // .catch(error => {
+                //     console.error('Error:', error);
+                //     alert('An error occurred while confirming the cancellation');
+                // });
+            }
+        }
+
+        function confirmReschedule(appointmentId) {
+            if (confirm('Are you sure you want to confirm this reschedule?')) {
+                // You can replace this with an AJAX call to your backend
+                alert('Reschedule confirmed for appointment #' + appointmentId);
+                // Example AJAX call:
+                // fetch('/receptionist/confirm-reschedule/' + appointmentId, {
+                //     method: 'POST',
+                // })
+                // .then(response => response.json())
+                // .then(data => {
+                //     if (data.success) {
+                //         alert('Reschedule confirmed successfully');
+                //         // Reload the page or update the UI
+                //         window.location.reload();
+                //     } else {
+                //         alert('Error: ' + data.message);
+                //     }
+                // })
+                // .catch(error => {
+                //     console.error('Error:', error);
+                //     alert('An error occurred while confirming the reschedule');
+                // });
+            }
+        }
+    </script>
 </body>
 
 </html>

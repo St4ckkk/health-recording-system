@@ -139,8 +139,9 @@
   background-size: 1rem;
 }
 .appointment-list-container {
-  max-height: 430px;
+  /* Remove the max-height property to allow all appointments to show */
   overflow-y: auto;
+  max-height: 600px;
 }
 
 /* New styles for the updated design */
@@ -198,50 +199,109 @@
   font-size: 0.75rem;
   font-weight: 500;
 }
-
 .status-badge.completed i {
-  color: #059669;
+  color: var(--success-dark);
   font-size: 1rem;
 }
 
 .status-badge.no-show i {
-  color: #d97706;
+  color: var(--warning-dark);
   font-size: 1rem;
 }
 
 .status-badge.cancelled i {
-  color: #dc2626;
+  color: var(--danger-dark);
   font-size: 1rem;
 }
 
 .status-badge.scheduled i {
-  color: #3b82f6;
+  color: var(--primary);
   font-size: 1rem;
 }
 
+.status-badge.pending i {
+  color: var(--info-dark);
+  font-size: 1rem;
+}
+
+.status-badge.confirmed i {
+  color: var(--success-dark);
+  font-size: 1rem;
+}
+
+.status-badge.check-in i {
+  color: var(--primary-dark);
+  font-size: 1rem;
+}
+
+.status-badge.rescheduled i {
+  color: var(--warning);
+  font-size: 1rem;
+}
+
+/* Add these styles for the text colors in the appointment details */
+.text-success {
+  color: var(--success-dark) !important;
+}
+
+.text-primary {
+  color: var(--primary) !important;
+}
+
+.text-danger {
+  color: var(--danger-dark) !important;
+}
+
+.text-warning {
+  color: var(--warning-dark) !important;
+}
+
+.text-info {
+  color: var(--info-dark) !important;
+}
+/* Appointment type badges */
 .appointment-type {
-  display: inline-block;
-  padding: 0.1rem 0.5rem;
+  padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
   font-size: 0.75rem;
   font-weight: 500;
-  color: white;
+  text-transform: capitalize;
 }
 
+/* Make the checkup background color darker */
 .appointment-type.checkup {
-  background-color: #3b82f6;
+  background-color: var(--primary-light);
+  color: var(--primary);
 }
 
 .appointment-type.follow-up {
-  background-color: #10b981;
+  background-color: var(--success-light);
+  color: var(--success-dark);
+}
+
+.appointment-type.emergency {
+  background-color: var(--danger-light);
+  color: var(--danger-dark);
+}
+
+.appointment-type.consultation {
+  background-color: var(--info-light);
+  color: var(--info-dark);
+}
+
+.appointment-type.general-appointment {
+  background-color: var(--primary-blue-light);
+  color: var(--primary-blue-dark);
 }
 
 .appointment-type.procedure {
-  background-color: #f59e0b;
+  background-color: var(--warning-light);
+  color: var(--warning-dark);
 }
 
 .appointment-type.specialist {
-  background-color: #8b5cf6;
+  background-color: var(--gray-100);
+  color: var(--gray-800);
 }
 
 .detail-label {

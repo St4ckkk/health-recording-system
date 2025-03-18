@@ -134,4 +134,24 @@ class Model
         $this->db->bind(':value', $value);
         return $this->db->single();
     }
+    
+    /**
+     * Execute a custom query with optional parameters
+     * 
+     * @param string $sql The SQL query to execute
+     * @param array $params Optional parameters to bind to the query
+     * @return array|object The query results
+     */
+    public function query($sql, $params = [])
+    {
+        $this->db->query($sql);
+        
+        if (!empty($params)) {
+            foreach ($params as $key => $value) {
+                $this->db->bind($key, $value);
+            }
+        }
+        
+        return $this->db->resultSet();
+    }
 }

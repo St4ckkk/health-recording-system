@@ -242,6 +242,36 @@
     border: 2px solid var(--gray-300);
 }
 
+/* Added styles for cancelled and no-show markers */
+.timeline-marker.cancelled,
+.timeline-marker.no-show {
+    background-color: var(--danger-light, #FEF2F2);
+    color: var(--danger, #ef4444);
+    border: 2px solid var(--danger, #ef4444);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Added styles for rescheduled markers */
+.timeline-marker.rescheduled {
+    background-color: var(--warning-light, #FFF7ED);
+    color: var(--warning, #f59e0b);
+    border: 2px solid var(--warning, #f59e0b);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Ensure all icons in timeline markers are centered */
+.timeline-marker i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
 .timeline-content {
     padding: 0.5rem 0;
 }
