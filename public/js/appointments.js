@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const backFromRescheduleButton = document.getElementById('backFromReschedule');
 
     // Function to show patient details
-    function showPatientDetails(patientId) {
+    function showPatientDetails(appointmentId) {
         // Hide appointments view
         appointmentsView.classList.remove('visible-view');
         appointmentsView.classList.add('hidden-view');
@@ -44,11 +44,125 @@ document.addEventListener('DOMContentLoaded', function () {
         patientAppView.classList.remove('hidden-view');
         patientAppView.classList.add('visible-view');
 
-        // You can use patientId to load specific patient data if needed
-        console.log('Viewing patient:', patientId);
+        // Fetch appointment details using AJAX
+        fetch(`${document.querySelector('meta[name="base-url"]').content}/receptionist/getAppointmentDetails`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: `appointmentId=${appointmentId}`
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text().then(text => {
+                    try {
+                        return JSON.parse(text);
+                    } catch (e) {
+                        console.error('Error parsing JSON:', e);
+                        console.error('Response text:', text);
+                        throw new Error('Invalid JSON response from server');
+                    }
+                });
+            })
+            .then(data => {
+                // Populate the patient_app.php with the fetched data
+                populateAppointmentDetails(data);
+            })
+            .catch(error => {
+                console.error('Error fetching appointment details:', error);
+                alert('Failed to load appointment details. Please try again.');
+            });
 
         // Scroll to top
         window.scrollTo(0, 0);
+    }
+
+    // Function to populate appointment details in the patient_app.php view
+    function populateAppointmentDetails(data) {
+        console.log('Received data:', data);
+
+        if (data.error) {
+            console.error('Error from server:', data.error);
+            alert('Error: ' + data.error);
+            return;
+        }
+    
+        // Extract patient data from appointment if patient data is not available
+        let patientData = data.patient;
+        if (!patientData || patientData === false) {
+            console.log('Patient data not found, extracting from appointment');
+            // Create patient object from appointment data
+            patientData = {
+                patient_id: data.appointment.patient_id,
+                first_name: data.appointment.first_name,
+                last_name: data.appointment.last_name,
+                email: data.appointment.email,
+                contact_number: data.appointment.contact_number,
+                // Add any other patient fields you need
+            };
+        }
+    
+        // Get elements from patient_app.php
+        const patientName = document.getElementById('patient-name');
+        const patientId = document.getElementById('patient-id');
+        const refNumber = document.getElementById('ref-number');
+        const appointmentDate = document.getElementById('appointment-date');
+        const appointmentTime = document.getElementById('appointment-time');
+        const appointmentType = document.getElementById('appointment-type');
+        const appointmentReason = document.getElementById('appointment-reason');
+        const appointmentStatus = document.getElementById('appointment-status');
+        const appointmentNotes = document.getElementById('appointment-notes');
+        const appointmentLocation = document.getElementById('appointment-location');
+        const patientPhone = document.getElementById('patient-phone');
+        const patientEmail = document.getElementById('patient-email');
+        const patientInsurance = document.getElementById('patient-insurance');
+    
+        // Populate elements with data
+        if (patientName) patientName.textContent = `${patientData.first_name} ${patientData.last_name}`;
+        if (patientId) patientId.textContent = patientData.patient_id || 'N/A';
+        if (refNumber) refNumber.textContent = data.appointment.reference_number || 'N/A';
+    
+        // Format date
+        if (appointmentDate) {
+            const date = new Date(data.appointment.appointment_date);
+            const formattedDate = date.toLocaleDateString('en-US', {
+                month: '2-digit',
+                day: '2-digit',
+                year: 'numeric'
+            });
+            appointmentDate.textContent = formattedDate;
+        }
+    
+        // Format time
+        if (appointmentTime) {
+            appointmentTime.textContent = data.appointment.appointment_time || 'N/A';
+        }
+
+        if (appointmentType) {
+            appointmentType.textContent = data.appointment.type || 'Checkup';
+            appointmentType.className = `appointment-type ${(data.appointment.type || 'checkup').toLowerCase()}`;
+        }
+
+        if (appointmentReason) appointmentReason.textContent = data.appointment.reason || 'N/A';
+
+        if (appointmentStatus) {
+            appointmentStatus.textContent = data.appointment.status ? data.appointment.status.charAt(0).toUpperCase() + data.appointment.status.slice(1) : 'Scheduled';
+            appointmentStatus.className = `status-badge ${(data.appointment.status || 'scheduled').toLowerCase()}`;
+        }
+
+        if (appointmentNotes) appointmentNotes.textContent = data.appointment.notes || 'No notes available';
+        if (appointmentLocation) appointmentLocation.textContent = data.appointment.location || 'Main Clinic';
+        if (patientPhone) patientPhone.textContent = data.patient ? data.patient.contact_number : 'N/A';
+        if (patientEmail) patientEmail.textContent = data.patient ? data.patient.email : 'N/A';
+        if (patientInsurance) patientInsurance.textContent = data.patient && data.patient.insurance ? data.patient.insurance : 'Not provided';
+
+        // Update action buttons based on appointment status
+        if (typeof updateActionButtons === 'function') {
+            updateActionButtons(data.appointment.status || 'scheduled');
+        }
     }
 
     // Function to show reschedule interface
@@ -89,10 +203,57 @@ document.addEventListener('DOMContentLoaded', function () {
     // Add click event to all view buttons
     viewButtons.forEach(button => {
         button.addEventListener('click', function () {
+            const appointmentId = this.getAttribute('data-appointment-id');
             const patientId = this.getAttribute('data-patient-id');
-            showPatientDetails(patientId);
+            showPatientDetails(appointmentId, patientId);
         });
     });
+
+    // Function to show patient details
+    function showPatientDetails(appointmentId, patientId) {
+        // Hide appointments view
+        appointmentsView.classList.remove('visible-view');
+        appointmentsView.classList.add('hidden-view');
+
+        // Show patient app view
+        patientAppView.classList.remove('hidden-view');
+        patientAppView.classList.add('visible-view');
+
+        // Fetch appointment details using AJAX
+        fetch(`${document.querySelector('meta[name="base-url"]').content}/receptionist/getAppointmentDetails`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: `appointmentId=${appointmentId}&patientId=${patientId}`
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text().then(text => {
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    console.error('Error parsing JSON:', e);
+                    console.error('Response text:', text);
+                    throw new Error('Invalid JSON response from server');
+                }
+            });
+        })
+        .then(data => {
+            // Populate the patient_app.php with the fetched data
+            populateAppointmentDetails(data);
+        })
+        .catch(error => {
+            console.error('Error fetching appointment details:', error);
+            alert('Failed to load appointment details. Please try again.');
+        });
+
+        // Scroll to top
+        window.scrollTo(0, 0);
+    }
 
     // Add click event to back buttons
     if (backButton) {

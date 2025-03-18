@@ -125,19 +125,31 @@ class Appointment extends Model
      * @param int $id
      * @return object|null
      */
+    /**
+     * Get an appointment by its ID with all related information
+     * 
+     * @param int $id The appointment ID
+     * @return object|false The appointment object or false if not found
+     */
     public function getAppointmentById($id)
     {
         $this->db->query("SELECT a.*, p.first_name, p.last_name, p.contact_number, p.email, p.patient_id, 
-                  p.insurance_provider, p.insurance_id,
                   d.first_name as doctor_first_name, d.last_name as doctor_last_name, 
-                  d.specialization
+                  d.specialization, 
+                  COALESCE(a.appointment_type, 'Checkup') as type
                   FROM {$this->table} a
-                  JOIN patients p ON a.patient_id = p.id
-                  JOIN doctors d ON a.doctor_id = d.id
+                  LEFT JOIN patients p ON a.patient_id = p.id
+                  LEFT JOIN doctors d ON a.doctor_id = d.id
                   WHERE a.id = :id");
         $this->db->bind(':id', $id);
 
-        return $this->db->single();
+        $result = $this->db->single();
+
+        if ($this->db->rowCount() > 0) {
+            return $result;
+        }
+
+        return false;
     }
 
     /**

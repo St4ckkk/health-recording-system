@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base-url" content="<?= BASE_URL ?>">
     <title>Receptionist</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/node_modules/boxicons/css/boxicons.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/globals.css">
@@ -14,26 +15,6 @@
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/flatpickr.min.js"></script>
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/l10n/fr.js"></script>
     <style>
-        /* Make action buttons more compact in table */
-        .action-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: auto;
-            padding: 0.375rem 0.5rem;
-            font-size: 0.7rem;
-            border-radius: 0.375rem;
-            white-space: nowrap;
-        }
-
-        /* Add table header styling for smaller text */
-        .appointments-table thead th {
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
         .action-button i {
             margin-right: 0.25rem;
             font-size: 0.875rem;
@@ -234,35 +215,31 @@
             font-size: var(--font-size-xs);
             font-weight: 500;
             text-transform: capitalize;
+            border: 1px solid currentColor;
+            background-color: transparent;
         }
 
         .appointment-type.checkup {
-            background-color: var(--primary-light);
             color: var(--primary);
         }
 
         .appointment-type.follow-up {
-            background-color: var(--success-light);
             color: var(--success-dark);
         }
 
         .appointment-type.procedure {
-            background-color: var(--warning-light);
             color: var(--warning-dark);
         }
 
         .appointment-type.specialist {
-            background-color: var(--info-light);
             color: var(--info-dark);
         }
 
         .appointment-type.emergency {
-            background-color: var(--danger-light);
             color: var(--danger-dark);
         }
 
         .appointment-type.consultation {
-            background-color: var(--primary-blue-light);
             color: var(--primary-blue-dark);
         }
 
@@ -373,6 +350,11 @@
             visibility: visible;
             opacity: 1;
         }
+
+        .calendar-icon {
+            display: inline-flex;
+            padding-left: 5.5rem;
+        }
     </style>
 </head>
 
@@ -422,18 +404,7 @@
                                     <input type="text" placeholder="Search by patient name or ID..."
                                         class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm">
                                     <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                                        <i class="bx bx-search text-gray-400"></i>
-                                    </span>
-                                </div>
-                            </div>
-                            <!-- Date Filter -->
-                            <div class="filter-group">
-                                <p class="filter-label text-xs font-medium mb-1">Date Filter</p>
-                                <div class="relative">
-                                    <input type="text" id="dateFilter" placeholder="Select date"
-                                        class="filter-input w-full border rounded-md px-3 py-2 pl-9 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 calendar-icon">
-                                        <i class="bx bx-calendar text-gray-400"></i>
+                                        <i class="search bx bx-search text-gray-400"></i>
                                     </span>
                                 </div>
                             </div>
@@ -450,6 +421,18 @@
                                         <option>Procedure</option>
                                         <option>Specialist</option>
                                     </select>
+                                </div>
+                            </div>
+
+                            <!-- Date Filter (moved to the right) -->
+                            <div class="filter-group">
+                                <p class="filter-label text-xs font-medium mb-1">Date Filter</p>
+                                <div class="relative">
+                                    <input type="text" id="dateFilter" placeholder="Select date"
+                                        class="filter-input w-full border rounded-md px-3 py-2 pr-9 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 calendar-icon">
+                                        <i class="bx bx-calendar text-gray-400"></i>
+                                    </span>
                                 </div>
                             </div>
 

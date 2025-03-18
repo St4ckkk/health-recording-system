@@ -75,3 +75,6 @@ class Router
         return $controller->$action();
     }
 }
+
+
+// Add this route to your routes array or registration method
