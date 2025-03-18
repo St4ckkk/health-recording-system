@@ -7,7 +7,8 @@
             </div>
             <div class="flex gap-2">
                 <span id="appointment-type" class="appointment-type checkup">Loading...</span>
-                <span id="appointment-status" class="status-badge scheduled">Loading...</span>
+                <span id="appointment-status" class="status-badge scheduled"
+                    style="border-radius: 5px;">Loading...</span>
             </div>
         </div>
 

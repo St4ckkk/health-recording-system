@@ -211,7 +211,7 @@
             display: inline-flex;
             align-items: center;
             padding: 0.25rem 0.75rem;
-            border-radius: var(--radius-pill);
+            /* Removed border-radius: var(--radius-pill); */
             font-size: var(--font-size-xs);
             font-weight: 500;
             text-transform: capitalize;
