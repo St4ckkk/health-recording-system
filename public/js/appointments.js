@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
             appointmentStatus.className = `status-badge ${(data.appointment.status || 'scheduled').toLowerCase()}`;
         }
 
-        if (appointmentNotes) appointmentNotes.textContent = data.appointment.notes || 'No notes available';
+        if (appointmentNotes) appointmentNotes.textContent = data.appointment.special_instructions || 'No notes available';
         if (appointmentLocation) appointmentLocation.textContent = data.appointment.location || 'Main Clinic';
         if (patientPhone) patientPhone.textContent = data.patient ? data.patient.contact_number : 'N/A';
         if (patientEmail) patientEmail.textContent = data.patient ? data.patient.email : 'N/A';
