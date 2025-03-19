@@ -1,3 +1,4 @@
 node_modules/
 .qodo
 public/uploads/doctors/
+public/php_errors.log
