@@ -104,7 +104,7 @@ class Doctor extends Model
         $this->db->bind(':max_appointments_per_day', $data['max_appointments_per_day']);
         $this->db->bind(':default_location', $data['default_location']);
         $this->db->bind(':status', $data['status']);
-        $this->db->bind(':profile', $data['profile_image']);
+        $this->db->bind(':profile', $data['profile']);
         $this->db->bind(':created_at', $data['created_at']);
         $this->db->bind(':work_hours_start', $data['work_hours_start']);
         $this->db->bind(':work_hours_end', $data['work_hours_end']);

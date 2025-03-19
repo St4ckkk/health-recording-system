@@ -558,8 +558,8 @@
                                     <div class="form-group">
                                         <label for="status" class="form-label">Status*</label>
                                         <select id="status" name="status" class="form-select" required>
-                                            <option value="active">Active</option>
-                                            <option value="inactive">Inactive</option>
+                                            <option value="available">Available</option>
+                                            <option value="not-available">Not Available</option>
                                             <option value="on_leave">On Leave</option>
                                             <option value="pending">Pending</option>
                                         </select>

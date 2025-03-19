@@ -55,7 +55,58 @@ class DoctorTimeSlot extends Model
         // Format days like "Monday, Wednesday, Friday"
         return implode(', ', $days);
     }
+    
+    /**
+     * Insert a new time slot
+     * 
+     * @param array $data The time slot data
+     * @return bool|int The ID of the inserted time slot or false on failure
+     */
+    public function insert($data)
+    {
+        $this->db->query('INSERT INTO doctor_time_slots (
+            doctor_id,
+            day,
+            start_time,
+            end_time,
+            created_at
+        ) VALUES (
+            :doctor_id,
+            :day,
+            :start_time,
+            :end_time,
+            :created_at
+        )');
 
+        // Bind values
+        $this->db->bind(':doctor_id', $data['doctor_id']);
+        $this->db->bind(':day', $data['day']);
+        $this->db->bind(':start_time', $data['start_time']);
+        $this->db->bind(':end_time', $data['end_time']);
+        $this->db->bind(':created_at', $data['created_at'] ?? date('Y-m-d H:i:s'));
+
+        // Execute
+        if ($this->db->execute()) {
+            return $this->db->lastInsertId();
+        }
+
+        return false;
+    }
+    
+    /**
+     * Delete time slots by a specific field
+     * 
+     * @param string $field The field name
+     * @param mixed $value The field value
+     * @return bool True on success, false on failure
+     */
+    public function deleteByField($field, $value)
+    {
+        $this->db->query("DELETE FROM {$this->table} WHERE {$field} = :{$field}");
+        $this->db->bind(":{$field}", $value);
+        return $this->db->execute();
+    }
+    
     public function getDoctorAvailableDaysFormatted($doctorId)
     {
         $days = $this->getDoctorAvailableDays($doctorId);
@@ -94,39 +145,5 @@ class DoctorTimeSlot extends Model
         }
 
         return $this->db->resultSet();
-    }
-
-    public function insert($data)
-    {
-        $this->db->query('INSERT INTO doctor_time_slots (
-            doctor_id, 
-            day, 
-            start_time, 
-            end_time, 
-            created_at
-        ) VALUES (
-            :doctor_id, 
-            :day, 
-            :start_time, 
-            :end_time, 
-            :created_at
-        )');
-        
-        // Bind values
-        $this->db->bind(':doctor_id', $data['doctor_id']);
-        $this->db->bind(':day', $data['day']);
-        $this->db->bind(':start_time', $data['start_time']);
-        $this->db->bind(':end_time', $data['end_time']);
-        $this->db->bind(':created_at', $data['created_at']);
-        
-        // Execute
-        return $this->db->execute();
-    }
-
-    public function deleteByField($field, $value)
-    {
-        $this->db->query("DELETE FROM {$this->table} WHERE {$field} = :{$field}");
-        $this->db->bind(":{$field}", $value);
-        return $this->db->execute();
     }
 }

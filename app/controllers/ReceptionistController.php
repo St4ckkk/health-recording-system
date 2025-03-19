@@ -263,6 +263,12 @@ class ReceptionistController extends Controller
         $startTimes = isset($_POST['startTimes']) ? $_POST['startTimes'] : [];
         $endTimes = isset($_POST['endTimes']) ? $_POST['endTimes'] : [];
 
+        // Debug log
+        error_log('Processing time slots for doctor ID: ' . $doctorId);
+        error_log('Available days: ' . print_r($availableDays, true));
+        error_log('Start times: ' . print_r($startTimes, true));
+        error_log('End times: ' . print_r($endTimes, true));
+
         // Delete existing time slots for this doctor
         $this->timeSlotModel->deleteByField('doctor_id', $doctorId);
 
@@ -278,8 +284,16 @@ class ReceptionistController extends Controller
                         'end_time' => $endTimes[$i],
                         'created_at' => date('Y-m-d H:i:s')
                     ];
-
-                    $this->timeSlotModel->insert($slotData);
+                    
+                    // Insert time slot
+                    $result = $this->timeSlotModel->insert($slotData);
+                    
+                    // Debug log
+                    if ($result) {
+                        error_log('Inserted time slot: ' . print_r($slotData, true));
+                    } else {
+                        error_log('Failed to insert time slot: ' . print_r($slotData, true));
+                    }
                 }
             }
         }
