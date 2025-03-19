@@ -170,49 +170,95 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const doctorInfoCard = document.getElementById("doctorInfoCard")
 
+        // Get available days
+        const availableDays = doctor.available_days || []
+        const dayAbbreviations = {
+            'Monday': { 'abbr': 'Mon', 'class': 'day-mon' },
+            'Tuesday': { 'abbr': 'Tue', 'class': 'day-tue' },
+            'Wednesday': { 'abbr': 'Wed', 'class': 'day-wed' },
+            'Thursday': { 'abbr': 'Thu', 'class': 'day-thu' },
+            'Friday': { 'abbr': 'Fri', 'class': 'day-fri' },
+            'Saturday': { 'abbr': 'Sat', 'class': 'day-sat' },
+            'Sunday': { 'abbr': 'Sun', 'class': 'day-sun' }
+        }
+
+        // Format work hours
+        let workHoursHtml = '9:00 AM - 5:00 PM'
+        if (doctor.work_hours_start && doctor.work_hours_end) {
+            const start_time = formatTime(doctor.work_hours_start)
+            const end_time = formatTime(doctor.work_hours_end)
+            workHoursHtml = `${start_time} - ${end_time}`
+        }
+
         // Prepare profile image HTML
-        let profileHtml = `<div class="doctor-avatar"><i class="bx bx-user"></i></div>`
+        let profileHtml = `
+            <div class="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 overflow-hidden flex-shrink-0">
+                <i class="bx bx-user text-xl"></i>
+            </div>`
+
         if (doctor.profile) {
             // Get base URL from meta tag
             const baseUrl = document.querySelector('meta[name="base-url"]').content
-            profileHtml = `<img src="${baseUrl}/${doctor.profile}" alt="Dr. ${doctor.full_name}" class="doctor-avatar-img">`
+            profileHtml = `
+                <div class="h-12 w-12 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
+                    <img src="${baseUrl}/${doctor.profile}" alt="Dr. ${doctor.full_name}" class="h-full w-full object-cover">
+                </div>`
         }
 
         doctorInfoCard.innerHTML = `
-              <div class="flex items-start mb-6">
-                  ${profileHtml}
-                  <div>
-                      <h3 class="text-lg font-semibold text-gray-900">Dr. ${doctor.full_name}</h3>
-                      <p class="text-primary font-medium capitalize">${doctor.specialization}</p>
-                  </div>
-              </div>
-  
-              <div class="mb-4">
-                  <h4 class="text-sm font-medium text-gray-700 mb-2">Contact Information</h4>
-                  <div class="space-y-2">
-                      <p class="text-sm text-gray-600">
-                          <i class="bx bx-envelope text-gray-400 mr-2"></i> ${doctor.email}
-                      </p>
-                      <p class="text-sm text-gray-600">
-                          <i class="bx bx-phone text-gray-400 mr-2"></i> ${doctor.contact_number}
-                      </p>
-                  </div>
-              </div>
-  
-              <div class="mb-4">
-                  <h4 class="text-sm font-medium text-gray-700 mb-2">Default Location</h4>
-                  <div class="space-y-1">
-                      <p class="text-sm text-gray-600">${doctor.default_location || "Not specified"}</p>
-                  </div>
-              </div>
-  
-              <div class="mb-4">
-                  <h4 class="text-sm font-medium text-gray-700 mb-2">Max Appointments Per Day</h4>
-                  <div class="space-y-1">
-                      <p class="text-sm text-gray-600">${doctor.max_appointments_per_day}</p>
-                  </div>
-              </div>
-          `
+            <div class="p-6">
+                <div class="flex items-start mb-4">
+                    ${profileHtml}
+                    <div class="ml-3">
+                        <h3 class="text-lg font-semibold text-gray-900">Dr. ${doctor.full_name}</h3>
+                        <p class="text-primary font-medium capitalize">${doctor.specialization}</p>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h4 class="text-sm font-medium text-gray-700 mb-2">Available Days</h4>
+                    <div>
+                        ${availableDays.length > 0
+                ? availableDays.map(day =>
+                    `<span class="schedule-day ${dayAbbreviations[day].class}">${dayAbbreviations[day].abbr}</span>`
+                ).join('')
+                : '<span class="text-sm text-gray-500">Not available</span>'
+            }
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h4 class="text-sm font-medium text-gray-700 mb-2">Contact Information</h4>
+                    <div class="space-y-2">
+                        <p class="text-sm text-gray-600">
+                            <i class="bx bx-envelope text-gray-400 mr-2"></i> ${doctor.email || 'Not provided'}
+                        </p>
+                        <p class="text-sm text-gray-600">
+                            <i class="bx bx-phone text-gray-400 mr-2"></i> ${doctor.contact_number || 'Not provided'}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center mt-4">
+                    <span class="text-sm text-gray-500">
+                        <i class="bx bx-time text-gray-400 mr-1"></i>
+                        ${workHoursHtml}
+                    </span>
+                    <button id="editDoctorProfileBtn" class="px-3 py-1.5 bg-primary-light text-primary rounded-md hover:bg-primary hover:text-white transition-colors duration-fast" data-doctor-id="${doctor.id}">
+                        Edit Profile
+                    </button>
+                </div>
+            </div>
+        `
+
+        // Add event listener to the edit profile button
+        const editDoctorProfileBtn = document.getElementById("editDoctorProfileBtn")
+        if (editDoctorProfileBtn) {
+            editDoctorProfileBtn.addEventListener("click", function () {
+                // This will be implemented later to edit the doctor profile
+                alert("Edit doctor profile functionality will be implemented soon.")
+            })
+        }
     }
 
     // Function to update schedule table

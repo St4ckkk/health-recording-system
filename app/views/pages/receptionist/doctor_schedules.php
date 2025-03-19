@@ -114,10 +114,19 @@
                                 <div class="doctor-card bg-white shadow-sm border border-gray-200">
                                     <div class="p-6">
                                         <div class="flex items-start mb-4">
-                                            <div class="doctor-avatar">
-                                                <i class="bx bx-user"></i>
-                                            </div>
-                                            <div>
+                                            <?php if (!empty($doctor->profile)): ?>
+                                                <div class="h-12 w-12 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
+                                                    <img src="<?= BASE_URL ?>/<?= $doctor->profile ?>"
+                                                        alt="Dr. <?= htmlspecialchars($doctor->full_name) ?>"
+                                                        class="h-full w-full object-cover">
+                                                </div>
+                                            <?php else: ?>
+                                                <div
+                                                    class="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 overflow-hidden flex-shrink-0">
+                                                    <i class="bx bx-user text-xl"></i>
+                                                </div>
+                                            <?php endif; ?>
+                                            <div class="ml-3">
                                                 <h3 class="text-lg font-semibold text-gray-900">Dr.
                                                     <?= htmlspecialchars($doctor->full_name) ?>
                                                 </h3>
@@ -276,12 +285,16 @@
                                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
 
                                     <div class="flex flex-col md:flex-row items-start gap-6 mb-6">
-                                        <div class="doctor-profile-preview">
+                                        <div
+                                            class="doctor-profile-preview h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 overflow-hidden relative">
                                             <div class="profile-icon">
-                                                <i class="bx bx-user"></i>
+                                                <i class="bx bx-user text-3xl"></i>
                                             </div>
-                                            <img id="profileImagePreview" class="hidden" alt="Doctor profile preview">
-                                            <div class="upload-overlay">Change Photo</div>
+                                            <img id="profileImagePreview" class="hidden h-full w-full object-cover"
+                                                alt="Doctor profile preview">
+                                            <div
+                                                class="upload-overlay absolute inset-0 bg-black bg-opacity-50 text-white text-xs flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
+                                                Change Photo</div>
                                         </div>
                                         <div class="flex flex-col justify-center">
                                             <div class="upload-btn-wrapper mb-2">
