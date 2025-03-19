@@ -222,8 +222,10 @@ class ReceptionistController extends Controller
      */
     private function handleProfileImageUpload($file)
     {
+        // Define uploads directory using proper file system path
+        $uploadsDir = dirname(APP_ROOT) . '/public/uploads/doctors';
+
         // Check if uploads directory exists, if not create it
-        $uploadsDir = PUBLIC_DIR . 'uploads/doctors';
         if (!file_exists($uploadsDir)) {
             mkdir($uploadsDir, 0777, true);
         }
@@ -248,7 +250,8 @@ class ReceptionistController extends Controller
             return ['error' => 'Failed to upload file'];
         }
 
-        return $filename;
+        // Return the relative path for database storage
+        return 'uploads/doctors/' . $filename;
     }
 
     /**
@@ -284,10 +287,10 @@ class ReceptionistController extends Controller
                         'end_time' => $endTimes[$i],
                         'created_at' => date('Y-m-d H:i:s')
                     ];
-                    
+
                     // Insert time slot
                     $result = $this->timeSlotModel->insert($slotData);
-                    
+
                     // Debug log
                     if ($result) {
                         error_log('Inserted time slot: ' . print_r($slotData, true));

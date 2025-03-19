@@ -110,7 +110,7 @@
         }
 
         .avatar {
-            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            background: var(--primary);
             color: var(--primary-dark);
             border-radius: 50%;
             display: flex;
@@ -445,7 +445,7 @@
                                 <div class="avatar-wrapper">
                                     <div class="avatar w-20 h-20">
                                         <?php if (!empty($doctor->profile)): ?>
-                                            <img src="<?= BASE_URL . '/uploads/doctors/' . $doctor->profile ?>"
+                                            <img src="<?= BASE_URL . '/' . $doctor->profile ?>"
                                                 class="w-full h-full object-cover rounded-full"
                                                 alt="Dr. <?= $data['doctorModel']->getFullName($doctor) ?>">
                                         <?php else: ?>
@@ -498,7 +498,7 @@
                         <div class="p-4 flex items-center">
                             <div class="avatar w-16 h-16 mr-4 shrink-0">
                                 <?php if (!empty($doctor->profile)): ?>
-                                    <img src="<?= BASE_URL . '/uploads/doctors/' . $doctor->profile ?>"
+                                    <img src="<?= BASE_URL . '/' . $doctor->profile ?>"
                                         class="w-full h-full object-cover rounded-full"
                                         alt="Dr. <?= $data['doctorModel']->getFullName($doctor) ?>">
                                 <?php else: ?>
