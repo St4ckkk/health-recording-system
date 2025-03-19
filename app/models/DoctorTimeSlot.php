@@ -95,4 +95,38 @@ class DoctorTimeSlot extends Model
 
         return $this->db->resultSet();
     }
+
+    public function insert($data)
+    {
+        $this->db->query('INSERT INTO doctor_time_slots (
+            doctor_id, 
+            day, 
+            start_time, 
+            end_time, 
+            created_at
+        ) VALUES (
+            :doctor_id, 
+            :day, 
+            :start_time, 
+            :end_time, 
+            :created_at
+        )');
+        
+        // Bind values
+        $this->db->bind(':doctor_id', $data['doctor_id']);
+        $this->db->bind(':day', $data['day']);
+        $this->db->bind(':start_time', $data['start_time']);
+        $this->db->bind(':end_time', $data['end_time']);
+        $this->db->bind(':created_at', $data['created_at']);
+        
+        // Execute
+        return $this->db->execute();
+    }
+
+    public function deleteByField($field, $value)
+    {
+        $this->db->query("DELETE FROM {$this->table} WHERE {$field} = :{$field}");
+        $this->db->bind(":{$field}", $value);
+        return $this->db->execute();
+    }
 }

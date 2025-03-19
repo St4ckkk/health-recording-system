@@ -13,7 +13,6 @@ $router->get('/receptionist/dashboard', 'ReceptionistController@dashboard');
 $router->get('/receptionist/appointments', 'ReceptionistController@appointments');
 $router->get('/receptionist/notification', 'ReceptionistController@notification');
 $router->get('/receptionist/doctor_schedules', 'ReceptionistController@doctor_schedules');
+$router->post('/receptionist/add_doctor', 'ReceptionistController@add_doctor'); // Add this line
 $router->get('/receptionist/appointment/details', 'ReceptionistController@appointmentDetails');
-
-// Add the missing route for getAppointmentDetails
 $router->post('/receptionist/getAppointmentDetails', 'ReceptionistController@getAppointmentDetails');

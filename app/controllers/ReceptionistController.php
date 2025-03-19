@@ -113,6 +113,199 @@ class ReceptionistController extends Controller
     }
 
     /**
+     * Add a new doctor
+     */
+    public function add_doctor()
+    {
+        // Check if this is an AJAX request
+        if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
+            header('Location: ' . BASE_URL . '/receptionist/doctor_schedules');
+            exit;
+        }
+
+        try {
+            // Get form data
+            $firstName = isset($_POST['firstname']) ? trim($_POST['firstname']) : '';
+            $lastName = isset($_POST['lastname']) ? trim($_POST['lastname']) : '';
+            $middleName = isset($_POST['middlename']) ? trim($_POST['middlename']) : '';
+            $suffix = isset($_POST['suffix']) ? trim($_POST['suffix']) : '';
+            $specialty = isset($_POST['specialty']) ? trim($_POST['specialty']) : '';
+            $email = isset($_POST['email']) ? trim($_POST['email']) : '';
+            $phone = isset($_POST['phone']) ? trim($_POST['phone']) : '';
+            $location = isset($_POST['location']) ? trim($_POST['location']) : '';
+            $maxAppointments = isset($_POST['maxAppointments']) ? intval($_POST['maxAppointments']) : 15;
+            $status = isset($_POST['status']) ? trim($_POST['status']) : 'active';
+            $availableDays = isset($_POST['availableDays']) ? $_POST['availableDays'] : [];
+
+            // Get work hours
+            $workHoursStart = isset($_POST['workHoursStart']) ? trim($_POST['workHoursStart']) : null;
+            $workHoursEnd = isset($_POST['workHoursEnd']) ? trim($_POST['workHoursEnd']) : null;
+
+            // Validate required fields
+            if (empty($firstName) || empty($lastName) || empty($specialty) || empty($email) || empty($phone)) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Please fill in all required fields'
+                ]);
+                return;
+            }
+
+            // Handle profile image upload
+            $profileImage = null;
+            if (isset($_FILES['profileImage']) && $_FILES['profileImage']['error'] === UPLOAD_ERR_OK) {
+                $profileImage = $this->handleProfileImageUpload($_FILES['profileImage']);
+                if (is_array($profileImage) && isset($profileImage['error'])) {
+                    $this->jsonResponse([
+                        'success' => false,
+                        'message' => $profileImage['error']
+                    ]);
+                    return;
+                }
+            }
+
+            // Create doctor data array
+            $doctorData = [
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'middle_name' => $middleName,
+                'suffix' => $suffix,
+                'specialization' => $specialty,
+                'contact_number' => $phone,
+                'email' => $email,
+                'max_appointments_per_day' => $maxAppointments,
+                'status' => $status,
+                'default_location' => $location,
+                'profile' => $profileImage,
+                'created_at' => date('Y-m-d H:i:s'),
+                'work_hours_start' => $workHoursStart,
+                'work_hours_end' => $workHoursEnd
+            ];
+
+            // Debug log
+            error_log('Doctor data: ' . print_r($doctorData, true));
+
+            // Insert doctor into database
+            $doctorId = $this->doctorModel->insert($doctorData);
+
+            if (!$doctorId) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Failed to add doctor. Database error.'
+                ]);
+                return;
+            }
+
+            // Process time slots
+            $this->processTimeSlots($doctorId, $availableDays);
+
+            $this->jsonResponse([
+                'success' => true,
+                'message' => 'Doctor added successfully',
+                'doctorId' => $doctorId
+            ]);
+        } catch (\Exception $e) {
+            // Log the error
+            error_log('Error in add_doctor: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Server error: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Handle profile image upload
+     * 
+     * @param array $file The uploaded file data
+     * @return string|array The filename if successful, or an array with error message
+     */
+    private function handleProfileImageUpload($file)
+    {
+        // Check if uploads directory exists, if not create it
+        $uploadsDir = PUBLIC_DIR . 'uploads/doctors';
+        if (!file_exists($uploadsDir)) {
+            mkdir($uploadsDir, 0777, true);
+        }
+
+        // Validate file type
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (!in_array($file['type'], $allowedTypes)) {
+            return ['error' => 'Only JPG and PNG files are allowed'];
+        }
+
+        // Validate file size (max 2MB)
+        if ($file['size'] > 2 * 1024 * 1024) {
+            return ['error' => 'File size exceeds 2MB'];
+        }
+
+        // Generate unique filename
+        $filename = uniqid() . '_' . time() . '_' . str_replace(' ', '_', $file['name']);
+        $destination = $uploadsDir . '/' . $filename;
+
+        // Move uploaded file
+        if (!move_uploaded_file($file['tmp_name'], $destination)) {
+            return ['error' => 'Failed to upload file'];
+        }
+
+        return $filename;
+    }
+
+    /**
+     * Process time slots for a doctor
+     * 
+     * @param int $doctorId The doctor ID
+     * @param array $availableDays The available days
+     */
+    private function processTimeSlots($doctorId, $availableDays)
+    {
+        // Get time slots from POST data
+        $startTimes = isset($_POST['startTimes']) ? $_POST['startTimes'] : [];
+        $endTimes = isset($_POST['endTimes']) ? $_POST['endTimes'] : [];
+
+        // Delete existing time slots for this doctor
+        $this->timeSlotModel->deleteByField('doctor_id', $doctorId);
+
+        // Process each available day
+        foreach ($availableDays as $day) {
+            // Process each time slot
+            for ($i = 0; $i < count($startTimes); $i++) {
+                if (isset($startTimes[$i]) && isset($endTimes[$i])) {
+                    $slotData = [
+                        'doctor_id' => $doctorId,
+                        'day' => ucfirst(strtolower($day)), // Ensure proper capitalization (Monday, Tuesday, etc.)
+                        'start_time' => $startTimes[$i],
+                        'end_time' => $endTimes[$i],
+                        'created_at' => date('Y-m-d H:i:s')
+                    ];
+
+                    $this->timeSlotModel->insert($slotData);
+                }
+            }
+        }
+    }
+
+    /**
+     * JSON response helper
+     * 
+     * @param array $data The data to send as JSON
+     */
+    private function jsonResponse($data)
+    {
+        // Clear any previous output that might corrupt the JSON
+        if (ob_get_length())
+            ob_clean();
+
+        // Set proper headers
+        header('Content-Type: application/json');
+        header('Cache-Control: no-cache, must-revalidate');
+
+        // Output JSON data
+        echo json_encode($data);
+        exit;
+    }
+
+    /**
      * Get appointment details via AJAX
      */
     public function getAppointmentDetails()
@@ -189,15 +382,5 @@ class ReceptionistController extends Controller
                 'error' => 'Server error: ' . $e->getMessage()
             ]);
         }
-    }
-
-    /**
-     * Helper method to send JSON response
-     */
-    private function jsonResponse($data)
-    {
-        header('Content-Type: application/json');
-        echo json_encode($data);
-        exit;
     }
 }

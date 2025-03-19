@@ -46,14 +46,14 @@ document.addEventListener('DOMContentLoaded', function () {
         doctorFormView.classList.remove('visible-view');
         doctorFormView.classList.add('hidden-view');
 
-        // Here you would load the specific doctor's data based on doctorId
-        console.log('Viewing schedule for doctor:', doctorId);
-
         window.scrollTo(0, 0);
+
+        // Here you would typically fetch the doctor's schedule data
+        // and populate the view with it
     }
 
     // Function to show doctor form view
-    function showDoctorFormView(isEdit = false, doctorId = null) {
+    function showDoctorFormView() {
         doctorFormView.classList.remove('hidden-view');
         doctorFormView.classList.add('visible-view');
 
@@ -63,111 +63,210 @@ document.addEventListener('DOMContentLoaded', function () {
         doctorScheduleView.classList.remove('visible-view');
         doctorScheduleView.classList.add('hidden-view');
 
-        if (isEdit) {
-            formTitle.textContent = 'Edit Doctor Schedule';
-            formSubtitle.textContent = 'Update doctor details and schedule';
-            backButtonText.textContent = 'Back to Schedule';
-            // Here you would load the doctor's data into the form
-            console.log('Editing doctor:', doctorId);
-        } else {
-            formTitle.textContent = 'Add New Doctor';
-            formSubtitle.textContent = 'Enter doctor details and schedule';
-            backButtonText.textContent = 'Back to Doctor List';
-            // Reset form
-            doctorForm.reset();
-        }
-
         window.scrollTo(0, 0);
     }
 
-    // Add event listeners for view schedule buttons
-    viewScheduleButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const doctorId = this.getAttribute('data-doctor-id');
-            showDoctorScheduleView(doctorId);
+    // Add event listeners for view transitions
+    if (viewScheduleButtons) {
+        viewScheduleButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const doctorId = this.getAttribute('data-doctor-id');
+                showDoctorScheduleView(doctorId);
+            });
         });
-    });
+    }
 
-    // Add event listener for back to doctor list button
-    backToDoctorListButton.addEventListener('click', showDoctorListView);
+    if (backToDoctorListButton) {
+        backToDoctorListButton.addEventListener('click', showDoctorListView);
+    }
 
-    // Add event listener for add doctor button
-    addDoctorButton.addEventListener('click', function () {
-        showDoctorFormView(false);
-    });
+    if (addDoctorButton) {
+        addDoctorButton.addEventListener('click', function () {
+            // Reset form
+            doctorForm.reset();
 
-    // Add event listener for edit schedule button
-    editScheduleButton.addEventListener('click', function () {
-        // Get the doctor ID from the current view
-        const doctorId = document.querySelector('.view-schedule-btn').getAttribute('data-doctor-id');
-        showDoctorFormView(true, doctorId);
-    });
+            // Reset profile image preview
+            const profileImagePreview = document.getElementById('profileImagePreview');
+            const profileIcon = document.querySelector('.profile-icon');
+            if (profileImagePreview && profileIcon) {
+                profileImagePreview.classList.add('hidden');
+                profileIcon.classList.remove('hidden');
+            }
 
-    // Add event listener for back from form button
-    backFromFormButton.addEventListener('click', function () {
-        if (backButtonText.textContent === 'Back to Schedule') {
-            // Get the doctor ID from the current view
-            const doctorId = document.querySelector('.view-schedule-btn').getAttribute('data-doctor-id');
-            showDoctorScheduleView(doctorId);
-        } else {
-            showDoctorListView();
-        }
-    });
+            // Set form title and subtitle
+            formTitle.textContent = 'Add New Doctor';
+            formSubtitle.textContent = 'Enter doctor details and schedule';
+            backButtonText.textContent = 'Back to Doctor List';
 
-    // Add event listener for cancel form button
-    cancelFormButton.addEventListener('click', function () {
-        if (backButtonText.textContent === 'Back to Schedule') {
-            // Get the doctor ID from the current view
-            const doctorId = document.querySelector('.view-schedule-btn').getAttribute('data-doctor-id');
-            showDoctorScheduleView(doctorId);
-        } else {
-            showDoctorListView();
-        }
-    });
-
-    // Add event listener for add time slot button
-    addTimeSlotButton.addEventListener('click', function () {
-        const timeSlot = document.createElement('div');
-        timeSlot.className = 'time-slot';
-        timeSlot.innerHTML = `
-            <input type="time" class="time-slot-input" value="09:00">
-            <span class="time-slot-separator">to</span>
-            <input type="time" class="time-slot-input" value="17:00">
-            <span class="time-slot-remove">
-                <i class="bx bx-x"></i>
-            </span>
-        `;
-        timeSlots.appendChild(timeSlot);
-
-        // Add event listener for remove button
-        const removeButton = timeSlot.querySelector('.time-slot-remove');
-        removeButton.addEventListener('click', function () {
-            timeSlot.remove();
+            showDoctorFormView();
         });
-    });
+    }
 
-    // Add event listeners for existing time slot remove buttons
+    if (backFromFormButton) {
+        backFromFormButton.addEventListener('click', showDoctorListView);
+    }
+
+    if (cancelFormButton) {
+        cancelFormButton.addEventListener('click', showDoctorListView);
+    }
+
+    // Add time slot functionality
+    if (addTimeSlotButton) {
+        addTimeSlotButton.addEventListener('click', function () {
+            const timeSlotTemplate = `
+                <div class="time-slot">
+                    <input type="time" class="time-slot-input" required>
+                    <span class="time-slot-separator">to</span>
+                    <input type="time" class="time-slot-input" required>
+                    <span class="time-slot-remove">
+                        <i class="bx bx-x"></i>
+                    </span>
+                </div>
+            `;
+
+            timeSlots.insertAdjacentHTML('beforeend', timeSlotTemplate);
+
+            // Add event listener to the new remove button
+            const newTimeSlot = timeSlots.lastElementChild;
+            const removeButton = newTimeSlot.querySelector('.time-slot-remove');
+
+            removeButton.addEventListener('click', function () {
+                this.closest('.time-slot').remove();
+            });
+        });
+    }
+
+    // Add event listeners to existing time slot remove buttons
     document.querySelectorAll('.time-slot-remove').forEach(button => {
         button.addEventListener('click', function () {
             this.closest('.time-slot').remove();
         });
     });
 
-    // Add event listener for form submission
-    doctorForm.addEventListener('submit', function (event) {
-        event.preventDefault();
+    // Form submission
+    if (doctorForm) {
+        doctorForm.addEventListener('submit', function (e) {
+            e.preventDefault();
 
-        // Here you would handle form submission, validation, and saving data
-        console.log('Form submitted');
+            // Validate form
+            if (!validateDoctorForm()) {
+                return;
+            }
 
-        // For demo purposes, just go back to the list view
-        showDoctorListView();
-    });
+            // Create FormData object
+            const formData = new FormData(doctorForm);
 
-    // Function to clear filters
-    window.clearFilters = function () {
-        document.getElementById('specialtyFilter').value = 'All Specialties';
-        document.getElementById('availabilityFilter').value = 'Any Day';
-        document.querySelector('input[placeholder="Search by doctor name or specialty..."]').value = '';
-    };
+            // Add time slots to form data
+            const startTimes = [];
+            const endTimes = [];
+
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                const inputs = slot.querySelectorAll('input[type="time"]');
+                if (inputs.length === 2) {
+                    startTimes.push(inputs[0].value);
+                    endTimes.push(inputs[1].value);
+                }
+            });
+
+            // Add start and end times to form data
+            startTimes.forEach(time => {
+                formData.append('startTimes[]', time);
+            });
+
+            endTimes.forEach(time => {
+                formData.append('endTimes[]', time);
+            });
+
+            // Send AJAX request
+            fetch(BASE_URL + '/receptionist/add_doctor', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Show success message
+                        alert(data.message);
+
+                        // Reload page to show new doctor
+                        window.location.reload();
+                    } else {
+                        // Show error message
+                        alert(data.message || 'Failed to add doctor');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while adding the doctor');
+                });
+        });
+    }
+
+    // Function to validate doctor form
+    function validateDoctorForm() {
+        // Get required fields
+        const firstName = document.getElementById('firstname').value.trim();
+        const lastName = document.getElementById('lastname').value.trim();
+        const specialty = document.getElementById('specialty').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+
+        // Check required fields
+        if (!firstName || !lastName || !specialty || !email || !phone) {
+            alert('Please fill in all required fields');
+            return false;
+        }
+
+        // Check if at least one day is selected
+        const availableDays = document.querySelectorAll('input[name="availableDays"]:checked');
+        if (availableDays.length === 0) {
+            alert('Please select at least one available day');
+            return false;
+        }
+
+        // Check if at least one time slot is added
+        const timeSlots = document.querySelectorAll('.time-slot');
+        if (timeSlots.length === 0) {
+            alert('Please add at least one time slot');
+            return false;
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address');
+            return false;
+        }
+
+        return true;
+    }
+    
+    // Remove this line as it's causing the error
+    // const BASE_URL = "<?= BASE_URL ?>";
+});
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const profileImageInput = document.getElementById('profileImage');
+    const profileImagePreview = document.getElementById('profileImagePreview');
+    const profileIcon = document.querySelector('.profile-icon');
+
+    if (profileImageInput) {
+        profileImageInput.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    profileImagePreview.src = e.target.result;
+                    profileImagePreview.classList.remove('hidden');
+                    profileIcon.classList.add('hidden');
+                }
+
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    }
 });

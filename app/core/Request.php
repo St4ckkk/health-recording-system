@@ -66,6 +66,7 @@ class Request
         if (self::method() === 'POST') {
             return $_POST;
         }
+
         
         return [];
     }

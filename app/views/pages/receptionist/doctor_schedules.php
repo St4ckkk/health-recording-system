@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base-url" content="<?= BASE_URL ?>">
     <title>
         <?= $title ?>
     </title>
@@ -16,6 +17,9 @@
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/flatpickr.min.js"></script>
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/l10n/fr.js"></script>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/doctor-schedules.css">
+    <style>
+
+    </style>
 </head>
 
 <body class="font-body">
@@ -24,7 +28,6 @@
         <main class="flex-1 main-content">
             <?php include(VIEW_ROOT . '/pages/receptionist/components/header.php') ?>
             <div class="content-wrapper">
-                <!-- Doctor List View (initially visible) -->
                 <section id="doctorListView" class="p-6 view-transition visible-view">
 
                     <div class="mb-4 flex justify-between items-center">
@@ -210,7 +213,9 @@
                                 <h4 class="text-sm font-medium text-gray-700 mb-2">Contact Information</h4>
                                 <div class="space-y-2">
                                     <p class="text-sm text-gray-600">
-                                        <i class="bx bx-envelope text-gray-400 mr-2"></i> sarah.johnson@example.com
+                                        <i class="bx bx-envelope text-gray-400 mr-2"></i> <a
+                                            href="/cdn-cgi/l/email-protection" class="__cf_email__"
+                                            data-cfemail="3c4f5d4e5d5412565354524f53527c59445d514c5059125f5351">[email&#160;protected]</a>
                                     </p>
                                     <p class="text-sm text-gray-600">
                                         <i class="bx bx-phone text-gray-400 mr-2"></i> (555) 123-4567
@@ -373,18 +378,62 @@
                         <form id="doctorForm">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Basic Information -->
-                                <div>
+                                <div class="mb-6">
                                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
 
-                                    <div class="form-group">
-                                        <label for="doctorName" class="form-label">Full Name</label>
-                                        <input type="text" id="doctorName" class="form-input"
-                                            placeholder="Dr. John Doe">
+                                    <div class="flex flex-col md:flex-row items-start gap-6 mb-6">
+                                        <div class="doctor-profile-preview">
+                                            <div class="profile-icon">
+                                                <i class="bx bx-user"></i>
+                                            </div>
+                                            <img id="profileImagePreview" class="hidden" alt="Doctor profile preview">
+                                            <div class="upload-overlay">Change Photo</div>
+                                        </div>
+                                        <div class="flex flex-col justify-center">
+                                            <div class="upload-btn-wrapper mb-2">
+                                                <button class="upload-btn">
+                                                    <i class="bx bx-upload"></i> Upload Photo
+                                                </button>
+                                                <input type="file" id="profileImage" name="profileImage"
+                                                    accept="image/*">
+                                            </div>
+                                            <p class="text-xs text-gray-500">Recommended: Square image (1:1 ratio)</p>
+                                            <p class="text-xs text-gray-500">Maximum size: 2MB</p>
+                                            <p class="text-xs text-gray-500 mt-2">Supported formats: JPG, PNG</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="form-group">
+                                            <label for="firstname" class="form-label">First Name*</label>
+                                            <input type="text" id="firstname" name="firstname" class="form-input"
+                                                placeholder="Enter first name" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="lastname" class="form-label">Last Name*</label>
+                                            <input type="text" id="lastname" name="lastname" class="form-input"
+                                                placeholder="Enter last name" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                        <div class="form-group">
+                                            <label for="middlename" class="form-label">Middle Name</label>
+                                            <input type="text" id="middlename" name="middlename" class="form-input"
+                                                placeholder="Enter middle name (optional)">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="suffix" class="form-label">Suffix</label>
+                                            <input type="text" id="suffix" name="suffix" class="form-input"
+                                                placeholder="MD, PhD, etc. (optional)">
+                                        </div>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="specialty" class="form-label">Specialty</label>
-                                        <select id="specialty" class="form-select">
+                                        <label for="specialty" class="form-label">Specialty*</label>
+                                        <select id="specialty" name="specialty" class="form-select" required>
                                             <option value="">Select Specialty</option>
                                             <option value="cardiology">Cardiology</option>
                                             <option value="dermatology">Dermatology</option>
@@ -397,30 +446,43 @@
                                         </select>
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="experience" class="form-label">Years of Experience</label>
-                                        <input type="number" id="experience" class="form-input" min="0"
-                                            placeholder="10">
-                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="form-group">
+                                            <label for="email" class="form-label">Email*</label>
+                                            <input type="email" id="email" name="email" class="form-input"
+                                                placeholder="doctor@example.com" required>
+                                        </div>
 
-                                    <div class="form-group">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input type="email" id="email" class="form-input"
-                                            placeholder="doctor@example.com">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="phone" class="form-label">Phone</label>
-                                        <input type="tel" id="phone" class="form-input" placeholder="(555) 123-4567">
+                                        <div class="form-group">
+                                            <label for="phone" class="form-label">Phone*</label>
+                                            <input type="tel" id="phone" name="phone" class="form-input"
+                                                placeholder="(555) 123-4567" required>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- Schedule Information -->
                                 <div>
                                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Schedule Information</h3>
-
                                     <div class="form-group">
-                                        <label class="form-label">Available Days</label>
+                                        <label class="form-label">Work Hours*</label>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                            <div class="form-group">
+                                                <label for="workHoursStart" class="form-label">Work Hours Start</label>
+                                                <input type="time" id="workHoursStart" name="workHoursStart"
+                                                    class="form-input">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="workHoursEnd" class="form-label">Work Hours End</label>
+                                                <input type="time" id="workHoursEnd" name="workHoursEnd"
+                                                    class="form-input">
+                                            </div>
+                                        </div>
+                                        <p class="text-xs text-gray-500 ">General working hours for this doctor</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Available Days*</label>
                                         <div class="checkbox-group">
                                             <label class="checkbox-label">
                                                 <input type="checkbox" class="checkbox-input" name="availableDays"
@@ -453,21 +515,21 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
-                                        <label class="form-label">Time Slots</label>
+                                    <div class="form-group time-slots-container">
+                                        <label class="form-label">Time Slots*</label>
                                         <div id="timeSlots" class="time-slots">
                                             <div class="time-slot">
-                                                <input type="time" class="time-slot-input" value="09:00">
+                                                <input type="time" class="time-slot-input" value="09:00" required>
                                                 <span class="time-slot-separator">to</span>
-                                                <input type="time" class="time-slot-input" value="12:00">
+                                                <input type="time" class="time-slot-input" value="12:00" required>
                                                 <span class="time-slot-remove">
                                                     <i class="bx bx-x"></i>
                                                 </span>
                                             </div>
                                             <div class="time-slot">
-                                                <input type="time" class="time-slot-input" value="13:00">
+                                                <input type="time" class="time-slot-input" value="13:00" required>
                                                 <span class="time-slot-separator">to</span>
-                                                <input type="time" class="time-slot-input" value="17:00">
+                                                <input type="time" class="time-slot-input" value="17:00" required>
                                                 <span class="time-slot-remove">
                                                     <i class="bx bx-x"></i>
                                                 </span>
@@ -478,16 +540,29 @@
                                         </button>
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="location" class="form-label">Default Location</label>
-                                        <input type="text" id="location" class="form-input"
-                                            placeholder="Main Clinic, Room 101">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="form-group">
+                                            <label for="location" class="form-label">Default Location*</label>
+                                            <input type="text" id="location" name="location" class="form-input"
+                                                placeholder="Main Clinic, Room 101" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="maxAppointments" class="form-label">Max Appointments Per
+                                                Day*</label>
+                                            <input type="number" id="maxAppointments" name="maxAppointments"
+                                                class="form-input" min="1" placeholder="15" required>
+                                        </div>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="maxAppointments" class="form-label">Max Appointments Per Day</label>
-                                        <input type="number" id="maxAppointments" class="form-input" min="1"
-                                            placeholder="15">
+                                        <label for="status" class="form-label">Status*</label>
+                                        <select id="status" name="status" class="form-select" required>
+                                            <option value="active">Active</option>
+                                            <option value="inactive">Inactive</option>
+                                            <option value="on_leave">On Leave</option>
+                                            <option value="pending">Pending</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -498,7 +573,7 @@
                                     Cancel
                                 </button>
                                 <button type="submit"
-                                    class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark">
+                                    class="px-3 py-1 bg-primary text-white rounded-md hover:bg-primary-dark">
                                     Save Doctor
                                 </button>
                             </div>
@@ -509,7 +584,11 @@
         </main>
     </div>
 
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script src="<?= BASE_URL ?>/js/doctor-schedules.js"></script>
+    <script>
+        const BASE_URL = "<?= BASE_URL ?>";
+    </script>
 </body>
 
 </html>
