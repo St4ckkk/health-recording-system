@@ -4,6 +4,7 @@ namespace app\models;
 
 use app\models\Model;
 use app\models\DoctorTimeSlot;
+use app\models\Appointment;
 
 class Doctor extends Model
 {
@@ -116,4 +117,48 @@ class Doctor extends Model
 
         return false;
     }
+
+    /**
+     * Get doctor schedule with time slots
+     * 
+     * @param int $doctorId The doctor ID
+     * @return object|null The doctor with schedule information
+     */
+    public function getDoctorSchedule($doctorId)
+    {
+        // Get doctor details
+        $doctor = $this->getDoctorById($doctorId);
+
+        if (!$doctor) {
+            return null;
+        }
+
+        // Add full name
+        $doctor->full_name = $this->getFullName($doctor);
+
+        // Get available days
+        $doctor->available_days = $this->timeSlotModel->getDoctorAvailableDays($doctorId);
+
+        // Get time slots
+        $doctor->time_slots = $this->timeSlotModel->getTimeSlotsByDoctorId($doctorId);
+
+        return $doctor;
+    }
+
+    /**
+     * Get doctor's upcoming appointments
+     * 
+     * @param int $doctorId The doctor ID
+     * @param int $limit Optional limit of appointments to return
+     * @return array The upcoming appointments
+     */
+    public function getDoctorUpcomingAppointments($doctorId, $limit = 10)
+    {
+        // Create an instance of the Appointment model
+        $appointmentModel = new Appointment();
+
+        // Get upcoming appointments for this doctor
+        return $appointmentModel->getUpcomingAppointmentsByDoctorId($doctorId, $limit);
+    }
 }
+

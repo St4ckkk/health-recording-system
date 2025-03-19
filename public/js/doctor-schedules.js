@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const viewScheduleButtons = document.querySelectorAll(".view-schedule-btn")
     const backToDoctorListButton = document.getElementById("backToDoctorList")
     const addDoctorButton = document.getElementById("addDoctorBtn")
-    const editScheduleButton = document.getElementById("editScheduleButton")
+    const editScheduleButton = document.getElementById("editScheduleBtn")
     const backFromFormButton = document.getElementById("backFromForm")
     const cancelFormButton = document.getElementById("cancelForm")
     const addTimeSlotButton = document.getElementById("addTimeSlot")
@@ -47,8 +47,279 @@ document.addEventListener("DOMContentLoaded", () => {
 
         window.scrollTo(0, 0)
 
-        // Here you would typically fetch the doctor's schedule data
-        // and populate the view with it
+        // Fetch doctor details and appointments
+        fetchDoctorSchedule(doctorId)
+    }
+
+    // Function to fetch doctor schedule data
+    function fetchDoctorSchedule(doctorId) {
+        const baseUrl = document.querySelector('meta[name="base-url"]').content
+
+        // Show loading state
+        const doctorScheduleTitle = document.getElementById("doctorScheduleTitle")
+        doctorScheduleTitle.textContent = "Loading doctor schedule..."
+
+        // Clear previous data
+        document.getElementById("doctorInfoCard").innerHTML = `
+              <div class="flex justify-center items-center h-40">
+                  <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              </div>
+          `
+        document.getElementById("scheduleTableBody").innerHTML = `
+              <tr>
+                  <td colspan="4" class="text-center py-4">
+                      <div class="animate-spin inline-block w-6 h-6 border-b-2 border-primary rounded-full"></div>
+                      <span class="ml-2">Loading schedule...</span>
+                  </td>
+              </tr>
+          `
+        document.getElementById("appointmentsTableBody").innerHTML = `
+              <tr>
+                  <td colspan="5" class="text-center py-4">
+                      <div class="animate-spin inline-block w-6 h-6 border-b-2 border-primary rounded-full"></div>
+                      <span class="ml-2">Loading appointments...</span>
+                  </td>
+              </tr>
+          `
+
+        // Change from URL parameter to query parameter
+        fetch(`${baseUrl}/receptionist/get_doctor_schedule?id=${doctorId}`, {
+            method: "GET",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+            },
+        })
+            .then((response) => {
+                // Clone the response so we can both check it and use it
+                const responseClone = response.clone()
+
+                if (!response.ok) {
+                    throw new Error("Network response was not ok")
+                }
+
+                // Check if the response is JSON
+                const contentType = response.headers.get("content-type")
+
+                // Debug: Log the content type
+                console.log("Response content type:", contentType)
+
+                // If not JSON, get the text and log it to help debugging
+                if (!contentType || !contentType.includes("application/json")) {
+                    responseClone.text().then(text => {
+                        console.error("Server returned non-JSON response:", text.substring(0, 500) + "...")
+                    })
+                    throw new Error("Server returned non-JSON response. This might indicate a server error.")
+                }
+
+                return response.json()
+            })
+            .then((data) => {
+                if (data.success) {
+                    // Update doctor info
+                    updateDoctorInfo(data.doctor)
+
+                    // Update schedule table
+                    updateScheduleTable(data.doctor)
+
+                    // Update appointments table
+                    updateAppointmentsTable(data.appointments)
+                } else {
+                    alert(data.message || "Failed to load doctor schedule")
+                }
+            })
+            .catch((error) => {
+                console.error("Error:", error)
+
+                // Show a more user-friendly error message
+                const errorMessage = document.getElementById("doctorScheduleTitle")
+                errorMessage.textContent = "Error loading doctor schedule"
+
+                // Clear loading indicators with error messages
+                document.getElementById("doctorInfoCard").innerHTML = `
+                    <div class="p-4 text-center">
+                        <div class="text-red-500 mb-2"><i class="bx bx-error-circle text-2xl"></i></div>
+                        <p class="text-red-500">Failed to load doctor information</p>
+                        <p class="text-sm text-gray-500 mt-2">Please try again later or contact support</p>
+                    </div>
+                `
+                document.getElementById("scheduleTableBody").innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-red-500">
+                            <i class="bx bx-error-circle mr-2"></i>
+                            Failed to load schedule
+                        </td>
+                    </tr>
+                `
+                document.getElementById("appointmentsTableBody").innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-red-500">
+                            <i class="bx bx-error-circle mr-2"></i>
+                            Failed to load appointments
+                        </td>
+                    </tr>
+                `
+
+                alert("An error occurred while loading the doctor schedule. This might be due to a server issue. Please try again later.")
+            })
+    }
+
+    // Function to update doctor info card
+    function updateDoctorInfo(doctor) {
+        const doctorScheduleTitle = document.getElementById("doctorScheduleTitle")
+        doctorScheduleTitle.textContent = `Dr. ${doctor.full_name}'s Schedule`
+
+        const doctorInfoCard = document.getElementById("doctorInfoCard")
+
+        // Prepare profile image HTML
+        let profileHtml = `<div class="doctor-avatar"><i class="bx bx-user"></i></div>`
+        if (doctor.profile) {
+            // Get base URL from meta tag
+            const baseUrl = document.querySelector('meta[name="base-url"]').content
+            profileHtml = `<img src="${baseUrl}/${doctor.profile}" alt="Dr. ${doctor.full_name}" class="doctor-avatar-img">`
+        }
+
+        doctorInfoCard.innerHTML = `
+              <div class="flex items-start mb-6">
+                  ${profileHtml}
+                  <div>
+                      <h3 class="text-lg font-semibold text-gray-900">Dr. ${doctor.full_name}</h3>
+                      <p class="text-primary font-medium capitalize">${doctor.specialization}</p>
+                  </div>
+              </div>
+  
+              <div class="mb-4">
+                  <h4 class="text-sm font-medium text-gray-700 mb-2">Contact Information</h4>
+                  <div class="space-y-2">
+                      <p class="text-sm text-gray-600">
+                          <i class="bx bx-envelope text-gray-400 mr-2"></i> ${doctor.email}
+                      </p>
+                      <p class="text-sm text-gray-600">
+                          <i class="bx bx-phone text-gray-400 mr-2"></i> ${doctor.contact_number}
+                      </p>
+                  </div>
+              </div>
+  
+              <div class="mb-4">
+                  <h4 class="text-sm font-medium text-gray-700 mb-2">Default Location</h4>
+                  <div class="space-y-1">
+                      <p class="text-sm text-gray-600">${doctor.default_location || "Not specified"}</p>
+                  </div>
+              </div>
+  
+              <div class="mb-4">
+                  <h4 class="text-sm font-medium text-gray-700 mb-2">Max Appointments Per Day</h4>
+                  <div class="space-y-1">
+                      <p class="text-sm text-gray-600">${doctor.max_appointments_per_day}</p>
+                  </div>
+              </div>
+          `
+    }
+
+    // Function to update schedule table
+    function updateScheduleTable(doctor) {
+        const scheduleTableBody = document.getElementById("scheduleTableBody")
+        const availableDays = doctor.available_days || []
+        const timeSlots = doctor.time_slots || []
+
+        // Group time slots by day
+        const timeSlotsByDay = {}
+        timeSlots.forEach((slot) => {
+            if (!timeSlotsByDay[slot.day]) {
+                timeSlotsByDay[slot.day] = []
+            }
+            timeSlotsByDay[slot.day].push(slot)
+        })
+
+        // Days of the week in order
+        const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+        // Create rows for each day
+        let tableHtml = ""
+        daysOfWeek.forEach((day) => {
+            const isAvailable = availableDays.includes(day)
+            const dayTimeSlots = timeSlotsByDay[day] || []
+
+            let timeSlotsHtml = "Not Available"
+            let locationHtml = "-"
+            let maxAppointmentsHtml = "-"
+
+            if (isAvailable && dayTimeSlots.length > 0) {
+                timeSlotsHtml = dayTimeSlots
+                    .map((slot) => {
+                        const startTime = formatTime(slot.start_time)
+                        const endTime = formatTime(slot.end_time)
+                        return `<span class="schedule-time">${startTime} - ${endTime}</span>`
+                    })
+                    .join("")
+
+                locationHtml = doctor.default_location || "Not specified"
+                maxAppointmentsHtml = doctor.max_appointments_per_day
+            }
+
+            tableHtml += `
+                  <tr>
+                      <td class="font-medium">${day}</td>
+                      <td>${timeSlotsHtml}</td>
+                      <td>${locationHtml}</td>
+                      <td>${maxAppointmentsHtml}</td>
+                  </tr>
+              `
+        })
+
+        scheduleTableBody.innerHTML = tableHtml
+    }
+
+    // Function to update appointments table
+    function updateAppointmentsTable(appointments) {
+        const appointmentsTableBody = document.getElementById("appointmentsTableBody")
+
+        if (!appointments || appointments.length === 0) {
+            appointmentsTableBody.innerHTML = `
+                  <tr>
+                      <td colspan="5" class="py-4 text-center text-gray-500">No upcoming appointments</td>
+                  </tr>
+              `
+            return
+        }
+
+        let tableHtml = ""
+        appointments.forEach((appointment) => {
+            // Determine status class
+            let statusClass = "bg-blue-100 text-blue-800"
+            if (appointment.status === "confirmed") {
+                statusClass = "bg-green-100 text-green-800"
+            } else if (appointment.status === "cancelled") {
+                statusClass = "bg-red-100 text-red-800"
+            } else if (appointment.status === "completed") {
+                statusClass = "bg-purple-100 text-purple-800"
+            }
+
+            tableHtml += `
+                  <tr>
+                      <td class="py-3 px-4 border-b border-gray-200">${appointment.patient_name}</td>
+                      <td class="py-3 px-4 border-b border-gray-200">${appointment.formatted_date}</td>
+                      <td class="py-3 px-4 border-b border-gray-200">${appointment.formatted_time}</td>
+                      <td class="py-3 px-4 border-b border-gray-200">${appointment.reason || "Not specified"}</td>
+                      <td class="py-3 px-4 border-b border-gray-200">
+                          <span class="px-2 py-1 ${statusClass} rounded-full text-xs font-medium capitalize">${appointment.status}</span>
+                      </td>
+                  </tr>
+              `
+        })
+
+        appointmentsTableBody.innerHTML = tableHtml
+    }
+
+    // Helper function to format time (HH:MM:SS to 12-hour format)
+    function formatTime(timeString) {
+        if (!timeString) return ""
+
+        const [hours, minutes] = timeString.split(":")
+        const hour = Number.parseInt(hours)
+        const ampm = hour >= 12 ? "PM" : "AM"
+        const hour12 = hour % 12 || 12
+
+        return `${hour12}:${minutes} ${ampm}`
     }
 
     // Function to show doctor form view

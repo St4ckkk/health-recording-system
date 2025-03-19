@@ -183,4 +183,49 @@ class Appointment extends Model
             'cancelled' => $cancelledCount
         ];
     }
+
+    /**
+     * Get upcoming appointments for a specific doctor
+     * 
+     * @param int $doctorId The doctor ID
+     * @param int $limit Optional limit of appointments to return
+     * @return array The upcoming appointments
+     */
+    public function getUpcomingAppointmentsByDoctorId($doctorId, $limit = 10)
+    {
+        $this->db->query('
+            SELECT a.*, 
+                   p.first_name as patient_first_name, 
+                   p.last_name as patient_last_name,
+                   p.middle_name as patient_middle_name,
+                   p.suffix as patient_suffix
+            FROM appointments a
+            JOIN patients p ON a.patient_id = p.id
+            WHERE a.doctor_id = :doctor_id
+            AND a.appointment_date >= CURDATE()
+            ORDER BY a.appointment_date ASC, a.appointment_time ASC
+            LIMIT :limit
+        ');
+        
+        $this->db->bind(':doctor_id', $doctorId);
+        $this->db->bind(':limit', $limit);
+        
+        $appointments = $this->db->resultSet();
+        
+        // Format patient names and appointment details
+        foreach ($appointments as &$appointment) {
+            $appointment->patient_name = trim(
+                $appointment->patient_first_name . ' ' . 
+                ($appointment->patient_middle_name ? $appointment->patient_middle_name . ' ' : '') . 
+                $appointment->patient_last_name . 
+                ($appointment->patient_suffix ? ' ' . $appointment->patient_suffix : '')
+            );
+            
+            // Format date and time for display
+            $appointment->formatted_date = date('M j, Y', strtotime($appointment->appointment_date));
+            $appointment->formatted_time = date('g:i A', strtotime($appointment->appointment_time));
+        }
+        
+        return $appointments;
+    }
 }

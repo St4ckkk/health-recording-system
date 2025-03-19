@@ -47,24 +47,14 @@ class ReceptionistController extends Controller
 
     public function appointments()
     {
-        // Get tab parameter from URL, default to 'upcoming'
+
         $tab = isset($_GET['tab']) ? $_GET['tab'] : 'upcoming';
 
-        // Get all appointments with patient and doctor information
         $allAppointments = $this->appointmentModel->getAllAppointments();
-
-        // Debug log to check if appointments are being retrieved
-        error_log("Retrieved " . count($allAppointments) . " total appointments");
-
-        // Get upcoming appointments
         $upcomingAppointments = $this->appointmentModel->getUpcomingAppointments();
-        error_log("Retrieved " . count($upcomingAppointments) . " upcoming appointments");
-
-        // Get past appointments
         $pastAppointments = $this->appointmentModel->getPastAppointments();
-        error_log("Retrieved " . count($pastAppointments) . " past appointments");
 
-        // Determine which appointments to display based on tab
+
         $displayAppointments = $allAppointments;
         if ($tab === 'upcoming') {
             $displayAppointments = $upcomingAppointments;
@@ -141,11 +131,19 @@ class ReceptionistController extends Controller
             $workHoursStart = isset($_POST['workHoursStart']) ? trim($_POST['workHoursStart']) : null;
             $workHoursEnd = isset($_POST['workHoursEnd']) ? trim($_POST['workHoursEnd']) : null;
 
+            // Create validator instance
+            $validator = new \app\core\Validator($_POST);
+
             // Validate required fields
-            if (empty($firstName) || empty($lastName) || empty($specialty) || empty($email) || empty($phone)) {
+            $validator->required(['firstname', 'lastname', 'specialty', 'email', 'phone'])
+                ->email('email')
+                ->minItems('availableDays', 1, 'Please select at least one available day');
+
+            // Check if validation fails
+            if ($validator->fails()) {
                 $this->jsonResponse([
                     'success' => false,
-                    'message' => 'Please fill in all required fields'
+                    'message' => $validator->getFirstError()
                 ]);
                 return;
             }
@@ -153,6 +151,19 @@ class ReceptionistController extends Controller
             // Handle profile image upload
             $profileImage = null;
             if (isset($_FILES['profileImage']) && $_FILES['profileImage']['error'] === UPLOAD_ERR_OK) {
+                // Validate file
+                $fileValidator = new \app\core\Validator(['profileImage' => $_FILES['profileImage']]);
+                $fileValidator->fileSize('profileImage', 2 * 1024 * 1024, 'Profile image must not exceed 2MB')
+                    ->fileType('profileImage', ['image/jpeg', 'image/png', 'image/jpg'], 'Only JPG and PNG files are allowed');
+
+                if ($fileValidator->fails()) {
+                    $this->jsonResponse([
+                        'success' => false,
+                        'message' => $fileValidator->getFirstError()
+                    ]);
+                    return;
+                }
+
                 $profileImage = $this->handleProfileImageUpload($_FILES['profileImage']);
                 if (is_array($profileImage) && isset($profileImage['error'])) {
                     $this->jsonResponse([
@@ -230,18 +241,8 @@ class ReceptionistController extends Controller
             mkdir($uploadsDir, 0777, true);
         }
 
-        // Validate file type
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-        if (!in_array($file['type'], $allowedTypes)) {
-            return ['error' => 'Only JPG and PNG files are allowed'];
-        }
-
-        // Validate file size (max 2MB)
-        if ($file['size'] > 2 * 1024 * 1024) {
-            return ['error' => 'File size exceeds 2MB'];
-        }
-
-        // Generate unique filename
+        // We no longer need these validations as they're handled by the Validator class
+        // Just move the uploaded file
         $filename = uniqid() . '_' . time() . '_' . str_replace(' ', '_', $file['name']);
         $destination = $uploadsDir . '/' . $filename;
 
@@ -299,6 +300,60 @@ class ReceptionistController extends Controller
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Get doctor schedule and upcoming appointments
+     */
+    public function get_doctor_schedule()
+    {
+        // Check if this is an AJAX request
+        if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
+            header('Location: ' . BASE_URL . '/receptionist/doctor_schedules');
+            exit;
+        }
+
+        try {
+            // Get doctor ID from query parameter
+            $doctorId = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+            if ($doctorId <= 0) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Invalid doctor ID'
+                ]);
+                return;
+            }
+
+            // Get doctor schedule
+            $doctor = $this->doctorModel->getDoctorSchedule($doctorId);
+
+            if (!$doctor) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Doctor not found'
+                ]);
+                return;
+            }
+
+            // Get upcoming appointments
+            $appointments = $this->doctorModel->getDoctorUpcomingAppointments($doctorId);
+
+            // Return the data as JSON
+            $this->jsonResponse([
+                'success' => true,
+                'doctor' => $doctor,
+                'appointments' => $appointments
+            ]);
+        } catch (\Exception $e) {
+            // Log the error
+            error_log('Error in get_doctor_schedule: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Server error: ' . $e->getMessage()
+            ]);
         }
     }
 

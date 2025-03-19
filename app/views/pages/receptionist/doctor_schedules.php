@@ -17,9 +17,6 @@
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/flatpickr.min.js"></script>
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/l10n/fr.js"></script>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/doctor-schedules.css">
-    <style>
-
-    </style>
 </head>
 
 <body class="font-body">
@@ -124,7 +121,7 @@
                                                 <h3 class="text-lg font-semibold text-gray-900">Dr.
                                                     <?= htmlspecialchars($doctor->full_name) ?>
                                                 </h3>
-                                                <p class="text-primary font-medium">
+                                                <p class="text-primary font-medium capitalize">
                                                     <?= htmlspecialchars($doctor->specialization) ?>
                                                 </p>
                                             </div>
@@ -175,6 +172,7 @@
                     </div>
                 </section>
 
+
                 <!-- Doctor Schedule Detail View (initially hidden) -->
                 <section id="doctorScheduleView" class="p-6 view-transition hidden-view">
                     <button id="backToDoctorList" class="back-button">
@@ -183,11 +181,7 @@
 
                     <div class="mb-4 flex justify-between items-center">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900" id="doctorScheduleTitle">Dr. Sarah Johnson's
-                                Schedule</h2>
-                            <p class="text-sm text-gray-500" id="doctorScheduleSubtitle">Cardiologist • 15+ years
-                                experience
-                            </p>
+                            <h2 class="text-2xl font-bold text-gray-900" id="doctorScheduleTitle">Loading...</h2>
                         </div>
                         <button id="editScheduleBtn"
                             class="px-4 py-2 bg-primary text-white rounded-md flex items-center">
@@ -197,47 +191,10 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <!-- Doctor Info Card -->
-                        <div class="bg-white shadow-sm rounded-lg p-6 border border-gray-200">
-                            <div class="flex items-start mb-6">
-                                <div class="doctor-avatar">
-                                    <i class="bx bx-user"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-lg font-semibold text-gray-900">Dr. Sarah Johnson</h3>
-                                    <p class="text-primary font-medium">Cardiologist</p>
-                                    <p class="text-sm text-gray-500 mt-1">15+ years experience</p>
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <h4 class="text-sm font-medium text-gray-700 mb-2">Contact Information</h4>
-                                <div class="space-y-2">
-                                    <p class="text-sm text-gray-600">
-                                        <i class="bx bx-envelope text-gray-400 mr-2"></i> <a
-                                            href="/cdn-cgi/l/email-protection" class="__cf_email__"
-                                            data-cfemail="3c4f5d4e5d5412565354524f53527c59445d514c5059125f5351">[email&#160;protected]</a>
-                                    </p>
-                                    <p class="text-sm text-gray-600">
-                                        <i class="bx bx-phone text-gray-400 mr-2"></i> (555) 123-4567
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <h4 class="text-sm font-medium text-gray-700 mb-2">Specializations</h4>
-                                <div class="space-y-1">
-                                    <p class="text-sm text-gray-600">• Interventional Cardiology</p>
-                                    <p class="text-sm text-gray-600">• Echocardiography</p>
-                                    <p class="text-sm text-gray-600">• Heart Failure Management</p>
-                                </div>
-                            </div>
-
-                            <div>
-                                <h4 class="text-sm font-medium text-gray-700 mb-2">Languages</h4>
-                                <div class="space-y-1">
-                                    <p class="text-sm text-gray-600">• English (Native)</p>
-                                    <p class="text-sm text-gray-600">• Spanish (Fluent)</p>
-                                </div>
+                        <div id="doctorInfoCard" class="bg-white shadow-sm rounded-lg p-6 border border-gray-200">
+                            <!-- Content will be dynamically populated -->
+                            <div class="flex justify-center items-center h-40">
+                                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                             </div>
                         </div>
 
@@ -254,57 +211,15 @@
                                         <th>Max Appointments</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="scheduleTableBody">
+                                    <!-- Schedule rows will be dynamically populated -->
                                     <tr>
-                                        <td class="font-medium">Monday</td>
-                                        <td>
-                                            <span class="schedule-time">9:00 AM - 12:00 PM</span>
-                                            <span class="schedule-time">1:00 PM - 5:00 PM</span>
+                                        <td colspan="4" class="text-center py-4">
+                                            <div
+                                                class="animate-spin inline-block w-6 h-6 border-b-2 border-primary rounded-full">
+                                            </div>
+                                            <span class="ml-2">Loading schedule...</span>
                                         </td>
-                                        <td>Main Clinic, Room 101</td>
-                                        <td>15</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-medium">Tuesday</td>
-                                        <td>Not Available</td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-medium">Wednesday</td>
-                                        <td>
-                                            <span class="schedule-time">9:00 AM - 12:00 PM</span>
-                                            <span class="schedule-time">1:00 PM - 5:00 PM</span>
-                                        </td>
-                                        <td>Cardiology Center, Room 305</td>
-                                        <td>12</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-medium">Thursday</td>
-                                        <td>Not Available</td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-medium">Friday</td>
-                                        <td>
-                                            <span class="schedule-time">9:00 AM - 12:00 PM</span>
-                                            <span class="schedule-time">1:00 PM - 5:00 PM</span>
-                                        </td>
-                                        <td>Main Clinic, Room 101</td>
-                                        <td>15</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-medium">Saturday</td>
-                                        <td>Not Available</td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-medium">Sunday</td>
-                                        <td>Not Available</td>
-                                        <td>-</td>
-                                        <td>-</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -326,35 +241,14 @@
                                         <th class="text-left py-2 px-4 bg-gray-50 font-medium text-gray-700">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="appointmentsTableBody">
+                                    <!-- Appointment rows will be dynamically populated -->
                                     <tr>
-                                        <td class="py-3 px-4 border-b border-gray-200">John Smith</td>
-                                        <td class="py-3 px-4 border-b border-gray-200">May 15, 2023</td>
-                                        <td class="py-3 px-4 border-b border-gray-200">10:00 AM</td>
-                                        <td class="py-3 px-4 border-b border-gray-200">Annual checkup</td>
-                                        <td class="py-3 px-4 border-b border-gray-200">
-                                            <span
-                                                class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">Confirmed</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="py-3 px-4 border-b border-gray-200">Emma Wilson</td>
-                                        <td class="py-3 px-4 border-b border-gray-200">May 15, 2023</td>
-                                        <td class="py-3 px-4 border-b border-gray-200">11:30 AM</td>
-                                        <td class="py-3 px-4 border-b border-gray-200">Follow-up</td>
-                                        <td class="py-3 px-4 border-b border-gray-200">
-                                            <span
-                                                class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">Scheduled</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="py-3 px-4 border-b border-gray-200">Robert Johnson</td>
-                                        <td class="py-3 px-4 border-b border-gray-200">May 17, 2023</td>
-                                        <td class="py-3 px-4 border-b border-gray-200">9:15 AM</td>
-                                        <td class="py-3 px-4 border-b border-gray-200">Consultation</td>
-                                        <td class="py-3 px-4 border-b border-gray-200">
-                                            <span
-                                                class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">Scheduled</span>
+                                        <td colspan="5" class="text-center py-4">
+                                            <div
+                                                class="animate-spin inline-block w-6 h-6 border-b-2 border-primary rounded-full">
+                                            </div>
+                                            <span class="ml-2">Loading appointments...</span>
                                         </td>
                                     </tr>
                                 </tbody>
