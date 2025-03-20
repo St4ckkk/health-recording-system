@@ -440,7 +440,7 @@
                         <div class="doctor-card-header">
                         </div>
                         <!-- Card Body -->
-                        <div class="p-6">
+                        <div class="p-6 flex flex-col h-full relative pb-16">
                             <div class="flex flex-col items-start">
                                 <div class="avatar-wrapper">
                                     <div class="avatar w-20 h-20">
@@ -472,7 +472,7 @@
                                         <span>Not Available Today</span>
                                     <?php endif; ?>
                                 </div>
-                                <a href="<?= BASE_URL ?>/appointment/schedule/<?= $doctor->id ?>"
+                                <a href="<?= BASE_URL ?>/appointment/scheduling?doctor_id=<?= $doctor->id ?>"
                                     class="schedule-btn w-full text-center">
                                     Schedule Appointment
                                 </a>
@@ -528,7 +528,7 @@
                                         </div>
                                     </div>
                                     <div class="mt-2 sm:mt-0 flex flex-wrap gap-2 items-center">
-                                        <a href="<?= BASE_URL ?>/appointment/schedule/<?= $doctor->id ?>" class="schedule-btn">
+                                        <a href="<?= BASE_URL ?>/appointment/scheduling?doctor_id=<?= $doctor->id ?>" class="schedule-btn">
                                             Schedule
                                         </a>
                                     </div>
@@ -567,3 +567,4 @@
 </body>
 
 </html>
+

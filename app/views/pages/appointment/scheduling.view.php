@@ -156,11 +156,26 @@
                 <div class="mt-16">
                     <div class="flex items-center mb-4">
                         <div class="avatar w-16 h-16 mr-4 shrink-0">
-                            <i class="bx bx-user text-2xl"></i>
+                            <?php if (!empty($doctor->profile)): ?>
+                                <img src="<?= BASE_URL . '/' . $doctor->profile ?>"
+                                    class="w-full h-full object-cover rounded-full"
+                                    alt="Dr. <?= $doctor->full_name ?>">
+                            <?php else: ?>
+                                <i class="bx bx-user text-2xl"></i>
+                            <?php endif; ?>
                         </div>
                         <div>
-                            <h2 class="text-xl font-bold text-gray-800">Dr. Abdul</h2>
-                            <h1 class="text-gray-500 text-sm">Pulmonologist</h1>
+                            <h2 class="text-xl font-bold text-gray-800">Dr. <?= $doctor->full_name ?></h2>
+                            <h1 class="text-gray-500 text-sm"><?= $doctor->specialization ?></h1>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h3 class="text-sm font-medium text-gray-700 mb-2">Available Days</h3>
+                        <div class="flex flex-wrap gap-1">
+                            <?php foreach ($doctor->available_days as $day): ?>
+                                <span class="inline-block px-2 py-1 bg-primary-light text-primary text-xs rounded-full"><?= $day ?></span>
+                            <?php endforeach; ?>
                         </div>
                     </div>
                 </div>
@@ -181,6 +196,13 @@
 
         <!-- Right panel - Calendar and Form -->
         <div class="w-full md:w-3/5 p-8 relative border border-gray-200">
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 fade-in">
+                    <p><?= $_SESSION['error'] ?></p>
+                </div>
+                <?php unset($_SESSION['error']); ?>
+            <?php endif; ?>
+
             <!-- Step 1: Calendar View -->
             <div id="calendarView" class="block fade-in">
                 <div class="flex flex-col md:flex-row md:space-x-8">
@@ -224,22 +246,12 @@
                     <div id="timeSlotContainer" class="hidden md:w-64 mt-8 md:mt-16 fade-in">
                         <h3 id="selectedDate" class="text-lg font-semibold text-gray-800 mb-4"></h3>
 
-                        <div class="space-y-2">
-                            <button class="time-slot w-full p-3 text-center" data-time="2:00pm">
-                                2:00pm
-                            </button>
-                            <button class="time-slot w-full p-3 text-center" data-time="2:30pm">
-                                2:30pm
-                            </button>
-                            <button class="time-slot w-full p-3 text-center" data-time="3:00pm">
-                                3:00pm
-                            </button>
-                            <button class="time-slot w-full p-3 text-center" data-time="3:30pm">
-                                3:30pm
-                            </button>
-                            <button class="time-slot w-full p-3 text-center" data-time="4:00pm">
-                                4:00pm
-                            </button>
+                        <div id="timeSlots" class="space-y-2">
+                            <!-- Time slots will be dynamically populated -->
+                            <div class="text-center py-4 text-gray-500">
+                                <i class="bx bx-time-five text-2xl mb-2"></i>
+                                <p>Select a date to view available time slots</p>
+                            </div>
                         </div>
 
                         <!-- Next button - Initially hidden -->
@@ -261,7 +273,12 @@
                 </div>
 
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Patient Information</h2>
-                <form id="patientForm" class="space-y-6">
+                <form id="patientForm" action="<?= BASE_URL ?>/appointment/book" method="POST" class="space-y-6">
+                    <!-- Hidden fields for appointment data -->
+                    <input type="hidden" id="doctor_id" name="doctor_id" value="<?= $doctor->id ?>">
+                    <input type="hidden" id="appointment_date" name="appointment_date">
+                    <input type="hidden" id="appointment_time" name="appointment_time">
+                    
                     <!-- Patient Name Section -->
                     <div class="space-y-4">
                         <h3 class="section-title">Patient Name</h3>
@@ -423,61 +440,43 @@
             const prevMonthButton = document.getElementById('prevMonth');
             const nextMonthButton = document.getElementById('nextMonth');
             const timeSlotContainer = document.getElementById('timeSlotContainer');
+            const timeSlotsContainer = document.getElementById('timeSlots');
             const selectedDateElement = document.getElementById('selectedDate');
-            const timeSlotButtons = document.querySelectorAll('.time-slot');
             const nextButton = document.getElementById('nextButton');
 
             // Form view elements
             const calendarView = document.getElementById('calendarView');
             const patientFormView = document.getElementById('patientFormView');
             const backToCalendarButton = document.getElementById('backToCalendar');
-            const formDate = document.getElementById('formDate');
-            const formTime = document.getElementById('formTime');
             const isGuardianCheckbox = document.getElementById('isGuardian');
             const guardianFields = document.getElementById('guardianFields');
             const patientForm = document.getElementById('patientForm');
+            
+            // Hidden form fields
+            const appointmentDateField = document.getElementById('appointment_date');
+            const appointmentTimeField = document.getElementById('appointment_time');
 
             // Selected appointment time display elements
             const selectedAppointmentTime = document.getElementById('selectedAppointmentTime');
             const appointmentTimeRange = document.getElementById('appointmentTimeRange');
             const appointmentFullDate = document.getElementById('appointmentFullDate');
 
-            // Mock data for available dates - adjusted to include current year/month
-            // Format: { year: { month: [days] } }
-            const availableDates = {};
-
-            // Add current year if not present
-            if (!availableDates[currentYear]) {
-                availableDates[currentYear] = {};
-            }
-
-            // Add some sample available dates for current month and next month
-            if (!availableDates[currentYear][currentMonth]) {
-                // Get current day
-                const today = currentDate.getDate();
-                // Add some available dates starting from tomorrow
-                const availableDaysThisMonth = [];
-                for (let i = today + 1; i <= Math.min(today + 15, 28); i += 2) {
-                    availableDaysThisMonth.push(i);
+            // Doctor's available days from PHP
+            const doctorAvailableDays = <?= json_encode($doctor->available_days) ?>;
+            
+            // Convert day names to day numbers (0 = Sunday, 1 = Monday, etc.)
+            const availableDayNumbers = [];
+            doctorAvailableDays.forEach(day => {
+                switch (day) {
+                    case 'Monday': availableDayNumbers.push(1); break;
+                    case 'Tuesday': availableDayNumbers.push(2); break;
+                    case 'Wednesday': availableDayNumbers.push(3); break;
+                    case 'Thursday': availableDayNumbers.push(4); break;
+                    case 'Friday': availableDayNumbers.push(5); break;
+                    case 'Saturday': availableDayNumbers.push(6); break;
+                    case 'Sunday': availableDayNumbers.push(0); break;
                 }
-                availableDates[currentYear][currentMonth] = availableDaysThisMonth;
-            }
-
-            // Add some dates for next month
-            const nextMonth = currentMonth + 1 > 11 ? 0 : currentMonth + 1;
-            const nextMonthYear = nextMonth === 0 ? currentYear + 1 : currentYear;
-
-            if (!availableDates[nextMonthYear]) {
-                availableDates[nextMonthYear] = {};
-            }
-
-            if (!availableDates[nextMonthYear][nextMonth]) {
-                const availableDaysNextMonth = [];
-                for (let i = 1; i <= 15; i += 2) {
-                    availableDaysNextMonth.push(i);
-                }
-                availableDates[nextMonthYear][nextMonth] = availableDaysNextMonth;
-            }
+            });
 
             // Initialize calendar
             generateCalendar(currentMonth, currentYear);
@@ -512,27 +511,30 @@
                 nextButton.classList.add('hidden');
             });
 
-            // Time slot selection handling
-            timeSlotButtons.forEach(button => {
-                button.addEventListener('click', function () {
+            // Function to handle time slot selection
+            function handleTimeSlotSelection(e) {
+                if (e.target.classList.contains('time-slot')) {
                     // Remove selection from all time slots
-                    timeSlotButtons.forEach(btn => {
-                        btn.classList.remove('selected');
+                    document.querySelectorAll('.time-slot').forEach(slot => {
+                        slot.classList.remove('selected');
                     });
 
                     // Add selection to clicked time slot
-                    this.classList.add('selected');
+                    e.target.classList.add('selected');
 
                     // Store selected time
-                    selectedTime = this.getAttribute('data-time');
+                    selectedTime = e.target.getAttribute('data-time');
+                    
+                    // Set hidden form field
+                    appointmentTimeField.value = selectedTime;
 
                     // Show next button
                     nextButton.classList.remove('hidden');
 
                     // Update appointment time display
                     updateAppointmentTimeDisplay();
-                });
-            });
+                }
+            }
 
             // Function to update appointment time display
             function updateAppointmentTimeDisplay() {
@@ -544,37 +546,17 @@
                     let endTime = "";
 
                     // Parse the time string to get hours and minutes
-                    const timeMatch = startTime.match(/(\d+):(\d+)([ap]m)/);
-                    if (timeMatch) {
-                        const [_, hours, minutes, ampm] = timeMatch;
-                        const hour = parseInt(hours);
-                        const minute = parseInt(minutes);
+                    const [hours, minutes] = startTime.split(':');
+                    const hour = parseInt(hours);
+                    const minute = parseInt(minutes);
 
-                        // Create a new date object for end time calculation
-                        const endDate = new Date(selectedDate);
+                    // Create a new date object for end time calculation
+                    const endDate = new Date(selectedDate);
+                    endDate.setHours(hour);
+                    endDate.setMinutes(minute + 15);
 
-                        // Set hours (convert to 24-hour format if needed)
-                        if (ampm.toLowerCase() === 'pm' && hour < 12) {
-                            endDate.setHours(hour + 12);
-                        } else if (ampm.toLowerCase() === 'am' && hour === 12) {
-                            endDate.setHours(0);
-                        } else {
-                            endDate.setHours(hour);
-                        }
-
-                        // Set minutes and add 15 minutes
-                        endDate.setMinutes(minute + 15);
-
-                        // Format the end time
-                        endTime = endDate.toLocaleTimeString('en-US', {
-                            hour: 'numeric',
-                            minute: '2-digit',
-                            hour12: true
-                        }).toLowerCase();
-                    } else {
-                        // Fallback if time parsing fails
-                        endTime = "15 minutes later";
-                    }
+                    // Format the end time
+                    endTime = endDate.toTimeString().substring(0, 5);
 
                     // Format the full date
                     const formattedDate = selectedDate.toLocaleDateString('en-US', {
@@ -584,11 +566,24 @@
                         year: 'numeric'
                     });
 
+                    // Format times for display
+                    const displayStartTime = formatTimeForDisplay(startTime);
+                    const displayEndTime = formatTimeForDisplay(endTime);
+
                     // Update the display
-                    appointmentTimeRange.textContent = `${startTime} - ${endTime}`;
+                    appointmentTimeRange.textContent = `${displayStartTime} - ${displayEndTime}`;
                     appointmentFullDate.textContent = formattedDate;
                     selectedAppointmentTime.classList.remove('hidden');
                 }
+            }
+
+            // Helper function to format time for display (HH:MM to 12-hour format)
+            function formatTimeForDisplay(timeString) {
+                const [hours, minutes] = timeString.split(':');
+                const hour = parseInt(hours);
+                const ampm = hour >= 12 ? 'PM' : 'AM';
+                const hour12 = hour % 12 || 12;
+                return `${hour12}:${minutes} ${ampm}`;
             }
 
             // Next button click - Show patient form
@@ -598,18 +593,13 @@
                     calendarView.classList.add('hidden');
                     patientFormView.classList.remove('hidden');
 
-                    // Set appointment date and time in the form
-                    const selectedDate = new Date(selectedYear, selectedMonth, selectedDay);
-                    const formattedDate = selectedDate.toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        month: 'long',
-                        day: 'numeric',
-                        year: 'numeric'
-                    });
-
-                    // Update the form fields
-                    formDate.textContent = formattedDate;
-                    formTime.textContent = selectedTime;
+                    // Set appointment date in the form
+                    // FIX: Use local date formatting instead of ISO to prevent timezone issues
+                    const year = selectedYear;
+                    const month = String(selectedMonth + 1).padStart(2, '0');
+                    const day = String(selectedDay).padStart(2, '0');
+                    const formattedDate = `${year}-${month}-${day}`;
+                    appointmentDateField.value = formattedDate;
                 }
             });
 
@@ -632,53 +622,76 @@
                 }
             });
 
-            // Form submission
-            patientForm.addEventListener('submit', function (e) {
-                e.preventDefault();
-
-                // Collect form data
-                const formData = {
-                    // Patient details
-                    firstName: document.getElementById('firstName').value,
-                    middleName: document.getElementById('middleName').value,
-                    surname: document.getElementById('surname').value,
-                    suffix: document.getElementById('suffix').value,
-
-                    // Appointment details
-                    appointmentType: document.getElementById('appointmentType').value,
-                    appointmentReason: document.getElementById('appointmentReason').value,
-                    appointmentDate: `${selectedYear}-${selectedMonth + 1}-${selectedDay}`,
-                    appointmentTime: selectedTime,
-
-                    // Patient information
-                    dateOfBirth: document.getElementById('dateOfBirth').value,
-                    legalSex: document.getElementById('legalSex').value,
-                    email: document.getElementById('email').value,
-                    contactNumber: document.getElementById('contactNumber').value,
-                    address: document.getElementById('address').value,
-
-                    // Guardian information (if applicable)
-                    isGuardian: document.getElementById('isGuardian').checked,
-                    guardianName: document.getElementById('isGuardian').checked ? document.getElementById('guardianName').value : '',
-                    relationship: document.getElementById('isGuardian').checked ? document.getElementById('relationship').value : ''
-                };
-
-                // Here you would typically send the form data to your server
-                console.log('Appointment data:', formData);
-
-                // For demo purposes
-                alert('Appointment submitted successfully!');
-
-                // Reset form and go back to calendar
-                this.reset();
-                guardianFields.classList.add('hidden');
-                patientFormView.classList.add('hidden');
-                calendarView.classList.remove('hidden');
-
-                // Reset selected time
-                selectedTime = null;
-                selectedAppointmentTime.classList.add('hidden');
-            });
+            // Function to fetch available time slots for a selected date
+            function fetchAvailableTimeSlots(date) {
+                const doctorId = <?= $doctor->id ?>;
+                const baseUrl = '<?= BASE_URL ?>';
+                
+                // FIX: Use local date formatting instead of ISO to prevent timezone issues
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const formattedDate = `${year}-${month}-${day}`;
+                
+                // Show loading state
+                timeSlotsContainer.innerHTML = `
+                    <div class="text-center py-4">
+                        <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                        <p class="mt-2 text-gray-600">Loading available times...</p>
+                    </div>
+                `;
+                
+                // Add console log to debug the request
+                console.log(`Fetching time slots for doctor ${doctorId} on ${formattedDate}`);
+                
+                // Fetch time slots from the server using query parameters
+                fetch(`${baseUrl}/appointment/get-available-time-slots?doctor_id=${doctorId}&date=${formattedDate}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Add console log to debug the response
+                    console.log('Time slots response:', data);
+                    
+                    if (data.success && data.time_slots && data.time_slots.length > 0) {
+                        // Populate time slots
+                        timeSlotsContainer.innerHTML = '';
+                        data.time_slots.forEach(slot => {
+                            const timeSlotButton = document.createElement('button');
+                            timeSlotButton.className = 'time-slot w-full p-3 text-center';
+                            timeSlotButton.setAttribute('data-time', slot.time);
+                            timeSlotButton.textContent = slot.formatted_time;
+                            timeSlotButton.addEventListener('click', handleTimeSlotSelection);
+                            timeSlotsContainer.appendChild(timeSlotButton);
+                        });
+                    } else {
+                        // No time slots available
+                        timeSlotsContainer.innerHTML = `
+                            <div class="text-center py-4 text-gray-500">
+                                <i class="bx bx-time-five text-2xl mb-2"></i>
+                                <p>No available time slots for this date</p>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching time slots:', error);
+                    timeSlotsContainer.innerHTML = `
+                        <div class="text-center py-4 text-red-500">
+                            <i class="bx bx-error-circle text-2xl mb-2"></i>
+                            <p>Failed to load time slots</p>
+                        </div>
+                    `;
+                });
+            }
 
             // Function to generate calendar
             function generateCalendar(month, year) {
@@ -701,6 +714,12 @@
                     calendarGrid.appendChild(emptyCell);
                 }
 
+                // Get today's date for comparison
+                const today = new Date();
+                const todayDate = today.getDate();
+                const todayMonth = today.getMonth();
+                const todayYear = today.getFullYear();
+
                 // Add days of the month
                 for (let day = 1; day <= daysInMonth; day++) {
                     const dayCell = document.createElement('div');
@@ -709,8 +728,16 @@
                     const dayButton = document.createElement('button');
                     dayButton.textContent = day;
 
-                    // Check if this date is available
-                    const isAvailable = availableDates[year]?.[month]?.includes(day) || false;
+                    // Check if this date is in the past
+                    const isPast = (year < todayYear) || 
+                                  (year === todayYear && month < todayMonth) || 
+                                  (year === todayYear && month === todayMonth && day < todayDate);
+                    
+                    // Check if this day of the week is available for the doctor
+                    const date = new Date(year, month, day);
+                    const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+                    const isAvailable = availableDayNumbers.includes(dayOfWeek) && !isPast;
+                    
                     const isSelected = selectedDay === day && selectedMonth === month && selectedYear === year;
 
                     // Set appropriate classes
@@ -748,10 +775,16 @@
                             });
                             selectedDateElement.textContent = formattedDate;
 
+                            // Fetch available time slots for this date
+                            fetchAvailableTimeSlots(selectedDate);
+                            console.log("Debug info:");
+                            console.log("Selected date:", selectedDate);
+                            console.log("Day of week:", selectedDate.getDay());
+                            console.log("Day name:", ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][selectedDate.getDay()]);
+                            console.log("Available day numbers:", availableDayNumbers);
+                            console.log("Is day available:", availableDayNumbers.includes(selectedDate.getDay()));
+
                             // Reset time slot selections
-                            timeSlotButtons.forEach(btn => {
-                                btn.classList.remove('selected');
-                            });
                             selectedTime = null;
                             nextButton.classList.add('hidden');
 
@@ -771,7 +804,10 @@
 
                 dayButtons.forEach(button => {
                     const day = parseInt(button.textContent);
-                    const isAvailable = availableDates[currentYear]?.[currentMonth]?.includes(day) || false;
+                    
+                    // Check if this day is available (has the 'available' class)
+                    const isAvailable = button.classList.contains('available');
+                    
                     const isSelected = selectedDay === day && selectedMonth === currentMonth && selectedYear === currentYear;
 
                     // Reset classes
@@ -799,3 +835,4 @@
 </body>
 
 </html>
+
