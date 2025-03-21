@@ -106,8 +106,8 @@
                                     <i class="bx bx-user text-2xl"></i>
                                 </div>
                                 <div>
-                                    <h3 class="font-semibold text-gray-800" id="doctorName">Dr. Sarah Johnson</h3>
-                                    <p class="text-gray-600 text-sm" id="specialty">Cardiologist</p>
+                                    <h3 class="font-semibold text-gray-800" id="doctorName"></h3>
+                                    <p class="text-gray-600 text-sm" id="specialty"></p>
                                 </div>
                             </div>
 
@@ -118,8 +118,8 @@
                                         <i class="bx bx-calendar"></i>
                                     </div>
                                     <div class="info-card-label">Date & Time</div>
-                                    <div class="info-card-value" id="dateTime">May 15, 2023 at 10:00 AM</div>
-                                    <div class="text-sm font-bold text-primary mt-1" id="timeOnly">10:00 AM</div>
+                                    <div class="info-card-value" id="dateTime"></div>
+                                    <div class="text-sm font-bold text-primary mt-1" id="timeOnly"></div>
                                 </div>
 
                                 <div class="info-card">
@@ -127,317 +127,339 @@
                                         <i class="bx bx-map"></i>
                                     </div>
                                     <div class="info-card-label">Location</div>
-                                    <div class="info-card-value" id="location">Main Clinic, Room 101</div>
+                                    <div class="info-card-value" id="location"></div>
                                 </div>
 
                                 <div class="info-card">
                                     <div class="info-card-icon">
                                         <i class="bx bx-clipboard"></i>
                                     </div>
-                                    <div class="info-card-label">Reason for Visit</div>
-                                    <div class="info-card-value" id="reason">Annual checkup</div>
+                                    <div class="info-card-label"></div>
+                                    <div class="info-card-value" id="reason"></div>
                                 </div>
 
                                 <div class="info-card">
                                     <div class="info-card-icon">
                                         <i class="bx bx-time"></i>
                                     </div>
-                                    <div class="info-card-label">Scheduled On</div>
-                                    <div class="info-card-value" id="scheduledDate">May 10, 2023</div>
+                                    <div class="info-card-label"></div>
+                                    <div class="info-card-value" id="scheduledDate" </div>
+                                    </div>
+                                </div>
+
+                                <!-- Timeline -->
+                                <div class="mt-6">
+                                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Appointment Status</h3>
+                                    <div class="timeline">
+                                        <div class="timeline-item">
+                                            <div class="timeline-marker completed">
+                                                <i class="bx bx-check text-xs"></i>
+                                            </div>
+                                            <div class="timeline-content">
+                                                <h4 class="text-sm font-medium text-gray-800">Appointment Scheduled</h4>
+                                                <p class="text-xs text-gray-500" id="scheduledDateTimeline">May 10, 2023
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item">
+                                            <div class="timeline-marker completed" id="confirmedMarker">
+                                                <i class="bx bx-check text-xs"></i>
+                                            </div>
+                                            <div class="timeline-content">
+                                                <h4 class="text-sm font-medium text-gray-800">Appointment Confirmed</h4>
+                                                <p class="text-xs text-gray-500" id="confirmedDate">May 12, 2023</p>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item">
+                                            <div class="timeline-marker current" id="checkInMarker"></div>
+                                            <div class="timeline-content">
+                                                <h4 class="text-sm font-medium text-gray-800">Check-in</h4>
+                                                <p class="text-xs text-gray-500" id="checkInDate">Pending</p>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item">
+                                            <div class="timeline-marker pending" id="completedMarker"></div>
+                                            <div class="timeline-content">
+                                                <h4 class="text-sm font-medium text-gray-800" id="completedLabel">
+                                                    Appointment Completed</h4>
+                                                <p class="text-xs text-gray-500" id="completedDate">Pending</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Timeline -->
-                            <div class="mt-6">
-                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Appointment Status</h3>
-                                <div class="timeline">
-                                    <div class="timeline-item">
-                                        <div class="timeline-marker completed">
-                                            <i class="bx bx-check text-xs"></i>
-                                        </div>
-                                        <div class="timeline-content">
-                                            <h4 class="text-sm font-medium text-gray-800">Appointment Scheduled</h4>
-                                            <p class="text-xs text-gray-500" id="scheduledDateTimeline">May 10, 2023</p>
-                                        </div>
-                                    </div>
-                                    <div class="timeline-item">
-                                        <div class="timeline-marker completed" id="confirmedMarker">
-                                            <i class="bx bx-check text-xs"></i>
-                                        </div>
-                                        <div class="timeline-content">
-                                            <h4 class="text-sm font-medium text-gray-800">Appointment Confirmed</h4>
-                                            <p class="text-xs text-gray-500" id="confirmedDate">May 12, 2023</p>
-                                        </div>
-                                    </div>
-                                    <div class="timeline-item">
-                                        <div class="timeline-marker current" id="checkInMarker"></div>
-                                        <div class="timeline-content">
-                                            <h4 class="text-sm font-medium text-gray-800">Check-in</h4>
-                                            <p class="text-xs text-gray-500" id="checkInDate">Pending</p>
-                                        </div>
-                                    </div>
-                                    <div class="timeline-item">
-                                        <div class="timeline-marker pending" id="completedMarker"></div>
-                                        <div class="timeline-content">
-                                            <h4 class="text-sm font-medium text-gray-800">Appointment Completed</h4>
-                                            <p class="text-xs text-gray-500" id="completedDate">Pending</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="appointment-card-footer">
-                            <div class="flex gap-2">
-                                <button class="btn-secondary" id="rescheduleButton">
-                                    <i class="bx bx-calendar-edit mr-2"></i> Reschedule
-                                </button>
-                                <div class="tooltip">
-                                    <button class="btn-danger" id="cancelButton">
-                                        <i class="bx bx-x-circle mr-2"></i> Cancel
+                            <div class="appointment-card-footer">
+                                <div class="flex gap-2">
+                                    <button class="btn-secondary" id="rescheduleButton">
+                                        <i class="bx bx-calendar-edit mr-2"></i> Reschedule
                                     </button>
-                                    <span class="tooltip-text" id="cancelTooltip">You can only cancel within 30 minutes
-                                        of scheduling</span>
+                                    <div class="tooltip">
+                                        <button class="btn-danger" id="cancelButton">
+                                            <i class="bx bx-x-circle mr-2"></i> Cancel
+                                        </button>
+                                        <span class="tooltip-text" id="cancelTooltip">You can only cancel within 30
+                                            minutes
+                                            of scheduling</span>
+                                    </div>
+                                </div>
+                                <button class="print-btn" id="printButton">
+                                    <i class="bx bx-printer"></i> Print Details
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Preparation Instructions -->
+                        <div class="preparation-list">
+                            <h3 class="preparation-list-title">Preparation Instructions</h3>
+                            <div class="preparation-item">
+                                <div class="preparation-item-icon">
+                                    <i class="bx bx-id-card text-xs"></i>
+                                </div>
+                                <div class="preparation-item-text">Bring your insurance card and photo ID</div>
+                            </div>
+                            <div class="preparation-item">
+                                <div class="preparation-item-icon">
+                                    <i class="bx bx-time text-xs"></i>
+                                </div>
+                                <div class="preparation-item-text">Arrive 15 minutes before your appointment time</div>
+                            </div>
+                            <div class="preparation-item">
+                                <div class="preparation-item-icon">
+                                    <i class="bx bx-capsule text-xs"></i>
+                                </div>
+                                <div class="preparation-item-text">Bring a list of all current medications</div>
+                            </div>
+                            <div class="preparation-item">
+                                <div class="preparation-item-icon">
+                                    <i class="bx bx-food-menu text-xs"></i>
+                                </div>
+                                <div class="preparation-item-text" id="specialInstructions">Fast for 8 hours before your
+                                    appointment (water is allowed)</div>
+                            </div>
+                            <div class="preparation-item">
+                                <div class="preparation-item-icon">
+                                    <i class="bx bx-closet text-xs"></i>
+                                </div>
+                                <div class="preparation-item-text">Wear comfortable clothing</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reschedule Modal -->
+        <div class="modal-overlay" id="rescheduleModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 class="modal-title">Select a Date & Time</h3>
+                    <button class="modal-close" id="closeRescheduleModal">
+                        <i class="bx bx-x"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="calendar-date-picker">
+                        <!-- Calendar Section -->
+                        <div class="calendar-section">
+                            <div class="calendar-month-nav">
+                                <button class="calendar-nav-btn" id="prevMonth">
+                                    <i class="bx bx-chevron-left"></i>
+                                </button>
+                                <div class="calendar-month" id="currentMonth">March 2025</div>
+                                <button class="calendar-nav-btn" id="nextMonth">
+                                    <i class="bx bx-chevron-right"></i>
+                                </button>
+                            </div>
+                            <div class="calendar-grid">
+                                <div class="calendar-day-header">SUN</div>
+                                <div class="calendar-day-header">MON</div>
+                                <div class="calendar-day-header">TUE</div>
+                                <div class="calendar-day-header">WED</div>
+                                <div class="calendar-day-header">THU</div>
+                                <div class="calendar-day-header">FRI</div>
+                                <div class="calendar-day-header">SAT</div>
+                                <!-- Calendar days will be generated by JavaScript -->
+                                <div id="calendarDays" class="calendar-grid-days"></div>
+                            </div>
+                        </div>
+
+                        <!-- Time Slots Section -->
+                        <div class="time-section">
+                            <div class="time-slots-container" id="timeSlotsContainer">
+                                <h4 class="time-slots-title" id="selectedDateDisplay">Tuesday, March 18</h4>
+                                <div class="time-slots-list" id="timeSlots">
+                                    <!-- Time slots will be generated by JavaScript -->
+                                    <div class="time-slot">2:00pm</div>
+                                    <div class="time-slot">2:30pm</div>
+                                    <div class="time-slot">3:00pm</div>
+                                    <div class="time-slot">3:30pm</div>
+                                    <div class="time-slot selected">4:00pm</div>
                                 </div>
                             </div>
-                            <button class="print-btn" id="printButton">
-                                <i class="bx bx-printer"></i> Print Details
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Preparation Instructions -->
-                    <div class="preparation-list">
-                        <h3 class="preparation-list-title">Preparation Instructions</h3>
-                        <div class="preparation-item">
-                            <div class="preparation-item-icon">
-                                <i class="bx bx-id-card text-xs"></i>
-                            </div>
-                            <div class="preparation-item-text">Bring your insurance card and photo ID</div>
-                        </div>
-                        <div class="preparation-item">
-                            <div class="preparation-item-icon">
-                                <i class="bx bx-time text-xs"></i>
-                            </div>
-                            <div class="preparation-item-text">Arrive 15 minutes before your appointment time</div>
-                        </div>
-                        <div class="preparation-item">
-                            <div class="preparation-item-icon">
-                                <i class="bx bx-capsule text-xs"></i>
-                            </div>
-                            <div class="preparation-item-text">Bring a list of all current medications</div>
-                        </div>
-                        <div class="preparation-item">
-                            <div class="preparation-item-icon">
-                                <i class="bx bx-food-menu text-xs"></i>
-                            </div>
-                            <div class="preparation-item-text" id="specialInstructions">Fast for 8 hours before your
-                                appointment (water is allowed)</div>
-                        </div>
-                        <div class="preparation-item">
-                            <div class="preparation-item-icon">
-                                <i class="bx bx-closet text-xs"></i>
-                            </div>
-                            <div class="preparation-item-text">Wear comfortable clothing</div>
+                            <button class="btn-next" id="confirmReschedule">Next</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Reschedule Modal -->
-    <div class="modal-overlay" id="rescheduleModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">Select a Date & Time</h3>
-                <button class="modal-close" id="closeRescheduleModal">
-                    <i class="bx bx-x"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="calendar-date-picker">
-                    <!-- Calendar Section -->
-                    <div class="calendar-section">
-                        <div class="calendar-month-nav">
-                            <button class="calendar-nav-btn" id="prevMonth">
-                                <i class="bx bx-chevron-left"></i>
-                            </button>
-                            <div class="calendar-month" id="currentMonth">March 2025</div>
-                            <button class="calendar-nav-btn" id="nextMonth">
-                                <i class="bx bx-chevron-right"></i>
-                            </button>
-                        </div>
-                        <div class="calendar-grid">
-                            <div class="calendar-day-header">SUN</div>
-                            <div class="calendar-day-header">MON</div>
-                            <div class="calendar-day-header">TUE</div>
-                            <div class="calendar-day-header">WED</div>
-                            <div class="calendar-day-header">THU</div>
-                            <div class="calendar-day-header">FRI</div>
-                            <div class="calendar-day-header">SAT</div>
-                            <!-- Calendar days will be generated by JavaScript -->
-                            <div id="calendarDays" class="calendar-grid-days"></div>
-                        </div>
+        <!-- Reschedule Confirmation Modal -->
+        <div class="modal-overlay confirmation-modal" id="rescheduleConfirmModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 class="modal-title">Confirm Reschedule</h3>
+                    <button class="modal-close" id="closeRescheduleConfirmModal">
+                        <i class="bx bx-x"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="confirmation-icon warning">
+                        <i class="bx bx-calendar-exclamation"></i>
                     </div>
-
-                    <!-- Time Slots Section -->
-                    <div class="time-section">
-                        <div class="time-slots-container" id="timeSlotsContainer">
-                            <h4 class="time-slots-title" id="selectedDateDisplay">Tuesday, March 18</h4>
-                            <div class="time-slots-list" id="timeSlots">
-                                <!-- Time slots will be generated by JavaScript -->
-                                <div class="time-slot">2:00pm</div>
-                                <div class="time-slot">2:30pm</div>
-                                <div class="time-slot">3:00pm</div>
-                                <div class="time-slot">3:30pm</div>
-                                <div class="time-slot selected">4:00pm</div>
-                            </div>
-                        </div>
-                        <button class="btn-next" id="confirmReschedule">Next</button>
+                    <h4 class="confirmation-title">Are you sure you want to reschedule?</h4>
+                    <p class="confirmation-message">You are about to reschedule your appointment to:</p>
+                    <div class="p-4 my-3 bg-gray-50 rounded-lg text-center">
+                        <p class="font-bold text-lg text-primary" id="newAppointmentDate">Tuesday, March 18, 2025</p>
+                        <p class="font-medium text-gray-700" id="newAppointmentTime">4:00 PM</p>
                     </div>
+                    <p class="text-sm text-gray-600 mt-2">Your current appointment will be cancelled and a new
+                        appointment
+                        will be created.</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" id="cancelRescheduleConfirmation">No, Keep Current
+                        Appointment</button>
+                    <button class="btn-primary" id="confirmRescheduleConfirmation">Yes, Reschedule Appointment</button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Reschedule Confirmation Modal -->
-    <div class="modal-overlay confirmation-modal" id="rescheduleConfirmModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">Confirm Reschedule</h3>
-                <button class="modal-close" id="closeRescheduleConfirmModal">
-                    <i class="bx bx-x"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="confirmation-icon warning">
-                    <i class="bx bx-calendar-exclamation"></i>
+        <!-- Cancel Confirmation Modal -->
+        <div class="modal-overlay confirmation-modal" id="cancelConfirmModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 class="modal-title">Cancel Appointment</h3>
+                    <button class="modal-close" id="closeCancelModal">
+                        <i class="bx bx-x"></i>
+                    </button>
                 </div>
-                <h4 class="confirmation-title">Are you sure you want to reschedule?</h4>
-                <p class="confirmation-message">You are about to reschedule your appointment to:</p>
-                <div class="p-4 my-3 bg-gray-50 rounded-lg text-center">
-                    <p class="font-bold text-lg text-primary" id="newAppointmentDate">Tuesday, March 18, 2025</p>
-                    <p class="font-medium text-gray-700" id="newAppointmentTime">4:00 PM</p>
-                </div>
-                <p class="text-sm text-gray-600 mt-2">Your current appointment will be cancelled and a new appointment
-                    will be created.</p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" id="cancelRescheduleConfirmation">No, Keep Current Appointment</button>
-                <button class="btn-primary" id="confirmRescheduleConfirmation">Yes, Reschedule Appointment</button>
-            </div>
-        </div>
-    </div>
+                <div class="modal-body">
+                    <div class="confirmation-icon danger">
+                        <i class="bx bx-error-circle"></i>
+                    </div>
+                    <h4 class="confirmation-title">Are you sure you want to cancel?</h4>
+                    <p class="confirmation-message">This action cannot be undone. Your appointment slot will be released
+                        and
+                        made available to other patients.</p>
 
-    <!-- Cancel Confirmation Modal -->
-    <div class="modal-overlay confirmation-modal" id="cancelConfirmModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">Cancel Appointment</h3>
-                <button class="modal-close" id="closeCancelModal">
-                    <i class="bx bx-x"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="confirmation-icon danger">
-                    <i class="bx bx-error-circle"></i>
-                </div>
-                <h4 class="confirmation-title">Are you sure you want to cancel?</h4>
-                <p class="confirmation-message">This action cannot be undone. Your appointment slot will be released and
-                    made available to other patients.</p>
-
-                <div class="mt-4">
-                    <label for="cancellationReason" class="block text-sm font-medium text-gray-700 mb-2">
-                        Please provide a reason for cancellation:
-                    </label>
-                    <select id="cancellationReason" class="search-input w-full">
-                        <option value="">-- Select a reason --</option>
-                        <option value="schedule_conflict">Schedule conflict</option>
-                        <option value="feeling_better">Feeling better, no longer need appointment</option>
-                        <option value="found_another_provider">Found another healthcare provider</option>
-                        <option value="transportation_issues">Transportation issues</option>
-                        <option value="financial_reasons">Financial reasons</option>
-                        <option value="other">Other reason</option>
-                    </select>
-                    <div id="otherReasonContainer" class="mt-3 hidden">
-                        <label for="otherReason" class="block text-sm font-medium text-gray-700 mb-2">
-                            Please specify:
+                    <div class="mt-4">
+                        <label for="cancellationReason" class="block text-sm font-medium text-gray-700 mb-2">
+                            Please provide a reason for cancellation:
                         </label>
-                        <textarea id="otherReason" class="search-input w-full" rows="3"
-                            placeholder="Please provide details..."></textarea>
+                        <select id="cancellationReason" class="search-input w-full">
+                            <option value="">-- Select a reason --</option>
+                            <option value="schedule_conflict">Schedule conflict</option>
+                            <option value="feeling_better">Feeling better, no longer need appointment</option>
+                            <option value="found_another_provider">Found another healthcare provider</option>
+                            <option value="transportation_issues">Transportation issues</option>
+                            <option value="financial_reasons">Financial reasons</option>
+                            <option value="other">Other reason</option>
+                        </select>
+                        <div id="otherReasonContainer" class="mt-3 hidden">
+                            <label for="otherReason" class="block text-sm font-medium text-gray-700 mb-2">
+                                Please specify:
+                            </label>
+                            <textarea id="otherReason" class="search-input w-full" rows="3"
+                                placeholder="Please provide details..."></textarea>
+                        </div>
+                        <p id="cancellationReasonError" class="text-red-600 text-sm mt-1 hidden">Please select a reason
+                            for
+                            cancellation</p>
                     </div>
-                    <p id="cancellationReasonError" class="text-red-600 text-sm mt-1 hidden">Please select a reason for
-                        cancellation</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" id="cancelCancellation">No, Keep Appointment</button>
+                    <button class="btn-danger" id="confirmCancellation">Yes, Cancel Appointment</button>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" id="cancelCancellation">No, Keep Appointment</button>
-                <button class="btn-danger" id="confirmCancellation">Yes, Cancel Appointment</button>
-            </div>
         </div>
-    </div>
 
-    <style>
-        /* Loading indicator */
-        .loading-indicator {
-            display: none;
-            text-align: center;
-            padding: 2rem 0;
-        }
-
-        .loading-indicator.visible {
-            display: block;
-        }
-
-        .search-animation {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background-color: var(--primary-light);
-            position: relative;
-            animation: pulse 2s infinite;
-        }
-
-        .search-animation i {
-            font-size: 2.5rem;
-            color: var(--primary);
-            animation: hover 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0.4);
+        <style>
+            /* Loading indicator */
+            .loading-indicator {
+                display: none;
+                text-align: center;
+                padding: 2rem 0;
             }
 
-            70% {
-                box-shadow: 0 0 0 15px rgba(var(--primary-rgb), 0);
+            .loading-indicator.visible {
+                display: block;
             }
 
-            100% {
-                box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0);
-            }
-        }
-
-        @keyframes hover {
-            0% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-10px);
+            .search-animation {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                background-color: var(--primary-light);
+                position: relative;
+                animation: pulse 2s infinite;
             }
 
-            100% {
-                transform: translateY(0);
+            .search-animation i {
+                font-size: 2.5rem;
+                color: var(--primary);
+                animation: hover 1.5s ease-in-out infinite;
             }
-        }
-    </style>
 
-    <script src="<?= BASE_URL ?>/js/app-tracking.js"></script>
+            @keyframes pulse {
+                0% {
+                    box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0.4);
+                }
+
+                70% {
+                    box-shadow: 0 0 0 15px rgba(var(--primary-rgb), 0);
+                }
+
+                100% {
+                    box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0);
+                }
+            }
+
+            @keyframes hover {
+                0% {
+                    transform: translateY(0);
+                }
+
+                50% {
+                    transform: translateY(-10px);
+                }
+
+                100% {
+                    transform: translateY(0);
+                }
+            }
+
+            /* New status styles for pending confirmation */
+            .timeline-marker.pending-confirmation {
+                background-color: #fef3c7;
+                border-color: #f59e0b;
+            }
+
+            .timeline-marker.pending-confirmation i {
+                color: #f59e0b;
+            }
+
+            .status-badge.status-pending-confirmation {
+                background-color: #fef3c7;
+                color: #d97706;
+            }
+        </style>
+
+        <script src="<?= BASE_URL ?>/js/app-tracking.js"></script>
 </body>
 
 </html>
