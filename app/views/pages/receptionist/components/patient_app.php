@@ -93,6 +93,11 @@
             // Convert status to lowercase and trim any whitespace
             status = status.toLowerCase().trim();
 
+            // Simplify cancelled statuses
+            if (status.includes('cancelled')) {
+                status = 'cancelled';
+            }
+
             console.log("Current appointment status:", status);
 
             if (status === 'scheduled' || status === 'loading...') {
@@ -121,7 +126,7 @@
                         </button>
                     </div>
                 `;
-            } else if (status === 'cancelled') {
+            } else if (status === 'cancellation_requested') {
                 actionsContainer.innerHTML = `
                     <div class="flex-1">
                         <button class="action-button border border-warning text-warning" onclick="rescheduleAppointment()">
@@ -242,7 +247,10 @@
 
             // Get status from class if possible
             let status = 'scheduled'; // Default
-            if (statusElement.classList.contains('cancelled')) {
+
+            // Check for cancelled status first (any type of cancellation)
+            if (statusText.toLowerCase().includes('cancelled') ||
+                statusElement.classList.contains('cancelled')) {
                 status = 'cancelled';
             } else if (statusElement.classList.contains('no-show')) {
                 status = 'no-show';

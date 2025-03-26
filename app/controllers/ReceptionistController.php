@@ -357,6 +357,79 @@ class ReceptionistController extends Controller
         }
     }
 
+
+    /**
+     * Cancel an appointment
+     * 
+     * @return void
+     */
+    public function cancelAppointment()
+    {
+        // Check if this is an AJAX request
+        if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
+            header('Location: ' . BASE_URL . '/receptionist/dashboard');
+            exit;
+        }
+
+        try {
+            // Get the request body
+            $data = json_decode(file_get_contents('php://input'), true);
+
+            if (!$data || !isset($data['appointmentId'])) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Invalid request data. Appointment ID is required.'
+                ]);
+                return;
+            }
+
+            $appointmentId = $data['appointmentId'];
+            $reason = isset($data['reason']) ? $data['reason'] : 'other';
+            $details = isset($data['details']) ? $data['details'] : '';
+
+            // Get the appointment to verify it exists
+            $appointment = $this->appointmentModel->getAppointmentById($appointmentId);
+
+            if (!$appointment) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Appointment not found.'
+                ]);
+                return;
+            }
+
+            // Update the appointment status
+            $updateData = [
+                'status' => 'cancelled_by_clinic',
+                'cancellation_reason' => $reason,
+                'cancellation_details' => $details,
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+
+            $success = $this->appointmentModel->update($appointmentId, $updateData);
+
+            if ($success) {
+                $this->jsonResponse([
+                    'success' => true,
+                    'message' => 'Appointment cancelled successfully.'
+                ]);
+            } else {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Failed to cancel appointment. Database error.'
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Log the error
+            error_log('Error in cancelAppointment: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Server error: ' . $e->getMessage()
+            ]);
+        }
+    }
+
     /**
      * JSON response helper
      * 
@@ -455,4 +528,7 @@ class ReceptionistController extends Controller
             ]);
         }
     }
+
+
+
 }

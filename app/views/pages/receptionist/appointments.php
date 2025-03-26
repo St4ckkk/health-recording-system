@@ -408,6 +408,7 @@
                         </button>
                         <?php include('components/reschedule_app.php') ?>
                     </div>
+
                 </div>
 
                 <!-- Appointments Overview (initially visible) -->
@@ -526,7 +527,14 @@
                                                 <td class="text-xs"><?= htmlspecialchars($appointment->reason) ?>
                                                 </td>
                                                 <td><span
-                                                        class="status-badge <?= strtolower($appointment->status) ?>"><?= ucfirst(htmlspecialchars($appointment->status)) ?></span>
+                                                        class="status-badge <?= strtolower(strpos($appointment->status, 'cancelled') !== false ? 'cancelled' : $appointment->status) ?>"><?php
+                                                                 // Check if status contains 'cancelled' and simplify display
+                                                                 if (strpos($appointment->status, 'cancelled') !== false) {
+                                                                     echo 'Cancelled';
+                                                                 } else {
+                                                                     echo ucfirst(htmlspecialchars($appointment->status));
+                                                                 }
+                                                                 ?></span>
                                                 </td>
                                                 <td>
                                                     <div class="action-buttons-container">

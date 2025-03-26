@@ -12,287 +12,11 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/output.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/reception.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/dashboard.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/node_modules/flatpickr/dist/flatpickr.min.css">
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/flatpickr.min.js"></script>
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/l10n/fr.js"></script>
-    <style>
-        /* Image header styling */
-        .image-header {
-            position: relative;
-            height: 250px;
-            width: 100%;
-            border-radius: 1rem;
-            overflow: hidden;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-        }
 
-        .image-header-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .image-header-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.3);
-            z-index: 1;
-        }
-
-        .image-header-content {
-            position: relative;
-            z-index: 3;
-            height: 100%;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 2rem 3rem;
-            color: white;
-        }
-
-        .image-header-title {
-            font-size: 2.25rem;
-            font-weight: 700;
-            margin-bottom: 0.75rem;
-            line-height: 1.2;
-            max-width: 600px;
-        }
-
-        .image-header-subtitle {
-            font-size: 1.125rem;
-            font-weight: 400;
-            margin-bottom: 1.25rem;
-            max-width: 500px;
-            opacity: 0.9;
-        }
-
-        .image-header-stats {
-            display: flex;
-            gap: 2rem;
-            margin-top: 0.5rem;
-        }
-
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(5px);
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            min-width: 110px;
-        }
-
-        .stat-number {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.25rem;
-        }
-
-        .stat-label {
-            font-size: 0.875rem;
-            opacity: 0.9;
-        }
-
-        @media (max-width: 768px) {
-            .image-header {
-                height: 350px;
-            }
-
-            .image-header-content {
-                padding: 1.5rem;
-            }
-
-            .image-header-title {
-                font-size: 1.75rem;
-            }
-
-            .image-header-subtitle {
-                font-size: 1rem;
-            }
-
-            .image-header-stats {
-                flex-wrap: wrap;
-                gap: 1rem;
-            }
-
-            .stat-item {
-                min-width: 100px;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .image-header {
-                height: 400px;
-            }
-
-            .image-header-title {
-                font-size: 1.5rem;
-            }
-
-            .stat-item {
-                min-width: 90px;
-                padding: 0.75rem;
-            }
-
-            .stat-number {
-                font-size: 1.25rem;
-            }
-        }
-
-        /* Status badge styles using CSS variables */
-        .badge-upcoming,
-        .badge-today,
-        .badge-past {
-
-            font-weight: 500;
-        }
-
-        /* Status badge styles using CSS variables - colors only */
-        .badge-upcoming {
-            background-color: var(--primary);
-        }
-
-        .badge-today {
-            background-color: var(--success);
-        }
-
-        .badge-past {
-            background-color: var(--gray-500);
-        }
-
-        /* Appointment status badges */
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            font-size: var(--font-size-xs);
-            font-weight: 500;
-            text-transform: capitalize;
-        }
-
-        /* Appointment status badges - colors only */
-        .status-badge.completed {
-
-            color: var(--success-dark);
-
-        }
-
-        .status-badge.scheduled {
-
-            color: var(--info-dark);
-
-        }
-        
-        .status-badge.cancelled,
-        .status-badge.cancelled_pending {
-
-            color: var(--danger-dark);
-
-        }
-
-        .status-badge.no-show {
-
-            color: var(--warning-dark);
-
-        }
-
-        .status-badge.pending {
-
-            color: var(--primary-dark);
-
-        }
-
-        .status-badge.confirmed {
-
-            color: var(--success-dark);
-        }
-
-        .status-badge.check-in {
-
-            color: var(--primary-blue-dark);
-
-        }
-
-        .status-badge.rescheduled,
-        .status-badge.rescheduled_pending {
-
-            color: var(--warning-dark);
-
-        }
-
-        /* Appointment type badges */
-        .appointment-type {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.25rem 0.5rem;
-            font-size: var(--font-size-xs);
-            font-weight: 500;
-            text-transform: capitalize;
-        }
-
-        /* Appointment type badges - colors only */
-        .appointment-type.checkup {
-            background-color: var(--primary-light);
-            color: var(--primary-dark);
-            border-color: var(--primary);
-        }
-
-        .appointment-type.follow_up {
-            background-color: var(--success-light);
-            color: var(--success-dark);
-            border-color: var(--success);
-        }
-
-        .appointment-type.consultation {
-            background-color: var(--info-light);
-            color: var(--info-dark);
-            border-color: var(--info);
-        }
-
-        .appointment-type.treatment {
-            background-color: var(--primary-blue-light);
-            color: var(--primary-blue-dark);
-            border-color: var(--primary-blue);
-        }
-
-        .appointment-type.emergency {
-            background-color: var(--danger-light);
-            color: var(--danger-dark);
-            border-color: var(--danger);
-        }
-
-        .appointment-type.specialist {
-            background-color: var(--info-light);
-            color: var(--info-dark);
-            border-color: var(--info);
-        }
-
-        .appointment-type.vaccination {
-            background-color: var(--success-light);
-            color: var(--success-dark);
-            border-color: var(--success);
-        }
-
-        .appointment-type.laboratory_test {
-            background-color: var(--warning-light);
-            color: var(--warning-dark);
-            border-color: var(--warning);
-        }
-
-        .appointment-type.medical_clearance {
-            background-color: var(--primary-light);
-            color: var(--primary-dark);
-            border-color: var(--primary);
-        }
-    </style>
 </head>
 
 <body class="font-body">
@@ -578,6 +302,110 @@
                             </div>
                         </div>
 
+                        <!-- Cancellation Modal -->
+                        <!-- Cancellation Modal -->
+                        <div id="cancellationModal"
+                            class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
+                            <div class="w-full max-w-md transform rounded-lg bg-white shadow-xl transition-all duration-300 scale-95 opacity-0"
+                                id="modalContent">
+                                <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+                                    <h3 class="text-lg font-medium text-gray-900">Cancel Appointment</h3>
+                                    <button type="button" class="text-gray-400 hover:text-gray-500 focus:outline-none"
+                                        id="closeModal">
+                                        <i class="bx bx-x text-2xl"></i>
+                                    </button>
+                                </div>
+
+                                <div class="px-6 py-4">
+                                    <p class="mb-4 text-sm text-gray-500">Please select a reason for cancellation:</p>
+
+                                    <form id="cancellationForm" class="space-y-3">
+                                        <input type="hidden" id="appointmentId" name="appointmentId" value="">
+
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                                                <label class="flex cursor-pointer items-start">
+                                                    <input type="radio" name="cancellation_reason"
+                                                        value="schedule_conflict" class="mt-1 mr-2">
+                                                    <div>
+                                                        <span class="block text-sm font-medium">Schedule Conflict</span>
+                                                        <span class="text-xs text-gray-500">Patient has another
+                                                            appointment</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+
+                                            <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                                                <label class="flex cursor-pointer items-start">
+                                                    <input type="radio" name="cancellation_reason"
+                                                        value="patient_request" class="mt-1 mr-2">
+                                                    <div>
+                                                        <span class="block text-sm font-medium">Patient Request</span>
+                                                        <span class="text-xs text-gray-500">Patient requested to
+                                                            cancel</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+
+                                            <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                                                <label class="flex cursor-pointer items-start">
+                                                    <input type="radio" name="cancellation_reason"
+                                                        value="doctor_unavailable" class="mt-1 mr-2">
+                                                    <div>
+                                                        <span class="block text-sm font-medium">Doctor
+                                                            Unavailable</span>
+                                                        <span class="text-xs text-gray-500">Doctor not available</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+
+                                            <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                                                <label class="flex cursor-pointer items-start">
+                                                    <input type="radio" name="cancellation_reason"
+                                                        value="medical_reason" class="mt-1 mr-2">
+                                                    <div>
+                                                        <span class="block text-sm font-medium">Medical Reason</span>
+                                                        <span class="text-xs text-gray-500">Medical circumstances</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                                            <label class="flex cursor-pointer items-start">
+                                                <input type="radio" name="cancellation_reason" value="other"
+                                                    class="mt-1 mr-2">
+                                                <div>
+                                                    <span class="block text-sm font-medium">Other Reason</span>
+                                                    <span class="text-xs text-gray-500">Please specify in details</span>
+                                                </div>
+                                            </label>
+                                        </div>
+
+                                        <div>
+                                            <label for="cancellation_details"
+                                                class="block text-sm font-medium text-gray-700 mb-1">Additional
+                                                Details:</label>
+                                            <textarea id="cancellation_details" name="cancellation_details" rows="2"
+                                                class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                                placeholder="Please provide any additional information..."></textarea>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="flex justify-end space-x-3 border-t border-gray-200 bg-gray-50 px-6 py-3">
+                                    <button type="button" id="cancelModalBtn"
+                                        class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                                        Cancel
+                                    </button>
+                                    <button type="button" id="confirmCancelBtn"
+                                        class="rounded-md bg-danger px-4 py-2 text-sm font-medium text-white hover:bg-danger-dark focus:outline-none"
+                                        disabled>
+                                        Confirm Cancellation
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- Right: Appointment Details -->
                         <div id="appointmentDetails" class="card bg-white shadow-sm rounded-lg p-6 flex-1 fade-in">
@@ -641,7 +469,16 @@
                                                 </span>
                                                 <span
                                                     class="appointment-type border <?= $statusClass ?> px-1 py-1 rounded text-sm status">
-                                                    <?= ucwords(str_replace('_', ' ', $appointment->status ?? 'Scheduled')) ?>
+                                                    <?php
+                                                    $displayStatus = $appointment->status ?? 'Scheduled';
+                                                    // Check if status contains 'cancelled' and simplify display
+                                                    if (strpos($displayStatus, 'cancelled') !== false) {
+                                                        $displayStatus = 'Cancelled';
+                                                    } else {
+                                                        $displayStatus = ucwords(str_replace('_', ' ', $displayStatus));
+                                                    }
+                                                    echo $displayStatus;
+                                                    ?>
                                                 </span>
                                             </div>
                                         </div>
@@ -866,6 +703,8 @@
             }
         });
 
+        const BASE_URL = '<?= BASE_URL ?>';
+
         function clearFilters() {
             document.getElementById('dateFilter').value = '';
             const dateFilterInstance = document.getElementById('dateFilter')._flatpickr;
@@ -957,6 +796,192 @@
                         detailElement.classList.remove('hidden');
                     }
                 });
+            });
+        });
+
+        // Cancellation Modal Functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('cancellationModal');
+            const modalContent = document.getElementById('modalContent');
+            if (!modal || !modalContent) return; // Exit if modal doesn't exist
+
+            const closeBtn = document.getElementById('closeModal');
+            const cancelBtn = document.getElementById('cancelModalBtn');
+            const form = document.getElementById('cancellationForm');
+            const confirmBtn = document.getElementById('confirmCancelBtn');
+            const reasonInputs = form.querySelectorAll('input[name="cancellation_reason"]');
+
+            // Function to open the modal with smooth animation
+            window.cancelAppointment = function (appointmentId) {
+                document.getElementById('appointmentId').value = appointmentId;
+
+                // Reset form
+                form.reset();
+                updateConfirmButton();
+
+                // Show modal with animation
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+
+                // Trigger reflow for animation
+                void modal.offsetWidth;
+
+                // Animate in
+                modal.classList.add('opacity-100');
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+
+                // Prevent body scrolling
+                document.body.style.overflow = 'hidden';
+            };
+
+            // Function to close the modal with smooth animation
+            function closeModal() {
+                // Animate out
+                modalContent.classList.remove('scale-100', 'opacity-100');
+                modalContent.classList.add('scale-95', 'opacity-0');
+                modal.classList.remove('opacity-100');
+
+                // Wait for animation to complete
+                setTimeout(() => {
+                    modal.classList.remove('flex');
+                    modal.classList.add('hidden');
+
+                    // Restore body scrolling
+                    document.body.style.overflow = '';
+                }, 300);
+            }
+
+            // Close the modal when clicking the close button
+            closeBtn.addEventListener('click', closeModal);
+
+            // Close the modal when clicking the cancel button
+            cancelBtn.addEventListener('click', closeModal);
+
+            // Close the modal when clicking outside of it
+            modal.addEventListener('click', function (event) {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+
+            // Update confirm button state based on form validity
+            function updateConfirmButton() {
+                let isReasonSelected = false;
+                reasonInputs.forEach(input => {
+                    if (input.checked) {
+                        isReasonSelected = true;
+                    }
+                });
+
+                confirmBtn.disabled = !isReasonSelected;
+
+                // Update button styling based on state
+                if (isReasonSelected) {
+                    confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
+                    confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            }
+
+            // Add event listeners to radio buttons
+            reasonInputs.forEach(input => {
+                input.addEventListener('change', updateConfirmButton);
+            });
+
+            // Handle form submission
+            confirmBtn.addEventListener('click', function () {
+                const appointmentId = document.getElementById('appointmentId').value;
+                let reason = '';
+                reasonInputs.forEach(input => {
+                    if (input.checked) {
+                        reason = input.value;
+                    }
+                });
+                const details = document.getElementById('cancellation_details').value;
+
+                // Show loading state
+                confirmBtn.disabled = true;
+                confirmBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin mr-2"></i> Processing...';
+
+                // Send AJAX request to cancel the appointment
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', BASE_URL + '/receptionist/cancel-appointment', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            if (response.success) {
+                                // Close the modal
+                                closeModal();
+
+                                // Update the UI to reflect the cancelled appointment
+                                const appointmentElement = document.querySelector(`[data-patient="patient-${appointmentId}"]`);
+                                if (appointmentElement) {
+                                    const statusBadge = appointmentElement.querySelector('.status-badge');
+                                    if (statusBadge) {
+                                        statusBadge.className = 'status-badge cancelled';
+                                        statusBadge.innerHTML = '<i class="bx bx-x-circle mr-1"></i><span class="text-xs">Cancelled</span>';
+                                    }
+                                }
+
+                                // Show success message with toast if available, otherwise use alert
+                                if (typeof showToast === 'function') {
+                                    showToast('success', 'Appointment cancelled successfully');
+                                } else {
+                                    alert('Appointment cancelled successfully');
+                                }
+
+                                // Reload the page to reflect changes
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 1000);
+                            } else {
+                                if (typeof showToast === 'function') {
+                                    showToast('error', 'Failed to cancel appointment: ' + response.message);
+                                } else {
+                                    alert('Failed to cancel appointment: ' + response.message);
+                                }
+                            }
+                        } catch (e) {
+                            console.error(e);
+                            if (typeof showToast === 'function') {
+                                showToast('error', 'Error processing response');
+                            } else {
+                                alert('Error processing response');
+                            }
+                        }
+                    } else {
+                        if (typeof showToast === 'function') {
+                            showToast('error', 'Request failed. Status: ' + xhr.status);
+                        } else {
+                            alert('Request failed. Status: ' + xhr.status);
+                        }
+                    }
+
+                    // Reset button state
+                    confirmBtn.disabled = false;
+                    confirmBtn.innerHTML = 'Confirm Cancellation';
+                };
+
+                xhr.onerror = function () {
+                    if (typeof showToast === 'function') {
+                        showToast('error', 'Request failed. Please try again.');
+                    } else {
+                        alert('Request failed. Please try again.');
+                    }
+                    confirmBtn.disabled = false;
+                    confirmBtn.innerHTML = 'Confirm Cancellation';
+                };
+
+                xhr.send(JSON.stringify({
+                    appointmentId: appointmentId,
+                    reason: reason,
+                    details: details
+                }));
             });
         });
     </script>

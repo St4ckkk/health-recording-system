@@ -487,3 +487,26 @@
   margin-top: 1px; /* Negative margin to reduce gap */
   display: block;
 }
+
+/* Modal animation styles */
+#modalContent {
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+#cancellationModal {
+  transition: opacity 0.3s ease-out;
+}
+
+#cancellationModal.flex {
+  opacity: 1;
+}
+
+#modalContent.scale-100 {
+  transform: scale(1);
+  opacity: 1;
+}
+
+#modalContent.scale-95 {
+  transform: scale(0.95);
+  opacity: 0;
+}

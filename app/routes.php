@@ -26,9 +26,9 @@ $router->post('/receptionist/getAppointmentDetails', 'ReceptionistController@get
 
 // Change this line to use a query parameter instead of a URL parameter
 $router->get('/receptionist/get_doctor_schedule', 'ReceptionistController@get_doctor_schedule');
-
+$router->post('/receptionist/cancel-appointment', 'ReceptionistController@cancelAppointment');
 // Add a debug route to test session handling
-$router->get('/debug-session', function() {
+$router->get('/debug-session', function () {
     error_log("Debug session route called");
     echo "<pre>";
     echo "Session contents: ";
