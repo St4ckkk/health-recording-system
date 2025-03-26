@@ -568,31 +568,31 @@
                                                 <div class="flex-1">
                                                     <button class="action-button border border-danger text-danger"
                                                         onclick="cancelAppointment(<?= $appointment->id ?>)">
-                                                        <i class="bx bx-x-circle text-danger mr-2 text-md"></i>
+                                                        <i class="bx bx-x-circle mr-2 text-md"></i>
                                                         Cancel Appointment
                                                     </button>
                                                 </div>
-                                                <button class="action-button secondary border border-success text-success"
+                                                <button class="action-button border border-success text-success"
                                                     onclick="confirmAppointment(<?= $appointment->id ?>)">
                                                     <i class="bx bx-check-circle mr-2 text-md"></i>
                                                     Confirm
                                                 </button>
-                                                <button class="action-button secondary border border-warning text-warning"
+                                                <button class="action-button border border-warning text-warning"
                                                     onclick="sendReminder(<?= $appointment->id ?>)">
-                                                    <i class="bx bx-bell mr-2 text-md text-yellow-500"></i>
+                                                    <i class="bx bx-bell mr-2 text-md"></i>
                                                     Send Reminder
                                                 </button>
                                             <?php elseif ($appointment->status == 'no_show'): ?>
                                                 <div class="flex-1">
-                                                    <button class="action-button secondary border border-warning text-warning"
+                                                    <button class="action-button border border-warning text-warning"
                                                         onclick="sendReminder(<?= $appointment->id ?>)">
-                                                        <i class="bx bx-bell mr-2 text-md text-yellow-500"></i>
+                                                        <i class="bx bx-bell mr-2 text-md"></i>
                                                         Send Reminder
                                                     </button>
                                                 </div>
                                             <?php elseif (in_array($appointment->status, ['cancelled_by_patient', 'cancelled_by_clinic', 'cancelled_auto'])): ?>
                                                 <div class="flex-1">
-                                                    <button class="action-button secondary"
+                                                    <button class="action-button border border-info text-info"
                                                         onclick="rescheduleAppointment(<?= $appointment->id ?>)">
                                                         <i class="bx bx-calendar mr-2 text-md"></i>
                                                         Reschedule
@@ -600,32 +600,32 @@
                                                 </div>
                                             <?php elseif ($appointment->status == 'cancellation_requested'): ?>
                                                 <div class="flex-1">
-                                                    <button class="action-button secondary"
+                                                    <button class="action-button border border-success text-success"
                                                         onclick="approveCancellation(<?= $appointment->id ?>)">
                                                         <i class="bx bx-check-circle mr-2 text-md"></i>
                                                         Approve Cancellation
                                                     </button>
                                                 </div>
-                                                <button class="action-button secondary"
+                                                <button class="action-button border border-danger text-danger"
                                                     onclick="denyCancellation(<?= $appointment->id ?>)">
                                                     <i class="bx bx-x-circle mr-2 text-md"></i>
                                                     Deny Cancellation
                                                 </button>
                                             <?php elseif ($appointment->status == 'reschedule_requested' || $appointment->status == 'rescheduled'): ?>
                                                 <div class="flex-1">
-                                                    <button class="action-button secondary"
+                                                    <button class="action-button border border-info text-info"
                                                         onclick="rescheduleAppointment(<?= $appointment->id ?>)">
                                                         <i class="bx bx-calendar mr-2 text-md"></i>
                                                         Modify Schedule
                                                     </button>
                                                 </div>
                                                 <?php if ($appointment->status == 'reschedule_requested'): ?>
-                                                    <button class="action-button secondary"
+                                                    <button class="action-button border border-success text-success"
                                                         onclick="approveReschedule(<?= $appointment->id ?>)">
                                                         <i class="bx bx-check-circle mr-2 text-md"></i>
                                                         Approve Reschedule
                                                     </button>
-                                                    <button class="action-button secondary"
+                                                    <button class="action-button border border-danger text-danger"
                                                         onclick="denyReschedule(<?= $appointment->id ?>)">
                                                         <i class="bx bx-x-circle mr-2 text-md"></i>
                                                         Deny Reschedule
@@ -633,20 +633,20 @@
                                                 <?php endif; ?>
                                             <?php elseif ($appointment->status == 'confirmed'): ?>
                                                 <div class="flex-1">
-                                                    <button class="action-button secondary border border-primary text-primary"
+                                                    <button class="action-button border border-primary text-primary"
                                                         onclick="checkInPatient(<?= $appointment->id ?>)">
                                                         <i class="bx bx-log-in-circle mr-2 text-md"></i>
                                                         Check In Patient
                                                     </button>
                                                 </div>
-                                                <button class="action-button secondary border border-warning text-warning"
+                                                <button class="action-button border border-warning text-warning"
                                                     onclick="sendReminder(<?= $appointment->id ?>)">
-                                                    <i class="bx bx-bell mr-2 text-md text-yellow-500"></i>
+                                                    <i class="bx bx-bell mr-2 text-md"></i>
                                                     Send Reminder
                                                 </button>
                                             <?php elseif ($appointment->status == 'checked_in'): ?>
                                                 <div class="flex-1">
-                                                    <button class="action-button secondary border border-primary text-primary"
+                                                    <button class="action-button border border-primary text-primary"
                                                         onclick="startAppointment(<?= $appointment->id ?>)">
                                                         <i class="bx bx-play-circle mr-2 text-md"></i>
                                                         Start Appointment
@@ -654,7 +654,7 @@
                                                 </div>
                                             <?php elseif ($appointment->status == 'in_progress'): ?>
                                                 <div class="flex-1">
-                                                    <button class="action-button secondary border border-success text-success"
+                                                    <button class="action-button border border-success text-success"
                                                         onclick="completeAppointment(<?= $appointment->id ?>)">
                                                         <i class="bx bx-check-circle mr-2 text-md"></i>
                                                         Complete Appointment

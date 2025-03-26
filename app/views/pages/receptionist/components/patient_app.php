@@ -104,7 +104,7 @@
                 actionsContainer.innerHTML = `
                     <div class="flex-1">
                         <button class="action-button border border-danger text-danger" onclick="cancelAppointment()">
-                            <i class="bx bx-x-circle text-danger mr-2 text-md"></i>
+                            <i class="bx bx-x-circle mr-2 text-md"></i>
                             Cancel Appointment
                         </button>
                     </div>
@@ -116,17 +116,28 @@
                         <i class="bx bx-bell mr-2 text-md"></i>
                         Send Reminder
                     </button>
-                      <div class="flex-1">
-                        <button class="action-button border border-warning text-warning" onclick="rescheduleAppointment()">
-                            <i class="bx bx-calendar mr-2 text-md"></i>
-                            Reschedule
-                        </button>
-                    </div>
+                    <button class="action-button border border-info text-info" onclick="rescheduleAppointment()">
+                        <i class="bx bx-calendar mr-2 text-md"></i>
+                        Reschedule
+                    </button>
                 `;
             } else if (status === 'no-show') {
                 actionsContainer.innerHTML = `
                     <div class="flex-1">
-                        <button class="action-button border border-warning text-warning" onclick="rescheduleAppointment()">
+                        <button class="action-button border border-warning text-warning" onclick="sendReminder()">
+                            <i class="bx bx-bell mr-2 text-md"></i>
+                            Send Reminder
+                        </button>
+                    </div>
+                    <button class="action-button border border-info text-info" onclick="rescheduleAppointment()">
+                        <i class="bx bx-calendar mr-2 text-md"></i>
+                        Reschedule
+                    </button>
+                `;
+            } else if (status === 'cancelled') {
+                actionsContainer.innerHTML = `
+                    <div class="flex-1">
+                        <button class="action-button border border-info text-info" onclick="rescheduleAppointment()">
                             <i class="bx bx-calendar mr-2 text-md"></i>
                             Reschedule
                         </button>
@@ -135,22 +146,61 @@
             } else if (status === 'cancellation_requested') {
                 actionsContainer.innerHTML = `
                     <div class="flex-1">
-                        <button class="action-button border border-warning text-warning" onclick="rescheduleAppointment()">
-                            <i class="bx bx-calendar mr-2 text-md"></i>
-                            Reschedule
+                        <button class="action-button border border-success text-success" onclick="confirmCancellation()">
+                            <i class="bx bx-check-circle mr-2 text-md"></i>
+                            Confirm Cancellation
                         </button>
                     </div>
-                    <button class="action-button border border-success text-success" onclick="confirmCancellation()">
-                        <i class="bx bx-check-circle mr-2 text-md"></i>
-                        Confirm Cancellation
+                    <button class="action-button border border-danger text-danger" onclick="denyCancellation()">
+                        <i class="bx bx-x-circle mr-2 text-md"></i>
+                        Deny Cancellation
+                    </button>
+                    <button class="action-button border border-info text-info" onclick="rescheduleAppointment()">
+                        <i class="bx bx-calendar mr-2 text-md"></i>
+                        Reschedule
                     </button>
                 `;
-            } else if (status === 'rescheduled') {
+            } else if (status === 'rescheduled' || status === 'reschedule_requested') {
                 actionsContainer.innerHTML = `
                     <div class="flex-1">
                         <button class="action-button border border-success text-success" onclick="confirmReschedule()">
                             <i class="bx bx-check-circle mr-2 text-md"></i>
                             Confirm Reschedule
+                        </button>
+                    </div>
+                    <button class="action-button border border-danger text-danger" onclick="denyReschedule()">
+                        <i class="bx bx-x-circle mr-2 text-md"></i>
+                        Deny Reschedule
+                    </button>
+                `;
+            } else if (status === 'confirmed') {
+                actionsContainer.innerHTML = `
+                    <div class="flex-1">
+                        <button class="action-button border border-primary text-primary" onclick="checkInPatient()">
+                            <i class="bx bx-log-in-circle mr-2 text-md"></i>
+                            Check In Patient
+                        </button>
+                    </div>
+                    <button class="action-button border border-warning text-warning" onclick="sendReminder()">
+                        <i class="bx bx-bell mr-2 text-md"></i>
+                        Send Reminder
+                    </button>
+                `;
+            } else if (status === 'checked_in') {
+                actionsContainer.innerHTML = `
+                    <div class="flex-1">
+                        <button class="action-button border border-primary text-primary" onclick="startAppointment()">
+                            <i class="bx bx-play-circle mr-2 text-md"></i>
+                            Start Appointment
+                        </button>
+                    </div>
+                `;
+            } else if (status === 'in_progress') {
+                actionsContainer.innerHTML = `
+                    <div class="flex-1">
+                        <button class="action-button border border-success text-success" onclick="completeAppointment()">
+                            <i class="bx bx-check-circle mr-2 text-md"></i>
+                            Complete Appointment
                         </button>
                     </div>
                 `;

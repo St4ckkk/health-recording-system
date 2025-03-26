@@ -97,22 +97,6 @@
   justify-content: center;
 }
 
-/* Style for appointment status badges */
-.badge-upcoming {
-  background-color: #3b82f6;
-  /* blue-500 */
-}
-
-.badge-today {
-  background-color: #10b981;
-  /* green-500 */
-}
-
-.badge-past {
-  background-color: #9ca3af;
-  /* gray-400 */
-}
-
 .search-container {
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   border-radius: 1rem;
@@ -192,53 +176,6 @@
   margin: 1rem 0;
 }
 
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-.status-badge.completed i {
-  color: var(--success-dark);
-  font-size: 1rem;
-}
-
-.status-badge.no-show i {
-  color: var(--warning-dark);
-  font-size: 1rem;
-}
-
-.status-badge.cancelled i {
-  color: var(--danger-dark);
-  font-size: 1rem;
-}
-
-.status-badge.scheduled i {
-  color: var(--primary);
-  font-size: 1rem;
-}
-
-.status-badge.pending i {
-  color: var(--info-dark);
-  font-size: 1rem;
-}
-
-.status-badge.confirmed i {
-  color: var(--success-dark);
-  font-size: 1rem;
-}
-
-.status-badge.check-in i {
-  color: var(--primary-dark);
-  font-size: 1rem;
-}
-
-.status-badge.rescheduled i {
-  color: var(--warning);
-  font-size: 1rem;
-}
-
 /* Add these styles for the text colors in the appointment details */
 .text-success {
   color: var(--success-dark) !important;
@@ -258,50 +195,6 @@
 
 .text-info {
   color: var(--info-dark) !important;
-}
-/* Appointment type badges */
-.appointment-type {
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: capitalize;
-}
-
-/* Make the checkup background color darker */
-.appointment-type.checkup {
-  background-color: var(--primary-light);
-  color: var(--primary);
-}
-
-.appointment-type.follow-up {
-  background-color: var(--success-light);
-  color: var(--success-dark);
-}
-
-.appointment-type.emergency {
-  background-color: var(--danger-light);
-  color: var(--danger-dark);
-}
-
-.appointment-type.consultation {
-  background-color: var(--info-light);
-  color: var(--info-dark);
-}
-
-.appointment-type.general-appointment {
-  background-color: var(--primary-blue-light);
-  color: var(--primary-blue-dark);
-}
-
-.appointment-type.procedure {
-  background-color: var(--warning-light);
-  color: var(--warning-dark);
-}
-
-.appointment-type.specialist {
-  background-color: var(--gray-100);
-  color: var(--gray-800);
 }
 
 .detail-label {
@@ -434,33 +327,6 @@
   line-height: 1.2;
 }
 
-.appointments-table .status-badge {
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.appointments-table .status-badge.completed {
-  border: 1px solid #d1fae5;
-  color: #059669;
-}
-
-.appointments-table .status-badge.no-show {
-  border: 1px solid #feebd3;
-  color: #d97706;
-}
-
-.appointments-table .status-badge.cancelled {
-  border: 1px solid #fee2e2;
-  color: #dc2626;
-}
-
-.appointments-table .status-badge.scheduled {
-  border: 1px solid#dbeafe;
-  color: #3b82f6;
-}
-
 .appointments-table .action-button {
   padding: 0.25rem 0.85rem;
   font-size: 0.75rem;
@@ -486,27 +352,4 @@
 .date-time span {
   margin-top: 1px; /* Negative margin to reduce gap */
   display: block;
-}
-
-/* Modal animation styles */
-#modalContent {
-  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-}
-
-#cancellationModal {
-  transition: opacity 0.3s ease-out;
-}
-
-#cancellationModal.flex {
-  opacity: 1;
-}
-
-#modalContent.scale-100 {
-  transform: scale(1);
-  opacity: 1;
-}
-
-#modalContent.scale-95 {
-  transform: scale(0.95);
-  opacity: 0;
 }
