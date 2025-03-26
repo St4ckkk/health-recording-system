@@ -337,6 +337,7 @@ class Appointment extends Model
     public function update($id, $data)
     {
         try {
+            // Build the SQL query dynamically based on the data provided
             $sql = 'UPDATE ' . $this->table . ' SET ';
             $updates = [];
             $bindings = [':id' => $id];

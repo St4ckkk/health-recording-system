@@ -357,48 +357,56 @@ class ReceptionistController extends Controller
         }
     }
 
-
     /**
      * Cancel an appointment
-     * 
-     * @return void
      */
     public function cancelAppointment()
     {
+        // Disable error output to prevent it from corrupting JSON
+        ini_set('display_errors', 0);
+        error_reporting(0);
+
+        // Start output buffering to capture any unexpected output
+        ob_start();
+
         // Check if this is an AJAX request
         if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
-            header('Location: ' . BASE_URL . '/receptionist/dashboard');
+            header('Location: ' . BASE_URL . '/receptionist/appointments');
             exit;
         }
 
         try {
-            // Get the request body
-            $data = json_decode(file_get_contents('php://input'), true);
+            // Get JSON data from request body
+            $json = file_get_contents('php://input');
+            $data = json_decode($json, true);
 
-            if (!$data || !isset($data['appointmentId'])) {
+            // Log the received data for debugging
+            error_log('Received data in cancelAppointment: ' . print_r($data, true));
+
+            if (!$data || !isset($data['appointmentId']) || !isset($data['reason'])) {
                 $this->jsonResponse([
                     'success' => false,
-                    'message' => 'Invalid request data. Appointment ID is required.'
+                    'message' => 'Invalid request data'
                 ]);
                 return;
             }
 
-            $appointmentId = $data['appointmentId'];
-            $reason = isset($data['reason']) ? $data['reason'] : 'other';
-            $details = isset($data['details']) ? $data['details'] : '';
+            $appointmentId = intval($data['appointmentId']);
+            $reason = $data['reason'];
+            $details = $data['details'] ?? '';
 
-            // Get the appointment to verify it exists
+            // Get the appointment
             $appointment = $this->appointmentModel->getAppointmentById($appointmentId);
 
             if (!$appointment) {
                 $this->jsonResponse([
                     'success' => false,
-                    'message' => 'Appointment not found.'
+                    'message' => 'Appointment not found'
                 ]);
                 return;
             }
 
-            // Update the appointment status
+            // Update appointment status
             $updateData = [
                 'status' => 'cancelled_by_clinic',
                 'cancellation_reason' => $reason,
@@ -406,17 +414,20 @@ class ReceptionistController extends Controller
                 'updated_at' => date('Y-m-d H:i:s')
             ];
 
+            // Log the update data for debugging
+            error_log('Updating appointment with data: ' . print_r($updateData, true));
+
             $success = $this->appointmentModel->update($appointmentId, $updateData);
 
             if ($success) {
                 $this->jsonResponse([
                     'success' => true,
-                    'message' => 'Appointment cancelled successfully.'
+                    'message' => 'Appointment cancelled successfully'
                 ]);
             } else {
                 $this->jsonResponse([
                     'success' => false,
-                    'message' => 'Failed to cancel appointment. Database error.'
+                    'message' => 'Failed to cancel appointment'
                 ]);
             }
         } catch (\Exception $e) {
@@ -438,8 +449,15 @@ class ReceptionistController extends Controller
     private function jsonResponse($data)
     {
         // Clear any previous output that might corrupt the JSON
-        if (ob_get_length())
+        if (ob_get_length()) {
             ob_clean();
+        }
+
+        // Discard any output that might have been generated
+        ob_end_clean();
+
+        // Start a new buffer
+        ob_start();
 
         // Set proper headers
         header('Content-Type: application/json');
@@ -447,6 +465,9 @@ class ReceptionistController extends Controller
 
         // Output JSON data
         echo json_encode($data);
+
+        // Flush the buffer and end the script
+        ob_end_flush();
         exit;
     }
 
@@ -532,3 +553,4 @@ class ReceptionistController extends Controller
 
 
 }
+

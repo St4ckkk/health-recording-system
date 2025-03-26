@@ -140,7 +140,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Format time
         if (appointmentTime) {
-            appointmentTime.textContent = data.appointment.appointment_time || "N/A"
+            // Check if time is in 24-hour format (HH:MM:SS)
+            if (data.appointment.appointment_time && data.appointment.appointment_time.includes(':')) {
+                const timeParts = data.appointment.appointment_time.split(':');
+                let hours = parseInt(timeParts[0]);
+                const minutes = timeParts[1];
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+
+                // Convert to 12-hour format
+                hours = hours % 12;
+                hours = hours ? hours : 12; // Convert '0' to '12'
+
+                // Format as "hh:mm AM/PM"
+                appointmentTime.textContent = `${hours}:${minutes} ${ampm}`;
+            } else {
+                appointmentTime.textContent = data.appointment.appointment_time || "N/A";
+            }
         }
 
         if (appointmentType) {

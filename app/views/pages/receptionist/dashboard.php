@@ -266,15 +266,15 @@
                                                 // Define status classes and icons
                                                 $statusMapping = [
                                                     'completed' => ['class' => 'completed', 'icon' => 'bx-check-circle'],
-                                                    'scheduled' => ['class' => 'scheduled', 'icon' => 'bx-time'],
                                                     'cancelled' => ['class' => 'cancelled', 'icon' => 'bx-x-circle'],
-                                                    'cancelled_pending' => ['class' => 'cancelled', 'icon' => 'bx-time', 'label' => 'Waiting Confirmation'],
+                                                    'cancelled_by_clinic' => ['class' => 'cancelled', 'icon' => 'bx-x-circle'],
+                                                    'cancellation_requested' => ['class' => 'cancellation_requested', 'icon' => 'bx-time', 'label' => 'Cancellation Waiting For Confirmation'],
                                                     'no-show' => ['class' => 'no-show', 'icon' => 'bx-error-circle'],
                                                     'pending' => ['class' => 'pending', 'icon' => 'bx-hourglass'],
                                                     'confirmed' => ['class' => 'confirmed', 'icon' => 'bx-calendar-check'],
                                                     'check-in' => ['class' => 'check-in', 'icon' => 'bx-log-in-circle'],
                                                     'rescheduled' => ['class' => 'rescheduled', 'icon' => 'bx-calendar-exclamation'],
-                                                    'rescheduled_pending' => ['class' => 'rescheduled', 'icon' => 'bx-time', 'label' => 'Waiting Confirmation'],
+                                                    'reschedule_requested' => ['class' => 'rescheduled', 'icon' => 'bx-time', 'label' => 'Reschedule Waiting For Confirmation'],
                                                 ];
 
                                                 $statusInfo = $statusMapping[$appointment->status] ?? $statusMapping['scheduled'];
@@ -516,7 +516,17 @@
                                                             <?= $appointment->special_instructions ?? 'No notes available' ?>
                                                         </td>
                                                     </tr>
-                                                    <?php if ($appointment->status == 'cancelled' && (!empty($appointment->cancellation_reason) || !empty($appointment->cancellation_details))): ?>
+
+                                                    <tr class="">
+                                                        <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Insurance
+                                                        </td>
+                                                        <td class="text-sm text-gray-900 py-2">
+                                                            <?= $appointment->insurance_provider ?? 'Not specified' ?>
+                                                            <?= !empty($appointment->insurance_id) ? '#' . $appointment->insurance_id : '' ?>
+                                                        </td>
+                                                    </tr>
+
+                                                    <?php if ($appointment->status == 'cancelled_by_clinic' && (!empty($appointment->cancellation_reason) || !empty($appointment->cancellation_details))): ?>
                                                         <tr class="border-b border-gray-200">
                                                             <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">
                                                                 Cancellation Reason</td>
@@ -532,14 +542,6 @@
                                                             </td>
                                                         </tr>
                                                     <?php endif; ?>
-                                                    <tr class="">
-                                                        <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Insurance
-                                                        </td>
-                                                        <td class="text-sm text-gray-900 py-2">
-                                                            <?= $appointment->insurance_provider ?? 'Not specified' ?>
-                                                            <?= !empty($appointment->insurance_id) ? '#' . $appointment->insurance_id : '' ?>
-                                                        </td>
-                                                    </tr>
                                                 </table>
                                             </div>
                                         </div>
@@ -679,8 +681,6 @@
             </div>
         </main>
     </div>
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
-
     <script src="<?= BASE_URL ?>/js/reception.js"></script>
 </body>
 

@@ -32,12 +32,12 @@
   color: var(--success-dark);
 }
 
-.status-badge.scheduled {
+.status-badge.confirmed {
   color: var(--info-dark);
 }
 
 .status-badge.cancelled,
-.status-badge.cancelled_pending {
+.status-badge.cancellation_requested {
   color: var(--danger-dark);
 }
 
@@ -58,7 +58,7 @@
 }
 
 .status-badge.rescheduled,
-.status-badge.rescheduled_pending {
+.status-badge.rescheduled_requested {
   color: var(--warning-dark);
 }
 
