@@ -7,8 +7,8 @@
             </div>
             <div class="flex gap-2">
                 <span id="appointment-type" class="appointment-type checkup">Loading...</span>
-                <span id="appointment-status" class="status-badge scheduled"
-                    style="border-radius: 5px;">Loading...</span>
+                <span id="appointment-status"
+                    class="status-badge border scheduled px-1 py-1 rounded text-sm">Loading...</span>
             </div>
         </div>
 
@@ -100,7 +100,7 @@
 
             console.log("Current appointment status:", status);
 
-            if (status === 'scheduled' || status === 'loading...') {
+            if (status === 'pending' || status === 'loading...') {
                 actionsContainer.innerHTML = `
                     <div class="flex-1">
                         <button class="action-button border border-danger text-danger" onclick="cancelAppointment()">
@@ -116,6 +116,12 @@
                         <i class="bx bx-bell mr-2 text-md"></i>
                         Send Reminder
                     </button>
+                      <div class="flex-1">
+                        <button class="action-button border border-warning text-warning" onclick="rescheduleAppointment()">
+                            <i class="bx bx-calendar mr-2 text-md"></i>
+                            Reschedule
+                        </button>
+                    </div>
                 `;
             } else if (status === 'no-show') {
                 actionsContainer.innerHTML = `
@@ -167,7 +173,7 @@
                 // Update the status badge to show cancelled
                 const statusBadge = document.getElementById('appointment-status');
                 statusBadge.textContent = 'Cancelled';
-                statusBadge.className = 'status-badge cancelled';
+                statusBadge.className = 'status-badge border border-danger text-danger px-1 py-1 rounded text-sm';
 
                 // Update the buttons
                 updateActionButtons('cancelled');
@@ -182,7 +188,7 @@
                 // Update the status badge to show confirmed
                 const statusBadge = document.getElementById('appointment-status');
                 statusBadge.textContent = 'Confirmed';
-                statusBadge.className = 'status-badge confirmed';
+                statusBadge.className = 'status-badge border border-success text-success px-1 py-1 rounded text-sm';
 
                 alert('Appointment confirmed');
                 // Update UI or make AJAX call to backend
@@ -198,7 +204,7 @@
             // Update the status badge to show rescheduled
             const statusBadge = document.getElementById('appointment-status');
             statusBadge.textContent = 'Rescheduled';
-            statusBadge.className = 'status-badge rescheduled';
+            statusBadge.className = 'status-badge border border-warning text-warning px-1 py-1 rounded text-sm';
 
             // Update the buttons
             updateActionButtons('rescheduled');
@@ -218,7 +224,7 @@
                 // Update the status badge to show confirmed
                 const statusBadge = document.getElementById('appointment-status');
                 statusBadge.textContent = 'Confirmed';
-                statusBadge.className = 'status-badge confirmed';
+                statusBadge.className = 'status-badge border border-success text-success px-1 py-1 rounded text-sm';
 
                 // Update the buttons
                 updateActionButtons('confirmed');

@@ -1,0 +1,128 @@
+/* Status badge styles using CSS variables */
+.badge-upcoming,
+.badge-today,
+.badge-past {
+  font-weight: 500;
+}
+
+/* Status badge styles using CSS variables - colors only */
+.badge-upcoming {
+  background-color: var(--primary);
+}
+
+.badge-today {
+  background-color: var(--success);
+}
+
+.badge-past {
+  background-color: var(--gray-500);
+}
+
+/* Appointment status badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+/* Appointment status badges - colors only */
+.status-badge.completed {
+  color: var(--success-dark);
+}
+
+.status-badge.scheduled {
+  color: var(--info-dark);
+}
+
+.status-badge.cancelled,
+.status-badge.cancelled_pending {
+  color: var(--danger-dark);
+}
+
+.status-badge.no-show {
+  color: var(--warning-dark);
+}
+
+.status-badge.pending {
+  color: var(--primary-dark);
+}
+
+.status-badge.confirmed {
+  color: var(--success-dark);
+}
+
+.status-badge.check-in {
+  color: var(--primary-blue-dark);
+}
+
+.status-badge.rescheduled,
+.status-badge.rescheduled_pending {
+  color: var(--warning-dark);
+}
+
+/* Appointment type badges */
+.appointment-type {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+/* Appointment type badges - colors only */
+.appointment-type.checkup {
+  background-color: var(--primary-light);
+  color: var(--primary-dark);
+  border-color: var(--primary);
+}
+
+.appointment-type.follow_up {
+  background-color: var(--success-light);
+  color: var(--success-dark);
+  border-color: var(--success);
+}
+
+.appointment-type.consultation {
+  background-color: var(--info-light);
+  color: var(--info-dark);
+  border-color: var(--info);
+}
+
+.appointment-type.treatment {
+  background-color: var(--primary-blue-light);
+  color: var(--primary-blue-dark);
+  border-color: var(--primary-blue);
+}
+
+.appointment-type.emergency {
+  background-color: var(--danger-light);
+  color: var(--danger-dark);
+  border-color: var(--danger);
+}
+
+.appointment-type.specialist {
+  background-color: var(--info-light);
+  color: var(--info-dark);
+  border-color: var(--info);
+}
+
+.appointment-type.vaccination {
+  background-color: var(--success-light);
+  color: var(--success-dark);
+  border-color: var(--success);
+}
+
+.appointment-type.laboratory_test {
+  background-color: var(--warning-light);
+  color: var(--warning-dark);
+  border-color: var(--warning);
+}
+
+.appointment-type.medical_clearance {
+  background-color: var(--primary-light);
+  color: var(--primary-dark);
+  border-color: var(--primary);
+}

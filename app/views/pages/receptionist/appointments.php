@@ -1,3 +1,30 @@
+<?php
+// Helper function to get the appropriate icon for each status
+function getStatusIcon($status)
+{
+    $status = strtolower($status);
+
+    if (strpos($status, 'cancelled') !== false) {
+        return 'bx-x-circle';
+    } elseif ($status == 'completed') {
+        return 'bx-check-circle';
+    } elseif ($status == 'scheduled') {
+        return 'bx-time';
+    } elseif ($status == 'confirmed') {
+        return 'bx-calendar-check';
+    } elseif ($status == 'no-show') {
+        return 'bx-error-circle';
+    } elseif ($status == 'pending') {
+        return 'bx-hourglass';
+    } elseif ($status == 'check-in') {
+        return 'bx-log-in-circle';
+    } elseif (strpos($status, 'rescheduled') !== false) {
+        return 'bx-calendar-exclamation';
+    } else {
+        return 'bx-calendar';
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,6 +38,7 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/output.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/reception.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/badges.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/node_modules/flatpickr/dist/flatpickr.min.css">
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/flatpickr.min.js"></script>
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/l10n/fr.js"></script>
@@ -34,22 +62,26 @@
             align-items: center;
         }
 
-        /* Status badge alignment */
+        /* Status badge alignment - only layout properties */
         .status-badge {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             text-align: center;
             min-width: 80px;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.375rem;
         }
 
-        /* Appointment type alignment */
+        /* Appointment type alignment - only layout properties */
         .appointment-type {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             text-align: center;
             min-width: 80px;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
         }
 
         /* Ensure text doesn't overflow */
@@ -154,114 +186,6 @@
             background-color: var(--neutral-lighter);
         }
 
-        .action-button.danger {
-            background-color: var(--danger-light);
-            color: var(--danger-dark);
-            border: 1px solid var(--danger-light);
-        }
-
-        .action-button.danger:hover {
-            background-color: var(--danger-lighter);
-        }
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.15rem 0.5rem;
-            font-size: var(--font-size-xs);
-            font-weight: 500;
-            text-transform: capitalize;
-        }
-
-        .status-badge.scheduled {
-            background-color: var(--info-light);
-            color: var(--info-dark);
-            border: 1px solid var(--info);
-        }
-
-        .status-badge.completed {
-            background-color: var(--success-light);
-            color: var(--success-dark);
-            border: 1px solid var(--success);
-        }
-
-        .status-badge.cancelled {
-            background-color: var(--danger-light);
-            color: var(--danger-dark);
-            border: 1px solid var(--danger);
-        }
-
-        .status-badge.no-show {
-            background-color: var(--warning-light);
-            color: var(--warning-dark);
-            border: 1px solid var(--warning);
-        }
-
-        .status-badge.pending {
-            background-color: var(--primary-light);
-            color: var(--primary-dark);
-            border: 1px solid var(--primary);
-        }
-
-        .status-badge.rescheduled {
-            background-color: var(--warning-light);
-            color: var(--warning-dark);
-            border: 1px solid var(--warning);
-        }
-
-        .status-badge.confirmed {
-            background-color: var(--success-light);
-            color: var(--success-dark);
-            border: 1px solid var(--success);
-        }
-
-        /* Appointment type styles */
-        .appointment-type {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.25rem 0.5rem;
-            font-size: var(--font-size-xs);
-            font-weight: 500;
-            text-transform: capitalize;
-        }
-
-        .appointment-type.checkup {
-            background-color: var(--primary-light);
-            color: var(--primary-dark);
-            border: 1px solid var(--primary);
-        }
-
-        .appointment-type.follow-up {
-            background-color: var(--success-light);
-            color: var(--success-dark);
-            border: 1px solid var(--success);
-        }
-
-        .appointment-type.procedure {
-            background-color: var(--warning-light);
-            color: var(--warning-dark);
-            border: 1px solid var(--warning);
-        }
-
-        .appointment-type.specialist {
-            background-color: var(--info-light);
-            color: var(--info-dark);
-            border: 1px solid var(--info);
-        }
-
-        .appointment-type.emergency {
-            background-color: var(--danger-light);
-            color: var(--danger-dark);
-            border: 1px solid var(--danger);
-        }
-
-        .appointment-type.consultation {
-            background-color: var(--primary-blue-light);
-            color: var(--primary-blue-dark);
-            border: 1px solid var(--primary-blue);
-        }
-
-        /* Action button styles */
         .action-button.danger {
             background-color: transparent;
             color: var(--danger-dark);
@@ -521,20 +445,69 @@
                                                             class="text-xs text-gray-500"><?= date('g:i A', strtotime($appointment->appointment_time)) ?></span>
                                                     </div>
                                                 </td>
-                                                <td><span
-                                                        class="appointment-type <?= strtolower($appointment->appointment_type) ?>"><?= htmlspecialchars($appointment->appointment_type) ?></span>
+                                                <td>
+                                                    <span
+                                                        class="appointment-type <?= strtolower(str_replace('-', '_', $appointment->appointment_type)) ?>">
+                                                        <?= htmlspecialchars(ucwords(str_replace('_', ' ', $appointment->appointment_type))) ?>
+                                                    </span>
                                                 </td>
                                                 <td class="text-xs"><?= htmlspecialchars($appointment->reason) ?>
                                                 </td>
-                                                <td><span
-                                                        class="status-badge <?= strtolower(strpos($appointment->status, 'cancelled') !== false ? 'cancelled' : $appointment->status) ?>"><?php
-                                                                 // Check if status contains 'cancelled' and simplify display
-                                                                 if (strpos($appointment->status, 'cancelled') !== false) {
-                                                                     echo 'Cancelled';
-                                                                 } else {
-                                                                     echo ucfirst(htmlspecialchars($appointment->status));
-                                                                 }
-                                                                 ?></span>
+                                                <!-- Replace the status badge cell in the table -->
+                                                <td>
+                                                    <?php
+                                                    $statusClass = '';
+                                                    $status = $appointment->status;
+
+                                                    // Determine the appropriate status class
+                                                    switch ($status) {
+                                                        case 'completed':
+                                                            $statusClass = 'border-success text-success';
+                                                            break;
+                                                        case 'confirmed':
+                                                            $statusClass = 'border-success text-success';
+                                                            break;
+                                                        case 'cancelled':
+                                                        case 'cancelled_by_patient':
+                                                        case 'cancelled_by_clinic':
+                                                        case 'cancelled_auto':
+                                                            $statusClass = 'border-danger text-danger';
+                                                            $status = 'cancelled';
+                                                            break;
+                                                        case 'cancellation_requested':
+                                                            $statusClass = 'border-warning text-warning';
+                                                            break;
+                                                        case 'no-show':
+                                                        case 'no_show':
+                                                            $statusClass = 'border-danger text-danger';
+                                                            $status = 'no-show';
+                                                            break;
+                                                        case 'pending':
+                                                            $statusClass = 'border-info text-info';
+                                                            break;
+                                                        case 'checked_in':
+                                                        case 'check-in':
+                                                            $statusClass = 'border-primary text-primary';
+                                                            break;
+                                                        case 'in_progress':
+                                                            $statusClass = 'border-primary text-primary';
+                                                            break;
+                                                        case 'reschedule_requested':
+                                                        case 'rescheduled':
+                                                            $statusClass = 'border-warning text-warning';
+                                                            break;
+                                                        default:
+                                                            $statusClass = 'border-primary text-primary';
+                                                            break;
+                                                    }
+
+                                                    // Format the display status
+                                                    $displayStatus = ucwords(str_replace('_', ' ', $status));
+                                                    ?>
+                                                    <span
+                                                        class="status-badge border <?= $statusClass ?> px-1 py-1 rounded text-sm">
+                                                        <?= $displayStatus ?>
+                                                    </span>
                                                 </td>
                                                 <td>
                                                     <div class="action-buttons-container">
