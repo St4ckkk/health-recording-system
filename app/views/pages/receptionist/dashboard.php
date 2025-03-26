@@ -147,6 +147,151 @@
                 font-size: 1.25rem;
             }
         }
+
+        /* Status badge styles using CSS variables */
+        .badge-upcoming,
+        .badge-today,
+        .badge-past {
+
+            font-weight: 500;
+        }
+
+        /* Status badge styles using CSS variables - colors only */
+        .badge-upcoming {
+            background-color: var(--primary);
+        }
+
+        .badge-today {
+            background-color: var(--success);
+        }
+
+        .badge-past {
+            background-color: var(--gray-500);
+        }
+
+        /* Appointment status badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            font-size: var(--font-size-xs);
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        /* Appointment status badges - colors only */
+        .status-badge.completed {
+
+            color: var(--success-dark);
+
+        }
+
+        .status-badge.scheduled {
+
+            color: var(--info-dark);
+
+        }
+        
+        .status-badge.cancelled,
+        .status-badge.cancelled_pending {
+
+            color: var(--danger-dark);
+
+        }
+
+        .status-badge.no-show {
+
+            color: var(--warning-dark);
+
+        }
+
+        .status-badge.pending {
+
+            color: var(--primary-dark);
+
+        }
+
+        .status-badge.confirmed {
+
+            color: var(--success-dark);
+        }
+
+        .status-badge.check-in {
+
+            color: var(--primary-blue-dark);
+
+        }
+
+        .status-badge.rescheduled,
+        .status-badge.rescheduled_pending {
+
+            color: var(--warning-dark);
+
+        }
+
+        /* Appointment type badges */
+        .appointment-type {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            font-size: var(--font-size-xs);
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        /* Appointment type badges - colors only */
+        .appointment-type.checkup {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            border-color: var(--primary);
+        }
+
+        .appointment-type.follow_up {
+            background-color: var(--success-light);
+            color: var(--success-dark);
+            border-color: var(--success);
+        }
+
+        .appointment-type.consultation {
+            background-color: var(--info-light);
+            color: var(--info-dark);
+            border-color: var(--info);
+        }
+
+        .appointment-type.treatment {
+            background-color: var(--primary-blue-light);
+            color: var(--primary-blue-dark);
+            border-color: var(--primary-blue);
+        }
+
+        .appointment-type.emergency {
+            background-color: var(--danger-light);
+            color: var(--danger-dark);
+            border-color: var(--danger);
+        }
+
+        .appointment-type.specialist {
+            background-color: var(--info-light);
+            color: var(--info-dark);
+            border-color: var(--info);
+        }
+
+        .appointment-type.vaccination {
+            background-color: var(--success-light);
+            color: var(--success-dark);
+            border-color: var(--success);
+        }
+
+        .appointment-type.laboratory_test {
+            background-color: var(--warning-light);
+            color: var(--warning-dark);
+            border-color: var(--warning);
+        }
+
+        .appointment-type.medical_clearance {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            border-color: var(--primary);
+        }
     </style>
 </head>
 
@@ -282,7 +427,7 @@
                 <section class="p-6">
                     <div class="flex gap-6 w-full">
                         <!-- Left: Appointment List -->
-                        <div class="card shadow-sm rounded-lg w-[450px]  fade-in">
+                        <div class="card shadow-sm rounded-lg w-[450px] fade-in">
                             <div class="p-4">
                                 <h2 class="text-md font-medium">Appointments</h2>
                                 <p class="text-sm text-gray-400">View and manage patient appointments</p>
@@ -347,7 +492,7 @@
                                     }
                                 </script>
                             </div>
-                            <!-- Fix for the appointment type in the appointment list -->
+
                             <div class="appointment-list-container">
                                 <?php if (!empty($allAppointments)): ?>
                                     <?php foreach ($allAppointments as $index => $appointment): ?>
@@ -355,10 +500,12 @@
                                             data-patient="patient-<?= $appointment->id ?>">
                                             <div class="flex justify-between items-start">
                                                 <div>
-                                                    <h4 class="text-gray-900 font-medium"><?= $appointment->first_name ?>
-                                                        <?= $appointment->last_name ?>
+                                                    <h4 class="text-gray-900 font-medium">
+                                                        <?= htmlspecialchars($appointment->first_name) ?>
+                                                        <?= htmlspecialchars($appointment->last_name) ?>
                                                     </h4>
-                                                    <p class="text-xs text-gray-500"><?= $appointment->patient_id ?>
+                                                    <p class="text-xs text-gray-500">
+                                                        <?= htmlspecialchars($appointment->patient_id) ?>
                                                     </p>
                                                     <div class="flex items-center mt-2">
                                                         <i class="bx bx-calendar text-gray-400 text-sm mr-1"></i>
@@ -370,72 +517,55 @@
                                                             class="text-sm"><?= date('h:i A', strtotime($appointment->appointment_time)) ?></span>
                                                     </div>
                                                 </div>
-                                                <?php
-                                                $appointmentType = 'general-appointment';
-                                                if (!empty($appointment->appointment_type)) {
-                                                    $appointmentType = $appointment->appointment_type;
-                                                } else if (!empty($appointment->type)) {
-                                                    $appointmentType = $appointment->type;
-                                                }
 
-                                                // Ensure the type is one of the valid types
-                                                $validTypes = ['checkup', 'follow-up', 'general-appointment', 'emergency', 'consultation'];
+                                                <?php
+                                                // Define valid appointment types
+                                                $validTypes = [
+                                                    'checkup',
+                                                    'follow_up',
+                                                    'consultation',
+                                                    'treatment',
+                                                    'emergency',
+                                                    'specialist',
+                                                    'vaccination',
+                                                    'laboratory_test',
+                                                    'medical_clearance'
+                                                ];
+
+                                                $appointmentType = $appointment->appointment_type ?? $appointment->type ?? 'checkup';
                                                 if (!in_array($appointmentType, $validTypes)) {
-                                                    $appointmentType = 'general-appointment';
+                                                    $appointmentType = 'checkup';
                                                 }
                                                 ?>
-                                                <span
-                                                    class="appointment-type <?= strtolower($appointmentType) ?>"><?= ucfirst(str_replace('-', ' ', $appointmentType)) ?></span>
+
+                                                <span class="appointment-type <?= strtolower($appointmentType) ?>">
+                                                    <?= ucwords(str_replace('_', ' ', $appointmentType)) ?>
+                                                </span>
                                             </div>
+
                                             <div>
                                                 <?php
-                                                $statusClass = '';
-                                                $statusIcon = '';
+                                                // Define status classes and icons
+                                                $statusMapping = [
+                                                    'completed' => ['class' => 'completed', 'icon' => 'bx-check-circle'],
+                                                    'scheduled' => ['class' => 'scheduled', 'icon' => 'bx-time'],
+                                                    'cancelled' => ['class' => 'cancelled', 'icon' => 'bx-x-circle'],
+                                                    'cancelled_pending' => ['class' => 'cancelled', 'icon' => 'bx-time', 'label' => 'Waiting Confirmation'],
+                                                    'no-show' => ['class' => 'no-show', 'icon' => 'bx-error-circle'],
+                                                    'pending' => ['class' => 'pending', 'icon' => 'bx-hourglass'],
+                                                    'confirmed' => ['class' => 'confirmed', 'icon' => 'bx-calendar-check'],
+                                                    'check-in' => ['class' => 'check-in', 'icon' => 'bx-log-in-circle'],
+                                                    'rescheduled' => ['class' => 'rescheduled', 'icon' => 'bx-calendar-exclamation'],
+                                                    'rescheduled_pending' => ['class' => 'rescheduled', 'icon' => 'bx-time', 'label' => 'Waiting Confirmation'],
+                                                ];
 
-                                                switch ($appointment->status) {
-                                                    case 'completed':
-                                                        $statusClass = '';
-                                                        $statusIcon = 'bx-check-circle';
-                                                        break;
-                                                    case 'scheduled':
-                                                        $statusClass = 'scheduled';
-                                                        $statusIcon = 'bx-time';
-                                                        break;
-                                                    case 'cancelled':
-                                                        $statusClass = 'cancelled';
-                                                        $statusIcon = 'bx-x-circle';
-                                                        break;
-                                                    case 'no-show':
-                                                        $statusClass = 'no-show';
-                                                        $statusIcon = 'bx-error-circle';
-                                                        break;
-                                                    case 'pending':
-                                                        $statusClass = 'pending';
-                                                        $statusIcon = 'bx-hourglass';
-                                                        break;
-                                                    case 'confirmed':
-                                                        $statusClass = 'confirmed';
-                                                        $statusIcon = 'bx-calendar-check';
-                                                        break;
-                                                    case 'check-in':
-                                                        $statusClass = 'check-in';
-                                                        $statusIcon = 'bx-log-in-circle';
-                                                        break;
-                                                    case 'rescheduled':
-                                                        $statusClass = 'rescheduled';
-                                                        $statusIcon = 'bx-calendar-exclamation';
-                                                        break;
-                                                    default:
-                                                        $statusClass = 'scheduled';
-                                                        $statusIcon = 'bx-time';
-                                                        break;
-                                                }
+                                                $statusInfo = $statusMapping[$appointment->status] ?? $statusMapping['scheduled'];
+                                                $statusLabel = $statusInfo['label'] ?? ucwords(str_replace('_', ' ', $appointment->status));
                                                 ?>
-                                                <span class="status-badge <?= $statusClass ?>">
-                                                    <i class="bx <?= $statusIcon ?> mr-1"></i>
-                                                    <span class="text-xs">
-                                                        <?= ucfirst($appointment->status ?? 'Scheduled') ?>
-                                                    </span>
+
+                                                <span class="status-badge <?= $statusInfo['class'] ?>">
+                                                    <i class="bx <?= $statusInfo['icon'] ?> mr-1"></i>
+                                                    <span class="text-xs"><?= $statusLabel ?></span>
                                                 </span>
                                             </div>
                                         </div>
@@ -447,6 +577,7 @@
                                 <?php endif; ?>
                             </div>
                         </div>
+
 
                         <!-- Right: Appointment Details -->
                         <div id="appointmentDetails" class="card bg-white shadow-sm rounded-lg p-6 flex-1 fade-in">
@@ -463,41 +594,39 @@
                                             </div>
                                             <div class="flex gap-2">
                                                 <?php
-                                                $appointmentType = 'general-appointment';
-                                                if (!empty($appointment->appointment_type)) {
-                                                    $appointmentType = $appointment->appointment_type;
-                                                } else if (!empty($appointment->type)) {
-                                                    $appointmentType = $appointment->type;
-                                                }
 
-                                                // Ensure the type is one of the valid types
-                                                $validTypes = ['checkup', 'follow-up', 'general-appointment', 'emergency', 'consultation'];
-                                                if (!in_array($appointmentType, $validTypes)) {
-                                                    $appointmentType = 'general-appointment';
-                                                }
+                                                $validTypes = ['checkup', 'follow_up', 'consultation', 'treatment', 'emergency', 'vaccination', 'laboratory_test', 'medical_clearance'];
 
                                                 $statusClass = '';
                                                 switch ($appointment->status) {
                                                     case 'completed':
                                                         $statusClass = 'border-success text-success';
                                                         break;
-                                                    case 'scheduled':
-                                                        $statusClass = 'border-primary text-primary';
+                                                    case 'confirmed':
+                                                        $statusClass = 'border-success text-success';
                                                         break;
-                                                    case 'cancelled':
+                                                    case 'cancelled_by_patient':
+                                                    case 'cancelled_by_clinic':
+                                                    case 'cancelled_auto':
                                                         $statusClass = 'border-danger text-danger';
                                                         break;
-                                                    case 'no-show':
+                                                    case 'cancellation_requested':
                                                         $statusClass = 'border-warning text-warning';
+                                                        break;
+                                                    case 'no_show':
+                                                        $statusClass = 'border-danger text-danger';
                                                         break;
                                                     case 'pending':
                                                         $statusClass = 'border-info text-info';
                                                         break;
-                                                    case 'confirmed':
-                                                        $statusClass = 'border-success text-success';
-                                                        break;
-                                                    case 'check-in':
+                                                    case 'checked_in':
                                                         $statusClass = 'border-primary text-primary';
+                                                        break;
+                                                    case 'in_progress':
+                                                        $statusClass = 'border-primary text-primary';
+                                                        break;
+                                                    case 'reschedule_requested':
+                                                        $statusClass = 'border-warning text-warning';
                                                         break;
                                                     case 'rescheduled':
                                                         $statusClass = 'border-warning text-warning';
@@ -508,10 +637,11 @@
                                                 }
                                                 ?>
                                                 <span
-                                                    class="appointment-type <?= strtolower($appointmentType) ?> px-2 py-2"><?= ucfirst(str_replace('-', ' ', $appointmentType)) ?></span>
+                                                    class="appointment-type <?= strtolower($appointmentType) ?> px-2 py-2"><?= ucwords(str_replace('_', ' ', $appointmentType)) ?>
+                                                </span>
                                                 <span
                                                     class="appointment-type border <?= $statusClass ?> px-1 py-1 rounded text-sm status">
-                                                    <?= ucfirst($appointment->status ?? 'Scheduled') ?>
+                                                    <?= ucwords(str_replace('_', ' ', $appointment->status ?? 'Scheduled')) ?>
                                                 </span>
                                             </div>
                                         </div>
@@ -603,7 +733,7 @@
                                         </div>
 
                                         <div class="flex gap-3 mt-6">
-                                            <?php if ($appointment->status == 'scheduled'): ?>
+                                            <?php if ($appointment->status == 'pending'): ?>
                                                 <div class="flex-1">
                                                     <button class="action-button border border-danger text-danger"
                                                         onclick="cancelAppointment(<?= $appointment->id ?>)">
@@ -611,17 +741,25 @@
                                                         Cancel Appointment
                                                     </button>
                                                 </div>
-                                                <button class="action-button secondary"
+                                                <button class="action-button secondary border border-success text-success"
                                                     onclick="confirmAppointment(<?= $appointment->id ?>)">
                                                     <i class="bx bx-check-circle mr-2 text-md"></i>
                                                     Confirm
                                                 </button>
-                                                <button class="action-button secondary"
+                                                <button class="action-button secondary border border-warning text-warning"
                                                     onclick="sendReminder(<?= $appointment->id ?>)">
-                                                    <i class="bx bx-bell mr-2 text-md"></i>
+                                                    <i class="bx bx-bell mr-2 text-md text-yellow-500"></i>
                                                     Send Reminder
                                                 </button>
-                                            <?php elseif ($appointment->status == 'no-show'): ?>
+                                            <?php elseif ($appointment->status == 'no_show'): ?>
+                                                <div class="flex-1">
+                                                    <button class="action-button secondary border border-warning text-warning"
+                                                        onclick="sendReminder(<?= $appointment->id ?>)">
+                                                        <i class="bx bx-bell mr-2 text-md text-yellow-500"></i>
+                                                        Send Reminder
+                                                    </button>
+                                                </div>
+                                            <?php elseif (in_array($appointment->status, ['cancelled_by_patient', 'cancelled_by_clinic', 'cancelled_auto'])): ?>
                                                 <div class="flex-1">
                                                     <button class="action-button secondary"
                                                         onclick="rescheduleAppointment(<?= $appointment->id ?>)">
@@ -629,25 +767,66 @@
                                                         Reschedule
                                                     </button>
                                                 </div>
-                                            <?php elseif ($appointment->status == 'cancelled'): ?>
+                                            <?php elseif ($appointment->status == 'cancellation_requested'): ?>
                                                 <div class="flex-1">
                                                     <button class="action-button secondary"
-                                                        onclick="rescheduleAppointment(<?= $appointment->id ?>)">
-                                                        <i class="bx bx-calendar mr-2 text-md"></i>
-                                                        Reschedule
+                                                        onclick="approveCancellation(<?= $appointment->id ?>)">
+                                                        <i class="bx bx-check-circle mr-2 text-md"></i>
+                                                        Approve Cancellation
                                                     </button>
                                                 </div>
                                                 <button class="action-button secondary"
-                                                    onclick="confirmCancellation(<?= $appointment->id ?>)">
-                                                    <i class="bx bx-check-circle mr-2 text-md"></i>
-                                                    Confirm Cancellation
+                                                    onclick="denyCancellation(<?= $appointment->id ?>)">
+                                                    <i class="bx bx-x-circle mr-2 text-md"></i>
+                                                    Deny Cancellation
                                                 </button>
-                                            <?php elseif ($appointment->status == 'rescheduled'): ?>
+                                            <?php elseif ($appointment->status == 'reschedule_requested' || $appointment->status == 'rescheduled'): ?>
                                                 <div class="flex-1">
                                                     <button class="action-button secondary"
-                                                        onclick="confirmReschedule(<?= $appointment->id ?>)">
+                                                        onclick="rescheduleAppointment(<?= $appointment->id ?>)">
+                                                        <i class="bx bx-calendar mr-2 text-md"></i>
+                                                        Modify Schedule
+                                                    </button>
+                                                </div>
+                                                <?php if ($appointment->status == 'reschedule_requested'): ?>
+                                                    <button class="action-button secondary"
+                                                        onclick="approveReschedule(<?= $appointment->id ?>)">
                                                         <i class="bx bx-check-circle mr-2 text-md"></i>
-                                                        Confirm Reschedule
+                                                        Approve Reschedule
+                                                    </button>
+                                                    <button class="action-button secondary"
+                                                        onclick="denyReschedule(<?= $appointment->id ?>)">
+                                                        <i class="bx bx-x-circle mr-2 text-md"></i>
+                                                        Deny Reschedule
+                                                    </button>
+                                                <?php endif; ?>
+                                            <?php elseif ($appointment->status == 'confirmed'): ?>
+                                                <div class="flex-1">
+                                                    <button class="action-button secondary border border-primary text-primary"
+                                                        onclick="checkInPatient(<?= $appointment->id ?>)">
+                                                        <i class="bx bx-log-in-circle mr-2 text-md"></i>
+                                                        Check In Patient
+                                                    </button>
+                                                </div>
+                                                <button class="action-button secondary border border-warning text-warning"
+                                                    onclick="sendReminder(<?= $appointment->id ?>)">
+                                                    <i class="bx bx-bell mr-2 text-md text-yellow-500"></i>
+                                                    Send Reminder
+                                                </button>
+                                            <?php elseif ($appointment->status == 'checked_in'): ?>
+                                                <div class="flex-1">
+                                                    <button class="action-button secondary border border-primary text-primary"
+                                                        onclick="startAppointment(<?= $appointment->id ?>)">
+                                                        <i class="bx bx-play-circle mr-2 text-md"></i>
+                                                        Start Appointment
+                                                    </button>
+                                                </div>
+                                            <?php elseif ($appointment->status == 'in_progress'): ?>
+                                                <div class="flex-1">
+                                                    <button class="action-button secondary border border-success text-success"
+                                                        onclick="completeAppointment(<?= $appointment->id ?>)">
+                                                        <i class="bx bx-check-circle mr-2 text-md"></i>
+                                                        Complete Appointment
                                                     </button>
                                                 </div>
                                             <?php endif; ?>
@@ -750,8 +929,7 @@
                 });
             });
         });
-    </script>
-    <script>
+
         document.addEventListener('DOMContentLoaded', function () {
             // Get all appointment items
             const appointmentItems = document.querySelectorAll('.appointment-item');
@@ -781,58 +959,6 @@
                 });
             });
         });
-    </script>
-    <script>
-        // Add these functions to handle the new buttons
-        function confirmCancellation(appointmentId) {
-            if (confirm('Are you sure you want to confirm this cancellation?')) {
-                // You can replace this with an AJAX call to your backend
-                alert('Cancellation confirmed for appointment #' + appointmentId);
-                // Example AJAX call:
-                // fetch('/receptionist/confirm-cancellation/' + appointmentId, {
-                //     method: 'POST',
-                // })
-                // .then(response => response.json())
-                // .then(data => {
-                //     if (data.success) {
-                //         alert('Cancellation confirmed successfully');
-                //         // Reload the page or update the UI
-                //         window.location.reload();
-                //     } else {
-                //         alert('Error: ' + data.message);
-                //     }
-                // })
-                // .catch(error => {
-                //     console.error('Error:', error);
-                //     alert('An error occurred while confirming the cancellation');
-                // });
-            }
-        }
-
-        function confirmReschedule(appointmentId) {
-            if (confirm('Are you sure you want to confirm this reschedule?')) {
-                // You can replace this with an AJAX call to your backend
-                alert('Reschedule confirmed for appointment #' + appointmentId);
-                // Example AJAX call:
-                // fetch('/receptionist/confirm-reschedule/' + appointmentId, {
-                //     method: 'POST',
-                // })
-                // .then(response => response.json())
-                // .then(data => {
-                //     if (data.success) {
-                //         alert('Reschedule confirmed successfully');
-                //         // Reload the page or update the UI
-                //         window.location.reload();
-                //     } else {
-                //         alert('Error: ' + data.message);
-                //     }
-                // })
-                // .catch(error => {
-                //     console.error('Error:', error);
-                //     alert('An error occurred while confirming the reschedule');
-                // });
-            }
-        }
     </script>
 </body>
 

@@ -103,11 +103,11 @@
                             Cancel Appointment
                         </button>
                     </div>
-                    <button class="action-button secondary" onclick="confirmAppointment()">
+                    <button class="action-button border border-success text-success" onclick="confirmAppointment()">
                         <i class="bx bx-check-circle mr-2 text-md"></i>
                         Confirm
                     </button>
-                    <button class="action-button secondary" onclick="sendReminder()">
+                    <button class="action-button border border-warning text-warning" onclick="sendReminder()">
                         <i class="bx bx-bell mr-2 text-md"></i>
                         Send Reminder
                     </button>
@@ -115,7 +115,7 @@
             } else if (status === 'no-show') {
                 actionsContainer.innerHTML = `
                     <div class="flex-1">
-                        <button class="action-button secondary" onclick="rescheduleAppointment()">
+                        <button class="action-button border border-warning text-warning" onclick="rescheduleAppointment()">
                             <i class="bx bx-calendar mr-2 text-md"></i>
                             Reschedule
                         </button>
@@ -124,12 +124,12 @@
             } else if (status === 'cancelled') {
                 actionsContainer.innerHTML = `
                     <div class="flex-1">
-                        <button class="action-button secondary" onclick="rescheduleAppointment()">
+                        <button class="action-button border border-warning text-warning" onclick="rescheduleAppointment()">
                             <i class="bx bx-calendar mr-2 text-md"></i>
                             Reschedule
                         </button>
                     </div>
-                    <button class="action-button secondary border " onclick="confirmCancellation()">
+                    <button class="action-button border border-success text-success" onclick="confirmCancellation()">
                         <i class="bx bx-check-circle mr-2 text-md"></i>
                         Confirm Cancellation
                     </button>
@@ -137,7 +137,7 @@
             } else if (status === 'rescheduled') {
                 actionsContainer.innerHTML = `
                     <div class="flex-1">
-                        <button class="action-button secondary" onclick="confirmReschedule()">
+                        <button class="action-button border border-success text-success" onclick="confirmReschedule()">
                             <i class="bx bx-check-circle mr-2 text-md"></i>
                             Confirm Reschedule
                         </button>

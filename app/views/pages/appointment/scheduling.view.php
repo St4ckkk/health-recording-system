@@ -69,6 +69,7 @@
             transition: all 0.2s ease;
             border: 1px solid var(--gray-300);
             border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
         }
 
         .time-slot:hover {
@@ -134,6 +135,34 @@
             padding: 1rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
+
+        /* Scrollable time slots container */
+        .time-slots-container {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 8px;
+            margin-right: -8px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-light) var(--gray-100);
+        }
+
+        .time-slots-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .time-slots-container::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: 10px;
+        }
+
+        .time-slots-container::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 10px;
+        }
+
+        .time-slots-container::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
     </style>
 </head>
 
@@ -158,8 +187,7 @@
                         <div class="avatar w-16 h-16 mr-4 shrink-0">
                             <?php if (!empty($doctor->profile)): ?>
                                 <img src="<?= BASE_URL . '/' . $doctor->profile ?>"
-                                    class="w-full h-full object-cover rounded-full"
-                                    alt="Dr. <?= $doctor->full_name ?>">
+                                    class="w-full h-full object-cover rounded-full" alt="Dr. <?= $doctor->full_name ?>">
                             <?php else: ?>
                                 <i class="bx bx-user text-2xl"></i>
                             <?php endif; ?>
@@ -169,12 +197,13 @@
                             <h1 class="text-gray-500 text-sm"><?= $doctor->specialization ?></h1>
                         </div>
                     </div>
-                    
+
                     <div class="mt-4">
                         <h3 class="text-sm font-medium text-gray-700 mb-2">Available Days</h3>
                         <div class="flex flex-wrap gap-1">
                             <?php foreach ($doctor->available_days as $day): ?>
-                                <span class="inline-block px-2 py-1 bg-primary-light text-primary text-xs rounded-full"><?= $day ?></span>
+                                <span
+                                    class="inline-block px-2 py-1 bg-primary-light text-primary text-xs rounded-full"><?= $day ?></span>
                             <?php endforeach; ?>
                         </div>
                     </div>
@@ -246,7 +275,7 @@
                     <div id="timeSlotContainer" class="hidden md:w-64 mt-8 md:mt-16 fade-in">
                         <h3 id="selectedDate" class="text-lg font-semibold text-gray-800 mb-4"></h3>
 
-                        <div id="timeSlots" class="space-y-2">
+                        <div id="timeSlots" class="time-slots-container">
                             <!-- Time slots will be dynamically populated -->
                             <div class="text-center py-4 text-gray-500">
                                 <i class="bx bx-time-five text-2xl mb-2"></i>
@@ -278,7 +307,7 @@
                     <input type="hidden" id="doctor_id" name="doctor_id" value="<?= $doctor->id ?>">
                     <input type="hidden" id="appointment_date" name="appointment_date">
                     <input type="hidden" id="appointment_time" name="appointment_time">
-                    
+
                     <!-- Patient Name Section -->
                     <div class="space-y-4">
                         <h3 class="section-title">Patient Name</h3>
@@ -451,7 +480,7 @@
             const isGuardianCheckbox = document.getElementById('isGuardian');
             const guardianFields = document.getElementById('guardianFields');
             const patientForm = document.getElementById('patientForm');
-            
+
             // Hidden form fields
             const appointmentDateField = document.getElementById('appointment_date');
             const appointmentTimeField = document.getElementById('appointment_time');
@@ -463,7 +492,7 @@
 
             // Doctor's available days from PHP
             const doctorAvailableDays = <?= json_encode($doctor->available_days) ?>;
-            
+
             // Convert day names to day numbers (0 = Sunday, 1 = Monday, etc.)
             const availableDayNumbers = [];
             doctorAvailableDays.forEach(day => {
@@ -524,7 +553,7 @@
 
                     // Store selected time
                     selectedTime = e.target.getAttribute('data-time');
-                    
+
                     // Set hidden form field
                     appointmentTimeField.value = selectedTime;
 
@@ -541,7 +570,7 @@
                 if (selectedDay && selectedMonth !== null && selectedYear && selectedTime) {
                     const selectedDate = new Date(selectedYear, selectedMonth, selectedDay);
 
-                    // Calculate end time (15 minutes after start time)
+                    // Calculate end time (30 minutes after start time instead of 15)
                     const startTime = selectedTime;
                     let endTime = "";
 
@@ -553,7 +582,7 @@
                     // Create a new date object for end time calculation
                     const endDate = new Date(selectedDate);
                     endDate.setHours(hour);
-                    endDate.setMinutes(minute + 15);
+                    endDate.setMinutes(minute + 30); // Changed from 15 to 30 minutes
 
                     // Format the end time
                     endTime = endDate.toTimeString().substring(0, 5);
@@ -626,13 +655,13 @@
             function fetchAvailableTimeSlots(date) {
                 const doctorId = <?= $doctor->id ?>;
                 const baseUrl = '<?= BASE_URL ?>';
-                
+
                 // FIX: Use local date formatting instead of ISO to prevent timezone issues
                 const year = date.getFullYear();
                 const month = String(date.getMonth() + 1).padStart(2, '0');
                 const day = String(date.getDate()).padStart(2, '0');
                 const formattedDate = `${year}-${month}-${day}`;
-                
+
                 // Show loading state
                 timeSlotsContainer.innerHTML = `
                     <div class="text-center py-4">
@@ -640,10 +669,10 @@
                         <p class="mt-2 text-gray-600">Loading available times...</p>
                     </div>
                 `;
-                
+
                 // Add console log to debug the request
                 console.log(`Fetching time slots for doctor ${doctorId} on ${formattedDate}`);
-                
+
                 // Fetch time slots from the server using query parameters
                 fetch(`${baseUrl}/appointment/get-available-time-slots?doctor_id=${doctorId}&date=${formattedDate}`, {
                     method: 'GET',
@@ -651,46 +680,68 @@
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Add console log to debug the response
-                    console.log('Time slots response:', data);
-                    
-                    if (data.success && data.time_slots && data.time_slots.length > 0) {
-                        // Populate time slots
-                        timeSlotsContainer.innerHTML = '';
-                        data.time_slots.forEach(slot => {
-                            const timeSlotButton = document.createElement('button');
-                            timeSlotButton.className = 'time-slot w-full p-3 text-center';
-                            timeSlotButton.setAttribute('data-time', slot.time);
-                            timeSlotButton.textContent = slot.formatted_time;
-                            timeSlotButton.addEventListener('click', handleTimeSlotSelection);
-                            timeSlotsContainer.appendChild(timeSlotButton);
-                        });
-                    } else {
-                        // No time slots available
-                        timeSlotsContainer.innerHTML = `
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Add console log to debug the response
+                        console.log('Time slots response:', data);
+
+                        if (data.success && data.time_slots && data.time_slots.length > 0) {
+                            // Populate time slots
+                            timeSlotsContainer.innerHTML = '';
+                            data.time_slots.forEach(slot => {
+                                // Calculate end time (30 minutes after start time)
+                                const startTime = slot.time;
+                                const [hours, minutes] = startTime.split(':');
+                                const hour = parseInt(hours);
+                                const minute = parseInt(minutes);
+
+                                // Create a new date object for end time calculation
+                                const endDate = new Date();
+                                endDate.setHours(hour);
+                                endDate.setMinutes(minute + 30);
+
+                                // Format the end time
+                                const endTime = endDate.toTimeString().substring(0, 5);
+
+                                // Format times for display
+                                const displayStartTime = formatTimeForDisplay(startTime);
+                                const displayEndTime = formatTimeForDisplay(endTime);
+
+                                // Create time slot button with start and end time
+                                const timeSlotButton = document.createElement('button');
+                                timeSlotButton.className = 'time-slot w-full p-3 text-center rounded-lg border border-gray-200 hover:bg-primary-light hover:border-primary transition-colors';
+                                timeSlotButton.setAttribute('data-time', slot.time);
+                                timeSlotButton.innerHTML = `
+                                    <span class="font-medium">${displayStartTime} - ${displayEndTime}</span>
+                                    <span class="block text-xs text-gray-500 mt-1">30 min</span>
+                                `;
+                                timeSlotButton.addEventListener('click', handleTimeSlotSelection);
+                                timeSlotsContainer.appendChild(timeSlotButton);
+                            });
+                        } else {
+                            // No time slots available
+                            timeSlotsContainer.innerHTML = `
                             <div class="text-center py-4 text-gray-500">
                                 <i class="bx bx-time-five text-2xl mb-2"></i>
                                 <p>No available time slots for this date</p>
                             </div>
                         `;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching time slots:', error);
-                    timeSlotsContainer.innerHTML = `
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching time slots:', error);
+                        timeSlotsContainer.innerHTML = `
                         <div class="text-center py-4 text-red-500">
                             <i class="bx bx-error-circle text-2xl mb-2"></i>
                             <p>Failed to load time slots</p>
                         </div>
                     `;
-                });
+                    });
             }
 
             // Function to generate calendar
@@ -729,15 +780,15 @@
                     dayButton.textContent = day;
 
                     // Check if this date is in the past
-                    const isPast = (year < todayYear) || 
-                                  (year === todayYear && month < todayMonth) || 
-                                  (year === todayYear && month === todayMonth && day < todayDate);
-                    
+                    const isPast = (year < todayYear) ||
+                        (year === todayYear && month < todayMonth) ||
+                        (year === todayYear && month === todayMonth && day < todayDate);
+
                     // Check if this day of the week is available for the doctor
                     const date = new Date(year, month, day);
                     const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
                     const isAvailable = availableDayNumbers.includes(dayOfWeek) && !isPast;
-                    
+
                     const isSelected = selectedDay === day && selectedMonth === month && selectedYear === year;
 
                     // Set appropriate classes
@@ -804,10 +855,10 @@
 
                 dayButtons.forEach(button => {
                     const day = parseInt(button.textContent);
-                    
+
                     // Check if this day is available (has the 'available' class)
                     const isAvailable = button.classList.contains('available');
-                    
+
                     const isSelected = selectedDay === day && selectedMonth === currentMonth && selectedYear === currentYear;
 
                     // Reset classes
@@ -835,4 +886,3 @@
 </body>
 
 </html>
-

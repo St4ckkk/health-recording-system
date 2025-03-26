@@ -12,7 +12,79 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/output.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/app-tracking.css">
+    <style>
+        /* Loading indicator */
+        .loading-indicator {
+            display: none;
+            text-align: center;
+            padding: 2rem 0;
+        }
 
+        .loading-indicator.visible {
+            display: block;
+        }
+
+        .search-animation {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+
+        .search-animation i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            animation: hover 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(var(--primary-rgb), 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0);
+            }
+        }
+
+        @keyframes hover {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        /* New status styles for pending confirmation */
+        .timeline-marker.pending-confirmation {
+            background-color: #fef3c7;
+            border-color: #f59e0b;
+        }
+
+        .timeline-marker.pending-confirmation i {
+            color: #f59e0b;
+        }
+
+        .status-badge.status-pending-confirmation {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+    </style>
 
 <body>
     <div class="p-5">
@@ -120,6 +192,8 @@
                                     <div class="info-card-label">Date & Time</div>
                                     <div class="info-card-value" id="dateTime"></div>
                                     <div class="text-sm font-bold text-primary mt-1" id="timeOnly"></div>
+                                    <div class="text-xs text-gray-600 mt-1" id="appointmentDuration">30 min appointment
+                                    </div>
                                 </div>
 
                                 <div class="info-card">
@@ -385,79 +459,7 @@
             </div>
         </div>
 
-        <style>
-            /* Loading indicator */
-            .loading-indicator {
-                display: none;
-                text-align: center;
-                padding: 2rem 0;
-            }
 
-            .loading-indicator.visible {
-                display: block;
-            }
-
-            .search-animation {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                width: 80px;
-                height: 80px;
-                border-radius: 50%;
-                background-color: var(--primary-light);
-                position: relative;
-                animation: pulse 2s infinite;
-            }
-
-            .search-animation i {
-                font-size: 2.5rem;
-                color: var(--primary);
-                animation: hover 1.5s ease-in-out infinite;
-            }
-
-            @keyframes pulse {
-                0% {
-                    box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0.4);
-                }
-
-                70% {
-                    box-shadow: 0 0 0 15px rgba(var(--primary-rgb), 0);
-                }
-
-                100% {
-                    box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0);
-                }
-            }
-
-            @keyframes hover {
-                0% {
-                    transform: translateY(0);
-                }
-
-                50% {
-                    transform: translateY(-10px);
-                }
-
-                100% {
-                    transform: translateY(0);
-                }
-            }
-
-            /* New status styles for pending confirmation */
-            .timeline-marker.pending-confirmation {
-                background-color: #fef3c7;
-                border-color: #f59e0b;
-            }
-
-            .timeline-marker.pending-confirmation i {
-                color: #f59e0b;
-            }
-
-            .status-badge.status-pending-confirmation {
-                background-color: #fef3c7;
-                color: #d97706;
-            }
-        </style>
 
         <script src="<?= BASE_URL ?>/js/app-tracking.js"></script>
 </body>

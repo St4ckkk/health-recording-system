@@ -211,7 +211,7 @@
                         <div class="bg-white shadow-sm rounded-lg p-6 border border-gray-200 md:col-span-2">
                             <h3 class="text-lg font-semibold text-gray-900 mb-4">Weekly Schedule</h3>
 
-                            <table class="schedule-table">
+                            <table class="schedule-table ">
                                 <thead>
                                     <tr>
                                         <th>Day</th>

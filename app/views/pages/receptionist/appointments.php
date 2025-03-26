@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="base-url" content="<?= BASE_URL ?>">
-    <title>Receptionist</title>
+    <title><?= $title ?></title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/node_modules/boxicons/css/boxicons.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/globals.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css">
@@ -164,125 +164,143 @@
             background-color: var(--danger-lighter);
         }
 
-        /* Enhanced status badge styles using CSS variables - text color only */
         .status-badge {
             display: inline-flex;
             align-items: center;
             padding: 0.15rem 0.5rem;
-            /* Reduced padding from 0.25rem 0.75rem */
-            border-radius: var(--radius-pill);
             font-size: var(--font-size-xs);
             font-weight: 500;
             text-transform: capitalize;
-            border: 1px solid currentColor;
-            background-color: transparent;
         }
 
         .status-badge.scheduled {
+            background-color: var(--info-light);
             color: var(--info-dark);
+            border: 1px solid var(--info);
         }
 
         .status-badge.completed {
+            background-color: var(--success-light);
             color: var(--success-dark);
+            border: 1px solid var(--success);
         }
 
         .status-badge.cancelled {
+            background-color: var(--danger-light);
             color: var(--danger-dark);
+            border: 1px solid var(--danger);
         }
 
         .status-badge.no-show {
+            background-color: var(--warning-light);
             color: var(--warning-dark);
+            border: 1px solid var(--warning);
         }
 
         .status-badge.pending {
+            background-color: var(--primary-light);
             color: var(--primary-dark);
+            border: 1px solid var(--primary);
         }
 
         .status-badge.rescheduled {
+            background-color: var(--warning-light);
             color: var(--warning-dark);
+            border: 1px solid var(--warning);
         }
 
         .status-badge.confirmed {
+            background-color: var(--success-light);
             color: var(--success-dark);
+            border: 1px solid var(--success);
         }
 
-        /* Keep the appointment type styles as they were */
+        /* Appointment type styles */
         .appointment-type {
             display: inline-flex;
             align-items: center;
-            padding: 0.25rem 0.75rem;
-            /* Removed border-radius: var(--radius-pill); */
+            padding: 0.25rem 0.5rem;
             font-size: var(--font-size-xs);
             font-weight: 500;
             text-transform: capitalize;
-            border: 1px solid currentColor;
-            background-color: transparent;
         }
 
         .appointment-type.checkup {
-            color: var(--primary);
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            border: 1px solid var(--primary);
         }
 
         .appointment-type.follow-up {
+            background-color: var(--success-light);
             color: var(--success-dark);
+            border: 1px solid var(--success);
         }
 
         .appointment-type.procedure {
+            background-color: var(--warning-light);
             color: var(--warning-dark);
+            border: 1px solid var(--warning);
         }
 
         .appointment-type.specialist {
+            background-color: var(--info-light);
             color: var(--info-dark);
+            border: 1px solid var(--info);
         }
 
         .appointment-type.emergency {
+            background-color: var(--danger-light);
             color: var(--danger-dark);
+            border: 1px solid var(--danger);
         }
 
         .appointment-type.consultation {
+            background-color: var(--primary-blue-light);
             color: var(--primary-blue-dark);
+            border: 1px solid var(--primary-blue);
         }
 
         /* Action button styles */
         .action-button.danger {
             background-color: transparent;
             color: var(--danger-dark);
-            border: 1px solid var(--danger-dark);
+            border: 1px solid var(--danger);
         }
 
         .action-button.danger:hover {
-            background-color: var(--danger-lighter);
+            background-color: var(--danger-light);
         }
 
         /* Add styles for view, reschedule and confirm buttons */
         .action-button.view {
             background-color: transparent;
             color: var(--info-dark);
-            border: 1px solid var(--info-dark);
+            border: 1px solid var(--info);
         }
 
         .action-button.view:hover {
-            background-color: var(--info-lighter);
+            background-color: var(--info-light);
         }
 
         .action-button.reschedule {
             background-color: transparent;
             color: var(--warning-dark);
-            border: 1px solid var(--warning-dark);
+            border: 1px solid var(--warning);
         }
 
         .action-button.reschedule:hover {
-            background-color: var(--warning-lighter);
+            background-color: var(--warning-light);
         }
 
         .action-button.confirm {
             background-color: transparent;
             color: var(--success-dark);
-            border: 1px solid var(--success-dark);
+            border: 1px solid var(--success);
         }
 
         .action-button.confirm:hover {
-            background-color: var(--success-lighter);
+            background-color: var(--success-light);
         }
 
         /* Add delete button style */
@@ -333,6 +351,15 @@
             transition: opacity 0.3s;
             font-size: 0.7rem;
             white-space: nowrap;
+        }
+
+        .appointments-table thead th {
+            background-color: var(--gray-50);
+            color: var(--gray-700);
+            font-weight: 500;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
         }
 
         .tooltip .tooltip-text::after {
@@ -457,13 +484,16 @@
                             <table class="appointments-table">
                                 <thead>
                                     <tr>
-                                        <th>REF #</th>
-                                        <th>Patient</th>
-                                        <th>Date & Time</th>
-                                        <th>Type</th>
-                                        <th>Reason</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
+                                        <th class="text-left py-2 px-4 bg-gray-50 font-medium text-gray-700">REF #</th>
+                                        <th class="text-left py-2 px-4 bg-gray-50 font-medium text-gray-700">Patient
+                                        </th>
+                                        <th class="text-left py-2 px-4 bg-gray-50 font-medium text-gray-700">Date & Time
+                                        </th>
+                                        <th class="text-left py-2 px-4 bg-gray-50 font-medium text-gray-700">Type</th>
+                                        <th class="text-left py-2 px-4 bg-gray-50 font-medium text-gray-700">Reason</th>
+                                        <th class="text-left py-2 px-4 bg-gray-50 font-medium text-gray-700">Status</th>
+                                        <th class="text-left py-2 px-4 bg-gray-50 font-medium text-gray-700">Actions
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
