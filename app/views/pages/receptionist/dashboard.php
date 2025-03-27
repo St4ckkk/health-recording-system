@@ -17,7 +17,6 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/node_modules/flatpickr/dist/flatpickr.min.css">
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/flatpickr.min.js"></script>
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/l10n/fr.js"></script>
-
 </head>
 
 <body class="font-body">
@@ -67,8 +66,8 @@
                                                 <p class="text-gray-900">Dr. <?= $appointment->doctor_first_name ?>
                                                     <?= $appointment->doctor_last_name ?>
                                                 </p>
-                                                <p class="text-sm text-gray-500">
-                                                    <?= $appointment->reason ?? 'General appointment' ?>
+                                                <p class="text-sm text-gray-500 capitalize">
+                                                    <?= $appointment->appointment_type ?? 'General appointment' ?>
                                                 </p>
                                             </div>
                                             <span class="badge-upcoming text-white px-3 py-1 rounded text-xs">
@@ -272,12 +271,13 @@
                                                     'no-show' => ['class' => 'no-show', 'icon' => 'bx-error-circle'],
                                                     'pending' => ['class' => 'pending', 'icon' => 'bx-hourglass'],
                                                     'confirmed' => ['class' => 'confirmed', 'icon' => 'bx-calendar-check'],
-                                                    'check-in' => ['class' => 'check-in', 'icon' => 'bx-log-in-circle'],
+                                                    'checked-in' => ['class' => 'checked-in', 'icon' => 'bx-log-in-circle'],
+                                                    'in_progress' => ['class' => 'in_progress', 'icon' => 'bx-hourglass'],
                                                     'rescheduled' => ['class' => 'rescheduled', 'icon' => 'bx-calendar-exclamation'],
                                                     'reschedule_requested' => ['class' => 'rescheduled', 'icon' => 'bx-time', 'label' => 'Reschedule Waiting For Confirmation'],
                                                 ];
 
-                                                $statusInfo = $statusMapping[$appointment->status] ?? $statusMapping['scheduled'];
+                                                $statusInfo = $statusMapping[$appointment->status] ?? $statusMapping['checked-in'];
                                                 $statusLabel = $statusInfo['label'] ?? ucwords(str_replace('_', ' ', $appointment->status));
                                                 ?>
 
@@ -395,6 +395,229 @@
                                         class="rounded-md bg-danger px-4 py-2 text-sm font-medium text-white hover:bg-danger-dark focus:outline-none"
                                         disabled>
                                         Confirm Cancellation
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Confirmation Modal -->
+                        <div id="confirmationModal"
+                            class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
+                            <div class="w-full max-w-md transform rounded-lg bg-white shadow-xl transition-all duration-300 scale-95 opacity-0"
+                                id="confirmModalContent">
+                                <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+                                    <h3 class="text-lg font-medium text-gray-900">Confirm Appointment</h3>
+                                    <button type="button" class="text-gray-400 hover:text-gray-500 focus:outline-none"
+                                        id="closeConfirmModal">
+                                        <i class="bx bx-x text-2xl"></i>
+                                    </button>
+                                </div>
+
+                                <div class="px-6 py-4">
+                                    <p class="mb-4 text-sm text-gray-500">Are you sure you want to confirm this
+                                        appointment?</p>
+
+                                    <form id="confirmationForm" class="space-y-3">
+                                        <input type="hidden" id="confirmAppointmentId" name="appointmentId" value="">
+
+                                        <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                                            <label class="flex cursor-pointer items-start">
+                                                <input type="checkbox" name="send_confirmation" value="1"
+                                                    class="mt-1 mr-2" checked>
+                                                <div>
+                                                    <span class="block text-sm font-medium">Send confirmation to
+                                                        patient</span>
+                                                    <span class="text-xs text-gray-500">Patient will receive an email
+                                                        notification</span>
+                                                </div>
+                                            </label>
+                                        </div>
+
+                                        <div>
+                                            <label for="confirmation_notes"
+                                                class="block text-sm font-medium text-gray-700 mb-1">Additional
+                                                Notes:</label>
+                                            <textarea id="confirmation_notes" name="confirmation_notes" rows="2"
+                                                class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                                placeholder="Add any special instructions or notes..."></textarea>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="flex justify-end space-x-3 border-t border-gray-200 bg-gray-50 px-6 py-3">
+                                    <button type="button" id="cancelConfirmBtn"
+                                        class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                                        Cancel
+                                    </button>
+                                    <button type="button" id="confirmAppointmentBtn"
+                                        class="rounded-md bg-success px-4 py-2 text-sm font-medium text-white hover:bg-success-dark focus:outline-none">
+                                        Confirm Appointment
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Approve Cancellation Modal -->
+                        <div id="approveCancellationModal"
+                            class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
+                            <div class="w-full max-w-md transform rounded-lg bg-white shadow-xl transition-all duration-300 scale-95 opacity-0"
+                                id="approveCancellationModalContent">
+                                <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+                                    <h3 class="text-lg font-medium text-gray-900">Approve Cancellation Request</h3>
+                                    <button type="button" class="text-gray-400 hover:text-gray-500 focus:outline-none"
+                                        id="closeApproveCancellationModal">
+                                        <i class="bx bx-x text-2xl"></i>
+                                    </button>
+                                </div>
+
+                                <div class="px-6 py-4">
+                                    <p class="mb-4 text-sm text-gray-500">Are you sure you want to approve this
+                                        cancellation request?</p>
+
+                                    <form id="approveCancellationForm" class="space-y-3">
+                                        <input type="hidden" id="approveCancellationAppointmentId" name="appointmentId"
+                                            value="">
+
+                                        <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                                            <label class="flex cursor-pointer items-start">
+                                                <input type="checkbox" name="send_cancellation_confirmation" value="1"
+                                                    class="mt-1 mr-2" checked>
+                                                <div>
+                                                    <span class="block text-sm font-medium">Send confirmation to
+                                                        patient</span>
+                                                    <span class="text-xs text-gray-500">Patient will receive an email
+                                                        notification</span>
+                                                </div>
+                                            </label>
+                                        </div>
+
+                                        <div>
+                                            <label for="approve_cancellation_notes"
+                                                class="block text-sm font-medium text-gray-700 mb-1">Additional
+                                                Notes:</label>
+                                            <textarea id="approve_cancellation_notes" name="approve_cancellation_notes"
+                                                rows="2"
+                                                class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                                placeholder="Add any notes about this cancellation..."></textarea>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="flex justify-end space-x-3 border-t border-gray-200 bg-gray-50 px-6 py-3">
+                                    <button type="button" id="cancelApproveCancellationBtn"
+                                        class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                                        Cancel
+                                    </button>
+                                    <button type="button" id="confirmApproveCancellationBtn"
+                                        class="rounded-md bg-success px-4 py-2 text-sm font-medium text-white hover:bg-success-dark focus:outline-none">
+                                        Approve Cancellation
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Deny Cancellation Modal -->
+                        <div id="denyCancellationModal"
+                            class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
+                            <div class="w-full max-w-md transform rounded-lg bg-white shadow-xl transition-all duration-300 scale-95 opacity-0"
+                                id="denyCancellationModalContent">
+                                <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+                                    <h3 class="text-lg font-medium text-gray-900">Deny Cancellation Request</h3>
+                                    <button type="button" class="text-gray-400 hover:text-gray-500 focus:outline-none"
+                                        id="closeDenyCancellationModal">
+                                        <i class="bx bx-x text-2xl"></i>
+                                    </button>
+                                </div>
+
+                                <div class="px-6 py-4">
+                                    <p class="mb-4 text-sm text-gray-500">Please provide a reason for denying this
+                                        cancellation request:</p>
+
+                                    <form id="denyCancellationForm" class="space-y-3">
+                                        <input type="hidden" id="denyCancellationAppointmentId" name="appointmentId"
+                                            value="">
+
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                                                <label class="flex cursor-pointer items-start">
+                                                    <input type="radio" name="denial_reason" value="late_notice"
+                                                        class="mt-1 mr-2">
+                                                    <div>
+                                                        <span class="block text-sm font-medium">Late Notice</span>
+                                                        <span class="text-xs text-gray-500">Request received too
+                                                            late</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+
+                                            <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                                                <label class="flex cursor-pointer items-start">
+                                                    <input type="radio" name="denial_reason" value="policy_violation"
+                                                        class="mt-1 mr-2">
+                                                    <div>
+                                                        <span class="block text-sm font-medium">Policy Violation</span>
+                                                        <span class="text-xs text-gray-500">Against clinic policy</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+
+                                            <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                                                <label class="flex cursor-pointer items-start">
+                                                    <input type="radio" name="denial_reason" value="medical_necessity"
+                                                        class="mt-1 mr-2">
+                                                    <div>
+                                                        <span class="block text-sm font-medium">Medical Necessity</span>
+                                                        <span class="text-xs text-gray-500">Appointment is
+                                                            necessary</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+
+                                            <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                                                <label class="flex cursor-pointer items-start">
+                                                    <input type="radio" name="denial_reason" value="other"
+                                                        class="mt-1 mr-2">
+                                                    <div>
+                                                        <span class="block text-sm font-medium">Other Reason</span>
+                                                        <span class="text-xs text-gray-500">Please specify below</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                                            <label class="flex cursor-pointer items-start">
+                                                <input type="checkbox" name="send_denial_notification" value="1"
+                                                    class="mt-1 mr-2" checked>
+                                                <div>
+                                                    <span class="block text-sm font-medium">Send notification to
+                                                        patient</span>
+                                                    <span class="text-xs text-gray-500">Patient will receive an email
+                                                        notification</span>
+                                                </div>
+                                            </label>
+                                        </div>
+
+                                        <div>
+                                            <label for="denial_details"
+                                                class="block text-sm font-medium text-gray-700 mb-1">Additional
+                                                Details:</label>
+                                            <textarea id="denial_details" name="denial_details" rows="2"
+                                                class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                                placeholder="Please provide additional information about this denial..."></textarea>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="flex justify-end space-x-3 border-t border-gray-200 bg-gray-50 px-6 py-3">
+                                    <button type="button" id="cancelDenialBtn"
+                                        class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                                        Cancel
+                                    </button>
+                                    <button type="button" id="confirmDenialBtn"
+                                        class="rounded-md bg-danger px-4 py-2 text-sm font-medium text-white hover:bg-danger-dark focus:outline-none"
+                                        disabled>
+                                        Confirm Denial
                                     </button>
                                 </div>
                             </div>
@@ -612,13 +835,7 @@
                                                     Deny Cancellation
                                                 </button>
                                             <?php elseif ($appointment->status == 'reschedule_requested' || $appointment->status == 'rescheduled'): ?>
-                                                <div class="flex-1">
-                                                    <button class="action-button border border-info text-info"
-                                                        onclick="rescheduleAppointment(<?= $appointment->id ?>)">
-                                                        <i class="bx bx-calendar mr-2 text-md"></i>
-                                                        Modify Schedule
-                                                    </button>
-                                                </div>
+
                                                 <?php if ($appointment->status == 'reschedule_requested'): ?>
                                                     <button class="action-button border border-success text-success"
                                                         onclick="approveReschedule(<?= $appointment->id ?>)">
@@ -682,6 +899,504 @@
         </main>
     </div>
     <script src="<?= BASE_URL ?>/js/reception.js"></script>
+    <script src="<?= BASE_URL ?>/js/confirm.js"></script>
 </body>
 
 </html>
+
+
+<div id="reminderModal"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
+    <div class="w-full max-w-md transform rounded-lg bg-white shadow-xl transition-all duration-300 scale-95 opacity-0"
+        id="reminderModalContent">
+        <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+            <h3 class="text-lg font-medium text-gray-900">Send Appointment Reminder</h3>
+            <button type="button" class="text-gray-400 hover:text-gray-500 focus:outline-none" id="closeReminderModal">
+                <i class="bx bx-x text-2xl"></i>
+            </button>
+        </div>
+
+        <div class="px-6 py-4">
+            <p class="mb-4 text-sm text-gray-500">Select a reminder type to send to the patient:</p>
+
+            <form id="reminderForm" class="space-y-3">
+                <input type="hidden" id="reminderAppointmentId" name="appointmentId" value="">
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                        <label class="flex cursor-pointer items-start">
+                            <input type="radio" name="reminder_type" value="standard" class="mt-1 mr-2">
+                            <div>
+                                <span class="block text-sm font-medium">Standard Reminder</span>
+                                <span class="text-xs text-gray-500">Basic appointment details</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                        <label class="flex cursor-pointer items-start">
+                            <input type="radio" name="reminder_type" value="preparation" class="mt-1 mr-2">
+                            <div>
+                                <span class="block text-sm font-medium">Preparation Instructions</span>
+                                <span class="text-xs text-gray-500">Include preparation details</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                        <label class="flex cursor-pointer items-start">
+                            <input type="radio" name="reminder_type" value="documents" class="mt-1 mr-2">
+                            <div>
+                                <span class="block text-sm font-medium">Document Reminder</span>
+                                <span class="text-xs text-gray-500">Remind to bring documents</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                        <label class="flex cursor-pointer items-start">
+                            <input type="radio" name="reminder_type" value="custom" class="mt-1 mr-2">
+                            <div>
+                                <span class="block text-sm font-medium">Custom Message</span>
+                                <span class="text-xs text-gray-500">Create your own message</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="reminder_message" class="block text-sm font-medium text-gray-700 mb-1">Additional
+                        Message:</label>
+                    <textarea id="reminder_message" name="reminder_message" rows="3"
+                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                        placeholder="Add any additional information or custom message..."></textarea>
+                </div>
+
+                <div class="rounded-md border border-gray-200 p-3 bg-gray-50">
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            <input id="send_email" name="send_email" type="checkbox" checked
+                                class="h-4 w-4 text-primary border-gray-300 rounded">
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="send_email" class="font-medium text-gray-700">Send Email</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-md border border-gray-200 p-3 bg-gray-50">
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            <input id="send_sms" name="send_sms" type="checkbox" checked
+                                class="h-4 w-4 text-primary border-gray-300 rounded">
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="send_sms" class="font-medium text-gray-700">Send SMS</label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="flex justify-end space-x-3 border-t border-gray-200 bg-gray-50 px-6 py-3">
+            <button type="button" id="cancelReminderBtn"
+                class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                Cancel
+            </button>
+            <button type="button" id="sendReminderBtn"
+                class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark focus:outline-none">
+                Send Reminder
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="approveRescheduleModal"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
+    <div class="w-full max-w-md transform rounded-lg bg-white shadow-xl transition-all duration-300 scale-95 opacity-0"
+        id="approveRescheduleModalContent">
+        <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+            <h3 class="text-lg font-medium text-gray-900">Approve Reschedule Request</h3>
+            <button type="button" class="text-gray-400 hover:text-gray-500 focus:outline-none"
+                id="closeApproveRescheduleModal">
+                <i class="bx bx-x text-2xl"></i>
+            </button>
+        </div>
+
+        <div class="px-6 py-4">
+            <p class="mb-4 text-sm text-gray-500">Review and approve the requested reschedule:</p>
+
+            <form id="approveRescheduleForm" class="space-y-3">
+                <input type="hidden" id="approveRescheduleAppointmentId" name="appointmentId" value="">
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="requested_date" class="block text-sm font-medium text-gray-700 mb-1">Requested
+                            Date:</label>
+                        <div class="relative">
+                            <input type="text" id="requested_date" name="requested_date" readonly
+                                class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary bg-gray-50">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="requested_time" class="block text-sm font-medium text-gray-700 mb-1">Requested
+                            Time:</label>
+                        <div class="relative">
+                            <input type="text" id="requested_time" name="requested_time" readonly
+                                class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary bg-gray-50">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="new_date" class="block text-sm font-medium text-gray-700 mb-1">New Date:</label>
+                        <div class="relative">
+                            <input type="text" id="new_date" name="new_date"
+                                class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <i class="bx bx-calendar text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="new_time" class="block text-sm font-medium text-gray-700 mb-1">New Time:</label>
+                        <div class="relative">
+                            <input type="text" id="new_time" name="new_time"
+                                class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <i class="bx bx-time text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                    <label class="flex cursor-pointer items-start">
+                        <input type="checkbox" id="use_requested_datetime" name="use_requested_datetime" value="1"
+                            class="mt-1 mr-2" checked>
+                        <div>
+                            <span class="block text-sm font-medium">Use requested date and time</span>
+                            <span class="text-xs text-gray-500">Uncheck to specify a different date/time</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                    <label class="flex cursor-pointer items-start">
+                        <input type="checkbox" name="send_reschedule_confirmation" value="1" class="mt-1 mr-2" checked>
+                        <div>
+                            <span class="block text-sm font-medium">Send confirmation to patient</span>
+                            <span class="text-xs text-gray-500">Patient will receive an email notification</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div>
+                    <label for="reschedule_notes" class="block text-sm font-medium text-gray-700 mb-1">Additional
+                        Notes:</label>
+                    <textarea id="reschedule_notes" name="reschedule_notes" rows="2"
+                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                        placeholder="Add any notes about this reschedule..."></textarea>
+                </div>
+            </form>
+        </div>
+
+        <div class="flex justify-end space-x-3 border-t border-gray-200 bg-gray-50 px-6 py-3">
+            <button type="button" id="cancelApproveRescheduleBtn"
+                class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                Cancel
+            </button>
+            <button type="button" id="confirmApproveRescheduleBtn"
+                class="rounded-md bg-success px-4 py-2 text-sm font-medium text-white hover:bg-success-dark focus:outline-none">
+                Approve Reschedule
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Deny Reschedule Modal -->
+<div id="denyRescheduleModal"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
+    <div class="w-full max-w-md transform rounded-lg bg-white shadow-xl transition-all duration-300 scale-95 opacity-0"
+        id="denyRescheduleModalContent">
+        <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+            <h3 class="text-lg font-medium text-gray-900">Deny Reschedule Request</h3>
+            <button type="button" class="text-gray-400 hover:text-gray-500 focus:outline-none"
+                id="closeDenyRescheduleModal">
+                <i class="bx bx-x text-2xl"></i>
+            </button>
+        </div>
+
+        <div class="px-6 py-4">
+            <p class="mb-4 text-sm text-gray-500">Please provide a reason for denying this reschedule request:</p>
+
+            <form id="denyRescheduleForm" class="space-y-3">
+                <input type="hidden" id="denyRescheduleAppointmentId" name="appointmentId" value="">
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                        <label class="flex cursor-pointer items-start">
+                            <input type="radio" name="reschedule_denial_reason" value="unavailable_slot"
+                                class="mt-1 mr-2">
+                            <div>
+                                <span class="block text-sm font-medium">Unavailable Slot</span>
+                                <span class="text-xs text-gray-500">Requested time is not available</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                        <label class="flex cursor-pointer items-start">
+                            <input type="radio" name="reschedule_denial_reason" value="short_notice" class="mt-1 mr-2">
+                            <div>
+                                <span class="block text-sm font-medium">Short Notice</span>
+                                <span class="text-xs text-gray-500">Request received too late</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                        <label class="flex cursor-pointer items-start">
+                            <input type="radio" name="reschedule_denial_reason" value="medical_necessity"
+                                class="mt-1 mr-2">
+                            <div>
+                                <span class="block text-sm font-medium">Medical Necessity</span>
+                                <span class="text-xs text-gray-500">Original time is necessary</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                        <label class="flex cursor-pointer items-start">
+                            <input type="radio" name="reschedule_denial_reason" value="other" class="mt-1 mr-2">
+                            <div>
+                                <span class="block text-sm font-medium">Other Reason</span>
+                                <span class="text-xs text-gray-500">Please specify below</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                    <label class="flex cursor-pointer items-start">
+                        <input type="checkbox" name="send_reschedule_denial_notification" value="1" class="mt-1 mr-2"
+                            checked>
+                        <div>
+                            <span class="block text-sm font-medium">Send notification to patient</span>
+                            <span class="text-xs text-gray-500">Patient will receive an email notification</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div>
+                    <label for="reschedule_denial_details"
+                        class="block text-sm font-medium text-gray-700 mb-1">Additional Details:</label>
+                    <textarea id="reschedule_denial_details" name="reschedule_denial_details" rows="2"
+                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                        placeholder="Please provide additional information about this denial..."></textarea>
+                </div>
+            </form>
+        </div>
+
+        <div class="flex justify-end space-x-3 border-t border-gray-200 bg-gray-50 px-6 py-3">
+            <button type="button" id="cancelRescheduleDenialBtn"
+                class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                Cancel
+            </button>
+            <button type="button" id="confirmRescheduleDenialBtn"
+                class="rounded-md bg-danger px-4 py-2 text-sm font-medium text-white hover:bg-danger-dark focus:outline-none"
+                disabled>
+                Confirm Denial
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="checkInModal"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
+    <div class="w-full max-w-md transform rounded-lg bg-white shadow-xl transition-all duration-300 scale-95 opacity-0"
+        id="checkInModalContent">
+        <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+            <h3 class="text-lg font-medium text-gray-900">Check-In Patient</h3>
+            <button type="button" class="text-gray-400 hover:text-gray-500 focus:outline-none" id="closeCheckInModal">
+                <i class="bx bx-x text-2xl"></i>
+            </button>
+        </div>
+
+        <div class="px-6 py-4">
+            <p class="mb-4 text-sm text-gray-500">Confirm patient arrival and check-in details:</p>
+
+            <form id="checkInForm" class="space-y-3">
+                <input type="hidden" id="checkInAppointmentId" name="appointmentId" value="">
+
+                <div class="rounded-md border border-gray-200 p-3 bg-gray-50">
+                    <div class="flex items-center mb-2">
+                        <i class="bx bx-time text-primary mr-2"></i>
+                        <span class="text-sm font-medium">Arrival Time</span>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-2">Current time will be recorded as the check-in time.</p>
+                    <div class="text-sm font-medium" id="currentCheckInTime"></div>
+                </div>
+
+                <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                    <label class="flex cursor-pointer items-start">
+                        <input type="checkbox" id="verify_insurance" name="verify_insurance" value="1" class="mt-1 mr-2"
+                            checked>
+                        <div>
+                            <span class="block text-sm font-medium">Insurance Verified</span>
+                            <span class="text-xs text-gray-500">Confirm patient's insurance information is valid</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                    <label class="flex cursor-pointer items-start">
+                        <input type="checkbox" id="verify_id" name="verify_id" value="1" class="mt-1 mr-2" checked>
+                        <div>
+                            <span class="block text-sm font-medium">ID Verified</span>
+                            <span class="text-xs text-gray-500">Confirm patient's identity has been verified</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                    <label class="flex cursor-pointer items-start">
+                        <input type="checkbox" id="forms_completed" name="forms_completed" value="1" class="mt-1 mr-2"
+                            checked>
+                        <div>
+                            <span class="block text-sm font-medium">Forms Completed</span>
+                            <span class="text-xs text-gray-500">Patient has completed all required paperwork</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                    <label class="flex cursor-pointer items-start">
+                        <input type="checkbox" id="notify_provider" name="notify_provider" value="1" class="mt-1 mr-2"
+                            checked>
+                        <div>
+                            <span class="block text-sm font-medium">Notify Provider</span>
+                            <span class="text-xs text-gray-500">Send notification to the healthcare provider</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div>
+                    <label for="check_in_notes" class="block text-sm font-medium text-gray-700 mb-1">Additional
+                        Notes:</label>
+                    <textarea id="check_in_notes" name="check_in_notes" rows="2"
+                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                        placeholder="Add any notes about this check-in..."></textarea>
+                </div>
+            </form>
+        </div>
+
+        <div class="flex justify-end space-x-3 border-t border-gray-200 bg-gray-50 px-6 py-3">
+            <button type="button" id="cancelCheckInBtn"
+                class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                Cancel
+            </button>
+            <button type="button" id="confirmCheckInBtn"
+                class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark focus:outline-none">
+                Complete Check-In
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Start Appointment Modal -->
+<div id="startAppointmentModal"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
+    <div class="w-full max-w-md transform rounded-lg bg-white shadow-xl transition-all duration-300 scale-95 opacity-0"
+        id="startAppointmentModalContent">
+        <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+            <h3 class="text-lg font-medium text-gray-900">Start Appointment</h3>
+            <button type="button" class="text-gray-400 hover:text-gray-500 focus:outline-none"
+                id="closeStartAppointmentModal">
+                <i class="bx bx-x text-2xl"></i>
+            </button>
+        </div>
+
+        <div class="px-6 py-4">
+            <p class="mb-4 text-sm text-gray-500">Confirm that the patient is ready to see the provider:</p>
+
+            <form id="startAppointmentForm" class="space-y-3">
+                <input type="hidden" id="startAppointmentId" name="appointmentId" value="">
+
+                <div class="rounded-md border border-gray-200 p-3 bg-gray-50">
+                    <div class="flex items-center mb-2">
+                        <i class="bx bx-user-check text-primary mr-2"></i>
+                        <span class="text-sm font-medium">Patient Status</span>
+                    </div>
+                    <p class="text-sm text-gray-500">Patient has been checked in and is ready to see the provider.</p>
+                </div>
+
+                <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                    <label class="flex cursor-pointer items-start">
+                        <input type="checkbox" id="vitals_recorded" name="vitals_recorded" value="1" class="mt-1 mr-2"
+                            checked>
+                        <div>
+                            <span class="block text-sm font-medium">Vitals Recorded</span>
+                            <span class="text-xs text-gray-500">Patient's vital signs have been recorded</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                    <label class="flex cursor-pointer items-start">
+                        <input type="checkbox" id="room_prepared" name="room_prepared" value="1" class="mt-1 mr-2"
+                            checked>
+                        <div>
+                            <span class="block text-sm font-medium">Room Prepared</span>
+                            <span class="text-xs text-gray-500">Examination room is ready for the patient</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                    <label class="flex cursor-pointer items-start">
+                        <input type="checkbox" id="provider_notified" name="provider_notified" value="1"
+                            class="mt-1 mr-2" checked>
+                        <div>
+                            <span class="block text-sm font-medium">Provider Notified</span>
+                            <span class="text-xs text-gray-500">Healthcare provider has been notified</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div>
+                    <label for="room_number" class="block text-sm font-medium text-gray-700 mb-1">Room Number:</label>
+                    <select id="room_number" name="room_number"
+                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+                        <option value="">Select a room</option>
+                        <option value="1">Room 1</option>
+                        <option value="2">Room 2</option>
+                        <option value="3">Room 3</option>
+                        <option value="4">Room 4</option>
+                        <option value="5">Room 5</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="start_appointment_notes" class="block text-sm font-medium text-gray-700 mb-1">Additional
+                        Notes:</label>
+                    <textarea id="start_appointment_notes" name="start_appointment_notes" rows="2"
+                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                        placeholder="Add any notes for the provider..."></textarea>
+                </div>
+            </form>
+        </div>
+
+        <div class="flex justify-end space-x-3 border-t border-gray-200 bg-gray-50 px-6 py-3">
+            <button type="button" id="cancelStartAppointmentBtn"
+                class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                Cancel
+            </button>
+            <button type="button" id="confirmStartAppointmentBtn"
+                class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark focus:outline-none">
+                Start Appointment
+            </button>
+        </div>
+    </div>
+</div>

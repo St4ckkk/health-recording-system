@@ -20,7 +20,7 @@
                 LOGO</div>
         </div>
         <div class="header-right">
-            <a href="#" class="login-link"><i class='bx bx-user'></i>Log in</a>
+            <a href="<?= BASE_URL ?>/login" class="login-link"><i class='bx bx-user'></i>Log in</a>
         </div>
     </header>
 
@@ -35,8 +35,10 @@
             <div class="hero-actions">
                 <a href="#" class="learn-more">Learn how we drive innovation <i class='bx bx-right-arrow-alt'></i></a>
                 <div class="appointment-buttons">
-                    <a href="<?= BASE_URL ?>/appointment/doctor-availability" class="hero-request-btn">Request appointment</a>
-                    <a href="<?= BASE_URL ?>/appointment/appointment-tracking" class="hero-track-btn"><i class='bx bx-calendar-check'></i>Track appointment</a>
+                    <a href="<?= BASE_URL ?>/appointment/doctor-availability" class="hero-request-btn">Request
+                        appointment</a>
+                    <a href="<?= BASE_URL ?>/appointment/appointment-tracking" class="hero-track-btn"><i
+                            class='bx bx-calendar-check'></i>Track appointment</a>
                 </div>
             </div>
         </div>

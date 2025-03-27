@@ -337,7 +337,9 @@ class Appointment extends Model
     public function update($id, $data)
     {
         try {
-            // Build the SQL query dynamically based on the data provided
+            error_log("Starting appointment update for ID: $id");
+            error_log("Update data: " . print_r($data, true));
+
             $sql = 'UPDATE ' . $this->table . ' SET ';
             $updates = [];
             $bindings = [':id' => $id];
@@ -350,17 +352,26 @@ class Appointment extends Model
             $sql .= implode(', ', $updates);
             $sql .= ' WHERE id = :id';
 
+            error_log("SQL query: $sql");
+            error_log("Bindings: " . print_r($bindings, true));
+
             $this->db->query($sql);
 
-            // Bind all values
             foreach ($bindings as $param => $value) {
                 $this->db->bind($param, $value);
             }
 
-            // Execute
-            return $this->db->execute();
+            $result = $this->db->execute();
+            error_log("Update execution result: " . ($result ? 'success' : 'failure'));
+            
+            if (!$result) {
+                error_log("Database error: " . $this->db->getError());
+            }
+
+            return $result;
         } catch (\Exception $e) {
-            error_log("Error in Appointment::update: " . $e->getMessage());
+            error_log("Exception in Appointment::update: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
             return false;
         }
     }

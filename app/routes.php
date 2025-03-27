@@ -14,6 +14,10 @@ $router->get('/appointment/get-available-time-slots', 'HomeController@get_availa
 $router->post('/appointment/book', 'HomeController@book_appointment');
 $router->get('/appointment/confirmation', 'HomeController@confirmation');
 
+$router->get('/login', 'SessionController@login');
+$router->post('/login', 'SessionController@login');
+$router->get('/logout', 'SessionController@logout');
+
 $router->get('/receptionist/dashboard', 'ReceptionistController@dashboard');
 $router->get('/receptionist/appointments', 'ReceptionistController@appointments');
 $router->get('/receptionist/notification', 'ReceptionistController@notification');
@@ -23,3 +27,4 @@ $router->get('/receptionist/appointment/details', 'ReceptionistController@appoin
 $router->post('/receptionist/getAppointmentDetails', 'ReceptionistController@getAppointmentDetails');
 $router->get('/receptionist/get_doctor_schedule', 'ReceptionistController@get_doctor_schedule');
 $router->post('/receptionist/cancel-appointment', 'ReceptionistController@cancelAppointment');
+$router->post('/receptionist/confirm-appointment', 'ReceptionistController@confirmAppointment');

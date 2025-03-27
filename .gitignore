@@ -1,4 +1,5 @@
 node_modules/
+vendor/
 .qodo
 public/uploads/doctors/
 public/php_errors.log

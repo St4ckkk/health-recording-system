@@ -6,6 +6,7 @@ use app\models\Appointment;
 use app\models\Doctor;
 use app\models\DoctorTimeSlot;
 use app\models\Patient;
+use app\helpers\EmailHelper; // Add this line
 
 class ReceptionistController extends Controller
 {
@@ -13,6 +14,7 @@ class ReceptionistController extends Controller
     private $doctorModel;
     private $timeSlotModel;
     private $patientModel;
+    private $emailHelper; // Add this line
 
     public function __construct()
     {
@@ -20,6 +22,7 @@ class ReceptionistController extends Controller
         $this->doctorModel = new Doctor();
         $this->timeSlotModel = new DoctorTimeSlot();
         $this->patientModel = new Patient();
+        $this->emailHelper = new EmailHelper(); // Add this line
     }
 
     public function dashboard()
@@ -356,6 +359,116 @@ class ReceptionistController extends Controller
             ]);
         }
     }
+
+    /**
+     * Confirm an appointment
+     */
+    public function confirmAppointment()
+    {
+        // Disable error output to prevent it from corrupting JSON
+        ini_set('display_errors', 0);
+        error_reporting(0);
+
+        // Start output buffering to capture any unexpected output
+        ob_start();
+
+        // Check if this is an AJAX request
+        if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
+            header('Location: ' . BASE_URL . '/receptionist/appointments');
+            exit;
+        }
+
+        try {
+            // Get JSON data from request body
+            $json = file_get_contents('php://input');
+            $data = json_decode($json, true);
+
+            // Log the received data for debugging
+            error_log('Received data in confirmAppointment: ' . print_r($data, true));
+
+            if (!$data || !isset($data['appointmentId'])) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Invalid request data'
+                ]);
+                return;
+            }
+
+            $appointmentId = intval($data['appointmentId']);
+            $sendConfirmation = isset($data['send_confirmation']) ? (bool) $data['send_confirmation'] : true;
+            $notes = $data['special_instructions'] ?? '';
+
+            error_log('Processing appointment ID: ' . $appointmentId);
+            error_log('Send confirmation: ' . ($sendConfirmation ? 'true' : 'false'));
+            error_log('Notes: ' . $notes);
+
+            // Get the appointment
+            $appointment = $this->appointmentModel->getAppointmentById($appointmentId);
+
+            if (!$appointment) {
+                error_log('Appointment not found with ID: ' . $appointmentId);
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Appointment not found'
+                ]);
+                return;
+            }
+
+            error_log('Found appointment: ' . print_r($appointment, true));
+
+            // Update appointment status
+            $updateData = [
+                'status' => 'confirmed',
+                'special_instructions' => $notes,
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+
+            // Log the update data for debugging
+            error_log('Updating appointment with data: ' . print_r($updateData, true));
+
+            // Try to update the appointment
+            $success = $this->appointmentModel->update($appointmentId, $updateData);
+
+            // Log the result
+            error_log('Update result: ' . ($success ? 'success' : 'failure'));
+
+            if ($success) {
+                // Send confirmation email/SMS if requested
+                if ($sendConfirmation && !empty($appointment->email)) {
+                    try {
+                        // Send confirmation email using EmailHelper
+                        $emailSent = $this->emailHelper->sendAppointmentConfirmation($appointment, $notes);
+                        error_log('Confirmation email ' . ($emailSent ? 'sent' : 'failed') . ' to: ' . $appointment->email);
+
+                        // Even if email fails, we still consider the appointment confirmation successful
+                    } catch (\Exception $e) {
+                        error_log('Email error: ' . $e->getMessage());
+                        // Continue with success response even if email fails
+                    }
+                }
+
+                $this->jsonResponse([
+                    'success' => true,
+                    'message' => 'Appointment confirmed successfully'
+                ]);
+            } else {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Failed to confirm appointment'
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Log the error
+            error_log('Error in confirmAppointment: ' . $e->getMessage());
+            error_log('Stack trace: ' . $e->getTraceAsString());
+
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Server error: ' . $e->getMessage()
+            ]);
+        }
+    }
+
 
     /**
      * Cancel an appointment
