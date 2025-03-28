@@ -823,6 +823,10 @@ video {
   display: grid;
 }
 
+.contents {
+  display: contents;
+}
+
 .list-item {
   display: list-item;
 }
@@ -1654,6 +1658,10 @@ video {
 
 .font-semibold {
   font-weight: 600;
+}
+
+.uppercase {
+  text-transform: uppercase;
 }
 
 .lowercase {

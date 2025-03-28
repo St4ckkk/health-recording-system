@@ -15,18 +15,18 @@ class EmailHelper
     {
         $this->mailer = new PHPMailer(true);
 
-        // Server settings
+     
         $this->mailer->isSMTP();
-        $this->mailer->Host = 'smtp.gmail.com';
+        $this->mailer->Host = $_ENV['EMAIL_HOST'] ?? 'smtp.gmail.com';
         $this->mailer->SMTPAuth = true;
-        // Update these credentials with valid ones
-        $this->mailer->Username = 'barkadevszxc@gmail.com'; // Change to your actual email
-        $this->mailer->Password = 'psjhsdinousmhjee'; // Change to your actual app password
+      
+        $this->mailer->Username = $_ENV['EMAIL_USERNAME'] ?? '';
+        $this->mailer->Password = $_ENV['EMAIL_PASSWORD'] ?? '';
         $this->mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $this->mailer->Port = 587;
+        $this->mailer->Port = $_ENV['EMAIL_PORT'] ?? 587;
 
-        // Default sender - MUST match the Gmail username above
-        $this->mailer->setFrom('barkadevszxc@gmail.com', 'Health Recording System');
+   
+        $this->mailer->setFrom($_ENV['EMAIL_USERNAME'] ?? '', $_ENV['EMAIL_FROM_NAME'] ?? 'Health Recording System');
     }
 
     /**
@@ -39,14 +39,14 @@ class EmailHelper
     public function sendAppointmentConfirmation($appointment, $notes = '')
     {
         try {
-            // Clear previous recipients and embedded images
+          
             $this->mailer->clearAllRecipients();
             $this->mailer->clearAttachments();
 
-            // Recipients
+            
             $this->mailer->addAddress($appointment->email, $appointment->first_name . ' ' . $appointment->last_name);
 
-            // Add embedded images
+         
             $logoPath = dirname(dirname(__DIR__)) . '/public/images/logo.png';
             $checkIconPath = dirname(dirname(__DIR__)) . '/public/images/icons/check.png';
             $calendarIconPath = dirname(dirname(__DIR__)) . '/public/images/icons/calendar-icon.png';
@@ -59,7 +59,6 @@ class EmailHelper
             $twitterIconPath = dirname(dirname(__DIR__)) . '/public/images/icons/twitter-icon.png';
             $instagramIconPath = dirname(dirname(__DIR__)) . '/public/images/icons/instagram-icon.png';
 
-            // Embed images with CIDs (Content IDs)
             $this->mailer->addEmbeddedImage($logoPath, 'logo', 'logo.png');
             $this->mailer->addEmbeddedImage($checkIconPath, 'check-icon', 'check.png');
             $this->mailer->addEmbeddedImage($calendarIconPath, 'calendar-icon', 'calendar-icon.png');
@@ -72,11 +71,11 @@ class EmailHelper
             $this->mailer->addEmbeddedImage($twitterIconPath, 'twitter-icon', 'twitter-icon.png');
             $this->mailer->addEmbeddedImage($instagramIconPath, 'instagram-icon', 'instagram-icon.png');
 
-            // Content
+           
             $this->mailer->isHTML(true);
             $this->mailer->Subject = 'Your Appointment Confirmation';
 
-            // Format the time to AM/PM format
+       
             $formattedTime = date('h:i A', strtotime($appointment->appointment_time));
             $formattedDate = date('l, F j, Y', strtotime($appointment->appointment_date));
 
@@ -372,4 +371,12 @@ class EmailHelper
             return false;
         }
     }
+
+
+
+    public function sendAppointmentTrackingNumber() {
+
+    }
+
+    
 }

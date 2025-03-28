@@ -363,10 +363,7 @@ class Appointment extends Model
 
             $result = $this->db->execute();
             error_log("Update execution result: " . ($result ? 'success' : 'failure'));
-            
-            if (!$result) {
-                error_log("Database error: " . $this->db->getError());
-            }
+
 
             return $result;
         } catch (\Exception $e) {
