@@ -734,7 +734,8 @@
                                                         </td>
                                                     </tr>
                                                     <tr class="border-b border-gray-200">
-                                                        <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Notes</td>
+                                                        <td class="text-sm font-medium text-gray-900 py-2 pl-5 w-1/3">Special
+                                                            Instructions</td>
                                                         <td class="text-sm text-gray-900 py-2">
                                                             <?= $appointment->special_instructions ?? 'No notes available' ?>
                                                         </td>
