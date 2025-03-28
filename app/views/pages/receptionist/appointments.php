@@ -599,8 +599,8 @@ function getStatusIcon($status)
             </div>
         </div>
     </div>
-    <script src="<?= BASE_URL ?>/js/reception.js"></script>
-    <script src="<?= BASE_URL ?>/js/appointments.js"></script>
+    <script src="<?= BASE_URL ?>/js/receptionist/reception.js"></script>
+    <script src="<?= BASE_URL ?>/js/receptionist/appointments.js"></script>
 </body>
 
 </html>

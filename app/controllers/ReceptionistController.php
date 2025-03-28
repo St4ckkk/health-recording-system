@@ -22,7 +22,7 @@ class ReceptionistController extends Controller
         $this->doctorModel = new Doctor();
         $this->timeSlotModel = new DoctorTimeSlot();
         $this->patientModel = new Patient();
-        $this->emailHelper = new EmailHelper(); // Add this line
+        $this->emailHelper = new EmailHelper();
     }
 
     public function dashboard()
@@ -663,7 +663,123 @@ class ReceptionistController extends Controller
         }
     }
 
+    /**
+     * Send appointment reminder to patient
+     * 
+     * @return void
+     */
+    public function sendReminder()
+    {
+        // Check if this is an AJAX request
+        if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
+            header('Location: ' . BASE_URL . '/receptionist/dashboard');
+            exit;
+        }
 
+        try {
+            // Get form data
+            $appointmentId = isset($_POST['appointmentId']) ? intval($_POST['appointmentId']) : 0;
+            $reminderType = isset($_POST['reminder_type']) ? trim($_POST['reminder_type']) : 'standard';
+            $additionalMessage = isset($_POST['reminder_message']) ? trim($_POST['reminder_message']) : '';
+            $sendEmail = isset($_POST['send_email']) && $_POST['send_email'] === 'on';
 
+            // Validate appointment ID
+            if ($appointmentId <= 0) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Invalid appointment ID'
+                ]);
+                return;
+            }
+
+            // Get appointment details
+            $appointment = $this->appointmentModel->getAppointmentById($appointmentId);
+            if (!$appointment) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Appointment not found'
+                ]);
+                return;
+            }
+
+            // Update appointment special instructions to include reminder info
+            // Since there's no dedicated reminder columns, we'll add a note to special_instructions
+            $currentInstructions = $appointment->special_instructions ?? '';
+            $reminderNote = "[Reminder sent on " . date('Y-m-d H:i:s') . "]";
+
+            if (!empty($additionalMessage)) {
+                $reminderNote .= " Message: " . $additionalMessage;
+            }
+
+            $updatedInstructions = $currentInstructions;
+            if (!empty($updatedInstructions)) {
+                $updatedInstructions .= "\n\n" . $reminderNote;
+            } else {
+                $updatedInstructions = $reminderNote;
+            }
+
+            $updateData = [
+                'special_instructions' => $updatedInstructions,
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+
+            $updated = $this->appointmentModel->update($appointmentId, $updateData);
+
+            if (!$updated) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Failed to update appointment with reminder information'
+                ]);
+                return;
+            }
+
+            // Send email if requested
+            $emailSent = true;
+            if ($sendEmail && !empty($appointment->email)) {
+                // Prepare email data
+                $emailData = [
+                    'patient_name' => $appointment->first_name . ' ' . $appointment->last_name,
+                    'doctor_name' => 'Dr. ' . $appointment->doctor_first_name . ' ' . $appointment->doctor_last_name,
+                    'appointment_date' => date('l, F j, Y', strtotime($appointment->appointment_date)),
+                    'appointment_time' => date('h:i A', strtotime($appointment->appointment_time)),
+                    'appointment_type' => $appointment->type,
+                    'tracking_number' => $appointment->tracking_number,
+                    'additional_message' => $additionalMessage,
+                    'clinic_name' => $_ENV['CLINIC_NAME'] ?? 'Health Recording System',
+                    'clinic_address' => $_ENV['CLINIC_ADDRESS'] ?? '123 Medical Center Blvd, Health City',
+                    'clinic_phone' => $_ENV['CLINIC_PHONE'] ?? '(123) 456-7890'
+                ];
+
+                // Choose template based on reminder type
+                $template = $reminderType === 'detailed' ? 'appointment_reminder_detailed' : 'appointment_reminder_standard';
+
+                // Send the email
+                $emailSent = $this->emailHelper->sendAppointmentReminder(
+                    $appointment->email,
+                    $appointment->first_name . ' ' . $appointment->last_name,
+                    $template,
+                    $emailData
+                );
+            }
+
+            // Return success response
+            $this->jsonResponse([
+                'success' => true,
+                'message' => 'Reminder sent successfully',
+                'emailSent' => $emailSent
+            ]);
+        } catch (\Exception $e) {
+            // Log the error
+            error_log('Error in sendReminder: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Server error: ' . $e->getMessage()
+            ]);
+        }
+    }
 }
+
+
+
 

@@ -328,49 +328,15 @@ class Appointment extends Model
     }
 
     /**
-     * Update an appointment
+     * Update appointment
      * 
-     * @param int $id The appointment ID
-     * @param array $data The appointment data
-     * @return bool True on success, false on failure
+     * @param int $id
+     * @param array $data
+     * @return bool
      */
-    public function update($id, $data)
+    public function updateAppointment($id, $data)
     {
-        try {
-            error_log("Starting appointment update for ID: $id");
-            error_log("Update data: " . print_r($data, true));
-
-            $sql = 'UPDATE ' . $this->table . ' SET ';
-            $updates = [];
-            $bindings = [':id' => $id];
-
-            foreach ($data as $key => $value) {
-                $updates[] = $key . ' = :' . $key;
-                $bindings[':' . $key] = $value;
-            }
-
-            $sql .= implode(', ', $updates);
-            $sql .= ' WHERE id = :id';
-
-            error_log("SQL query: $sql");
-            error_log("Bindings: " . print_r($bindings, true));
-
-            $this->db->query($sql);
-
-            foreach ($bindings as $param => $value) {
-                $this->db->bind($param, $value);
-            }
-
-            $result = $this->db->execute();
-            error_log("Update execution result: " . ($result ? 'success' : 'failure'));
-
-
-            return $result;
-        } catch (\Exception $e) {
-            error_log("Exception in Appointment::update: " . $e->getMessage());
-            error_log("Stack trace: " . $e->getTraceAsString());
-            return false;
-        }
+        return $this->update($id, $data);
     }
 
 }

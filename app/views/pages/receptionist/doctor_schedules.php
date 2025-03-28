@@ -492,7 +492,7 @@
     </div>
 
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
-    <script src="<?= BASE_URL ?>/js/doctor-schedules.js"></script>
+    <script src="<?= BASE_URL ?>/js/receptionist/doctor-schedules.js"></script>
     <script>
         const BASE_URL = "<?= BASE_URL ?>";
     </script>

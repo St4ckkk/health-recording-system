@@ -28,3 +28,4 @@ $router->post('/receptionist/getAppointmentDetails', 'ReceptionistController@get
 $router->get('/receptionist/get_doctor_schedule', 'ReceptionistController@get_doctor_schedule');
 $router->post('/receptionist/cancel-appointment', 'ReceptionistController@cancelAppointment');
 $router->post('/receptionist/confirm-appointment', 'ReceptionistController@confirmAppointment');
+$router->post('/receptionist/send-reminder', 'ReceptionistController@sendReminder');

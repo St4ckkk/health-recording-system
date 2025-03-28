@@ -90,8 +90,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     const scriptTags = document.querySelectorAll("script");
                     for (const script of scriptTags) {
                         const src = script.getAttribute("src");
-                        if (src && src.includes("/js/reception.js")) {
-                            baseUrl = src.split("/js/reception.js")[0];
+                        if (src && src.includes("/js/receptionist/reception.js")) {
+                            baseUrl = src.split("/js/receptionist/reception.js")[0];
                             break;
                         }
                     }
