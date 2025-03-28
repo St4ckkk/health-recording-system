@@ -350,10 +350,15 @@
                                     class="block text-sm font-medium text-gray-700 mb-1">Appointment Type*</label>
                                 <select id="appointmentType" name="appointmentType" required class="form-input w-full">
                                     <option value="">Select Type</option>
-                                    <option value="New Patient">New Patient</option>
-                                    <option value="Follow-up">Follow-up</option>
-                                    <option value="Consultation">Consultation</option>
-                                    <option value="Procedure">Procedure</option>
+                                    <option value="checkup">Checkup</option>
+                                    <option value="follow_up">Follow-up</option>
+                                    <option value="consultation">Consultation</option>
+                                    <option value="treatment">Treatment</option>
+                                    <option value="emergency">Emergency</option>
+                                    <option value="specialist">Specialist</option>
+                                    <option value="vaccination">Vaccination</option>
+                                    <option value="laboratory_test">Laboratory Test</option>
+                                    <option value="medical_clearance">Medical Clearance</option>
                                 </select>
                             </div>
                             <div class="md:col-span-2">
@@ -365,7 +370,7 @@
                         </div>
                     </div>
 
-                    <!-- Patient Information -->
+
                     <div class="space-y-4">
                         <h3 class="section-title">Patient Information</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

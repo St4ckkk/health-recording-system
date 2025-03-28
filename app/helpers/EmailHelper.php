@@ -15,17 +15,17 @@ class EmailHelper
     {
         $this->mailer = new PHPMailer(true);
 
-     
+
         $this->mailer->isSMTP();
         $this->mailer->Host = $_ENV['EMAIL_HOST'] ?? 'smtp.gmail.com';
         $this->mailer->SMTPAuth = true;
-      
+
         $this->mailer->Username = $_ENV['EMAIL_USERNAME'] ?? '';
         $this->mailer->Password = $_ENV['EMAIL_PASSWORD'] ?? '';
         $this->mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $this->mailer->Port = $_ENV['EMAIL_PORT'] ?? 587;
 
-   
+
         $this->mailer->setFrom($_ENV['EMAIL_USERNAME'] ?? '', $_ENV['EMAIL_FROM_NAME'] ?? 'Health Recording System');
     }
 
@@ -39,14 +39,14 @@ class EmailHelper
     public function sendAppointmentConfirmation($appointment, $notes = '')
     {
         try {
-          
+
             $this->mailer->clearAllRecipients();
             $this->mailer->clearAttachments();
 
-            
+
             $this->mailer->addAddress($appointment->email, $appointment->first_name . ' ' . $appointment->last_name);
 
-         
+
             $logoPath = dirname(dirname(__DIR__)) . '/public/images/logo.png';
             $checkIconPath = dirname(dirname(__DIR__)) . '/public/images/icons/check.png';
             $calendarIconPath = dirname(dirname(__DIR__)) . '/public/images/icons/calendar-icon.png';
@@ -71,11 +71,11 @@ class EmailHelper
             $this->mailer->addEmbeddedImage($twitterIconPath, 'twitter-icon', 'twitter-icon.png');
             $this->mailer->addEmbeddedImage($instagramIconPath, 'instagram-icon', 'instagram-icon.png');
 
-           
+
             $this->mailer->isHTML(true);
             $this->mailer->Subject = 'Your Appointment Confirmation';
 
-       
+
             $formattedTime = date('h:i A', strtotime($appointment->appointment_time));
             $formattedDate = date('l, F j, Y', strtotime($appointment->appointment_date));
 
@@ -372,11 +372,388 @@ class EmailHelper
         }
     }
 
+    /**
+     * Send appointment tracking number email after scheduling
+     * 
+     * @param object $appointment The appointment object with tracking number
+     * @param object $patient The patient object
+     * @param object $doctor The doctor object
+     * @return bool Whether the email was sent successfully
+     */
+    public function sendAppointmentTrackingNumber($appointment, $patient, $doctor)
+    {
+        try {
+            // Clear previous recipients and attachments
+            $this->mailer->clearAllRecipients();
+            $this->mailer->clearAttachments();
 
+            // Add recipient
+            $this->mailer->addAddress($patient->email, $patient->first_name . ' ' . $patient->last_name);
 
-    public function sendAppointmentTrackingNumber() {
+            // Add embedded images
+            $logoPath = dirname(dirname(__DIR__)) . '/public/images/logo.png';
+            $checkIconPath = dirname(dirname(__DIR__)) . '/public/images/icons/check.png';
+            $calendarIconPath = dirname(dirname(__DIR__)) . '/public/images/icons/calendar-icon.png';
+            $notepadIconPath = dirname(dirname(__DIR__)) . '/public/images/icons/notepad-icon.png';
+            $infoIconPath = dirname(dirname(__DIR__)) . '/public/images/icons/info-icon.png';
+            $timeIconPath = dirname(dirname(__DIR__)) . '/public/images/icons/time-icon.png';
+            $idCardIconPath = dirname(dirname(__DIR__)) . '/public/images/icons/id-card-icon.png';
+            $phoneIconPath = dirname(dirname(__DIR__)) . '/public/images/icons/phone-icon.png';
+            $facebookIconPath = dirname(dirname(__DIR__)) . '/public/images/icons/facebook-icon.png';
+            $twitterIconPath = dirname(dirname(__DIR__)) . '/public/images/icons/twitter-icon.png';
+            $instagramIconPath = dirname(dirname(__DIR__)) . '/public/images/icons/instagram-icon.png';
+            $ticketIconPath = dirname(dirname(__DIR__)) . '/public/images/icons/ticket-icon.png';
 
+            $this->mailer->addEmbeddedImage($logoPath, 'logo', 'logo.png');
+            $this->mailer->addEmbeddedImage($checkIconPath, 'check-icon', 'check.png');
+            $this->mailer->addEmbeddedImage($calendarIconPath, 'calendar-icon', 'calendar-icon.png');
+            $this->mailer->addEmbeddedImage($notepadIconPath, 'notepad-icon', 'notepad-icon.png');
+            $this->mailer->addEmbeddedImage($infoIconPath, 'info-icon', 'info-icon.png');
+            $this->mailer->addEmbeddedImage($timeIconPath, 'time-icon', 'time-icon.png');
+            $this->mailer->addEmbeddedImage($idCardIconPath, 'id-card-icon', 'id-card-icon.png');
+            $this->mailer->addEmbeddedImage($phoneIconPath, 'phone-icon', 'phone-icon.png');
+            $this->mailer->addEmbeddedImage($facebookIconPath, 'facebook-icon', 'facebook-icon.png');
+            $this->mailer->addEmbeddedImage($twitterIconPath, 'twitter-icon', 'twitter-icon.png');
+            $this->mailer->addEmbeddedImage($instagramIconPath, 'instagram-icon', 'instagram-icon.png');
+
+            // Use notepad icon as ticket icon if ticket icon doesn't exist
+            if (file_exists($ticketIconPath)) {
+                $this->mailer->addEmbeddedImage($ticketIconPath, 'ticket-icon', 'ticket-icon.png');
+                $ticketIconCid = 'cid:ticket-icon';
+            } else {
+                $ticketIconCid = 'cid:notepad-icon';
+            }
+
+            // Set email content
+            $this->mailer->isHTML(true);
+            $this->mailer->Subject = 'Your Appointment Request Received - Tracking Number';
+
+            // Format date and time
+            $formattedTime = date('h:i A', strtotime($appointment->appointment_time));
+            $formattedDate = date('l, F j, Y', strtotime($appointment->appointment_date));
+
+            // Get doctor name
+            $doctorName = '';
+            if (is_object($doctor)) {
+                if (!empty($doctor->first_name) && !empty($doctor->last_name)) {
+                    $doctorName = "Dr. {$doctor->first_name} {$doctor->last_name}";
+                } else if (!empty($doctor->full_name)) {
+                    $doctorName = $doctor->full_name;
+                }
+            }
+
+            // Build email body with modern design
+            $body = '
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Appointment Request Received</title>
+                <style>
+                    body, html {
+                        margin: 0;
+                        padding: 0;
+                        font-family: Arial, sans-serif;
+                        line-height: 1.6;
+                        color: #333;
+                    }
+                    .email-container {
+                        max-width: 600px;
+                        margin: 0 auto;
+                        border: 1px solid #e0e0e0;
+                        border-radius: 5px;
+                        overflow: hidden;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+                    }
+                    .header {
+                        padding: 20px;
+                        text-align: center;
+                        background-color: #ffffff;
+                        border-bottom: 1px solid #f0f0f0;
+                    }
+                    .banner {
+                        background-color: #00406a;
+                        background-image: linear-gradient(135deg, #00406a 0%, #005d99 100%);
+                        color: white;
+                        text-align: center;
+                        padding: 40px 20px;
+                    }
+                    .check-icon-container {
+                        width: 70px;
+                        height: 70px;
+                        margin: 0 auto 15px;
+                        position: relative;
+                    }
+                    .check-icon {
+                        background-color: #2ecc71;
+                        color: white;
+                        width: 70px;
+                        height: 70px;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 35px;
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                    }
+                    .check-icon img {
+                        display: block;
+                        margin: auto;
+                    }
+                    .content {
+                        padding: 30px;
+                        background-color: #ffffff;
+                    }
+                    .footer {
+                        background-color: #f9f9f9;
+                        padding: 20px;
+                        text-align: center;
+                        font-size: 12px;
+                        color: #666;
+                        border-top: 1px solid #f0f0f0;
+                    }
+                    .social-icons {
+                        text-align: center;
+                        padding: 15px 0;
+                    }
+                    .social-icons a {
+                        display: inline-block;
+                        margin: 0 10px;
+                        color: #00406a;
+                        text-decoration: none;
+                    }
+                    .social-icon {
+                        width: 36px;
+                        height: 36px;
+                        background-color: #00406a;
+                        border-radius: 50%;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                        font-size: 18px;
+                    }
+                    .social-icon img {
+                        display: block;
+                        margin: auto;
+                    }
+                    h1 {
+                        margin: 10px 0;
+                        font-size: 28px;
+                    }
+                    .subtitle {
+                        font-size: 16px;
+                        opacity: 0.9;
+                    }
+                    .appointment-details {
+                        background-color: #f9f9f9;
+                        border-radius: 5px;
+                        padding: 15px;
+                        margin: 20px 0;
+                    }
+                    .appointment-details h3 {
+                        margin-top: 0;
+                        color: #00406a;
+                    }
+                    .tracking-number {
+                        background-color: #00406a;
+                        color: white;
+                        font-size: 20px;
+                        font-weight: bold;
+                        text-align: center;
+                        padding: 15px;
+                        border-radius: 5px;
+                        margin: 20px 0;
+                        letter-spacing: 1px;
+                    }
+                    .button {
+                        display: inline-block;
+                        background-color: #00406a;
+                        color: white;
+                        padding: 12px 25px;
+                        text-decoration: none;
+                        border-radius: 5px;
+                        margin-top: 15px;
+                        font-weight: bold;
+                    }
+                    .detail-row {
+                        display: flex;
+                        margin-bottom: 8px;
+                    }
+                    .detail-label {
+                        font-weight: bold;
+                        width: 100px;
+                    }
+                    .detail-value {
+                        flex: 1;
+                    }
+                    .reminder-item {
+                        display: flex;
+                        align-items: flex-start;
+                        margin-bottom: 10px;
+                    }
+                    .status-badge {
+                        display: inline-block;
+                        background-color: #f0ad4e;
+                        color: white;
+                        font-size: 14px;
+                        padding: 5px 10px;
+                        border-radius: 20px;
+                        margin-top: 5px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img src="cid:logo" alt="Health Recording System Logo" style="max-height: 50px;">
+                    </div>
+                    
+                    <div class="banner">
+                        <div class="check-icon-container">
+                            <div class="check-icon">
+                                <img src="cid:check-icon" alt="✓" style="width: 40px; height: 40px; display: block; margin: auto;">
+                            </div>
+                        </div>
+                        <h1>Request Received!</h1>
+                        <p class="subtitle">Your appointment has been successfully booked</p>
+                    </div>
+                    
+                    <div class="content">
+                        <p>Dear ' . $patient->first_name . ' ' . $patient->last_name . ',</p>
+                        
+                        <p>Thank you for scheduling an appointment with us. Your request has been received please wait for confirmation.</p>
+                        
+                        <div class="appointment-details">
+                            <h3><img src="' . $ticketIconCid . '" alt="Tracking" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 5px;"> Tracking Information</h3>
+                            
+                            <p>Please save your tracking number for future reference:</p>
+                            
+                            <div class="tracking-number">
+                                ' . $appointment->tracking_number . '
+                            </div>
+                            
+                            <p>You can use this tracking number to check the status of your appointment on our website or by calling our office.</p>
+                            
+                            <div class="detail-row">
+                                <div class="detail-label">Status:</div>
+                                <div class="detail-value">
+                                    <span class="status-badge">Pending Confirmation</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="appointment-details">
+                            <h3><img src="cid:calendar-icon" alt="Calendar" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 5px;"> Appointment Details</h3>
+                            
+                            <div class="detail-row">
+                                <div class="detail-label">Date:</div>
+                                <div class="detail-value">' . $formattedDate . '</div>
+                            </div>
+                            
+                            <div class="detail-row">
+                                <div class="detail-label">Time:</div>
+                                <div class="detail-value">' . $formattedTime . '</div>
+                            </div>';
+
+            if (!empty($doctorName)) {
+                $body .= '
+                            <div class="detail-row">
+                                <div class="detail-label">Provider:</div>
+                                <div class="detail-value">' . $doctorName . '</div>
+                            </div>';
+            }
+
+            if (!empty($appointment->appointment_type)) {
+                $body .= '
+                            <div class="detail-row">
+                                <div class="detail-label">Type:</div>
+                                <div class="detail-value">' . $appointment->appointment_type . '</div>
+                            </div>';
+            }
+
+            if (!empty($appointment->reason)) {
+                $body .= '
+                            <div class="detail-row">
+                                <div class="detail-label">Reason:</div>
+                                <div class="detail-value">' . $appointment->reason . '</div>
+                            </div>';
+            }
+
+            if (!empty($appointment->location)) {
+                $body .= '
+                            <div class="detail-row">
+                                <div class="detail-label">Location:</div>
+                                <div class="detail-value">' . $appointment->location . '</div>
+                            </div>';
+            }
+
+            $body .= '
+                        </div>
+                        
+                        <p><strong><img src="cid:info-icon" alt="Info" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 5px;"> What happens next:</strong></p>
+                        
+                        <div class="reminder-item">
+                            <img src="cid:time-icon" alt="Time" style="width: 18px; height: 18px; margin-right: 10px;">
+                            <div>Our staff will review your appointment request</div>
+                        </div>
+                        
+                        <div class="reminder-item">
+                            <img src="cid:phone-icon" alt="Phone" style="width: 18px; height: 18px; margin-right: 10px;">
+                            <div>You will receive a confirmation email once your appointment is approved</div>
+                        </div>
+                        
+                        <div class="reminder-item">
+                            <img src="cid:id-card-icon" alt="ID Card" style="width: 18px; height: 18px; margin-right: 10px;">
+                            <div>Please bring your insurance card and photo ID to your appointment</div>
+                        </div>
+                        
+                        <p>If you have any questions or need to make changes to your appointment, please contact our office and reference your tracking number.</p>
+                        
+                        <a href="tel:+1234567890" class="button"><img src="cid:phone-icon" alt="Call" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;"> Call Us</a>
+                    </div>
+                    
+                    <div class="social-icons">
+                        <a href="#" title="Facebook">
+                            <div class="social-icon">
+                                <img src="cid:facebook-icon" alt="Facebook" style="width: 18px; height: 18px; display: block; margin: auto;">
+                            </div>
+                        </a>
+                        <a href="#" title="Twitter">
+                            <div class="social-icon">
+                                <img src="cid:twitter-icon" alt="Twitter" style="width: 18px; height: 18px; display: block; margin: auto;">
+                            </div>
+                        </a>
+                        <a href="#" title="Instagram">
+                            <div class="social-icon">
+                                <img src="cid:instagram-icon" alt="Instagram" style="width: 18px; height: 18px; display: block; margin: auto;">
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <div class="footer">
+                        <p>© ' . date('Y') . ' Health Recording System. All rights reserved.</p>
+                        <p>This email was sent to ' . $patient->email . '</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            ';
+
+            $this->mailer->Body = $body;
+            $this->mailer->AltBody = "Appointment Request Received\n\nDear {$patient->first_name} {$patient->last_name},\n\nThank you for scheduling an appointment with us. Your request has been received and is pending confirmation.\n\nTracking Number: {$appointment->tracking_number}\n\nAppointment Details:\nDate: {$formattedDate}\nTime: {$formattedTime}\n\nPlease keep your tracking number for future reference. You will receive a confirmation email once your appointment is approved.\n\nIf you have any questions, please contact our office.\n\nThank you for choosing our clinic.";
+
+            // Enable debug output
+            $this->mailer->SMTPDebug = 0; // Set to 2 for verbose debug output if needed
+
+            $this->mailer->send();
+            return true;
+        } catch (Exception $e) {
+            error_log("Email could not be sent. Mailer Error: {$this->mailer->ErrorInfo}");
+            return false;
+        }
     }
-
-    
 }

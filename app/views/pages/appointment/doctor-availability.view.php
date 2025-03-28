@@ -354,6 +354,7 @@
 
     <div class="max-w-7xl mx-auto">
         <!-- Image Header Section -->
+        <!-- Image Header Section -->
         <div class="image-header">
             <img src="<?= BASE_URL ?>/images/image-header.jpg" class="image-header-bg" alt="Doctors Team">
             <div class="image-header-overlay"></div>
@@ -363,18 +364,21 @@
                 <p class="image-header-subtitle">Schedule appointments with top specialists in various medical fields
                 </p>
 
-                <div class="image-header-stats">
-                    <div class="stat-item">
-                        <div class="stat-number"><?= count($data['doctors']) ?>+</div>
-                        <div class="stat-label">Doctors</div>
+                <div class="flex gap-8 mt-4">
+                    <div
+                        class="flex flex-col items-center bg-white bg-opacity-15 backdrop-blur-sm p-4 rounded-lg min-w-[120px]">
+                        <div class="text-3xl font-bold mb-1"><?= count($data['doctors']) ?>+</div>
+                        <div class="text-sm opacity-90">Doctors</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-number"><?= count($data['specializations']) ?>+</div>
-                        <div class="stat-label">Specialties</div>
+                    <div
+                        class="flex flex-col items-center bg-white bg-opacity-15 backdrop-blur-sm p-4 rounded-lg min-w-[120px]">
+                        <div class="text-3xl font-bold mb-1"><?= count($data['specializations']) ?>+</div>
+                        <div class="text-sm opacity-90">Specialties</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-number">24/7</div>
-                        <div class="stat-label">Support</div>
+                    <div
+                        class="flex flex-col items-center bg-white bg-opacity-15 backdrop-blur-sm p-4 rounded-lg min-w-[120px]">
+                        <div class="text-3xl font-bold mb-1">24/7</div>
+                        <div class="text-sm opacity-90">Support</div>
                     </div>
                 </div>
             </div>
@@ -382,10 +386,9 @@
 
         <!-- Search Section -->
         <div class="mb-8">
-            <div class="search-container border border-gray-300">
+            <div class="rounded-2xl border border-gray-300 p-6">
                 <h2 class="text-lg font-semibold mb-2">Search Doctors</h2>
                 <p class="text-sm text-gray-400 mb-4">Find doctor by name and speciality</p>
-
 
                 <form action="<?= BASE_URL ?>/appointment/search" method="GET" class="flex flex-col sm:flex-row gap-4">
                     <div class="relative w-full sm:w-[42.5%]">
@@ -393,13 +396,14 @@
                             <i class="bx bx-search text-gray-400"></i>
                         </span>
                         <input type="text" name="search" placeholder="Search by name, specialty, or hospital..."
-                            class="search-input w-full"
+                            class="w-full rounded-lg py-3 px-10 border border-gray-300 transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 outline-none"
                             value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
                     </div>
-                    <select name="specialization" class="select-input w-full sm:w-[42.5%]">
+                    <select name="specialization"
+                        class="w-full sm:w-[42.5%] rounded-lg py-3 px-4 border border-gray-300 transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 outline-none appearance-none bg-[right_0.75rem_center] bg-no-repeat bg-[length:1rem] bg-[url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27none%27 viewBox=%270 0 24 24%27 stroke=%27%236b7280%27%3E%3Cpath stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27M19 9l-7 7-7-7%27%3E%3C/path%3E%3C/svg%3E')]">
                         <option>All Specialties</option>
                         <?php
-                        // Get unique specializations directly from doctors table
+
                         $specializations = array_unique(array_column($data['doctors'], 'specialization'));
                         foreach ($specializations as $specialization):
                             ?>
@@ -408,17 +412,19 @@
                             </option>
                         <?php endforeach; ?>
                     </select>
-                    <button type="submit" class="btn-primary w-full sm:w-[15%] bg-gray-800 hover:bg-gray-900">
+                    <button type="submit"
+                        class="w-full sm:w-[15%] bg-gray-800 hover:bg-gray-900 text-white transition-all duration-200 rounded-lg py-2 px-4 font-medium">
                         Search
                     </button>
                 </form>
             </div>
-            <!-- View toggle buttons moved to right side -->
             <div class="flex items-center space-x-2 mt-4 justify-end">
-                <button id="cardView" class="view-btn active">
+                <button id="cardView"
+                    class="py-2 px-4 rounded-lg font-medium transition-all duration-200 flex items-center bg-primary text-white">
                     <i class="bx bxs-grid-alt mr-1"></i> Card View
                 </button>
-                <button id="listView" class="view-btn">
+                <button id="listView"
+                    class="py-2 px-4 rounded-lg font-medium transition-all duration-200 flex items-center bg-gray-200 text-gray-700 hover:bg-gray-300">
                     <i class="bx bx-list-ul mr-1"></i> List View
                 </button>
             </div>
@@ -457,7 +463,7 @@
                                     <h3 class="font-semibold text-gray-800">Dr.
                                         <?= $data['doctorModel']->getFullName($doctor) ?>
                                     </h3>
-                                    <p class="text-gray-600 text-sm mb-3"><?= $doctor->specialization ?></p>
+                                    <p class="text-gray-600 text-sm mb-3 capitalize"><?= $doctor->specialization ?></p>
                                 </div>
                                 <div class="flex items-center space-x-2 text-sm text-gray-700 mb-2">
                                     <i class="bx bx-calendar text-primary"></i>
@@ -528,7 +534,8 @@
                                         </div>
                                     </div>
                                     <div class="mt-2 sm:mt-0 flex flex-wrap gap-2 items-center">
-                                        <a href="<?= BASE_URL ?>/appointment/scheduling?doctor_id=<?= $doctor->id ?>" class="schedule-btn">
+                                        <a href="<?= BASE_URL ?>/appointment/scheduling?doctor_id=<?= $doctor->id ?>"
+                                            class="schedule-btn">
                                             Schedule
                                         </a>
                                     </div>
@@ -542,6 +549,11 @@
     </div>
 
     <!-- JavaScript for view switching -->
+    <style>
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+    </style>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const cardViewBtn = document.getElementById('cardView');
@@ -567,4 +579,3 @@
 </body>
 
 </html>
-

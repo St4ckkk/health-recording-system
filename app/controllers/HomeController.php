@@ -55,7 +55,7 @@ class HomeController extends Controller
     {
         // Get doctor ID from query parameter
         $doctorId = isset($_GET['doctor_id']) ? $_GET['doctor_id'] : null;
-        
+
         // If no doctor ID is provided, redirect to doctor availability page
         if (!$doctorId) {
             header('Location: ' . BASE_URL . '/appointment/doctor-availability');
@@ -64,7 +64,7 @@ class HomeController extends Controller
 
         // Get doctor details
         $doctor = $this->doctorModel->getDoctorById($doctorId);
-        
+
         if (!$doctor) {
             // Doctor not found, redirect to doctor availability page
             header('Location: ' . BASE_URL . '/appointment/doctor-availability');
@@ -74,7 +74,7 @@ class HomeController extends Controller
         // Get doctor's available days and time slots
         $doctor->available_days = $this->timeSlotModel->getDoctorAvailableDays($doctorId);
         $doctor->time_slots = $this->timeSlotModel->getTimeSlotsByDoctorId($doctorId);
-        
+
         // Format doctor's full name
         $doctor->full_name = $this->doctorModel->getFullName($doctor);
 
@@ -100,24 +100,25 @@ class HomeController extends Controller
         ]);
     }
 
-    public function track_appointment() {
+    public function track_appointment()
+    {
         try {
             // Check if this is an AJAX request
             if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
                 header('Location: ' . BASE_URL . '/appointment-tracking');
                 exit;
             }
-            
+
             // Get tracking number from POST data or raw input
             $trackingNumber = isset($_POST['tracking_number']) ? trim($_POST['tracking_number']) : '';
-            
+
             // If tracking number is empty, try to get it from the raw input
             if (empty($trackingNumber)) {
                 $rawInput = file_get_contents('php://input');
                 parse_str($rawInput, $parsedInput);
                 $trackingNumber = isset($parsedInput['tracking_number']) ? trim($parsedInput['tracking_number']) : '';
             }
-            
+
             // Validate tracking number
             if (empty($trackingNumber)) {
                 $this->jsonResponse([
@@ -126,10 +127,10 @@ class HomeController extends Controller
                 ]);
                 return;
             }
-            
+
             // Get appointment details from the model
             $appointment = $this->appointmentModel->getAppointmentByTrackingNumber($trackingNumber);
-            
+
             if (!$appointment) {
                 $this->jsonResponse([
                     'success' => false,
@@ -137,15 +138,15 @@ class HomeController extends Controller
                 ]);
                 return;
             }
-            
+
             // Convert object to array if needed
             if (is_object($appointment)) {
                 $appointment = (array) $appointment;
             }
-            
+
             // Get doctor details
             $doctor = $this->doctorModel->getDoctorById($appointment['doctor_id']);
-            
+
             // Set default doctor info if not found
             if (!$doctor) {
                 $doctor = [
@@ -160,7 +161,7 @@ class HomeController extends Controller
                 if (is_object($doctor)) {
                     $doctor = (array) $doctor;
                 }
-                
+
                 // Generate full doctor name
                 $doctorName = $doctor['first_name'];
                 if (!empty($doctor['middle_name'])) {
@@ -171,7 +172,7 @@ class HomeController extends Controller
                     $doctorName .= ', ' . $doctor['suffix'];
                 }
             }
-            
+
             // Format the appointment data for the response
             $formattedAppointment = [
                 'id' => $appointment['id'],
@@ -190,7 +191,7 @@ class HomeController extends Controller
                     'specialization' => $doctor['specialization'] ?? 'Not specified'
                 ]
             ];
-            
+
             // Return success response with appointment data
             $this->jsonResponse([
                 'success' => true,
@@ -204,14 +205,15 @@ class HomeController extends Controller
             ]);
         }
     }
-    
+
     /**
      * Send a JSON response
      * 
      * @param array $data Data to be encoded as JSON
      * @return void
      */
-    private function jsonResponse($data) {
+    private function jsonResponse($data)
+    {
         header('Content-Type: application/json');
         echo json_encode($data);
         exit;
@@ -221,7 +223,8 @@ class HomeController extends Controller
      * Get available time slots for a specific doctor on a specific date
      * Updated to use query parameters
      */
-    public function get_available_time_slots() {
+    public function get_available_time_slots()
+    {
         // Check if this is an AJAX request
         if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
             header('Location: ' . BASE_URL . '/appointment/doctor-availability');
@@ -232,10 +235,10 @@ class HomeController extends Controller
             // Get parameters from query string
             $doctorId = isset($_GET['doctor_id']) ? $_GET['doctor_id'] : null;
             $date = isset($_GET['date']) ? $_GET['date'] : null;
-            
+
             // Debug log
             error_log("Fetching time slots for doctor ID: $doctorId, date: $date");
-            
+
             // Validate inputs
             if (empty($doctorId) || empty($date)) {
                 $this->jsonResponse([
@@ -248,7 +251,7 @@ class HomeController extends Controller
             // Get day of week from date
             $dayOfWeek = date('l', strtotime($date)); // Returns Monday, Tuesday, etc.
             error_log("Day of week for $date: $dayOfWeek");
-        
+
             // Also get numeric day of week for verification
             $numericDayOfWeek = date('w', strtotime($date)); // 0 (Sunday) through 6 (Saturday)
             error_log("Numeric day of week for $date: $numericDayOfWeek (0=Sunday, 1=Monday, etc.)");
@@ -256,7 +259,7 @@ class HomeController extends Controller
             // Get doctor's time slots for this day
             $timeSlots = $this->timeSlotModel->getTimeSlotsByDoctorAndDay($doctorId, $dayOfWeek);
             error_log("Found " . count($timeSlots) . " time slots for doctor $doctorId on $dayOfWeek");
-            
+
             // If no time slots found, check if the doctor exists and has any time slots
             if (count($timeSlots) == 0) {
                 $doctor = $this->doctorModel->getDoctorById($doctorId);
@@ -264,41 +267,41 @@ class HomeController extends Controller
                     error_log("Doctor with ID $doctorId does not exist");
                 } else {
                     error_log("Doctor exists: " . $doctor->first_name . " " . $doctor->last_name);
-                    
+
                     // Check all time slots for this doctor
                     $allTimeSlots = $this->timeSlotModel->getTimeSlotsByDoctorId($doctorId);
                     error_log("Doctor has " . count($allTimeSlots) . " time slots in total");
-                    
+
                     // Log each time slot
                     foreach ($allTimeSlots as $slot) {
                         error_log("Time slot: day=" . $slot->day . ", start=" . $slot->start_time . ", end=" . $slot->end_time);
                     }
                 }
             }
-            
+
             // Get existing appointments for this doctor on this date
             $existingAppointments = $this->appointmentModel->getAppointmentsByDoctorAndDate($doctorId, $date);
             error_log("Found " . count($existingAppointments) . " existing appointments for doctor $doctorId on $date");
-            
+
             // Format existing appointments into a simple array of times
             $bookedTimes = [];
             foreach ($existingAppointments as $appointment) {
                 $bookedTimes[] = date('H:i', strtotime($appointment->appointment_time));
             }
-            
+
             // Format available time slots
             $availableTimeSlots = [];
             foreach ($timeSlots as $slot) {
                 // Debug log
                 error_log("Processing time slot: " . json_encode($slot));
-                
+
                 // Generate 15-minute intervals between start and end time
                 $startTime = strtotime($slot->start_time);
                 $endTime = strtotime($slot->end_time);
-                
+
                 for ($time = $startTime; $time < $endTime; $time += 15 * 60) {
                     $formattedTime = date('H:i', $time);
-                    
+
                     // Check if this time is already booked
                     if (!in_array($formattedTime, $bookedTimes)) {
                         $availableTimeSlots[] = [
@@ -308,9 +311,9 @@ class HomeController extends Controller
                     }
                 }
             }
-            
+
             error_log("Returning " . count($availableTimeSlots) . " available time slots");
-            
+
             $this->jsonResponse([
                 'success' => true,
                 'time_slots' => $availableTimeSlots,
@@ -336,12 +339,13 @@ class HomeController extends Controller
     /**
      * Book an appointment
      */
-    public function book_appointment() {
+    public function book_appointment()
+    {
         // Ensure session is started
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
-        
+
         // Check if this is a POST request
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL . '/appointment/doctor-availability');
@@ -379,13 +383,15 @@ class HomeController extends Controller
             ]));
 
             // Validate required fields
-            if (empty($doctorId) || empty($appointmentDate) || empty($appointmentTime) || 
-                empty($firstName) || empty($surname) || empty($appointmentType) || 
-                empty($dateOfBirth) || empty($legalSex) || empty($email) || 
-                empty($contactNumber) || empty($address)) {
-                
+            if (
+                empty($doctorId) || empty($appointmentDate) || empty($appointmentTime) ||
+                empty($firstName) || empty($surname) || empty($appointmentType) ||
+                empty($dateOfBirth) || empty($legalSex) || empty($email) ||
+                empty($contactNumber) || empty($address)
+            ) {
+
                 error_log("Validation failed: Missing required fields");
-                
+
                 // Redirect back with error message
                 $_SESSION['error'] = 'Please fill in all required fields';
                 header('Location: ' . BASE_URL . '/appointment/scheduling?doctor_id=' . $doctorId);
@@ -395,7 +401,7 @@ class HomeController extends Controller
             // Validate guardian fields if isGuardian is checked
             if ($isGuardian && (empty($guardianName) || empty($relationship))) {
                 error_log("Validation failed: Missing guardian fields");
-                
+
                 // Redirect back with error message
                 $_SESSION['error'] = 'Please fill in all guardian fields';
                 header('Location: ' . BASE_URL . '/appointment/scheduling?doctor_id=' . $doctorId);
@@ -404,11 +410,11 @@ class HomeController extends Controller
 
             // Check if patient already exists by email
             $patient = $this->patientModel->getPatientByEmail($email);
-            
+
             // If patient doesn't exist, create a new one
             if (!$patient) {
                 error_log("Patient with email $email not found. Creating new patient.");
-                
+
                 $patientData = [
                     'first_name' => $firstName,
                     'middle_name' => $middleName,
@@ -421,28 +427,28 @@ class HomeController extends Controller
                     'address' => $address,
                     'created_at' => date('Y-m-d H:i:s')
                 ];
-                
+
                 $patientId = $this->patientModel->insert($patientData);
-                
+
                 if (!$patientId) {
                     error_log("Failed to create patient record");
-                    
+
                     // Redirect back with error message
                     $_SESSION['error'] = 'Failed to create patient record';
                     header('Location: ' . BASE_URL . '/appointment/scheduling?doctor_id=' . $doctorId);
                     exit;
                 }
-                
+
                 error_log("New patient created with ID: $patientId");
             } else {
                 $patientId = $patient->id;
                 error_log("Existing patient found with ID: $patientId");
             }
-            
+
             // Generate tracking number
             $trackingNumber = 'APT-' . date('Ymd') . '-' . strtoupper(substr(md5(uniqid()), 0, 6));
             error_log("Generated tracking number: $trackingNumber");
-            
+
             // Create appointment
             $appointmentData = [
                 'patient_id' => $patientId,
@@ -468,57 +474,57 @@ class HomeController extends Controller
                     'relationship' => $relationship
                 ];
             }
-            
+
             error_log("Creating appointment with data: " . json_encode($appointmentData));
-            
+
             $appointmentId = $this->appointmentModel->insert($appointmentData);
-            
+
             if (!$appointmentId) {
                 error_log("Failed to create appointment");
-                
+
                 // Redirect back with error message
                 $_SESSION['error'] = 'Failed to create appointment';
                 header('Location: ' . BASE_URL . '/appointment/scheduling?doctor_id=' . $doctorId);
                 exit;
             }
-            
+
             error_log("Appointment created successfully with ID: $appointmentId");
-            
+
             // Verify the appointment was created with the correct tracking number
             $createdAppointment = $this->appointmentModel->getAppointmentById($appointmentId);
-            
+
             if (!$createdAppointment) {
                 error_log("Could not find the created appointment with ID: $appointmentId");
                 $_SESSION['error'] = 'Could not verify appointment creation';
                 header('Location: ' . BASE_URL . '/appointment/scheduling?doctor_id=' . $doctorId);
                 exit;
             }
-            
+
             error_log("Appointment verification - ID: $appointmentId, Tracking Number in DB: " . $createdAppointment->tracking_number);
-            
+
             // Use the tracking number from the database
             $trackingNumber = $createdAppointment->tracking_number;
-            
+
             // Get doctor details
             $doctor = $this->doctorModel->getDoctorById($createdAppointment->doctor_id);
-            
+
             if (!$doctor) {
                 error_log("Could not find doctor with ID: " . $createdAppointment->doctor_id);
                 $_SESSION['error'] = 'Could not find doctor details';
                 header('Location: ' . BASE_URL . '/appointment/scheduling?doctor_id=' . $doctorId);
                 exit;
             }
-            
+
             // Add full_name property to doctor object
             $doctor->full_name = $this->doctorModel->getFullName($doctor);
             error_log("Doctor full name: " . $doctor->full_name);
-            
+
             // Get patient details
             $patient = $this->patientModel->getPatientById($createdAppointment->patient_id);
-            
+
             if (!$patient) {
                 error_log("Could not find patient with ID: " . $createdAppointment->patient_id);
-                
+
                 // Create a dummy patient object with the form data
                 $patient = (object) [
                     'id' => $patientId,
@@ -529,10 +535,10 @@ class HomeController extends Controller
                     'email' => $email,
                     'contact_number' => $contactNumber
                 ];
-                
+
                 error_log("Created dummy patient object with first_name: " . $patient->first_name);
             }
-            
+
             // Render confirmation view directly
             $this->view('pages/appointment/confirmation.view', [
                 'title' => 'Appointment Confirmation',
@@ -542,11 +548,11 @@ class HomeController extends Controller
                 'tracking_number' => $trackingNumber
             ]);
             exit;
-            
+
         } catch (\Exception $e) {
             error_log("Error in book_appointment: " . $e->getMessage());
             error_log("Stack trace: " . $e->getTraceAsString());
-            
+
             // Redirect back with error message
             $_SESSION['error'] = 'An error occurred while booking the appointment: ' . $e->getMessage();
             header('Location: ' . BASE_URL . '/appointment/scheduling?doctor_id=' . (isset($_POST['doctor_id']) ? $_POST['doctor_id'] : ''));
@@ -557,33 +563,34 @@ class HomeController extends Controller
     /**
      * Show appointment confirmation page
      */
-    public function confirmation() {
+    public function confirmation()
+    {
         // Ensure session is started
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
-        
+
         error_log("Confirmation method called");
         $trackingNumber = isset($_SESSION['tracking_number']) ? $_SESSION['tracking_number'] : '';
         error_log("Tracking number from session: " . $trackingNumber);
-        
+
         if (empty($trackingNumber)) {
             error_log("Tracking number is empty, redirecting to doctor-availability");
             header('Location: ' . BASE_URL . '/appointment/doctor-availability');
             exit;
         }
-        
+
         // Get appointment details
         $appointment = $this->appointmentModel->getAppointmentByTrackingNumber($trackingNumber);
-        
+
         if (!$appointment) {
             header('Location: ' . BASE_URL . '/appointment/doctor-availability');
             exit;
         }
-        
+
         // Get doctor details
         $doctor = $this->doctorModel->getDoctorById($appointment->doctor_id);
-        
+
         if ($doctor) {
             // Add full_name property to doctor object
             $doctor->full_name = $this->doctorModel->getFullName($doctor);
@@ -595,10 +602,10 @@ class HomeController extends Controller
                 'specialization' => 'Not specified'
             ];
         }
-        
+
         // Get patient details
         $patient = $this->patientModel->getPatientById($appointment->patient_id);
-        
+
         if (!$patient) {
             // Create a dummy patient object if not found
             $patient = (object) [
@@ -609,7 +616,7 @@ class HomeController extends Controller
                 'contact_number' => ''
             ];
         }
-        
+
         $this->view('pages/appointment/confirmation.view', [
             'title' => 'Appointment Confirmation',
             'appointment' => $appointment,
@@ -617,10 +624,9 @@ class HomeController extends Controller
             'patient' => $patient,
             'tracking_number' => $trackingNumber
         ]);
-        
+
         // Clear session data
         unset($_SESSION['tracking_number']);
         unset($_SESSION['success']);
     }
 }
-

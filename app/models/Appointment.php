@@ -374,4 +374,3 @@ class Appointment extends Model
     }
 
 }
-

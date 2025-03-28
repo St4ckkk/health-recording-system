@@ -137,4 +137,3 @@ class Patient extends Model
         return $this->db->resultSet();
     }
 }
-
