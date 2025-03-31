@@ -7,6 +7,7 @@ use app\models\Doctor;
 use app\models\DoctorTimeSlot;
 use app\models\Patient;
 use app\helpers\EmailHelper;
+use app\helpers\TrackingNumber;
 
 class ReceptionistController extends Controller
 {
@@ -15,6 +16,7 @@ class ReceptionistController extends Controller
     private $timeSlotModel;
     private $patientModel;
     private $emailHelper;
+    private $trackingNumberHelper;
 
     public function __construct()
     {
@@ -23,6 +25,7 @@ class ReceptionistController extends Controller
         $this->timeSlotModel = new DoctorTimeSlot();
         $this->patientModel = new Patient();
         $this->emailHelper = new EmailHelper();
+        $this->trackingNumberHelper = new TrackingNumber();
     }
 
     /**
@@ -578,7 +581,8 @@ class ReceptionistController extends Controller
             'first_name' => $appointment->first_name,
             'last_name' => $appointment->last_name,
             'email' => $appointment->email,
-            'contact_number' => $appointment->contact_number
+            'contact_number' => $appointment->contact_number,
+            'patient_reference_number' => $appointment->patient_reference_number,
         ];
     }
 
@@ -930,8 +934,179 @@ class ReceptionistController extends Controller
     }
 
     /**
-     * Check if the request is an AJAX request
+     * Schedule a follow-up appointment
      */
+    public function scheduleFollowUp()
+    {
+        // Prepare for JSON response
+        $this->prepareJsonResponse();
+
+        // Check if the request is POST
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Invalid request method'
+            ]);
+            return;
+        }
+
+        try {
+            // Get the appointment ID
+            $appointmentId = isset($_POST['appointmentId']) ? $_POST['appointmentId'] : null;
+
+            // Get follow-up details
+            $followUpDate = isset($_POST['followUpDate']) ? $_POST['followUpDate'] : null;
+            $followUpTime = isset($_POST['followUpTime']) ? $_POST['followUpTime'] : null;
+            $followUpType = isset($_POST['followUpType']) ? $_POST['followUpType'] : 'follow_up';
+            $followUpReason = isset($_POST['followUpReason']) ? $_POST['followUpReason'] : 'Follow-up appointment';
+
+            // Log received data for debugging
+            error_log("Follow-up data received: appointmentId=$appointmentId, date=$followUpDate, time=$followUpTime, type=$followUpType");
+
+            // Validate required fields
+            if (!$appointmentId || !$followUpDate) {
+                error_log("Missing required fields for follow-up");
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Missing required fields'
+                ]);
+                return;
+            }
+
+            // Get the original appointment
+            $originalAppointment = $this->appointmentModel->getAppointmentById($appointmentId);
+            if (!$originalAppointment) {
+                error_log("Original appointment not found: $appointmentId");
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Original appointment not found'
+                ]);
+                return;
+            }
+
+            $patient = $this->patientModel->getPatientById($originalAppointment->patient_id);
+            if (!$patient) {
+                error_log("Patient not found for appointment: $appointmentId");
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Patient record not found'
+                ]);
+                return;
+            }
+
+
+
+
+            // Create follow-up appointment data
+            $followUpData = [
+                'patient_id' => $patient->id,
+                'doctor_id' => $originalAppointment->doctor_id,
+                'appointment_date' => $followUpDate,
+                'appointment_time' => $followUpTime,
+                'status' => 'confirmed',
+                'tracking_number' => $originalAppointment->tracking_number,
+                'appointment_type' => $followUpType,
+                'reason' => $followUpReason,
+                'created_at' => date('Y-m-d H:i:s'),
+                'is_follow_up' => 1,
+                'original_appointment_id' => $originalAppointment->id
+            ];
+
+            // Log the data we're trying to insert
+            error_log("Attempting to insert follow-up appointment: " . print_r($followUpData, true));
+
+            // Insert the follow-up appointment
+            $followUpId = $this->appointmentModel->insert($followUpData);
+
+            if ($followUpId) {
+                // Log the follow-up scheduling
+                $this->logActivity('Follow-up scheduled', 'Follow-up appointment #' . $followUpId . ' scheduled for appointment #' . $appointmentId);
+                error_log("Follow-up appointment created successfully with ID: $followUpId");
+
+                // Send email notification if patient has email
+                if (!empty($originalAppointment->email)) {
+                    // Prepare email data
+                    $emailData = [
+                        'patient_name' => $originalAppointment->first_name . ' ' . $originalAppointment->last_name,
+                        'doctor_name' => 'Dr. ' . $originalAppointment->doctor_first_name . ' ' . $originalAppointment->doctor_last_name,
+                        'appointment_date' => date('l, F j, Y', strtotime($followUpDate)),
+                        'appointment_time' => date('h:i A', strtotime($followUpTime)),
+                        'tracking_number' => $originalAppointment->tracking_number,
+                        'follow_up_reason' => $followUpReason,
+                        'special_instructions' => '',
+                        'clinic_name' => $_ENV['CLINIC_NAME'] ?? 'Health Recording System',
+                        'clinic_address' => $_ENV['CLINIC_ADDRESS'] ?? '123 Medical Center Blvd, Health City',
+                        'clinic_phone' => $_ENV['CLINIC_PHONE'] ?? '(123) 456-7890'
+                    ];
+
+                    try {
+                        // Send the follow-up notification email
+                        $this->emailHelper->sendFollowUpNotification(
+                            $originalAppointment->email,
+                            $originalAppointment->first_name . ' ' . $originalAppointment->last_name,
+                            $emailData
+                        );
+                    } catch (\Exception $e) {
+                        // Just log the email error but continue with success response
+                        error_log("Email sending failed: " . $e->getMessage());
+                    }
+                }
+
+                $this->jsonResponse([
+                    'success' => true,
+                    'message' => 'Follow-up appointment scheduled successfully',
+                    'followUpId' => $followUpId
+                ]);
+            } else {
+                error_log("Failed to insert follow-up appointment into database");
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Failed to schedule follow-up appointment'
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->logError('Error in scheduleFollowUp', $e);
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Server error: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * View all appointment records for a specific patient
+     * 
+     * @return void
+     */
+    public function viewPatientAppointmentRecords()
+    {
+        
+        $patientId = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+        if ($patientId <= 0) {
+            $this->redirect('receptionist/dashboard');
+            return;
+        }
+
+        // Get patient information
+        $patient = $this->patientModel->getPatientById($patientId);
+
+        if (!$patient) {
+            $this->redirect('receptionist/dashboard');
+        }
+
+        // Get all appointments for this patient
+        $appointments = $this->appointmentModel->getAppointmentsByPatientId($patientId);
+
+        // Load the view with the patient's appointment records
+        $this->view('pages/receptionist/appointment-record.view', [
+            'title' => 'Patient Appointment Records',
+            'patient' => $patient,
+            'appointments' => $appointments
+        ]);
+    }
+
+
     private function isAjaxRequest()
     {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
@@ -950,6 +1125,7 @@ class ReceptionistController extends Controller
         error_reporting(0);
 
         // Start output buffering to capture any unexpected output
+
         ob_start();
     }
 

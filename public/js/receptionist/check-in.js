@@ -55,16 +55,6 @@ function setupCheckInModal() {
     setInterval(updateCurrentTime, 1000);
 }
 
-function setupStartAppointmentFunctionality() {
-    const startAppointmentBtns = document.querySelectorAll("[onclick^='startAppointment']");
-
-    startAppointmentBtns.forEach(btn => {
-        const originalOnClick = btn.getAttribute("onclick");
-        const appointmentId = originalOnClick.match(/\d+/)[0];
-
-        btn.setAttribute("onclick", `startAppointmentProcess(${appointmentId})`);
-    });
-}
 
 // Open check-in modal
 window.checkInPatient = (appointmentId) => {
@@ -170,101 +160,9 @@ function submitCheckInForm() {
         });
 }
 
-// Start appointment process
-window.startAppointmentProcess = (appointmentId) => {
-    if (!appointmentId) return;
 
-    // Create form data
-    const formData = new FormData();
-    formData.append("appointmentId", appointmentId);
 
-    // Use window.BASE_URL if defined, otherwise fallback to empty string
-    const baseUrl = window.BASE_URL || '';
 
-    // Send AJAX request to the dedicated start appointment endpoint
-    fetch(`${baseUrl}/receptionist/start-appointment`, {
-        method: "POST",
-        body: formData,
-        headers: {
-            'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-        .then(async response => {
-            if (!response.ok) {
-                const text = await response.text();
-                console.error("Error response:", text);
-                throw new Error(text);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                // Show success message
-                showToast('success', 'Success', 'Appointment started successfully');
-
-                // Reload the page after a short delay
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
-            } else {
-                // Show error message
-                showToast('error', 'Error', data.message || "Failed to start appointment");
-            }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            showToast('error', 'Error', "An error occurred. Please try again.");
-        });
-}
-
-// Complete appointment process
-window.completeAppointment = (appointmentId) => {
-    if (!appointmentId) return;
-
-    // Create form data
-    const formData = new FormData();
-    formData.append("appointmentId", appointmentId);
-
-    // Use window.BASE_URL if defined, otherwise fallback to empty string
-    const baseUrl = window.BASE_URL || '';
-
-    // Send AJAX request to the dedicated complete appointment endpoint
-    fetch(`${baseUrl}/receptionist/complete-appointment`, {
-        method: "POST",
-        body: formData,
-        headers: {
-            'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-        .then(async response => {
-            if (!response.ok) {
-                const text = await response.text();
-                console.error("Error response:", text);
-                throw new Error(text);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                // Show success message
-                showToast('success', 'Success', 'Appointment completed successfully');
-
-                // Reload the page after a short delay
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
-            } else {
-                // Show error message
-                showToast('error', 'Error', data.message || "Failed to complete appointment");
-            }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            showToast('error', 'Error', "An error occurred. Please try again.");
-        });
-}
 
 // Toast notification function (similar to reminder.js)
 window.showToast = (type, title, message) => {

@@ -222,7 +222,7 @@
                                                         <?= htmlspecialchars($appointment->last_name) ?>
                                                     </h4>
                                                     <p class="text-xs text-gray-500">
-                                                        <?= htmlspecialchars($appointment->patient_id) ?>
+                                                        <?= htmlspecialchars($appointment->patient_reference_number) ?>
                                                     </p>
                                                     <div class="flex items-center mt-2">
                                                         <i class="bx bx-calendar text-gray-400 text-sm mr-1"></i>
@@ -387,6 +387,16 @@
 
                                         <hr class="border-gray-200 my-6 mt-5 mb-4 space">
 
+                                        <!-- Add action buttons here -->
+                                        <div class="flex justify-end gap-2 mt-4">
+                                            <?php if ($appointment->status === 'pending'): ?>
+                                                <button type="button" onclick="checkInPatient(<?= $appointment->id ?>)"
+                                                    class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark focus:outline-none">
+                                                    <i class="bx bx-log-in-circle mr-1"></i> Check In
+                                                </button>
+                                            <?php endif; ?>
+                                        </div>
+
                                         <div class="">
                                             <p class="text-sm mb-2 font-medium">Appointment Information</p>
                                             <div class="ml-1">
@@ -428,9 +438,8 @@
                                                                 Appointment End
                                                             </td>
                                                             <td class="text-sm text-gray-900 py-2">
-                                                                <?= date('h:i A', strtotime($appointment->completed_at)) ?>
+                                                                <?= isset($appointment->completed_at) && $appointment->completed_at ? date('h:i A', strtotime($appointment->completed_at)) : 'Not completed' ?>
                                                             </td>
-
                                                         </tr>
                                                     <?php endif; ?>
 
@@ -605,20 +614,26 @@
                                                     <button class="action-button border border-danger text-danger"
                                                         onclick="deleteAppointment(<?= $appointment->id ?>)">
                                                         <i class="bx bx-trash mr-2 text-md"></i>
-                                                        Delete Appointment
+                                                        Delete
                                                     </button>
                                                     <button class="action-button border border-info text-info"
                                                         onclick="archiveAppointment(<?= $appointment->id ?>)">
                                                         <i class="bx bx-archive mr-2 text-md"></i>
-                                                        Archive Appointment
+                                                        Archive
+                                                    </button>
+                                                    <button class="action-button border border-primary text-primary"
+                                                        onclick="scheduleFollowUp(<?= $appointment->id ?>)">
+                                                        <i class="bx bx-calendar-plus mr-2 text-md"></i>
+                                                        Schedule Follow-up
                                                     </button>
                                                 </div>
                                             <?php endif; ?>
+
                                             <button class="action-button bg-gray-900"
-                                                onclick="viewPatientRecord(<?= $appointment->id ?>)">
+                                                onclick="window.location.href='<?= BASE_URL ?>/receptionist/appointments/records?id=<?= $appointment->patient_id ?>'">
                                                 <i class="bx bx-file mr-2 text-white text-md"></i>
                                                 <span class=" text-white">
-                                                    Patient Record
+                                                    Appointment Record
                                                 </span>
                                             </button>
                                         </div>
@@ -636,6 +651,8 @@
     </div>
     <script src="<?= BASE_URL ?>/js/receptionist/reception.js"></script>
     <script src="<?= BASE_URL ?>/js/receptionist/check-in.js"></script>
+    <script src="<?= BASE_URL ?>/js/receptionist/start-appointment.js"></script>
+    <script src="<?= BASE_URL ?>/js/receptionist/complete.js"></script>
     <script src="<?= BASE_URL ?>/js/receptionist/confirm.js"></script>
     <script src="<?= BASE_URL ?>/js/receptionist/reminder.js"></script>
 
@@ -649,6 +666,7 @@
     <?php include(VIEW_ROOT . '/pages/receptionist/components/modals/deny-reschedule.php') ?>
     <?php include(VIEW_ROOT . '/pages/receptionist/components/modals/reschedule.php') ?>
     <?php include(VIEW_ROOT . '/pages/receptionist/components/modals/start-appointment.php') ?>
+    <?php include(VIEW_ROOT . '/pages/receptionist/components/modals/completed.php') ?>
 </body>
 
 </html>

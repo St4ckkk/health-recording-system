@@ -46,6 +46,12 @@ class Model
         return $this->db->single();
     }
 
+
+    public function findById($id)
+    {
+        $this->db->query("SELECT * FROM {$this->table} WHERE id = :id");
+    }
+
     public function create($data)
     {
         // Extract column names and placeholders
@@ -134,7 +140,7 @@ class Model
         $this->db->bind(':value', $value);
         return $this->db->single();
     }
-    
+
     /**
      * Execute a custom query with optional parameters
      * 
@@ -145,13 +151,13 @@ class Model
     public function query($sql, $params = [])
     {
         $this->db->query($sql);
-        
+
         if (!empty($params)) {
             foreach ($params as $key => $value) {
                 $this->db->bind($key, $value);
             }
         }
-        
+
         return $this->db->resultSet();
     }
 }

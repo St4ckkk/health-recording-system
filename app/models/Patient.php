@@ -15,7 +15,25 @@ class Patient extends Model
 
     public function getPatientById($id)
     {
-        return $this->getById($id);
+        // Log the requested patient ID for debugging
+        error_log("Attempting to get patient with ID: " . $id);
+
+        // First try direct ID lookup
+        $patient = $this->getById($id);
+
+        // If not found and the ID looks like a patient reference number (e.g., PAT-20250328-688566)
+        if (!$patient && is_string($id) && strpos($id, 'PAT-') === 0) {
+            error_log("ID appears to be a reference number, trying to find by patient_id");
+            $patient = $this->getSingleByField('id', $id);
+        }
+
+        if (!$patient) {
+            error_log("Patient not found with ID: " . $id);
+        } else {
+            error_log("Patient found: " . $patient->first_name . " " . $patient->last_name);
+        }
+
+        return $patient;
     }
 
     public function getPatientByEmail($email)

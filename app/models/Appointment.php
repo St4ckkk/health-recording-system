@@ -17,7 +17,7 @@ class Appointment extends Model
     {
         $typeField = $includeType ? ", COALESCE(a.appointment_type, 'Checkup') as type" : '';
         return "SELECT a.*, 
-                p.first_name, p.last_name, p.contact_number, p.email, p.patient_id, 
+                p.first_name, p.last_name, p.contact_number, p.email, p.patient_reference_number, p.id as patient_id, 
                 d.first_name as doctor_first_name, d.last_name as doctor_last_name, 
                 d.specialization{$typeField}
                 FROM {$this->table} a
@@ -213,5 +213,39 @@ class Appointment extends Model
             $additionalData,
             ['status' => 'completed', 'updated_at' => date('Y-m-d H:i:s')]
         ));
+    }
+
+
+    public function followUpAppointment($appointmentId, $additionalData = [])
+    {
+        return $this->update($appointmentId, array_merge(
+            $additionalData,
+            ['status' => 'follow-up', 'updated_at' => date('Y-m-d H:i:s')]
+        ));
+    }
+
+    public function getAppointmentsByPatientId($patientId)
+    {
+        $this->db->query("
+            SELECT 
+                a.*,
+                p.first_name AS patient_first_name,
+                p.last_name AS patient_last_name,
+                p.email AS patient_email,
+                p.contact_number AS patient_contact,
+                p.patient_reference_number AS patient_reference_number,
+                d.first_name AS doctor_first_name,
+                d.last_name AS doctor_last_name,
+                d.specialization AS doctor_specialty
+            FROM appointments a
+            JOIN patients p ON a.patient_id = p.id
+            JOIN doctors d ON a.doctor_id = d.id
+            WHERE a.patient_id = :patient_id
+            ORDER BY a.appointment_date DESC, a.appointment_time DESC
+        ");
+
+        $this->db->bind(':patient_id', $patientId);
+
+        return $this->db->resultSet();
     }
 }

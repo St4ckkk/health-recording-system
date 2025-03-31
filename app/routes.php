@@ -18,12 +18,13 @@ $router->get('/login', 'SessionController@login');
 $router->post('/login', 'SessionController@login');
 $router->get('/logout', 'SessionController@logout');
 
+// Receptionist routes
 $router->get('/receptionist/dashboard', 'ReceptionistController@dashboard');
 $router->get('/receptionist/appointments', 'ReceptionistController@appointments');
+$router->get('/receptionist/patients', 'ReceptionistController@patients');
 $router->get('/receptionist/notification', 'ReceptionistController@notification');
 $router->get('/receptionist/doctor_schedules', 'ReceptionistController@doctor_schedules');
 
-// New dedicated endpoints for appointment status management
 $router->post('/receptionist/check-in-patient', 'ReceptionistController@checkInPatient');
 $router->post('/receptionist/start-appointment', 'ReceptionistController@startAppointment');
 $router->post('/receptionist/complete-appointment', 'ReceptionistController@completeAppointment');
@@ -34,3 +35,9 @@ $router->get('/receptionist/get_doctor_schedule', 'ReceptionistController@get_do
 $router->post('/receptionist/cancel-appointment', 'ReceptionistController@cancelAppointment');
 $router->post('/receptionist/confirm-appointment', 'ReceptionistController@confirmAppointment');
 $router->post('/receptionist/send-reminder', 'ReceptionistController@sendReminder');
+$router->post('/receptionist/schedule-follow-up', 'ReceptionistController@scheduleFollowUp');
+// Change this line
+$router->get('/receptionist/appointments/records/{id}', 'ReceptionistController@viewPatientAppointmentRecords');
+
+// To this
+$router->get('/receptionist/appointments/records', 'ReceptionistController@viewPatientAppointmentRecords');

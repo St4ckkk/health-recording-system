@@ -435,7 +435,7 @@ function getStatusIcon($status)
                                                         <span
                                                             class="font-medium text-md"><?= htmlspecialchars($appointment->first_name . ' ' . $appointment->last_name) ?></span>
                                                         <span
-                                                            class="patient-id text-xs text-gray-500"><?= htmlspecialchars($appointment->patient_id) ?></span>
+                                                            class="patient-id text-xs text-gray-500"><?= htmlspecialchars($appointment->patient_reference_number ?? 'N/A') ?></span>
                                                     </div>
                                                 </td>
                                                 <td>
@@ -453,7 +453,7 @@ function getStatusIcon($status)
                                                 </td>
                                                 <td class="text-xs"><?= htmlspecialchars($appointment->reason) ?>
                                                 </td>
-                                                <!-- Replace the status badge cell in the table -->
+
                                                 <td>
                                                     <?php
                                                     $statusClass = '';
