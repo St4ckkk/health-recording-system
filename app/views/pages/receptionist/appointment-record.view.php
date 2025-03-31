@@ -11,9 +11,35 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/output.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/reception.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/dashboard.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/badges.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/node_modules/flatpickr/dist/flatpickr.min.css">
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/flatpickr.min.js"></script>
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/l10n/fr.js"></script>
+    <style>
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background-color: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 1rem;
+        }
+
+        .back-button:hover {
+            background-color: #e5e7eb;
+        }
+
+        .back-button i {
+            margin-right: 0.5rem;
+        }
+    </style>
 </head>
 
 <body class="font-body">
@@ -26,34 +52,42 @@
                 <section class="p-6">
                     <!-- Back button -->
                     <div class="mb-4">
+
                         <a href="<?= BASE_URL ?>/receptionist/dashboard"
                             class="inline-flex items-center text-sm font-medium text-primary hover:text-primary-dark">
-                            <i class="bx bx-arrow-back mr-2"></i> Back to Dashboard
+                            <button class="back-button">
+                                <i class="bx bx-arrow-back mr-2"></i> Back to Dashboard
+                            </button>
+
                         </a>
                     </div>
 
                     <!-- Patient Info Header -->
-                    <div class="bg-white rounded-lg shadow-md p-6 mb-6 fade-in">
+                    <div class="card shadow-sm rounded-lg p-6 flex-1 fade-in mb-3">
                         <div class="flex justify-between items-center">
                             <div>
-                                <h1 class="text-2xl font-semibold text-gray-900"><?= $patient->first_name ?>
-                                    <?= $patient->last_name ?>
+                                <h1 class="text-2xl font-semibold text-gray-900">
+                                    <?= isset($patient->first_name) ? $patient->first_name : 'N/A' ?>
+                                    <?= isset($patient->last_name) ? $patient->last_name : '' ?>
                                 </h1>
                                 <p class="text-gray-500">
-                                    <?= $patient->patient_reference_number ?></p>
+                                    <?= isset($patient->patient_reference_number) ? $patient->patient_reference_number : 'No Reference Number' ?>
+                                </p>
                                 <div class="flex items-center mt-2">
                                     <i class="bx bx-envelope text-gray-400 mr-2"></i>
-                                    <span class="text-gray-600"><?= $patient->email ?></span>
+                                    <span
+                                        class="text-gray-600"><?= isset($patient->email) ? $patient->email : 'No Email' ?></span>
                                     <span class="mx-2 text-gray-300">|</span>
                                     <i class="bx bx-phone text-gray-400 mr-2"></i>
-                                    <span class="text-gray-600"><?= $patient->contact_number ?></span>
+                                    <span
+                                        class="text-gray-600"><?= isset($patient->contact_number) ? $patient->contact_number : 'No Contact' ?></span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Appointment History -->
-                    <div class="bg-white rounded-lg shadow-md p-6 fade-in">
+                    <div class="card shadow-sm rounded-lg p-6 flex-1 fade-in">
                         <div class="flex justify-between items-center mb-6">
                             <div>
                                 <h2 class="text-xl font-semibold text-gray-900">Appointment History</h2>
@@ -90,138 +124,141 @@
                         <!-- Appointment Timeline -->
                         <div class="appointment-timeline">
                             <?php if (!empty($appointments)): ?>
-                                    <?php foreach ($appointments as $index => $appointment): ?>
-                                            <?php
-                                            // Define status classes and icons
-                                            $statusMapping = [
-                                                'completed' => ['class' => 'bg-green-100 border-green-500 text-green-800', 'icon' => 'bx-check-circle text-green-500'],
-                                                'cancelled' => ['class' => 'bg-red-100 border-red-500 text-red-800', 'icon' => 'bx-x-circle text-red-500'],
-                                                'cancelled_by_clinic' => ['class' => 'bg-red-100 border-red-500 text-red-800', 'icon' => 'bx-x-circle text-red-500'],
-                                                'cancellation_requested' => ['class' => 'bg-yellow-100 border-yellow-500 text-yellow-800', 'icon' => 'bx-time text-yellow-500'],
-                                                'no-show' => ['class' => 'bg-red-100 border-red-500 text-red-800', 'icon' => 'bx-error-circle text-red-500'],
-                                                'pending' => ['class' => 'bg-blue-100 border-blue-500 text-blue-800', 'icon' => 'bx-hourglass text-blue-500'],
-                                                'confirmed' => ['class' => 'bg-green-100 border-green-500 text-green-800', 'icon' => 'bx-calendar-check text-green-500'],
-                                                'checked-in' => ['class' => 'bg-indigo-100 border-indigo-500 text-indigo-800', 'icon' => 'bx-log-in-circle text-indigo-500'],
-                                                'in_progress' => ['class' => 'bg-indigo-100 border-indigo-500 text-indigo-800', 'icon' => 'bx-hourglass text-indigo-500'],
-                                                'rescheduled' => ['class' => 'bg-yellow-100 border-yellow-500 text-yellow-800', 'icon' => 'bx-calendar-exclamation text-yellow-500'],
-                                            ];
+                                <?php foreach ($appointments as $index => $appointment): ?>
+                                    <?php if (!is_object($appointment))
+                                        continue; // Skip if not an object ?>
+                                    <?php
+                                    // Define status classes and icons
+                                    $statusMapping = [
+                                        'completed' => ['class' => 'bg-green-100 border-green-500 text-green-800', 'icon' => 'bx-check-circle text-green-500'],
+                                        'cancelled' => ['class' => 'bg-red-100 border-red-500 text-red-800', 'icon' => 'bx-x-circle text-red-500'],
+                                        'cancelled_by_clinic' => ['class' => 'bg-red-100 border-red-500 text-red-800', 'icon' => 'bx-x-circle text-red-500'],
+                                        'cancellation_requested' => ['class' => 'bg-yellow-100 border-yellow-500 text-yellow-800', 'icon' => 'bx-time text-yellow-500'],
+                                        'no-show' => ['class' => 'bg-red-100 border-red-500 text-red-800', 'icon' => 'bx-error-circle text-red-500'],
+                                        'pending' => ['class' => 'bg-blue-100 border-blue-500 text-blue-800', 'icon' => 'bx-hourglass text-blue-500'],
+                                        'confirmed' => ['class' => 'bg-green-100 border-green-500 text-green-800', 'icon' => 'bx-calendar-check text-green-500'],
+                                        'checked-in' => ['class' => 'bg-indigo-100 border-indigo-500 text-indigo-800', 'icon' => 'bx-log-in-circle text-indigo-500'],
+                                        'in_progress' => ['class' => 'bg-indigo-100 border-indigo-500 text-indigo-800', 'icon' => 'bx-hourglass text-indigo-500'],
+                                        'rescheduled' => ['class' => 'bg-yellow-100 border-yellow-500 text-yellow-800', 'icon' => 'bx-calendar-exclamation text-yellow-500'],
+                                    ];
 
-                                            $statusInfo = $statusMapping[$appointment->status] ?? $statusMapping['pending'];
-                                            $statusLabel = ucwords(str_replace('_', ' ', $appointment->status));
+                                    $status = isset($appointment->status) ? $appointment->status : 'pending';
+                                    $statusInfo = $statusMapping[$status] ?? $statusMapping['pending'];
+                                    $statusLabel = ucwords(str_replace('_', ' ', $status));
 
-                                            // Define appointment type classes
-                                            $typeClass = '';
-                                            $appointmentType = $appointment->appointment_type ?? $appointment->type ?? 'checkup';
-                                            switch (strtolower($appointmentType)) {
-                                                case 'checkup':
-                                                    $typeClass = 'bg-blue-100 text-blue-800';
-                                                    break;
-                                                case 'follow_up':
-                                                    $typeClass = 'bg-purple-100 text-purple-800';
-                                                    break;
-                                                case 'consultation':
-                                                    $typeClass = 'bg-indigo-100 text-indigo-800';
-                                                    break;
-                                                case 'treatment':
-                                                    $typeClass = 'bg-green-100 text-green-800';
-                                                    break;
-                                                case 'emergency':
-                                                    $typeClass = 'bg-red-100 text-red-800';
-                                                    break;
-                                                case 'specialist':
-                                                    $typeClass = 'bg-yellow-100 text-yellow-800';
-                                                    break;
-                                                default:
-                                                    $typeClass = 'bg-gray-100 text-gray-800';
-                                                    break;
-                                            }
-                                            ?>
-                                            <div
-                                                class="appointment-card border-l-4 <?= str_replace('bg-', 'border-', $statusInfo['class']) ?> bg-white p-4 rounded-r-lg shadow-sm mb-4 hover:shadow-md transition-shadow">
-                                                <div class="flex justify-between items-start">
-                                                    <div class="flex-1">
-                                                        <div class="flex items-center mb-2">
-                                                            <span
-                                                                class="text-sm font-medium text-gray-900"><?= date('l, F j, Y', strtotime($appointment->appointment_date)) ?></span>
-                                                            <span class="mx-2 text-gray-300">•</span>
-                                                            <span
-                                                                class="text-sm text-gray-600"><?= date('h:i A', strtotime($appointment->appointment_time)) ?></span>
-                                                            <span class="mx-2 text-gray-300">•</span>
-                                                            <span class="text-sm font-medium">Dr. <?= $appointment->doctor_first_name ?>
-                                                                <?= $appointment->doctor_last_name ?></span>
-                                                        </div>
-                                                        <div class="flex items-center gap-2 mb-3">
-                                                            <span class="px-2 py-1 rounded-full text-xs font-medium <?= $typeClass ?>">
-                                                                <?= ucwords(str_replace('_', ' ', $appointmentType)) ?>
-                                                            </span>
-                                                            <span
-                                                                class="px-2 py-1 rounded-full text-xs font-medium <?= $statusInfo['class'] ?>">
-                                                                <i class="bx <?= $statusInfo['icon'] ?> mr-1"></i>
-                                                                <?= $statusLabel ?>
-                                                            </span>
-                                                        </div>
-                                                        <p class="text-sm text-gray-600 mb-2">
-                                                            <span class="font-medium">Reason:</span>
-                                                            <?= $appointment->reason ?? 'General appointment' ?>
-                                                        </p>
-                                                        <?php if (!empty($appointment->notes)): ?>
-                                                                <p class="text-sm text-gray-600">
-                                                                    <span class="font-medium">Notes:</span> <?= $appointment->notes ?>
-                                                                </p>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                    <div class="flex flex-col gap-2">
-                                                        <button class="action-button-sm bg-primary text-white"
-                                                            onclick="viewAppointmentDetails(<?= $appointment->id ?>)">
-                                                            <i class="bx bx-show mr-1"></i> View
-                                                        </button>
-                                                        <?php if ($appointment->status == 'pending'): ?>
-                                                                <button class="action-button-sm bg-success text-white"
-                                                                    onclick="confirmAppointment(<?= $appointment->id ?>)">
-                                                                    <i class="bx bx-check mr-1"></i> Confirm
-                                                                </button>
-                                                        <?php elseif ($appointment->status == 'confirmed'): ?>
-                                                                <button class="action-button-sm bg-indigo-500 text-white"
-                                                                    onclick="checkInPatient(<?= $appointment->id ?>)">
-                                                                    <i class="bx bx-log-in mr-1"></i> Check In
-                                                                </button>
-                                                        <?php elseif ($appointment->status == 'checked-in' || $appointment->status == 'in_progress'): ?>
-                                                                <button class="action-button-sm bg-green-600 text-white"
-                                                                    onclick="completeAppointment(<?= $appointment->id ?>)">
-                                                                    <i class="bx bx-check-double mr-1"></i> Complete
-                                                                </button>
-                                                        <?php endif; ?>
-                                                    </div>
+                                    // Define appointment type classes
+                                    $typeClass = '';
+                                    $appointmentType = $appointment->appointment_type ?? $appointment->type ?? 'checkup';
+                                    switch (strtolower($appointmentType)) {
+                                        case 'checkup':
+                                            $typeClass = 'bg-blue-100 text-blue-800';
+                                            break;
+                                        case 'follow_up':
+                                            $typeClass = 'bg-purple-100 text-purple-800';
+                                            break;
+                                        case 'consultation':
+                                            $typeClass = 'bg-indigo-100 text-indigo-800';
+                                            break;
+                                        case 'treatment':
+                                            $typeClass = 'bg-green-100 text-green-800';
+                                            break;
+                                        case 'emergency':
+                                            $typeClass = 'bg-red-100 text-red-800';
+                                            break;
+                                        case 'specialist':
+                                            $typeClass = 'bg-yellow-100 text-yellow-800';
+                                            break;
+                                        default:
+                                            $typeClass = 'bg-gray-100 text-gray-800';
+                                            break;
+                                    }
+                                    ?>
+                                    <div
+                                        class="appointment-card border-l-4 <?= str_replace('bg-', 'border-', $statusInfo['class']) ?> bg-white p-4 rounded-r-lg shadow-sm mb-4 hover:shadow-md transition-shadow">
+                                        <div class="flex justify-between items-start">
+                                            <div class="flex-1">
+                                                <div class="flex items-center mb-2">
+                                                    <span
+                                                        class="text-sm font-medium text-gray-900"><?= date('l, F j, Y', strtotime($appointment->appointment_date)) ?></span>
+                                                    <span class="mx-2 text-gray-300">•</span>
+                                                    <span
+                                                        class="text-sm text-gray-600"><?= date('h:i A', strtotime($appointment->appointment_time)) ?></span>
+                                                    <span class="mx-2 text-gray-300">•</span>
+                                                    <span class="text-sm font-medium">Dr. <?= $appointment->doctor_first_name ?>
+                                                        <?= $appointment->doctor_last_name ?></span>
                                                 </div>
+                                                <div class="flex items-center gap-2 mb-3">
+                                                    <span class="px-2 py-1 rounded-full text-xs font-medium <?= $typeClass ?>">
+                                                        <?= ucwords(str_replace('_', ' ', $appointmentType)) ?>
+                                                    </span>
+                                                    <span
+                                                        class="px-2 py-1 rounded-full text-xs font-medium <?= $statusInfo['class'] ?>">
+                                                        <i class="bx <?= $statusInfo['icon'] ?> mr-1"></i>
+                                                        <?= $statusLabel ?>
+                                                    </span>
+                                                </div>
+                                                <p class="text-sm text-gray-600 mb-2">
+                                                    <span class="font-medium">Reason:</span>
+                                                    <?= $appointment->reason ?? 'General appointment' ?>
+                                                </p>
+                                                <?php if (!empty($appointment->notes)): ?>
+                                                    <p class="text-sm text-gray-600">
+                                                        <span class="font-medium">Notes:</span> <?= $appointment->notes ?>
+                                                    </p>
+                                                <?php endif; ?>
                                             </div>
-                                    <?php endforeach; ?>
+                                            <div class="flex flex-col gap-2">
+                                                <button class="action-button-sm bg-primary text-white"
+                                                    onclick="viewAppointmentDetails(<?= $appointment->id ?>)">
+                                                    <i class="bx bx-show mr-1"></i> View
+                                                </button>
+                                                <?php if ($appointment->status == 'pending'): ?>
+                                                    <button class="action-button-sm bg-success text-white"
+                                                        onclick="confirmAppointment(<?= $appointment->id ?>)">
+                                                        <i class="bx bx-check mr-1"></i> Confirm
+                                                    </button>
+                                                <?php elseif ($appointment->status == 'confirmed'): ?>
+                                                    <button class="action-button-sm bg-indigo-500 text-white"
+                                                        onclick="checkInPatient(<?= $appointment->id ?>)">
+                                                        <i class="bx bx-log-in mr-1"></i> Check In
+                                                    </button>
+                                                <?php elseif ($appointment->status == 'checked-in' || $appointment->status == 'in_progress'): ?>
+                                                    <button class="action-button-sm bg-green-600 text-white"
+                                                        onclick="completeAppointment(<?= $appointment->id ?>)">
+                                                        <i class="bx bx-check-double mr-1"></i> Complete
+                                                    </button>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
                             <?php else: ?>
                             <?php endif; ?>
                         </div>
 
                         <!-- Pagination -->
                         <?php if (!empty($appointments) && count($appointments) > 10): ?>
-                                <div class="flex justify-center mt-6">
-                                    <nav class="flex items-center space-x-2">
-                                        <a href="#"
-                                            class="px-3 py-1 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50">
-                                            <i class="bx bx-chevron-left"></i>
-                                        </a>
-                                        <a href="#"
-                                            class="px-3 py-1 rounded-md border border-gray-300 bg-primary text-white">1</a>
-                                        <a href="#"
-                                            class="px-3 py-1 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50">2</a>
-                                        <a href="#"
-                                            class="px-3 py-1 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50">3</a>
-                                        <span class="px-3 py-1 text-gray-600">...</span>
-                                        <a href="#"
-                                            class="px-3 py-1 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50">8</a>
-                                        <a href="#"
-                                            class="px-3 py-1 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50">
-                                            <i class="bx bx-chevron-right"></i>
-                                        </a>
-                                    </nav>
-                                </div>
+                            <div class="flex justify-center mt-6">
+                                <nav class="flex items-center space-x-2">
+                                    <a href="#"
+                                        class="px-3 py-1 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50">
+                                        <i class="bx bx-chevron-left"></i>
+                                    </a>
+                                    <a href="#"
+                                        class="px-3 py-1 rounded-md border border-gray-300 bg-primary text-white">1</a>
+                                    <a href="#"
+                                        class="px-3 py-1 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50">2</a>
+                                    <a href="#"
+                                        class="px-3 py-1 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50">3</a>
+                                    <span class="px-3 py-1 text-gray-600">...</span>
+                                    <a href="#"
+                                        class="px-3 py-1 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50">8</a>
+                                    <a href="#"
+                                        class="px-3 py-1 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50">
+                                        <i class="bx bx-chevron-right"></i>
+                                    </a>
+                                </nav>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </section>
