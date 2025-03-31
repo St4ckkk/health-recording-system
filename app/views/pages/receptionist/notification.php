@@ -64,7 +64,7 @@
             <?php include('components/header.php') ?>
             <div class="content-wrapper">
                 <?php include('components/toast.php') ?>
-                <!-- Patient App View (initially hidden) -->
+
                 <div id="patientAppView" class="view-transition hidden-view">
                     <div class="p-6">
                         <button id="backToNotifications" class="back-button">
@@ -74,7 +74,7 @@
                     </div>
                 </div>
 
-                <!-- Reschedule App View (initially hidden) -->
+
                 <div id="rescheduleAppView" class="view-transition hidden-view">
                     <div class="p-6">
                         <button id="backFromReschedule" class="back-button">
@@ -84,15 +84,66 @@
                     </div>
                 </div>
 
-                <!-- Notifications View (initially visible) -->
+
                 <section id="notificationsView" class="p-6 view-transition visible-view">
                     <div class="mb-3">
                         <h2 class="text-2xl font-bold text-gray-900">Notifications</h2>
                         <p class="text-sm text-gray-500">View and manage notifications</p>
                     </div>
-                    <div class="p-4 card bg-white shadow-sm rounded-lg w-full fade-in">
+
+                    <!-- Replace the simple text with a more informative development notice -->
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg shadow-md my-6">
+                        <div class="flex items-center mb-4">
+                            <div class="flex-shrink-0 bg-yellow-100 rounded-full p-3">
+                                <i class="bx bx-wrench text-3xl text-yellow-500"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-xl font-semibold text-yellow-800">This Feature is Under Development</h3>
+                                <p class="text-yellow-700 mt-1">We're working hard to bring you a better notification
+                                    experience.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg p-4 border border-yellow-200">
+                            <h4 class="text-gray-800 font-medium mb-2">Coming Soon:</h4>
+                            <ul class="space-y-2 text-gray-700">
+                                <li class="flex items-center">
+                                    <i class="bx bx-check-circle text-green-500 mr-2"></i>
+                                    Real-time appointment notifications
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="bx bx-check-circle text-green-500 mr-2"></i>
+                                    Patient request alerts
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="bx bx-check-circle text-green-500 mr-2"></i>
+                                    Customizable notification preferences
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="bx bx-check-circle text-green-500 mr-2"></i>
+                                    Notification history and management
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="mt-4 text-sm text-gray-600">
+                            <p>Expected completion: <span class="font-medium">Q2 2023</span></p>
+                            <p class="mt-2">In the meantime, please continue using the appointment dashboard to manage
+                                patient appointments.</p>
+                        </div>
+
+                        <div class="mt-6">
+                            <a href="<?= BASE_URL ?>/receptionist/dashboard"
+                                class="inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors">
+                                <i class="bx bx-calendar mr-2"></i>
+                                Go to Appointment Dashboard
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- <div class="p-4 card bg-white shadow-sm rounded-lg w-full fade-in">
                         <div class="space-y-4">
-                            <!-- New Appointment Card -->
+                           
                             <div class="notification-card bg-[#f8faff] rounded-lg p-4 border border-primary-lighter">
                                 <div class="flex items-start justify-between">
                                     <div class="flex items-start space-x-4">
@@ -130,7 +181,7 @@
                                 </div>
                             </div>
 
-                            <!-- Appointment Confirmation Card -->
+                          
                             <div class="notification-card bg-[#f8faff] rounded-lg p-4 border border-primary-lighter">
                                 <div class="flex items-start justify-between">
                                     <div class="flex items-start space-x-4">
@@ -160,7 +211,7 @@
                                 </div>
                             </div>
 
-                            <!-- Read Appointment Card -->
+                        
                             <div class="notification-card bg-gray-50 rounded-lg p-4 border border-gray-200">
                                 <div class="flex items-start justify-between">
                                     <div class="flex items-start space-x-4">
@@ -190,7 +241,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
+
                 </section>
             </div>
         </div>

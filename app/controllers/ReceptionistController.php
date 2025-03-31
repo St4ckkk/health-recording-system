@@ -579,7 +579,9 @@ class ReceptionistController extends Controller
         return [
             'patient_id' => $appointment->patient_id,
             'first_name' => $appointment->first_name,
+            'middle_name' => $appointment->middle_name,
             'last_name' => $appointment->last_name,
+            'suffix' => $appointment->suffix,
             'email' => $appointment->email,
             'contact_number' => $appointment->contact_number,
             'patient_reference_number' => $appointment->patient_reference_number,

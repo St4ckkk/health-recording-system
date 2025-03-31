@@ -342,7 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             tableHtml += `
                   <tr>
-                      <td class="py-3 px-4 border-b border-gray-200">${appointment.patient_name}</td>
+                      <td class="py-3 px-4 border-b border-gray-200">${appointment.first_name} ${appointment.middle_name ? appointment.middle_name : ''} ${appointment.last_name} ${appointment.suffix ? appointment.suffix : ''}</td>
                       <td class="py-3 px-4 border-b border-gray-200">${appointment.formatted_date}</td>
                       <td class="py-3 px-4 border-b border-gray-200">${appointment.formatted_time}</td>
                       <td class="py-3 px-4 border-b border-gray-200">${appointment.reason || "Not specified"}</td>
