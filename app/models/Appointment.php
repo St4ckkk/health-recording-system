@@ -13,9 +13,21 @@ class Appointment extends Model
         parent::__construct();
     }
 
+    private function buildBaseQuery(bool $includeType = false): string
+    {
+        $typeField = $includeType ? ", COALESCE(a.appointment_type, 'Checkup') as type" : '';
+        return "SELECT a.*, 
+                p.first_name, p.last_name, p.contact_number, p.email, p.patient_id, 
+                d.first_name as doctor_first_name, d.last_name as doctor_last_name, 
+                d.specialization{$typeField}
+                FROM {$this->table} a
+                LEFT JOIN patients p ON a.patient_id = p.id
+                LEFT JOIN doctors d ON a.doctor_id = d.id";
+    }
+
     public function getAppointmentByTrackingNumber($trackingNumber)
     {
-        error_log("Looking for appointment with tracking number: " . $trackingNumber);
+        error_log("Looking for appointment with tracking number: $trackingNumber");
 
         if (empty($trackingNumber)) {
             error_log("Empty tracking number provided");
@@ -23,41 +35,33 @@ class Appointment extends Model
         }
 
         $trackingNumber = trim($trackingNumber);
-
-        // Debug query
         $this->db->query("SELECT * FROM {$this->table} WHERE tracking_number = :tracking_number");
         $this->db->bind(':tracking_number', $trackingNumber);
         $result = $this->db->single();
 
         if ($this->db->rowCount() > 0) {
-            error_log("Found appointment with tracking number: " . $trackingNumber . ", ID: " . $result->id);
+            error_log("Found appointment: $trackingNumber, ID: " . $result->id);
             return $result;
         }
 
-        error_log("No appointment found with tracking number: " . $trackingNumber);
-
-        // Try a direct query to see all appointments
-        $this->db->query("SELECT id, tracking_number FROM {$this->table} ORDER BY id DESC LIMIT 10");
-        $recentAppointments = $this->db->resultSet();
-
-        error_log("Recent appointments in the database:");
-        foreach ($recentAppointments as $appt) {
-            error_log("ID: " . $appt->id . ", Tracking Number: " . $appt->tracking_number);
-        }
-
+        error_log("No appointment found: $trackingNumber");
+        $this->logRecentAppointments();
         return null;
     }
 
-    /**
-     * Get appointments for a specific doctor on a specific date
-     * 
-     * @param int $doctorId The doctor ID
-     * @param string $date The date in Y-m-d format
-     * @return array The appointments
-     */
+    private function logRecentAppointments(int $limit = 10): void
+    {
+        $this->db->query("SELECT id, tracking_number FROM {$this->table} ORDER BY id DESC LIMIT $limit");
+        $recent = $this->db->resultSet();
+
+        error_log("Recent appointments:");
+        foreach ($recent as $appt) {
+            error_log("ID: $appt->id, Tracking: $appt->tracking_number");
+        }
+    }
+
     public function getAppointmentsByDoctorAndDate($doctorId, $date)
     {
-        // Debug log
         error_log("getAppointmentsByDoctorAndDate: doctorId=$doctorId, date=$date");
 
         $this->db->query('SELECT * FROM appointments WHERE doctor_id = :doctor_id AND appointment_date = :date');
@@ -65,278 +69,149 @@ class Appointment extends Model
         $this->db->bind(':date', $date);
 
         $result = $this->db->resultSet();
-
-        // Debug log
-        error_log("getAppointmentsByDoctorAndDate: found " . count($result) . " appointments");
-
+        error_log("Found " . count($result) . " appointments");
         return $result;
     }
 
-    /**
-     * Get all appointments with patient and doctor information
-     * 
-     * @return array
-     */
     public function getAllAppointments()
     {
-        $this->db->query("SELECT a.*, p.first_name, p.last_name, p.contact_number, p.email, p.patient_id, 
-                d.first_name as doctor_first_name, d.last_name as doctor_last_name, 
-                d.specialization, 
-                COALESCE(a.appointment_type, 'Checkup') as type
-                FROM {$this->table} a
-                LEFT JOIN patients p ON a.patient_id = p.id
-                LEFT JOIN doctors d ON a.doctor_id = d.id
-                ORDER BY a.appointment_date DESC, a.appointment_time DESC");
-
+        $sql = $this->buildBaseQuery(true) . " ORDER BY a.appointment_date DESC, a.appointment_time DESC";
+        $this->db->query($sql);
         $result = $this->db->resultSet();
-        error_log("Retrieved " . count($result) . " appointments in getAllAppointments");
+        error_log("Retrieved " . count($result) . " appointments");
         return $result;
     }
 
-    /**
-     * Get today's appointments
-     * 
-     * @return array
-     */
+    private function executeAppointmentQuery(string $where, array $params, string $order): array
+    {
+        $sql = $this->buildBaseQuery() . " WHERE $where ORDER BY $order";
+        $this->db->query($sql);
+        foreach ($params as $key => $value) {
+            $this->db->bind($key, $value);
+        }
+        return $this->db->resultSet();
+    }
+
     public function getTodayAppointments()
     {
-        $today = date('Y-m-d');
-        $this->db->query("SELECT a.*, p.first_name, p.last_name, p.contact_number, p.email, p.patient_id, 
-                d.first_name as doctor_first_name, d.last_name as doctor_last_name, 
-                d.specialization
-                FROM {$this->table} a
-                LEFT JOIN patients p ON a.patient_id = p.id
-                LEFT JOIN doctors d ON a.doctor_id = d.id
-                WHERE DATE(a.appointment_date) = :today
-                ORDER BY a.appointment_time ASC");
-        $this->db->bind(':today', $today);
-
-        return $this->db->resultSet();
+        return $this->executeAppointmentQuery(
+            'DATE(a.appointment_date) = :today',
+            [':today' => date('Y-m-d')],
+            'a.appointment_time ASC'
+        );
     }
 
-    /**
-     * Get upcoming appointments
-     * 
-     * @return array
-     */
     public function getUpcomingAppointments()
     {
-        $today = date('Y-m-d');
-        $this->db->query("SELECT a.*, p.first_name, p.last_name, p.contact_number, p.email, p.patient_id, 
-                d.first_name as doctor_first_name, d.last_name as doctor_last_name, 
-                d.specialization
-                FROM {$this->table} a
-                LEFT JOIN patients p ON a.patient_id = p.id
-                LEFT JOIN doctors d ON a.doctor_id = d.id
-                WHERE a.appointment_date > :today
-                ORDER BY a.appointment_date ASC, a.appointment_time ASC");
-        $this->db->bind(':today', $today);
-
-        return $this->db->resultSet();
+        return $this->executeAppointmentQuery(
+            'a.appointment_date > :today',
+            [':today' => date('Y-m-d')],
+            'a.appointment_date ASC, a.appointment_time ASC'
+        );
     }
 
-    /**
-     * Get past appointments
-     * 
-     * @return array
-     */
     public function getPastAppointments()
     {
         $today = date('Y-m-d');
-        $this->db->query("SELECT a.*, p.first_name, p.last_name, p.contact_number, p.email, p.patient_id, 
-                d.first_name as doctor_first_name, d.last_name as doctor_last_name, 
-                d.specialization
-                FROM {$this->table} a
-                LEFT JOIN patients p ON a.patient_id = p.id
-                LEFT JOIN doctors d ON a.doctor_id = d.id
-                WHERE a.appointment_date < :today OR 
-                      (a.appointment_date = :today AND a.status IN ('completed', 'no-show', 'cancelled'))
-                ORDER BY a.appointment_date DESC, a.appointment_time DESC");
-        $this->db->bind(':today', $today);
-
-        return $this->db->resultSet();
+        return $this->executeAppointmentQuery(
+            '(a.appointment_date < :today OR (a.appointment_date = :today AND a.status IN ("completed", "no-show", "cancelled")))',
+            [':today' => $today],
+            'a.appointment_date DESC, a.appointment_time DESC'
+        );
     }
 
-    /**
-     * Get appointment by ID with patient and doctor details
-     * 
-     * @param int $id
-     * @return object|null
-     */
-    /**
-     * Get an appointment by its ID with all related information
-     * 
-     * @param int $id The appointment ID
-     * @return object|false The appointment object or false if not found
-     */
     public function getAppointmentById($id)
     {
-        $this->db->query("SELECT a.*, p.first_name, p.last_name, p.contact_number, p.email, p.patient_id, 
-                d.first_name as doctor_first_name, d.last_name as doctor_last_name, 
-                d.specialization, 
-                COALESCE(a.appointment_type, 'Checkup') as type
-                FROM {$this->table} a
-                LEFT JOIN patients p ON a.patient_id = p.id
-                LEFT JOIN doctors d ON a.doctor_id = d.id
-                WHERE a.id = :id");
+        $sql = $this->buildBaseQuery(true) . " WHERE a.id = :id";
+        $this->db->query($sql);
         $this->db->bind(':id', $id);
-
-        $result = $this->db->single();
-
-        if ($this->db->rowCount() > 0) {
-            return $result;
-        }
-
-        return false;
+        return $this->db->single() ?: false;
     }
 
-    /**
-     * Get appointment statistics
-     * 
-     * @return array
-     */
     public function getAppointmentStats()
     {
-        $today = date('Y-m-d');
+        $this->db->query("SELECT 
+            SUM(CASE WHEN DATE(appointment_date) = CURDATE() THEN 1 ELSE 0 END) as today,
+            SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
+            SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled
+            FROM {$this->table}");
 
-        // Get today's appointments count
-        $this->db->query("SELECT COUNT(*) as count FROM {$this->table} WHERE DATE(appointment_date) = :today");
-        $this->db->bind(':today', $today);
-        $todayResult = $this->db->single();
-        $todayCount = $todayResult ? $todayResult->count : 0;
-
-        // Get pending appointments count
-        $this->db->query("SELECT COUNT(*) as count FROM {$this->table} WHERE status = 'pending'");
-        $pendingResult = $this->db->single();
-        $pendingCount = $pendingResult ? $pendingResult->count : 0;
-
-        // Get cancelled appointments count
-        $this->db->query("SELECT COUNT(*) as count FROM {$this->table} WHERE status = 'cancelled'");
-        $cancelledResult = $this->db->single();
-        $cancelledCount = $cancelledResult ? $cancelledResult->count : 0;
-
+        $result = $this->db->single();
         return [
-            'today' => $todayCount,
-            'pending' => $pendingCount,
-            'cancelled' => $cancelledCount
+            'today' => $result->today ?? 0,
+            'pending' => $result->pending ?? 0,
+            'cancelled' => $result->cancelled ?? 0
         ];
     }
 
-    /**
-     * Get upcoming appointments for a specific doctor
-     * 
-     * @param int $doctorId The doctor ID
-     * @param int $limit Optional limit of appointments to return
-     * @return array The upcoming appointments
-     */
     public function getUpcomingAppointmentsByDoctorId($doctorId, $limit = 10)
     {
-        $this->db->query('
-          SELECT a.*, 
-                 p.first_name as patient_first_name, 
-                 p.last_name as patient_last_name,
-                 p.middle_name as patient_middle_name,
-                 p.suffix as patient_suffix
-          FROM appointments a
-          JOIN patients p ON a.patient_id = p.id
-          WHERE a.doctor_id = :doctor_id
-          AND a.appointment_date >= CURDATE()
-          ORDER BY a.appointment_date ASC, a.appointment_time ASC
-          LIMIT :limit
-      ');
+        $this->db->query($this->buildBaseQuery() . "
+            WHERE a.doctor_id = :doctor_id AND a.appointment_date >= CURDATE()
+            ORDER BY a.appointment_date ASC, a.appointment_time ASC
+            LIMIT :limit");
 
         $this->db->bind(':doctor_id', $doctorId);
         $this->db->bind(':limit', $limit);
 
         $appointments = $this->db->resultSet();
-
-        // Format patient names and appointment details
-        foreach ($appointments as &$appointment) {
-            $appointment->patient_name = trim(
-                $appointment->patient_first_name . ' ' .
-                ($appointment->patient_middle_name ? $appointment->patient_middle_name . ' ' : '') .
-                $appointment->patient_last_name .
-                ($appointment->patient_suffix ? ' ' . $appointment->patient_suffix : '')
-            );
-
-            // Format date and time for display
-            $appointment->formatted_date = date('M j, Y', strtotime($appointment->appointment_date));
-            $appointment->formatted_time = date('g:i A', strtotime($appointment->appointment_time));
-        }
-
-        return $appointments;
+        return array_map([$this, 'formatAppointmentDetails'], $appointments);
     }
 
-    /**
-     * Insert a new appointment
-     * 
-     * @param array $data The appointment data
-     * @return bool|int The ID of the inserted appointment or false on failure
-     */
-    public function insert($data)
+    private function formatAppointmentDetails(object $appointment): object
+    {
+        $appointment->patient_name = trim(
+            "$appointment->patient_first_name " .
+            ($appointment->patient_middle_name ? "$appointment->patient_middle_name " : '') .
+            $appointment->patient_last_name .
+            ($appointment->patient_suffix ? " $appointment->patient_suffix" : '')
+        );
+
+        $appointment->formatted_date = date('M j, Y', strtotime($appointment->appointment_date));
+        $appointment->formatted_time = date('g:i A', strtotime($appointment->appointment_time));
+        return $appointment;
+    }
+
+    public function insert(array $data)
     {
         try {
-            $this->db->query('INSERT INTO appointments (
-              patient_id,
-              doctor_id,
-              appointment_date,
-              appointment_time,
-              reason,
-              appointment_type,
-              status,
-              tracking_number,
-              special_instructions,
-              created_at,
-              updated_at
-          ) VALUES (
-              :patient_id,
-              :doctor_id,
-              :appointment_date,
-              :appointment_time,
-              :reason,
-              :appointment_type,
-              :status,
-              :tracking_number,
-              :special_instructions,
-              :created_at,
-              :updated_at
-          )');
+            $fields = implode(', ', array_keys($data));
+            $placeholders = ':' . implode(', :', array_keys($data));
 
-            // Bind values
-            $this->db->bind(':patient_id', $data['patient_id']);
-            $this->db->bind(':doctor_id', $data['doctor_id']);
-            $this->db->bind(':appointment_date', $data['appointment_date']);
-            $this->db->bind(':appointment_time', $data['appointment_time']);
-            $this->db->bind(':reason', $data['reason']);
-            $this->db->bind(':appointment_type', $data['appointment_type']);
-            $this->db->bind(':status', $data['status']);
-            $this->db->bind(':tracking_number', $data['tracking_number']);
-            $this->db->bind(':special_instructions', $data['special_instructions'] ?? '');
-            $this->db->bind(':created_at', $data['created_at']);
-            $this->db->bind(':updated_at', $data['updated_at']);
+            $this->db->query("INSERT INTO appointments ($fields) VALUES ($placeholders)");
 
-            // Execute
-            if ($this->db->execute()) {
-                return $this->db->lastInsertId();
+            foreach ($data as $key => $value) {
+                $this->db->bind(":$key", $value);
             }
 
-            return false;
+            return $this->db->execute() ? $this->db->lastInsertId() : false;
         } catch (\Exception $e) {
-            error_log("Error in Appointment::insert: " . $e->getMessage());
+            error_log("Insert error: " . $e->getMessage());
             return false;
         }
     }
 
-    /**
-     * Update appointment
-     * 
-     * @param int $id
-     * @param array $data
-     * @return bool
-     */
-    public function updateAppointment($id, $data)
+    public function checkInPatient($appointmentId, $additionalData = [])
     {
-        return $this->update($id, $data);
+        return $this->update($appointmentId, array_merge(
+            $additionalData,
+            ['status' => 'checked_in', 'updated_at' => date('Y-m-d H:i:s')]
+        ));
     }
 
+    public function startAppointment($appointmentId, $additionalData = [])
+    {
+        return $this->update($appointmentId, array_merge(
+            $additionalData,
+            ['status' => 'in_progress', 'updated_at' => date('Y-m-d H:i:s')]
+        ));
+    }
+
+    public function completeAppointment($appointmentId, $additionalData = [])
+    {
+        return $this->update($appointmentId, array_merge(
+            $additionalData,
+            ['status' => 'completed', 'updated_at' => date('Y-m-d H:i:s')]
+        ));
+    }
 }

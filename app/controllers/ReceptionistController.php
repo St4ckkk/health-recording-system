@@ -6,7 +6,7 @@ use app\models\Appointment;
 use app\models\Doctor;
 use app\models\DoctorTimeSlot;
 use app\models\Patient;
-use app\helpers\EmailHelper; // Add this line
+use app\helpers\EmailHelper;
 
 class ReceptionistController extends Controller
 {
@@ -14,7 +14,7 @@ class ReceptionistController extends Controller
     private $doctorModel;
     private $timeSlotModel;
     private $patientModel;
-    private $emailHelper; // Add this line
+    private $emailHelper;
 
     public function __construct()
     {
@@ -25,17 +25,16 @@ class ReceptionistController extends Controller
         $this->emailHelper = new EmailHelper();
     }
 
+    /**
+     * Display the receptionist dashboard with appointment statistics
+     */
     public function dashboard()
     {
-        // Get appointment statistics
+        // Get appointment statistics and categorized appointments
         $stats = $this->appointmentModel->getAppointmentStats();
-
-        // Get upcoming, today's, and past appointments
         $upcomingAppointments = $this->appointmentModel->getUpcomingAppointments();
         $todayAppointments = $this->appointmentModel->getTodayAppointments();
         $pastAppointments = $this->appointmentModel->getPastAppointments();
-
-        // Get all appointments for the appointment list
         $allAppointments = $this->appointmentModel->getAllAppointments();
 
         $this->view('pages/receptionist/dashboard', [
@@ -48,22 +47,22 @@ class ReceptionistController extends Controller
         ]);
     }
 
+    /**
+     * Display appointments with filtering by tab
+     */
     public function appointments()
     {
-
         $tab = isset($_GET['tab']) ? $_GET['tab'] : 'upcoming';
 
         $allAppointments = $this->appointmentModel->getAllAppointments();
         $upcomingAppointments = $this->appointmentModel->getUpcomingAppointments();
         $pastAppointments = $this->appointmentModel->getPastAppointments();
 
-
-        $displayAppointments = $allAppointments;
-        if ($tab === 'upcoming') {
-            $displayAppointments = $upcomingAppointments;
-        } elseif ($tab === 'past') {
-            $displayAppointments = $pastAppointments;
-        }
+        $displayAppointments = match ($tab) {
+            'upcoming' => $upcomingAppointments,
+            'past' => $pastAppointments,
+            default => $allAppointments
+        };
 
         error_log("Displaying " . count($displayAppointments) . " appointments for tab: " . $tab);
 
@@ -77,6 +76,9 @@ class ReceptionistController extends Controller
         ]);
     }
 
+    /**
+     * Display notification page
+     */
     public function notification()
     {
         $this->view('pages/receptionist/notification', [
@@ -84,18 +86,17 @@ class ReceptionistController extends Controller
         ]);
     }
 
-    // Change from doctorSchedules() to doctor_schedules()
+    /**
+     * Display doctor schedules
+     */
     public function doctor_schedules()
     {
-        // Get all doctors with their availability information
+        // Get all available doctors
         $doctors = $this->doctorModel->getAllDoctors('available');
 
         // Process each doctor to add available days and full name
         foreach ($doctors as $doctor) {
-            // Get available days
             $doctor->available_days = $this->timeSlotModel->getDoctorAvailableDays($doctor->id);
-
-            // Get full name
             $doctor->full_name = $this->doctorModel->getFullName($doctor);
         }
 
@@ -110,39 +111,16 @@ class ReceptionistController extends Controller
      */
     public function add_doctor()
     {
-        // Check if this is an AJAX request
-        if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
-            header('Location: ' . BASE_URL . '/receptionist/doctor_schedules');
-            exit;
+        // Verify AJAX request
+        if (!$this->isAjaxRequest()) {
+            $this->redirect('/receptionist/doctor_schedules');
         }
 
         try {
-            // Get form data
-            $firstName = isset($_POST['firstname']) ? trim($_POST['firstname']) : '';
-            $lastName = isset($_POST['lastname']) ? trim($_POST['lastname']) : '';
-            $middleName = isset($_POST['middlename']) ? trim($_POST['middlename']) : '';
-            $suffix = isset($_POST['suffix']) ? trim($_POST['suffix']) : '';
-            $specialty = isset($_POST['specialty']) ? trim($_POST['specialty']) : '';
-            $email = isset($_POST['email']) ? trim($_POST['email']) : '';
-            $phone = isset($_POST['phone']) ? trim($_POST['phone']) : '';
-            $location = isset($_POST['location']) ? trim($_POST['location']) : '';
-            $maxAppointments = isset($_POST['maxAppointments']) ? intval($_POST['maxAppointments']) : 15;
-            $status = isset($_POST['status']) ? trim($_POST['status']) : 'active';
-            $availableDays = isset($_POST['availableDays']) ? $_POST['availableDays'] : [];
+            // Extract and validate form data
+            $doctorData = $this->extractDoctorFormData();
+            $validator = $this->validateDoctorData($doctorData);
 
-            // Get work hours
-            $workHoursStart = isset($_POST['workHoursStart']) ? trim($_POST['workHoursStart']) : null;
-            $workHoursEnd = isset($_POST['workHoursEnd']) ? trim($_POST['workHoursEnd']) : null;
-
-            // Create validator instance
-            $validator = new \app\core\Validator($_POST);
-
-            // Validate required fields
-            $validator->required(['firstname', 'lastname', 'specialty', 'email', 'phone'])
-                ->email('email')
-                ->minItems('availableDays', 1, 'Please select at least one available day');
-
-            // Check if validation fails
             if ($validator->fails()) {
                 $this->jsonResponse([
                     'success' => false,
@@ -152,51 +130,17 @@ class ReceptionistController extends Controller
             }
 
             // Handle profile image upload
-            $profileImage = null;
-            if (isset($_FILES['profileImage']) && $_FILES['profileImage']['error'] === UPLOAD_ERR_OK) {
-                // Validate file
-                $fileValidator = new \app\core\Validator(['profileImage' => $_FILES['profileImage']]);
-                $fileValidator->fileSize('profileImage', 2 * 1024 * 1024, 'Profile image must not exceed 2MB')
-                    ->fileType('profileImage', ['image/jpeg', 'image/png', 'image/jpg'], 'Only JPG and PNG files are allowed');
-
-                if ($fileValidator->fails()) {
-                    $this->jsonResponse([
-                        'success' => false,
-                        'message' => $fileValidator->getFirstError()
-                    ]);
-                    return;
-                }
-
-                $profileImage = $this->handleProfileImageUpload($_FILES['profileImage']);
-                if (is_array($profileImage) && isset($profileImage['error'])) {
-                    $this->jsonResponse([
-                        'success' => false,
-                        'message' => $profileImage['error']
-                    ]);
-                    return;
-                }
+            $profileImage = $this->handleDoctorProfileImage();
+            if (is_array($profileImage) && isset($profileImage['error'])) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => $profileImage['error']
+                ]);
+                return;
             }
 
-            // Create doctor data array
-            $doctorData = [
-                'first_name' => $firstName,
-                'last_name' => $lastName,
-                'middle_name' => $middleName,
-                'suffix' => $suffix,
-                'specialization' => $specialty,
-                'contact_number' => $phone,
-                'email' => $email,
-                'max_appointments_per_day' => $maxAppointments,
-                'status' => $status,
-                'default_location' => $location,
-                'profile' => $profileImage,
-                'created_at' => date('Y-m-d H:i:s'),
-                'work_hours_start' => $workHoursStart,
-                'work_hours_end' => $workHoursEnd
-            ];
-
-            // Debug log
-            error_log('Doctor data: ' . print_r($doctorData, true));
+            // Prepare doctor data for database
+            $doctorData = $this->prepareDoctorData($doctorData, $profileImage);
 
             // Insert doctor into database
             $doctorId = $this->doctorModel->insert($doctorData);
@@ -210,7 +154,7 @@ class ReceptionistController extends Controller
             }
 
             // Process time slots
-            $this->processTimeSlots($doctorId, $availableDays);
+            $this->processTimeSlots($doctorId, $doctorData['availableDays']);
 
             $this->jsonResponse([
                 'success' => true,
@@ -218,9 +162,7 @@ class ReceptionistController extends Controller
                 'doctorId' => $doctorId
             ]);
         } catch (\Exception $e) {
-            // Log the error
-            error_log('Error in add_doctor: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
-
+            $this->logError('Error in add_doctor', $e);
             $this->jsonResponse([
                 'success' => false,
                 'message' => 'Server error: ' . $e->getMessage()
@@ -229,28 +171,97 @@ class ReceptionistController extends Controller
     }
 
     /**
-     * Handle profile image upload
-     * 
-     * @param array $file The uploaded file data
-     * @return string|array The filename if successful, or an array with error message
+     * Extract doctor form data from POST request
      */
-    private function handleProfileImageUpload($file)
+    private function extractDoctorFormData()
     {
-        // Define uploads directory using proper file system path
+        return [
+            'firstName' => $_POST['firstname'] ?? '',
+            'lastName' => $_POST['lastname'] ?? '',
+            'middleName' => $_POST['middlename'] ?? '',
+            'suffix' => $_POST['suffix'] ?? '',
+            'specialty' => $_POST['specialty'] ?? '',
+            'email' => $_POST['email'] ?? '',
+            'phone' => $_POST['phone'] ?? '',
+            'location' => $_POST['location'] ?? '',
+            'maxAppointments' => intval($_POST['maxAppointments'] ?? 15),
+            'status' => $_POST['status'] ?? 'active',
+            'availableDays' => $_POST['availableDays'] ?? [],
+            'workHoursStart' => $_POST['workHoursStart'] ?? null,
+            'workHoursEnd' => $_POST['workHoursEnd'] ?? null
+        ];
+    }
+
+    /**
+     * Validate doctor data
+     */
+    private function validateDoctorData($data)
+    {
+        $validator = new \app\core\Validator($_POST);
+
+        // Validate required fields
+        $validator->required(['firstname', 'lastname', 'specialty', 'email', 'phone'])
+            ->email('email')
+            ->minItems('availableDays', 1, 'Please select at least one available day');
+
+        return $validator;
+    }
+
+    /**
+     * Prepare doctor data for database insertion
+     */
+    private function prepareDoctorData($data, $profileImage)
+    {
+        return [
+            'first_name' => $data['firstName'],
+            'last_name' => $data['lastName'],
+            'middle_name' => $data['middleName'],
+            'suffix' => $data['suffix'],
+            'specialization' => $data['specialty'],
+            'contact_number' => $data['phone'],
+            'email' => $data['email'],
+            'max_appointments_per_day' => $data['maxAppointments'],
+            'status' => $data['status'],
+            'default_location' => $data['location'],
+            'profile' => $profileImage,
+            'created_at' => date('Y-m-d H:i:s'),
+            'work_hours_start' => $data['workHoursStart'],
+            'work_hours_end' => $data['workHoursEnd']
+        ];
+    }
+
+    /**
+     * Handle profile image upload
+     */
+    private function handleDoctorProfileImage()
+    {
+        if (!isset($_FILES['profileImage']) || $_FILES['profileImage']['error'] !== UPLOAD_ERR_OK) {
+            return null;
+        }
+
+        // Validate file
+        $fileValidator = new \app\core\Validator(['profileImage' => $_FILES['profileImage']]);
+        $fileValidator->fileSize('profileImage', 2 * 1024 * 1024, 'Profile image must not exceed 2MB')
+            ->fileType('profileImage', ['image/jpeg', 'image/png', 'image/jpg'], 'Only JPG and PNG files are allowed');
+
+        if ($fileValidator->fails()) {
+            return ['error' => $fileValidator->getFirstError()];
+        }
+
+        // Define uploads directory
         $uploadsDir = dirname(APP_ROOT) . '/public/uploads/doctors';
 
-        // Check if uploads directory exists, if not create it
+        // Create directory if it doesn't exist
         if (!file_exists($uploadsDir)) {
             mkdir($uploadsDir, 0777, true);
         }
 
-        // We no longer need these validations as they're handled by the Validator class
-        // Just move the uploaded file
-        $filename = uniqid() . '_' . time() . '_' . str_replace(' ', '_', $file['name']);
+        // Generate unique filename
+        $filename = uniqid() . '_' . time() . '_' . str_replace(' ', '_', $_FILES['profileImage']['name']);
         $destination = $uploadsDir . '/' . $filename;
 
         // Move uploaded file
-        if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        if (!move_uploaded_file($_FILES['profileImage']['tmp_name'], $destination)) {
             return ['error' => 'Failed to upload file'];
         }
 
@@ -260,15 +271,12 @@ class ReceptionistController extends Controller
 
     /**
      * Process time slots for a doctor
-     * 
-     * @param int $doctorId The doctor ID
-     * @param array $availableDays The available days
      */
     private function processTimeSlots($doctorId, $availableDays)
     {
         // Get time slots from POST data
-        $startTimes = isset($_POST['startTimes']) ? $_POST['startTimes'] : [];
-        $endTimes = isset($_POST['endTimes']) ? $_POST['endTimes'] : [];
+        $startTimes = $_POST['startTimes'] ?? [];
+        $endTimes = $_POST['endTimes'] ?? [];
 
         // Delete existing time slots for this doctor
         $this->timeSlotModel->deleteByField('doctor_id', $doctorId);
@@ -280,7 +288,7 @@ class ReceptionistController extends Controller
                 if (isset($startTimes[$i]) && isset($endTimes[$i])) {
                     $slotData = [
                         'doctor_id' => $doctorId,
-                        'day' => ucfirst(strtolower($day)), // Ensure proper capitalization (Monday, Tuesday, etc.)
+                        'day' => ucfirst(strtolower($day)),
                         'start_time' => $startTimes[$i],
                         'end_time' => $endTimes[$i],
                         'created_at' => date('Y-m-d H:i:s')
@@ -288,15 +296,21 @@ class ReceptionistController extends Controller
 
                     // Insert time slot
                     $result = $this->timeSlotModel->insert($slotData);
-
-                    // Debug log
-                    if ($result) {
-                        error_log('Inserted time slot: ' . print_r($slotData, true));
-                    } else {
-                        error_log('Failed to insert time slot: ' . print_r($slotData, true));
-                    }
+                    $this->logTimeSlotResult($result, $slotData);
                 }
             }
+        }
+    }
+
+    /**
+     * Log time slot insertion result
+     */
+    private function logTimeSlotResult($result, $slotData)
+    {
+        if ($result) {
+            error_log('Inserted time slot: ' . print_r($slotData, true));
+        } else {
+            error_log('Failed to insert time slot: ' . print_r($slotData, true));
         }
     }
 
@@ -305,10 +319,9 @@ class ReceptionistController extends Controller
      */
     public function get_doctor_schedule()
     {
-        // Check if this is an AJAX request
-        if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
-            header('Location: ' . BASE_URL . '/receptionist/doctor_schedules');
-            exit;
+        // Verify AJAX request
+        if (!$this->isAjaxRequest()) {
+            $this->redirect('/receptionist/doctor_schedules');
         }
 
         try {
@@ -344,9 +357,7 @@ class ReceptionistController extends Controller
                 'appointments' => $appointments
             ]);
         } catch (\Exception $e) {
-            // Log the error
-            error_log('Error in get_doctor_schedule: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
-
+            $this->logError('Error in get_doctor_schedule', $e);
             $this->jsonResponse([
                 'success' => false,
                 'message' => 'Server error: ' . $e->getMessage()
@@ -359,26 +370,16 @@ class ReceptionistController extends Controller
      */
     public function confirmAppointment()
     {
-        // Disable error output to prevent it from corrupting JSON
-        ini_set('display_errors', 0);
-        error_reporting(0);
+        $this->prepareJsonResponse();
 
-        // Start output buffering to capture any unexpected output
-        ob_start();
-
-        // Check if this is an AJAX request
-        if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
-            header('Location: ' . BASE_URL . '/receptionist/appointments');
-            exit;
+        // Verify AJAX request
+        if (!$this->isAjaxRequest()) {
+            $this->redirect('/receptionist/appointments');
         }
 
         try {
             // Get JSON data from request body
-            $json = file_get_contents('php://input');
-            $data = json_decode($json, true);
-
-            // Log the received data for debugging
-            error_log('Received data in confirmAppointment: ' . print_r($data, true));
+            $data = $this->getJsonRequestData();
 
             if (!$data || !isset($data['appointmentId'])) {
                 $this->jsonResponse([
@@ -392,23 +393,16 @@ class ReceptionistController extends Controller
             $sendConfirmation = isset($data['send_confirmation']) ? (bool) $data['send_confirmation'] : true;
             $notes = $data['special_instructions'] ?? '';
 
-            error_log('Processing appointment ID: ' . $appointmentId);
-            error_log('Send confirmation: ' . ($sendConfirmation ? 'true' : 'false'));
-            error_log('Notes: ' . $notes);
-
             // Get the appointment
             $appointment = $this->appointmentModel->getAppointmentById($appointmentId);
 
             if (!$appointment) {
-                error_log('Appointment not found with ID: ' . $appointmentId);
                 $this->jsonResponse([
                     'success' => false,
                     'message' => 'Appointment not found'
                 ]);
                 return;
             }
-
-            error_log('Found appointment: ' . print_r($appointment, true));
 
             // Update appointment status
             $updateData = [
@@ -417,24 +411,13 @@ class ReceptionistController extends Controller
                 'updated_at' => date('Y-m-d H:i:s')
             ];
 
-            // Log the update data for debugging
-            error_log('Updating appointment with data: ' . print_r($updateData, true));
-
-            // Try to update the appointment
             $success = $this->appointmentModel->update($appointmentId, $updateData);
 
-            // Log the result
-            error_log('Update result: ' . ($success ? 'success' : 'failure'));
-
             if ($success) {
-                // Send confirmation email/SMS if requested
+                // Send confirmation email if requested
                 if ($sendConfirmation && !empty($appointment->email)) {
                     try {
-                        // Send confirmation email using EmailHelper
                         $emailSent = $this->emailHelper->sendAppointmentConfirmation($appointment, $notes);
-                        error_log('Confirmation email ' . ($emailSent ? 'sent' : 'failed') . ' to: ' . $appointment->email);
-
-                        // Even if email fails, we still consider the appointment confirmation successful
                     } catch (\Exception $e) {
                         error_log('Email error: ' . $e->getMessage());
                         // Continue with success response even if email fails
@@ -452,10 +435,7 @@ class ReceptionistController extends Controller
                 ]);
             }
         } catch (\Exception $e) {
-            // Log the error
-            error_log('Error in confirmAppointment: ' . $e->getMessage());
-            error_log('Stack trace: ' . $e->getTraceAsString());
-
+            $this->logError('Error in confirmAppointment', $e);
             $this->jsonResponse([
                 'success' => false,
                 'message' => 'Server error: ' . $e->getMessage()
@@ -463,32 +443,21 @@ class ReceptionistController extends Controller
         }
     }
 
-
     /**
      * Cancel an appointment
      */
     public function cancelAppointment()
     {
-        // Disable error output to prevent it from corrupting JSON
-        ini_set('display_errors', 0);
-        error_reporting(0);
+        $this->prepareJsonResponse();
 
-        // Start output buffering to capture any unexpected output
-        ob_start();
-
-        // Check if this is an AJAX request
-        if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
-            header('Location: ' . BASE_URL . '/receptionist/appointments');
-            exit;
+        // Verify AJAX request
+        if (!$this->isAjaxRequest()) {
+            $this->redirect('/receptionist/appointments');
         }
 
         try {
             // Get JSON data from request body
-            $json = file_get_contents('php://input');
-            $data = json_decode($json, true);
-
-            // Log the received data for debugging
-            error_log('Received data in cancelAppointment: ' . print_r($data, true));
+            $data = $this->getJsonRequestData();
 
             if (!$data || !isset($data['appointmentId']) || !isset($data['reason'])) {
                 $this->jsonResponse([
@@ -521,26 +490,14 @@ class ReceptionistController extends Controller
                 'updated_at' => date('Y-m-d H:i:s')
             ];
 
-            // Log the update data for debugging
-            error_log('Updating appointment with data: ' . print_r($updateData, true));
-
             $success = $this->appointmentModel->update($appointmentId, $updateData);
 
-            if ($success) {
-                $this->jsonResponse([
-                    'success' => true,
-                    'message' => 'Appointment cancelled successfully'
-                ]);
-            } else {
-                $this->jsonResponse([
-                    'success' => false,
-                    'message' => 'Failed to cancel appointment'
-                ]);
-            }
+            $this->jsonResponse([
+                'success' => $success,
+                'message' => $success ? 'Appointment cancelled successfully' : 'Failed to cancel appointment'
+            ]);
         } catch (\Exception $e) {
-            // Log the error
-            error_log('Error in cancelAppointment: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
-
+            $this->logError('Error in cancelAppointment', $e);
             $this->jsonResponse([
                 'success' => false,
                 'message' => 'Server error: ' . $e->getMessage()
@@ -549,44 +506,13 @@ class ReceptionistController extends Controller
     }
 
     /**
-     * JSON response helper
-     * 
-     * @param array $data The data to send as JSON
-     */
-    private function jsonResponse($data)
-    {
-        // Clear any previous output that might corrupt the JSON
-        if (ob_get_length()) {
-            ob_clean();
-        }
-
-        // Discard any output that might have been generated
-        ob_end_clean();
-
-        // Start a new buffer
-        ob_start();
-
-        // Set proper headers
-        header('Content-Type: application/json');
-        header('Cache-Control: no-cache, must-revalidate');
-
-        // Output JSON data
-        echo json_encode($data);
-
-        // Flush the buffer and end the script
-        ob_end_flush();
-        exit;
-    }
-
-    /**
      * Get appointment details via AJAX
      */
     public function getAppointmentDetails()
     {
-        // Check if this is an AJAX request
-        if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
-            header('Location: ' . BASE_URL . '/receptionist/appointments');
-            exit;
+        // Verify AJAX request
+        if (!$this->isAjaxRequest()) {
+            $this->redirect('/receptionist/appointments');
         }
 
         // Get appointment ID from POST data
@@ -612,22 +538,10 @@ class ReceptionistController extends Controller
             }
 
             // Create a patient object from the appointment data
-            // This ensures we always have patient data even if the Patient model fails
-            $patient = [
-                'patient_id' => $appointment->patient_id,
-                'first_name' => $appointment->first_name,
-                'last_name' => $appointment->last_name,
-                'email' => $appointment->email,
-                'contact_number' => $appointment->contact_number
-            ];
+            $patient = $this->extractPatientFromAppointment($appointment);
 
             // Try to get additional patient details from the Patient model
-            $patientFromDb = null;
-            if (!empty($patientId)) {
-                $patientFromDb = $this->patientModel->getPatientById($patientId);
-            } else if (!empty($appointment->patient_id)) {
-                $patientFromDb = $this->patientModel->getPatientById($appointment->patient_id);
-            }
+            $patientFromDb = $this->getPatientDetails($patientId, $appointment);
 
             // If we got patient details from the database, use those instead
             if ($patientFromDb) {
@@ -647,10 +561,7 @@ class ReceptionistController extends Controller
                 'doctor' => $doctor
             ]);
         } catch (\Exception $e) {
-            // Log the error
-            error_log('Error in getAppointmentDetails: ' . $e->getMessage());
-
-            // Return error as JSON
+            $this->logError('Error in getAppointmentDetails', $e);
             $this->jsonResponse([
                 'error' => 'Server error: ' . $e->getMessage()
             ]);
@@ -658,16 +569,40 @@ class ReceptionistController extends Controller
     }
 
     /**
+     * Extract patient data from appointment
+     */
+    private function extractPatientFromAppointment($appointment)
+    {
+        return [
+            'patient_id' => $appointment->patient_id,
+            'first_name' => $appointment->first_name,
+            'last_name' => $appointment->last_name,
+            'email' => $appointment->email,
+            'contact_number' => $appointment->contact_number
+        ];
+    }
+
+    /**
+     * Get patient details from database
+     */
+    private function getPatientDetails($patientId, $appointment)
+    {
+        if (!empty($patientId)) {
+            return $this->patientModel->getPatientById($patientId);
+        } else if (!empty($appointment->patient_id)) {
+            return $this->patientModel->getPatientById($appointment->patient_id);
+        }
+        return null;
+    }
+
+    /**
      * Send appointment reminder to patient
-     * 
-     * @return void
      */
     public function sendReminder()
     {
-        // Check if this is an AJAX request
-        if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
-            header('Location: ' . BASE_URL . '/receptionist/dashboard');
-            exit;
+        // Verify AJAX request
+        if (!$this->isAjaxRequest()) {
+            $this->redirect('/receptionist/dashboard');
         }
 
         try {
@@ -696,26 +631,10 @@ class ReceptionistController extends Controller
                 return;
             }
 
-            $currentInstructions = $appointment->special_instructions ?? '';
-            $updatedInstructions = $currentInstructions;
+            // Update appointment with reminder information
+            $success = $this->updateAppointmentWithReminder($appointment, $additionalMessage);
 
-            // Only add the message if it's not empty
-            if (!empty($additionalMessage)) {
-                if (!empty($updatedInstructions)) {
-                    $updatedInstructions .= "\n\n" . $additionalMessage;
-                } else {
-                    $updatedInstructions = $additionalMessage;
-                }
-            }
-
-            $updateData = [
-                'special_instructions' => $updatedInstructions,
-                'updated_at' => date('Y-m-d H:i:s')
-            ];
-
-            $updated = $this->appointmentModel->update($appointmentId, $updateData);
-
-            if (!$updated) {
+            if (!$success) {
                 $this->jsonResponse([
                     'success' => false,
                     'message' => 'Failed to update appointment with reminder information'
@@ -726,30 +645,7 @@ class ReceptionistController extends Controller
             // Send email if requested
             $emailSent = true;
             if ($sendEmail && !empty($appointment->email)) {
-                // Prepare email data
-                $emailData = [
-                    'patient_name' => $appointment->first_name . ' ' . $appointment->last_name,
-                    'doctor_name' => 'Dr. ' . $appointment->doctor_first_name . ' ' . $appointment->doctor_last_name,
-                    'appointment_date' => date('l, F j, Y', strtotime($appointment->appointment_date)),
-                    'appointment_time' => date('h:i A', strtotime($appointment->appointment_time)),
-                    'appointment_type' => $appointment->type,
-                    'tracking_number' => $appointment->tracking_number,
-                    'additional_message' => $additionalMessage,
-                    'clinic_name' => $_ENV['CLINIC_NAME'] ?? 'Health Recording System',
-                    'clinic_address' => $_ENV['CLINIC_ADDRESS'] ?? '123 Medical Center Blvd, Health City',
-                    'clinic_phone' => $_ENV['CLINIC_PHONE'] ?? '(123) 456-7890'
-                ];
-
-                // Choose template based on reminder type
-                $template = $reminderType === 'detailed' ? 'appointment_reminder_detailed' : 'appointment_reminder_standard';
-
-                // Send the email
-                $emailSent = $this->emailHelper->sendAppointmentReminder(
-                    $appointment->email,
-                    $appointment->first_name . ' ' . $appointment->last_name,
-                    $template,
-                    $emailData
-                );
+                $emailSent = $this->sendReminderEmail($appointment, $reminderType, $additionalMessage);
             }
 
             // Return success response
@@ -759,17 +655,359 @@ class ReceptionistController extends Controller
                 'emailSent' => $emailSent
             ]);
         } catch (\Exception $e) {
-            // Log the error
-            error_log('Error in sendReminder: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
-
+            $this->logError('Error in sendReminder', $e);
             $this->jsonResponse([
                 'success' => false,
                 'message' => 'Server error: ' . $e->getMessage()
             ]);
         }
     }
+
+    /**
+     * Update appointment with reminder information
+     */
+    private function updateAppointmentWithReminder($appointment, $additionalMessage)
+    {
+        $currentInstructions = $appointment->special_instructions ?? '';
+        $updatedInstructions = $currentInstructions;
+
+        // Only add the message if it's not empty
+        if (!empty($additionalMessage)) {
+            if (!empty($updatedInstructions)) {
+                $updatedInstructions .= "\n\n" . $additionalMessage;
+            } else {
+                $updatedInstructions = $additionalMessage;
+            }
+        }
+
+        $updateData = [
+            'special_instructions' => $updatedInstructions,
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        return $this->appointmentModel->update($appointment->id, $updateData);
+    }
+
+    /**
+     * Send reminder email
+     */
+    private function sendReminderEmail($appointment, $reminderType, $additionalMessage)
+    {
+        // Prepare email data
+        $emailData = [
+            'patient_name' => $appointment->first_name . ' ' . $appointment->last_name,
+            'doctor_name' => 'Dr. ' . $appointment->doctor_first_name . ' ' . $appointment->doctor_last_name,
+            'appointment_date' => date('l, F j, Y', strtotime($appointment->appointment_date)),
+            'appointment_time' => date('h:i A', strtotime($appointment->appointment_time)),
+            'appointment_type' => $appointment->type,
+            'tracking_number' => $appointment->tracking_number,
+            'additional_message' => $additionalMessage,
+            'clinic_name' => $_ENV['CLINIC_NAME'] ?? 'Health Recording System',
+            'clinic_address' => $_ENV['CLINIC_ADDRESS'] ?? '123 Medical Center Blvd, Health City',
+            'clinic_phone' => $_ENV['CLINIC_PHONE'] ?? '(123) 456-7890'
+        ];
+
+        // Choose template based on reminder type
+        $template = $reminderType === 'detailed' ? 'appointment_reminder_detailed' : 'appointment_reminder_standard';
+
+        // Send the email
+        return $this->emailHelper->sendAppointmentReminder(
+            $appointment->email,
+            $appointment->first_name . ' ' . $appointment->last_name,
+            $template,
+            $emailData
+        );
+    }
+
+    /**
+     * Check in a patient for their appointment
+     */
+    public function checkInPatient()
+    {
+        // Prepare for JSON response
+        $this->prepareJsonResponse();
+
+        // Check if the request is POST
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Invalid request method'
+            ]);
+            return;
+        }
+
+        try {
+            // Get the appointment ID
+            $appointmentId = isset($_POST['appointmentId']) ? $_POST['appointmentId'] : null;
+
+            // Validate appointment ID
+            if (!$appointmentId) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Appointment ID is required'
+                ]);
+                return;
+            }
+
+            // Get the appointment
+            $appointment = $this->appointmentModel->getById($appointmentId);
+            if (!$appointment) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Appointment not found'
+                ]);
+                return;
+            }
+
+            // Get check-in details
+            $checkInData = [
+                'insurance_verified' => isset($_POST['verify_insurance']) ? $_POST['verify_insurance'] : '0',
+                'id_verified' => isset($_POST['verify_id']) ? $_POST['verify_id'] : '0',
+                'forms_completed' => isset($_POST['forms_completed']) ? $_POST['forms_completed'] : '0',
+                'checked_in_at' => date('Y-m-d H:i:s')
+            ];
+
+            // Update appointment status to checked_in
+            $result = $this->appointmentModel->checkInPatient($appointmentId, $checkInData);
+
+            if ($result) {
+                // Log the check-in
+                $this->logActivity('Patient checked in', 'Appointment #' . $appointmentId . ' checked in');
+
+                $this->jsonResponse([
+                    'success' => true,
+                    'message' => 'Patient checked in successfully'
+                ]);
+            } else {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Failed to check in patient'
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->logError('Error in checkInPatient', $e);
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Server error: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Start an appointment
+     */
+    public function startAppointment()
+    {
+        // Prepare for JSON response
+        $this->prepareJsonResponse();
+
+        // Check if the request is POST
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Invalid request method'
+            ]);
+            return;
+        }
+
+        try {
+            // Get the appointment ID
+            $appointmentId = isset($_POST['appointmentId']) ? $_POST['appointmentId'] : null;
+
+            // Validate appointment ID
+            if (!$appointmentId) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Appointment ID is required'
+                ]);
+                return;
+            }
+
+            // Get the appointment
+            $appointment = $this->appointmentModel->getById($appointmentId);
+            if (!$appointment) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Appointment not found'
+                ]);
+                return;
+            }
+
+            // Update appointment status to in_progress
+            $result = $this->appointmentModel->startAppointment($appointmentId, [
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+
+            if ($result) {
+                // Log the start
+                $this->logActivity('Appointment started', 'Appointment #' . $appointmentId . ' started');
+
+                $this->jsonResponse([
+                    'success' => true,
+                    'message' => 'Appointment started successfully'
+                ]);
+            } else {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Failed to start appointment'
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->logError('Error in startAppointment', $e);
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Server error: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Complete an appointment
+     */
+    public function completeAppointment()
+    {
+        // Prepare for JSON response
+        $this->prepareJsonResponse();
+
+        // Check if the request is POST
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Invalid request method'
+            ]);
+            return;
+        }
+
+        try {
+            // Get the appointment ID
+            $appointmentId = isset($_POST['appointmentId']) ? $_POST['appointmentId'] : null;
+
+            // Validate appointment ID
+            if (!$appointmentId) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Appointment ID is required'
+                ]);
+                return;
+            }
+
+            // Get the appointment
+            $appointment = $this->appointmentModel->getById($appointmentId);
+            if (!$appointment) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Appointment not found'
+                ]);
+                return;
+            }
+
+            // Update appointment status to completed
+            $result = $this->appointmentModel->completeAppointment($appointmentId, [
+                'completed_at' => date('Y-m-d H:i:s')
+            ]);
+
+            if ($result) {
+                // Log the completion
+                $this->logActivity('Appointment completed', 'Appointment #' . $appointmentId . ' completed');
+
+                $this->jsonResponse([
+                    'success' => true,
+                    'message' => 'Appointment completed successfully'
+                ]);
+            } else {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Failed to complete appointment'
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->logError('Error in completeAppointment', $e);
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Server error: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Check if the request is an AJAX request
+     */
+    private function isAjaxRequest()
+    {
+        return isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+    }
+
+
+
+    /**
+     * Prepare for JSON response
+     */
+    private function prepareJsonResponse()
+    {
+        // Disable error output to prevent it from corrupting JSON
+        ini_set('display_errors', 0);
+        error_reporting(0);
+
+        // Start output buffering to capture any unexpected output
+        ob_start();
+    }
+
+    /**
+     * Get JSON request data
+     */
+    private function getJsonRequestData()
+    {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
+        error_log('Received data: ' . print_r($data, true));
+        return $data;
+    }
+
+    /**
+     * JSON response helper
+     */
+    private function jsonResponse($data)
+    {
+        // Clear any previous output that might corrupt the JSON
+        if (ob_get_length()) {
+            ob_clean();
+        }
+
+        // Discard any output that might have been generated
+        ob_end_clean();
+
+        // Start a new buffer
+        ob_start();
+
+        // Set proper headers
+        header('Content-Type: application/json');
+        header('Cache-Control: no-cache, must-revalidate');
+
+        // Output JSON data
+        echo json_encode($data);
+
+        // Flush the buffer and end the script
+        ob_end_flush();
+        exit;
+    }
+
+    /**
+     * Log error with stack trace
+     */
+    private function logError($message, $exception)
+    {
+        error_log($message . ': ' . $exception->getMessage());
+        error_log('Stack trace: ' . $exception->getTraceAsString());
+    }
+
+    /**
+     * Helper method for logging activities
+     */
+    private function logActivity($action, $description)
+    {
+        // You can implement activity logging here if needed
+        // For now, just log to error_log
+        error_log("Activity: {$action} - {$description}");
+    }
 }
-
-
-
-

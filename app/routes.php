@@ -22,6 +22,11 @@ $router->get('/receptionist/dashboard', 'ReceptionistController@dashboard');
 $router->get('/receptionist/appointments', 'ReceptionistController@appointments');
 $router->get('/receptionist/notification', 'ReceptionistController@notification');
 $router->get('/receptionist/doctor_schedules', 'ReceptionistController@doctor_schedules');
+
+// New dedicated endpoints for appointment status management
+$router->post('/receptionist/check-in-patient', 'ReceptionistController@checkInPatient');
+$router->post('/receptionist/start-appointment', 'ReceptionistController@startAppointment');
+$router->post('/receptionist/complete-appointment', 'ReceptionistController@completeAppointment');
 $router->post('/receptionist/add_doctor', 'ReceptionistController@add_doctor');
 $router->get('/receptionist/appointment/details', 'ReceptionistController@appointmentDetails');
 $router->post('/receptionist/getAppointmentDetails', 'ReceptionistController@getAppointmentDetails');
