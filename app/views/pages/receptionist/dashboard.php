@@ -387,15 +387,7 @@
 
                                         <hr class="border-gray-200 my-6 mt-5 mb-4 space">
 
-                                        <!-- Add action buttons here -->
-                                        <div class="flex justify-end gap-2 mt-4">
-                                            <?php if ($appointment->status === 'pending'): ?>
-                                                <button type="button" onclick="checkInPatient(<?= $appointment->id ?>)"
-                                                    class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark focus:outline-none">
-                                                    <i class="bx bx-log-in-circle mr-1"></i> Check In
-                                                </button>
-                                            <?php endif; ?>
-                                        </div>
+            
 
                                         <div class="">
                                             <p class="text-sm mb-2 font-medium">Appointment Information</p>

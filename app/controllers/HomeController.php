@@ -336,6 +336,56 @@ class HomeController extends Controller
         }
     }
 
+    private function handlePatientProfileImage()
+    {
+        if (!isset($_FILES['profileImage']) || $_FILES['profileImage']['error'] !== UPLOAD_ERR_OK) {
+            return null;
+        }
+
+        // Validate file
+        $fileValidator = new \app\core\Validator(['profileImage' => $_FILES['profileImage']]);
+        $fileValidator->fileSize('profileImage', 2 * 1024 * 1024, 'Profile image must not exceed 2MB')
+            ->fileType('profileImage', ['image/jpeg', 'image/png', 'image/jpg'], 'Only JPG and PNG files are allowed');
+
+        if ($fileValidator->fails()) {
+            return ['error' => $fileValidator->getFirstError()];
+        }
+
+        // Define uploads directory
+        $uploadsDir = dirname(APP_ROOT) . '/public/uploads/patients';
+
+        // Create directory if it doesn't exist
+        if (!file_exists($uploadsDir)) {
+            mkdir($uploadsDir, 0777, true);
+        }
+
+        // Generate unique filename
+        $filename = uniqid() . '_' . time() . '_' . str_replace(' ', '_', $_FILES['profileImage']['name']);
+        $destination = $uploadsDir . '/' . $filename;
+
+        // Move uploaded file
+        if (!move_uploaded_file($_FILES['profileImage']['tmp_name'], $destination)) {
+            return ['error' => 'Failed to upload file'];
+        }
+
+        // Return the relative path for database storage
+        return 'uploads/patients/' . $filename;
+    }
+
+    /**
+     * Calculate age from date of birth
+     * 
+     * @param string $dateOfBirth Date of birth in Y-m-d format
+     * @return int Age in years
+     */
+    private function calculateAge($dateOfBirth)
+    {
+        $dob = new \DateTime($dateOfBirth);
+        $now = new \DateTime();
+        $interval = $now->diff($dob);
+        return $interval->y;
+    }
+
     /**
      * Book an appointment
      */
@@ -364,6 +414,7 @@ class HomeController extends Controller
             $appointmentType = isset($_POST['appointmentType']) ? trim($_POST['appointmentType']) : '';
             $appointmentReason = isset($_POST['appointmentReason']) ? trim($_POST['appointmentReason']) : '';
             $dateOfBirth = isset($_POST['dateOfBirth']) ? trim($_POST['dateOfBirth']) : '';
+            $age = isset($_POST['age']) ? intval($_POST['age']) : 0;
             $legalSex = isset($_POST['legalSex']) ? trim($_POST['legalSex']) : '';
             $email = isset($_POST['email']) ? trim($_POST['email']) : '';
             $contactNumber = isset($_POST['contactNumber']) ? trim($_POST['contactNumber']) : '';
@@ -379,10 +430,10 @@ class HomeController extends Controller
                 'appointment_time' => $appointmentTime,
                 'firstName' => $firstName,
                 'surname' => $surname,
-                'email' => $email
+                'email' => $email,
+                'age' => $age
             ]));
 
-            // Validate required fields
             if (
                 empty($doctorId) || empty($appointmentDate) || empty($appointmentTime) ||
                 empty($firstName) || empty($surname) || empty($appointmentType) ||
@@ -408,7 +459,24 @@ class HomeController extends Controller
                 exit;
             }
 
-            // Check if patient already exists by email
+            // Handle profile image upload
+            $profileImagePath = $this->handlePatientProfileImage();
+            
+            // Check if there was an error with the image upload
+            if (is_array($profileImagePath) && isset($profileImagePath['error'])) {
+                error_log("Profile image upload error: " . $profileImagePath['error']);
+                $_SESSION['error'] = $profileImagePath['error'];
+                header('Location: ' . BASE_URL . '/appointment/scheduling?doctor_id=' . $doctorId);
+                exit;
+            }
+
+            // Calculate age if not provided or verify the provided age
+            if (empty($age) && !empty($dateOfBirth)) {
+                $age = $this->calculateAge($dateOfBirth);
+                error_log("Calculated age from DOB: $age");
+            }
+
+    
             $patient = $this->patientModel->getPatientByEmail($email);
 
             // If patient doesn't exist, create a new one
@@ -421,12 +489,18 @@ class HomeController extends Controller
                     'last_name' => $surname,
                     'suffix' => $suffix,
                     'date_of_birth' => $dateOfBirth,
+                    'age' => $age,
                     'gender' => $legalSex,
                     'email' => $email,
                     'contact_number' => $contactNumber,
                     'address' => $address,
                     'created_at' => date('Y-m-d H:i:s')
                 ];
+
+                // Add profile image path if available
+                if (!empty($profileImagePath)) {
+                    $patientData['profile'] = $profileImagePath;
+                }
 
                 $patientId = $this->patientModel->insert($patientData);
 
@@ -443,6 +517,18 @@ class HomeController extends Controller
             } else {
                 $patientId = $patient->id;
                 error_log("Existing patient found with ID: $patientId");
+                
+                // Update patient profile if a new image was uploaded
+                if (!empty($profileImagePath)) {
+                    $this->patientModel->update($patientId, ['profile' => $profileImagePath]);
+                    error_log("Updated patient profile image");
+                }
+                
+                // Update patient age if it has changed
+                if ($age != $patient->age) {
+                    $this->patientModel->update($patientId, ['age' => $age]);
+                    error_log("Updated patient age from {$patient->age} to $age");
+                }
             }
 
             // Generate tracking number
@@ -451,7 +537,7 @@ class HomeController extends Controller
 
             // Create appointment
             $appointmentData = [
-                'patient_id' => $patientId,
+                'patient_id' => $patientId, 
                 'doctor_id' => $doctorId,
                 'appointment_date' => $appointmentDate,
                 'appointment_time' => $appointmentTime,
@@ -533,7 +619,8 @@ class HomeController extends Controller
                     'last_name' => $surname,
                     'suffix' => $suffix,
                     'email' => $email,
-                    'contact_number' => $contactNumber
+                    'contact_number' => $contactNumber,
+                    'profile' => $profileImagePath
                 ];
 
                 error_log("Created dummy patient object with first_name: " . $patient->first_name);

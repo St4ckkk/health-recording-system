@@ -23,7 +23,7 @@ class Patient extends Model
 
         // If not found and the ID looks like a patient reference number (e.g., PAT-20250328-688566)
         if (!$patient && is_string($id) && strpos($id, 'PAT-') === 0) {
-            error_log("ID appears to be a reference number, trying to find by patient_id");
+            error_log("ID appears to be a reference number, trying to find by id");
             $patient = $this->getSingleByField('id', $id);
         }
 
@@ -58,6 +58,8 @@ class Patient extends Model
               last_name,
               suffix,
               date_of_birth,
+              age,
+              profile,
               gender,
               email,
               contact_number,
@@ -69,6 +71,8 @@ class Patient extends Model
               :last_name,
               :suffix,
               :date_of_birth,
+              :age,
+              :profile,
               :gender,
               :email,
               :contact_number,
@@ -82,6 +86,8 @@ class Patient extends Model
             $this->db->bind(':last_name', $data['last_name']);
             $this->db->bind(':suffix', $data['suffix'] ?? null);
             $this->db->bind(':date_of_birth', $data['date_of_birth']);
+            $this->db->bind(':age', $data['age']);
+            $this->db->bind(':profile', $data['profile']?? null);
             $this->db->bind(':gender', $data['gender']);
             $this->db->bind(':email', $data['email']);
             $this->db->bind(':contact_number', $data['contact_number']);
@@ -120,6 +126,8 @@ class Patient extends Model
           last_name = :last_name,
           suffix = :suffix,
           date_of_birth = :date_of_birth,
+          age = :age,
+          profile = :profile,
           gender = :gender,
           email = :email,
           contact_number = :contact_number,
@@ -134,6 +142,8 @@ class Patient extends Model
         $this->db->bind(':last_name', $data['last_name']);
         $this->db->bind(':suffix', $data['suffix'] ?? null);
         $this->db->bind(':date_of_birth', $data['date_of_birth']);
+        $this->db->bind(':age', $data['age']);
+        $this->db->bind(':profile', $data['profile']?? null);
         $this->db->bind(':gender', $data['gender']);
         $this->db->bind(':email', $data['email']);
         $this->db->bind(':contact_number', $data['contact_number']);

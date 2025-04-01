@@ -163,6 +163,93 @@
         .time-slots-container::-webkit-scrollbar-thumb:hover {
             background: var(--primary);
         }
+
+        /* Profile image upload styles */
+        .profile-upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            background-color: #f9fafb;
+            border: 1px dashed var(--gray-300);
+            transition: all 0.2s ease;
+        }
+
+        .profile-upload-container:hover {
+            border-color: var(--primary);
+            background-color: rgba(var(--primary-rgb), 0.05);
+        }
+
+        .profile-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            border: 3px solid white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .profile-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: white;
+            border: 1px solid var(--gray-300);
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .upload-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .upload-instructions {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        .remove-image-btn {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #ef4444;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .profile-preview:hover .remove-image-btn {
+            opacity: 1;
+        }
     </style>
 </head>
 
@@ -300,17 +387,32 @@
                         Back
                     </button>
                 </div>
-
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">Patient Information</h2>
-                <form id="patientForm" action="<?= BASE_URL ?>/appointment/book" method="POST" class="space-y-6">
+                <form id="patientForm" action="<?= BASE_URL ?>/appointment/book" method="POST" class="space-y-6" enctype="multipart/form-data">
                     <!-- Hidden fields for appointment data -->
                     <input type="hidden" id="doctor_id" name="doctor_id" value="<?= $doctor->id ?>">
                     <input type="hidden" id="appointment_date" name="appointment_date">
                     <input type="hidden" id="appointment_time" name="appointment_time">
 
+                    <!-- Profile Upload Section - Moved to top for better visibility -->
+                    <h3 class="section-title">Patient Information</h3>
+                    <div class="profile-upload-container">
+                        <div class="profile-preview" id="profilePreview">
+                            <i class="bx bx-user text-4xl text-gray-400"></i>
+                            <div class="remove-image-btn" id="removeImageBtn" style="display: none;">
+                                <i class="bx bx-x"></i>
+                            </div>
+                        </div>
+                        <label class="upload-btn">
+                            <i class="bx bx-upload"></i>
+                            <span>Upload Profile Photo</span>
+                            <input type="file" id="profileImage" name="profileImage" accept="image/*" class="hidden" onchange="previewImage(this)">
+                        </label>
+                        <p class="upload-instructions">Optional: Upload a clear photo for yours</p>
+                    </div>
+                    
+
                     <!-- Patient Name Section -->
                     <div class="space-y-4">
-                        <h3 class="section-title">Patient Name</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First
@@ -337,6 +439,48 @@
                                     <option value="III">III</option>
                                     <option value="IV">IV</option>
                                 </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="dateOfBirth" class="block text-sm font-medium text-gray-700 mb-1">Date of
+                                    Birth*</label>
+                                <input type="date" id="dateOfBirth" name="dateOfBirth" required
+                                    class="form-input w-full" onchange="calculateAge()">
+                            </div>
+                            <div>
+                                <label for="age" class="block text-sm font-medium text-gray-700 mb-1">Age*</label>
+                                <input type="number" id="age" name="age" required class="form-input w-full" min="0" max="120">
+                            </div>
+                            <div>
+                                <label for="legalSex" class="block text-sm font-medium text-gray-700 mb-1">Legal
+                                    Sex*</label>
+                                <select id="legalSex" name="legalSex" required class="form-input w-full">
+                                    <option value="">Select</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email
+                                    Address*</label>
+                                <input type="email" id="email" name="email" required class="form-input w-full"
+                                    placeholder="example@email.com">
+                            </div>
+                            <div>
+                                <label for="contactNumber" class="block text-sm font-medium text-gray-700 mb-1">Contact
+                                    Number*</label>
+                                <input type="tel" id="contactNumber" name="contactNumber" required
+                                    class="form-input w-full" placeholder="e.g., 0123456789">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="address"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Address*</label>
+                                <textarea id="address" name="address" required rows="3"
+                                    class="form-input w-full"></textarea>
                             </div>
                         </div>
                     </div>
@@ -370,47 +514,7 @@
                         </div>
                     </div>
 
-
-                    <div class="space-y-4">
-                        <h3 class="section-title">Patient Information</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label for="dateOfBirth" class="block text-sm font-medium text-gray-700 mb-1">Date of
-                                    Birth*</label>
-                                <input type="date" id="dateOfBirth" name="dateOfBirth" required
-                                    class="form-input w-full">
-                            </div>
-                            <div>
-                                <label for="legalSex" class="block text-sm font-medium text-gray-700 mb-1">Legal
-                                    Sex*</label>
-                                <select id="legalSex" name="legalSex" required class="form-input w-full">
-                                    <option value="">Select</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                </select>
-                            </div>
-                            <!-- New Email Field -->
-                            <div>
-                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email
-                                    Address*</label>
-                                <input type="email" id="email" name="email" required class="form-input w-full"
-                                    placeholder="example@email.com">
-                            </div>
-                            <!-- New Contact Number Field -->
-                            <div>
-                                <label for="contactNumber" class="block text-sm font-medium text-gray-700 mb-1">Contact
-                                    Number*</label>
-                                <input type="tel" id="contactNumber" name="contactNumber" required
-                                    class="form-input w-full" placeholder="e.g., 0123456789">
-                            </div>
-                            <div class="md:col-span-2">
-                                <label for="address"
-                                    class="block text-sm font-medium text-gray-700 mb-1">Address*</label>
-                                <textarea id="address" name="address" required rows="3"
-                                    class="form-input w-full"></textarea>
-                            </div>
-                        </div>
-                    </div>
+                   
 
                     <!-- Guardian Information -->
                     <div class="space-y-4">
@@ -655,6 +759,70 @@
                     document.getElementById('relationship').removeAttribute('required');
                 }
             });
+
+            // Calculate age from date of birth
+            function calculateAge() {
+                const dobInput = document.getElementById('dateOfBirth');
+                const ageInput = document.getElementById('age');
+                
+                if (dobInput.value) {
+                    const dob = new Date(dobInput.value);
+                    const today = new Date();
+                    let age = today.getFullYear() - dob.getFullYear();
+                    const monthDiff = today.getMonth() - dob.getMonth();
+                    
+                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                        age--;
+                    }
+                    
+                    ageInput.value = age;
+                }
+            }
+
+            // Function to preview uploaded image
+            function previewImage(input) {
+                const preview = document.getElementById('profilePreview');
+                const removeBtn = document.getElementById('removeImageBtn');
+                
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        preview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                        preview.appendChild(removeBtn);
+                        removeBtn.style.display = 'flex';
+                    }
+                    
+                    reader.readAsDataURL(input.files[0]);
+                } else {
+                    resetProfilePreview();
+                }
+            }
+            
+            // Function to remove profile image
+            function removeProfileImage() {
+                const input = document.getElementById('profileImage');
+                input.value = '';
+                resetProfilePreview();
+            }
+            
+            // Function to reset profile preview
+            function resetProfilePreview() {
+                const preview = document.getElementById('profilePreview');
+                const removeBtn = document.getElementById('removeImageBtn');
+                
+                preview.innerHTML = `<i class="bx bx-user text-4xl text-gray-400"></i>`;
+                preview.appendChild(removeBtn);
+                removeBtn.style.display = 'none';
+            }
+            
+            // Add event listener for remove button
+            document.getElementById('removeImageBtn').addEventListener('click', removeProfileImage);
+            
+            // Make these functions available globally
+            window.calculateAge = calculateAge;
+            window.previewImage = previewImage;
+            window.removeProfileImage = removeProfileImage;
 
             // Function to fetch available time slots for a selected date
             function fetchAvailableTimeSlots(date) {

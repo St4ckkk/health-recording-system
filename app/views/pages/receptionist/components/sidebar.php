@@ -52,9 +52,59 @@ $notification_count = 3;
         </ul>
     </div>
     <div class="logout-container">
-        <div
+        <!-- Changed from direct link to button that triggers modal -->
+        <div id="sidebarLogoutBtn"
             class="px-sm py-2 rounded-md hover:bg-primary-light flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1">
             <i class='bx bx-log-out text-lg mr-2 ml-1'></i> Logout
         </div>
     </div>
 </nav>
+
+<script>
+    // Only initialize if the function doesn't already exist (to avoid conflicts with header.php)
+    if (typeof window.openLogoutModal === 'undefined') {
+        // Define functions in the global scope
+        window.openLogoutModal = function () {
+            const logoutModal = document.getElementById('logoutModal');
+            const logoutModalContent = document.getElementById('logoutModalContent');
+
+            logoutModal.classList.remove('hidden');
+            logoutModal.classList.add('flex');
+
+            // Animate in
+            setTimeout(() => {
+                logoutModalContent.classList.remove('scale-95', 'opacity-0');
+                logoutModalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+
+            // Prevent body scrolling
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeLogoutModal = function () {
+            const logoutModal = document.getElementById('logoutModal');
+            const logoutModalContent = document.getElementById('logoutModalContent');
+
+            // Animate out
+            logoutModalContent.classList.remove('scale-100', 'opacity-100');
+            logoutModalContent.classList.add('scale-95', 'opacity-0');
+
+            // Wait for animation to complete
+            setTimeout(() => {
+                logoutModal.classList.remove('flex');
+                logoutModal.classList.add('hidden');
+
+                // Restore body scrolling
+                document.body.style.overflow = '';
+            }, 300);
+        };
+    }
+
+    // Add event listener for the sidebar logout button
+    document.addEventListener('DOMContentLoaded', function () {
+        const sidebarLogoutBtn = document.getElementById('sidebarLogoutBtn');
+        if (sidebarLogoutBtn) {
+            sidebarLogoutBtn.addEventListener('click', window.openLogoutModal);
+        }
+    });
+</script>

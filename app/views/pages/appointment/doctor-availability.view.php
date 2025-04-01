@@ -472,10 +472,10 @@
                                 <div class="flex items-center space-x-2 text-sm text-gray-700 mr-4 mb-3">
                                     <?php if ($doctor->status === 'available'): ?>
                                         <i class="bx bx-check-circle text-success"></i>
-                                        <span>Available Today</span>
+                                        <span>Available</span>
                                     <?php else: ?>
                                         <i class="bx bx-x-circle text-gray-400"></i>
-                                        <span>Not Available Today</span>
+                                        <span>Not Available</span>
                                     <?php endif; ?>
                                 </div>
                                 <a href="<?= BASE_URL ?>/appointment/scheduling?doctor_id=<?= $doctor->id ?>"
@@ -526,10 +526,10 @@
                                         <div class="flex items-center space-x-2 text-sm text-gray-700 mr-4">
                                             <?php if ($doctor->status === 'available'): ?>
                                                 <i class="bx bx-check-circle text-success"></i>
-                                                <span>Available Today</span>
+                                                <span>Available</span>
                                             <?php else: ?>
                                                 <i class="bx bx-x-circle text-gray-400"></i>
-                                                <span>Not Available Today</span>
+                                                <span>Not Available</span>
                                             <?php endif; ?>
                                         </div>
                                     </div>
@@ -548,7 +548,6 @@
         </div>
     </div>
 
-    <!-- JavaScript for view switching -->
     <style>
         .animate-fade-in {
             animation: fadeIn 0.3s ease-in-out;

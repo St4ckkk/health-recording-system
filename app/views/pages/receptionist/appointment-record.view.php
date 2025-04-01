@@ -204,7 +204,6 @@
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #3B82F6, #2563EB);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -284,7 +283,13 @@
                                 <h2 class="text-xl font-semibold text-gray-900 mb-4">Patient Information</h2>
                                 <div class="flex flex-col items-center mb-6">
                                     <div class="patient-avatar">
-                                        <?= substr($patient->first_name ?? 'J', 0, 1) ?>
+                                    <?php if (!empty($patient->profile)): ?>
+                                            <img src="<?= BASE_URL . '/' . $patient->profile ?>"
+                                                class="w-full h-full object-cover rounded-full"
+                                                >
+                                        <?php else: ?>
+                                            <i class="bx bx-user text-3xl"></i>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                                 <!-- Patient details -->
@@ -295,7 +300,7 @@
                                     </div>
                                     <div class="patient-info-item">
                                         <span class="patient-info-label">Gender:</span>
-                                        <span class="patient-info-value"><?= isset($patient->gender) ? $patient->gender : 'Male' ?></span>
+                                        <span class="patient-info-value capitalize"><?= isset($patient->gender) ? $patient->gender : 'Male' ?></span>
                                     </div>
                                     <div class="patient-info-item">
                                         <span class="patient-info-label">Date of Birth:</span>
@@ -344,7 +349,7 @@
                                                     <div class="flex justify-between items-start mb-2">
                                                         <div>
                                                             <h4 class="font-medium capitalize text-<?= $index === 0 ? 'blue' : 'green' ?>-700">
-                                                                <?= htmlspecialchars($appointment->appointment_type ?? 'Regular Checkup') ?>
+                                                                <?= htmlspecialchars(str_replace('_', ' ', $appointment->appointment_type ?? 'Regular Checkup')) ?>
                                                             </h4>
                                                             <p class="text-sm text-gray-600">
                                                                 <i class="bx bx-user-circle mr-1"></i> Dr. <?= htmlspecialchars($appointment->doctor_first_name . ' ' . $appointment->doctor_last_name) ?>

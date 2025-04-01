@@ -5,4 +5,5 @@ composer.json
 .env
 .qodo
 public/uploads/doctors/
+public/uploads/patients/
 public/php_errors.log
