@@ -17,7 +17,8 @@ class Appointment extends Model
     {
         $typeField = $includeType ? ", COALESCE(a.appointment_type, 'Checkup') as type" : '';
         return "SELECT a.*, 
-                p.first_name, p.last_name, p.middle_name, p.suffix, p.contact_number, p.email, p.patient_reference_number, p.id as patient_id, 
+                p.first_name, p.last_name, p.middle_name, p.suffix, p.contact_number, 
+                p.email, p.patient_reference_number, p.id as patient_id, p.profile,
                 d.first_name as doctor_first_name, d.last_name as doctor_last_name, 
                 d.specialization{$typeField}
                 FROM {$this->table} a
@@ -161,14 +162,15 @@ class Appointment extends Model
     private function formatAppointmentDetails(object $appointment): object
     {
         $appointment->patient_name = trim(
-            "$appointment->patient_first_name " .
-            ($appointment->patient_middle_name ? "$appointment->patient_middle_name " : '') .
-            $appointment->patient_last_name .
-            ($appointment->patient_suffix ? " $appointment->patient_suffix" : '')
+            "$appointment->first_name " .
+            ($appointment->middle_name ? "$appointment->middle_name " : '') .
+            $appointment->last_name .
+            ($appointment->suffix ? " $appointment->suffix" : '')   
         );
 
         $appointment->formatted_date = date('M j, Y', strtotime($appointment->appointment_date));
         $appointment->formatted_time = date('g:i A', strtotime($appointment->appointment_time));
+        $appointment->profile = $appointment->profile ?? 'default-avatar.jpg';
         return $appointment;
     }
 
@@ -232,9 +234,11 @@ class Appointment extends Model
                 p.first_name AS patient_first_name,
                 p.last_name AS patient_last_name,
                 p.middle_name AS patient_middle_name,
+
                 p.suffix AS patient_suffix,
                 p.email AS patient_email,
                 p.contact_number AS patient_contact,
+                p.profile AS patient_profile,
                 p.patient_reference_number AS patient_reference_number,
                 d.first_name AS doctor_first_name,
                 d.last_name AS doctor_last_name,
@@ -250,5 +254,84 @@ class Appointment extends Model
         $this->db->bind(':patient_id', $patientId);
 
         return $this->db->resultSet();
+    }
+
+    /**
+     * Get total number of unique patients assigned to a doctor
+     * 
+     * @param int $doctorId The doctor ID
+     * @param bool $lastMonth Whether to get last month's count
+     * @return int The total number of unique patients
+     */
+    public function getTotalAssignedPatientsByDoctorId($doctorId, $lastMonth = false)
+    {
+        $query = 'SELECT COUNT(DISTINCT patient_id) as total 
+                 FROM appointments 
+                 WHERE doctor_id = :doctor_id';
+        
+        if ($lastMonth) {
+            $query .= ' AND MONTH(created_at) = MONTH(DATE_SUB(NOW(), INTERVAL 1 MONTH))
+                       AND YEAR(created_at) = YEAR(DATE_SUB(NOW(), INTERVAL 1 MONTH))';
+        } else {
+            $query .= ' AND MONTH(created_at) = MONTH(NOW())
+                       AND YEAR(created_at) = YEAR(NOW())';
+        }
+        
+        $this->db->query($query);
+        $this->db->bind(':doctor_id', $doctorId);
+        
+        $result = $this->db->single();
+        return $result ? $result->total : 0;
+    }
+
+
+    public function getTodayAppointmentsByDoctor($doctorId) {
+        $sql = $this->buildBaseQuery(true) . "
+            WHERE a.doctor_id = :doctor_id 
+            AND DATE(a.appointment_date) = CURDATE()
+            ORDER BY a.appointment_time ASC";
+            
+        $this->db->query($sql);
+        $this->db->bind(':doctor_id', $doctorId);
+        
+        $appointments = $this->db->resultSet();
+        return [
+            'total' => count($appointments),
+            'appointments' => array_map([$this, 'formatAppointmentDetails'], $appointments)
+        ];
+    }
+
+    public function getUpcomingAppointmentsByDoctor($doctorId) {
+        $sql = $this->buildBaseQuery(true). "
+            WHERE a.doctor_id = :doctor_id
+            AND a.appointment_date > CURDATE()
+            ORDER BY a.appointment_date ASC, a.appointment_time ASC"; 
+
+        $this->db->query($sql);
+        $this->db->bind(':doctor_id', $doctorId);
+
+        $appointments = $this->db->resultSet();
+        return [
+            'total' => count($appointments),
+            'appointments' => array_map([$this, 'formatAppointmentDetails'], $appointments)
+        ];
+    }
+
+
+    public function getPastAppointmentsByDoctor($doctorId) {
+        $sql = $this->buildBaseQuery(true). "
+            WHERE a.doctor_id = :doctor_id
+            AND (a.appointment_date < CURDATE() OR (a.appointment_date = CURDATE() AND a.status IN ('completed', 'no-show', 'cancelled')))
+            ORDER BY a.appointment_date DESC, a.appointment_time DESC";
+
+        $this->db->query($sql);
+        $this->db->bind(':doctor_id', $doctorId);
+
+        $appointments = $this->db->resultSet();
+        return [
+            'total' => count($appointments),
+            'appointments' => array_map([$this, 'formatAppointmentDetails'], $appointments)
+        ];
+         
     }
 }

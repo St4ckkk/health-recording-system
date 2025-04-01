@@ -21,6 +21,7 @@ $router->get('/staff', 'SessionController@login');
 $router->post('/staff', 'SessionController@login');
 $router->get('/doctor', 'DoctorSessionController@login');
 $router->post('/doctor', 'DoctorSessionController@login');
+$router->get('/doctor/logout', 'DoctorSessionController@logout');  // Add this line
 $router->get('/logout', 'SessionController@logout');
 
 

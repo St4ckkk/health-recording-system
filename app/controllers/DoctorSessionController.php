@@ -101,7 +101,7 @@ class DoctorSessionController extends Controller
     {
         $_SESSION = [];
         session_destroy();
-        $this->redirect('/auth/doctor');
+        $this->redirect('/doctor');
     }
 
     public function isLoggedIn()

@@ -183,6 +183,38 @@ class Doctor extends Model
         $appointmentModel = new Appointment();
         return $appointmentModel->getTotalAssignedPatientsByDoctorId($doctorId);
     }
-   
+
+    /**
+     * Get patient count percentage change from last month
+     * 
+     * @param int $doctorId The doctor ID
+     * @return array Contains total count and percentage change
+     */
+    public function getPatientCountChange($doctorId) {
+        $appointmentModel = new Appointment();
+        
+        // Get current month's count
+        $currentCount = $appointmentModel->getTotalAssignedPatientsByDoctorId($doctorId);
+        
+        // Get last month's count
+        $lastMonthCount = $appointmentModel->getTotalAssignedPatientsByDoctorId($doctorId, true);
+        
+        // Calculate percentage change
+        $percentageChange = 0;
+        if ($lastMonthCount > 0) {
+            $percentageChange = (($currentCount - $lastMonthCount) / $lastMonthCount) * 100;
+        }
+        
+        return [
+            'total' => $currentCount,
+            'percentage' => round($percentageChange, 1)
+        ];
+    }
+
+    public function getTodayAppointments($doctorId) {
+        $appointmentModel = new Appointment();
+        return $appointmentModel->getTodayAppointmentsByDoctor($doctorId);
+    }
+    
 }
 

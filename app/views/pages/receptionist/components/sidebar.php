@@ -7,10 +7,16 @@ $notification_count = 3;
 ?>
 
 <nav class="bg-white p-4 sidebar border border-gray-200">
-    <div class="logo-container text-white p-4 mb-6">
-        <div class="mr-3">
+<div class=" p-4 mb-6 bg-primary rounded-lg">
+        <div class="flex items-center">
             <div class="logo">
-                <div class="w-12 h-12 flex justify-center items-center font-bold text-white">TC</div>
+                <div class="w-12 h-12 flex justify-center items-center font-bold text-white border-2 border-white rounded-lg">
+                    <span class="text-xl">TC</span>
+                </div>
+            </div>
+            <div class="ml-3 text-white">
+                <div class="text-lg font-semibold">TeleCure</div>
+                <div class="text-xs opacity-80">Doctor Portal</div>
             </div>
         </div>
     </div>
