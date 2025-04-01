@@ -20,7 +20,7 @@
                 LOGO</div>
         </div>
         <div class="header-right">
-            <a href="<?= BASE_URL ?>/login" class="login-link"><i class='bx bx-user'></i>Log in</a>
+            <a href="<?= BASE_URL ?>/onBoarding" class="login-link"><i class='bx bx-user'></i>Log in</a>
         </div>
     </header>
 

@@ -2,11 +2,11 @@
 // Get the current request URI
 $request_uri = $_SERVER['REQUEST_URI'];
 
-// Static notification count for testing
+
 $notification_count = 3;
 ?>
 
-<nav class="bg-white p-4 sidebar border border-gray-200">
+<nav class=" p-4 sidebar border border-gray-200">
     <div class="logo-container text-white p-4 mb-6">
         <div class="mr-3">
             <div class="logo">
@@ -16,9 +16,9 @@ $notification_count = 3;
     </div>
     <div class="sidebar-content">
         <ul class="space-y-md">
-            <a href="<?= BASE_URL ?>/receptionist/dashboard">
+            <a href="<?= BASE_URL ?>/doctor/dashboard">
                 <li class="px-sm py-2 rounded-md hover:bg-primary-light flex items-center cursor-pointer transition-all duration-200 hover:translate-x-1 mb-2 <?php echo strpos($request_uri, '/receptionist/dashboard') !== false ? 'active' : ''; ?>"
-                    style="<?php echo strpos($request_uri, '/receptionist/dashboard') !== false ? 'background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white;' : ''; ?>">
+                    style="<?php echo strpos($request_uri, '/doctor/dashboard') !== false ? 'background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white;' : ''; ?>">
                     <i class='bx bx-home text-lg mr-2 ml-1'></i> Dashboard
                 </li>
             </a>
@@ -28,12 +28,20 @@ $notification_count = 3;
                     <i class='bx bx-calendar text-lg mr-2 ml-1'></i> Appointments
                 </li>
             </a>
-            <a href="<?= BASE_URL ?>/receptionist/doctor_schedules">
+            <a href="<?= BASE_URL ?>/doctor/patients">
                 <li class="px-sm py-2 rounded-md hover:bg-primary-light flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1 mb-2 <?php echo strpos($request_uri, '/receptionist/doctor_schedules') !== false ? 'active' : ''; ?>"
                     style="<?php echo strpos($request_uri, '/receptionist/doctor_schedules') !== false ? 'background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white;' : ''; ?>">
-                    <i class='bx bx-user-circle text-lg mr-2 ml-1'></i> Doctor Schedules
+                    <i class='bx bx-user-circle text-lg mr-2 ml-1'></i> Patients
                 </li>
             </a>
+
+            <a href="<?= BASE_URL ?>/doctor/inventory">
+                <li class="px-sm py-2 rounded-md hover:bg-primary-light flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1 mb-2 <?php echo strpos($request_uri, '/receptionist/doctor_schedules') !== false ? 'active' : ''; ?>"
+                    style="<?php echo strpos($request_uri, '/receptionist/doctor_schedules') !== false ? 'background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white;' : ''; ?>">
+                    <i class='bx bx-capsule text-lg mr-2 ml-1'></i> Medicine Inventory
+                </li>
+            </a>
+
             <a href="<?= BASE_URL ?>/receptionist/notification">
                 <li class="px-sm py-2 rounded-md hover:bg-primary-light flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1 <?php echo strpos($request_uri, '/receptionist/notification') !== false ? 'active' : ''; ?>"
                     style="<?php echo strpos($request_uri, '/receptionist/notification') !== false ? 'background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white;' : ''; ?>">

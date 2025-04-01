@@ -33,7 +33,7 @@ class SessionController extends Controller
         }
 
         // Display login form
-        $this->view('pages/auth/login', [
+        $this->view('pages/auth/staff', [
             'title' => 'Login'
         ]);
     }
@@ -51,13 +51,12 @@ class SessionController extends Controller
             'password' => $password
         ]);
 
-        // Validate input
         $validator->required(['email', 'password'])
             ->email('email');
 
         // If validation fails, redisplay the form with errors
         if ($validator->fails()) {
-            $this->view('pages/auth/login', [
+            $this->view('pages/auth/staff', [
                 'title' => 'Login',
                 'errors' => $validator->getErrors(),
                 'email' => $email
@@ -78,7 +77,7 @@ class SessionController extends Controller
             $errors = ['login' => 'Invalid email or password'];
             // If there are errors, redisplay the form
             if (!empty($errors)) {
-                $this->view('pages/auth/login', [
+                $this->view('pages/auth/staff', [
                     'title' => 'Login',
                     'errors' => $errors,
                     'email' => $email
@@ -155,7 +154,7 @@ class SessionController extends Controller
         session_destroy();
 
         // Redirect to login page
-        $this->redirect('/login');
+        $this->redirect('/staff');
     }
 
     /**

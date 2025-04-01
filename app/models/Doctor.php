@@ -38,10 +38,30 @@ class Doctor extends Model
     }
 
     /**
-     * Get doctor's full name
+     * Authenticate doctor login
      * 
-     * @param object $doctor The doctor object
-     * @return string The full name
+     * @param string $email The doctor email
+     * @param string $password The doctor password
+     * @return object|bool The doctor object or false if authentication fails
+     */
+    public function authenticate($email, $password)
+    {
+        $doctor = $this->getDoctorByEmail($email);
+
+        if (!$doctor) {
+            return false;
+        }
+
+        // For SHA256 hashed passwords
+        if (hash('sha256', $password) === $doctor->password) {
+            return $doctor;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get doctor's full name
      */
     public function getFullName($doctor)
     {
@@ -154,11 +174,15 @@ class Doctor extends Model
      */
     public function getDoctorUpcomingAppointments($doctorId, $limit = 10)
     {
-        // Create an instance of the Appointment model
         $appointmentModel = new Appointment();
-
-        // Get upcoming appointments for this doctor
         return $appointmentModel->getUpcomingAppointmentsByDoctorId($doctorId, $limit);
     }
+
+
+    public function getTotalPatientCount($doctorId) {
+        $appointmentModel = new Appointment();
+        return $appointmentModel->getTotalAssignedPatientsByDoctorId($doctorId);
+    }
+   
 }
 

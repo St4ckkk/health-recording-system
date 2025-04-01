@@ -13,10 +13,16 @@ $router->post('/track-appointment', 'HomeController@track_appointment');
 $router->get('/appointment/get-available-time-slots', 'HomeController@get_available_time_slots');
 $router->post('/appointment/book', 'HomeController@book_appointment');
 $router->get('/appointment/confirmation', 'HomeController@confirmation');
+$router->get('/onBoarding', 'HomeController@onBoarding');
 
-$router->get('/login', 'SessionController@login');
-$router->post('/login', 'SessionController@login');
+
+// Change these lines from 'staff' to 'login'
+$router->get('/staff', 'SessionController@login');
+$router->post('/staff', 'SessionController@login');
+$router->get('/doctor', 'DoctorSessionController@login');
+$router->post('/doctor', 'DoctorSessionController@login');
 $router->get('/logout', 'SessionController@logout');
+
 
 // Receptionist routes
 $router->get('/receptionist/dashboard', 'ReceptionistController@dashboard');
@@ -24,7 +30,6 @@ $router->get('/receptionist/appointments', 'ReceptionistController@appointments'
 $router->get('/receptionist/patients', 'ReceptionistController@patients');
 $router->get('/receptionist/notification', 'ReceptionistController@notification');
 $router->get('/receptionist/doctor_schedules', 'ReceptionistController@doctor_schedules');
-
 $router->post('/receptionist/check-in-patient', 'ReceptionistController@checkInPatient');
 $router->post('/receptionist/start-appointment', 'ReceptionistController@startAppointment');
 $router->post('/receptionist/complete-appointment', 'ReceptionistController@completeAppointment');
@@ -36,8 +41,10 @@ $router->post('/receptionist/cancel-appointment', 'ReceptionistController@cancel
 $router->post('/receptionist/confirm-appointment', 'ReceptionistController@confirmAppointment');
 $router->post('/receptionist/send-reminder', 'ReceptionistController@sendReminder');
 $router->post('/receptionist/schedule-follow-up', 'ReceptionistController@scheduleFollowUp');
-// Change this line
 $router->get('/receptionist/appointments/records/{id}', 'ReceptionistController@viewPatientAppointmentRecords');
-
-// To this
 $router->get('/receptionist/appointments/records', 'ReceptionistController@viewPatientAppointmentRecords');
+
+
+
+$router->get('/doctor/dashboard', 'DoctorController@dashboard');
+

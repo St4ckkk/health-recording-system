@@ -23,11 +23,20 @@ class HomeController extends Controller
         $this->patientModel = new Patient();
     }
 
+  
+
     public function index()
     {
         $this->view('index.view', [
             'title' => 'Health Recording System'
         ]);
+    }
+
+    public function onBoarding() {
+        $this->view('pages/auth/onBoarding', [
+            'title' => 'Health Recording System',
+        ]);
+        
     }
 
     public function appointment()
