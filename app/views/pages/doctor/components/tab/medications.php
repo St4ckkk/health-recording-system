@@ -1,4 +1,22 @@
-<!-- components/patient/tab-medications.php -->
+<div class="flex justify-between items-center mb-6">
+    <h3 class="text-lg font-medium">Patient Medications</h3>
+    <div class="flex space-x-2">
+        <?php 
+            $text = "Add Medication";
+            $icon = "bx-capsule";
+            $data_modal = "add-medication-modal";
+            include(__DIR__ . '/../common/action-button.php'); 
+        ?>
+        
+        <?php 
+            $text = "Create E-Prescription";
+            $icon = "bx-file-blank";
+            $data_modal = "create-prescription-modal";
+            include(__DIR__ . '/../common/action-button.php'); 
+        ?>
+    </div>
+</div>
+
 <div class="mb-6">
     <h3 class="text-lg font-medium mb-4">Active Medications</h3>
     <div class="overflow-x-auto">

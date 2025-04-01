@@ -1,3 +1,12 @@
+<div class="flex justify-between items-center mb-6">
+    <h3 class="text-lg font-medium">Vital Signs</h3>
+    <?php 
+        $text = "Add Vitals";
+        $icon = "bx-plus-medical";
+        $data_modal = "add-vitals-modal";
+        include(__DIR__ . '/../common/action-button.php'); 
+    ?>
+</div>
 <div class="border border-gray-200 rounded-lg p-6 mb-6">
                         <div class="flex justify-between items-start mb-4">
                             <div>
@@ -43,23 +52,4 @@
                             <p class="text-sm">Patient reports feeling well. Blood pressure slightly elevated at 138/88. Recommended continued medication and lifestyle modifications.</p>
                         </div>
                     </div>
-                    
-                    <div class="border border-gray-200 rounded-lg p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <h3 class="text-lg font-medium">Dental Checkup</h3>
-                                <p class="text-sm text-gray-500">Dr. Michael Chen • <?= date('Y-m-d', strtotime('-2 months')) ?></p>
-                            </div>
-                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Completed</span>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <h4 class="text-sm font-medium text-gray-500 mb-1">Diagnosis</h4>
-                            <p class="text-sm">Mild gingivitis</p>
-                        </div>
-                        
-                        <div>
-                            <h4 class="text-sm font-medium text-gray-500 mb-1">Notes</h4>
-                            <p class="text-sm">Recommended improved flossing technique and scheduled follow-up in 6 months.</p>
-                        </div>
-                    </div>
+                 

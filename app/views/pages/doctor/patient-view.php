@@ -482,13 +482,13 @@
     </div>
 </section>
 
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Set default active tab
+       
         document.getElementById('tab-overview').classList.add('border-b-2', 'border-blue-500', 'text-blue-600', 'font-medium');
         document.getElementById('tab-content-overview').classList.remove('hidden');
         
-        // Tab switching functionality
         const tabs = document.querySelectorAll('.tab-button');
         tabs.forEach(tab => {
             tab.addEventListener('click', function() {

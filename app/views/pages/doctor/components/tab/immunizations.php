@@ -1,3 +1,13 @@
+<!-- components/tab/immunizations.php -->
+<div class="flex justify-between items-center mb-6">
+    <h3 class="text-lg font-medium">Immunization Records</h3>
+    <?php 
+        $text = "Add Immunization";
+        $icon = "bx-injection";
+        $data_modal = "add-immunization-modal";
+        include(__DIR__ . '/../common/action-button.php'); 
+    ?>
+</div>
 <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead>
