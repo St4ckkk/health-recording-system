@@ -39,227 +39,198 @@
         .back-button i {
             margin-right: 0.5rem;
         }
+
+        /* Timeline styles - cleaned up and simplified */
+        .timeline-item {
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 4px;
+        }
+
+        .timeline-icon {
+            position: absolute;
+            left: 0;
+            top: 16px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            z-index: 1;
+        }
+
+        /* Timeline connector line */
+        .timeline-item:before {
+            content: "";
+            position: absolute;
+            left: 12px;
+            top: 40px; /* Adjusted to start below the icon */
+            bottom: -4px;
+            width: 2px;
+            background-color: #e5e7eb;
+        }
+
+        .timeline-item:last-child:before {
+            display: none;
+        }
+
+        /* Timeline colors */
+        .timeline-blue {
+            border-left: 2px solid #3B82F6;
+        }
+
+        .timeline-blue .timeline-icon {
+            background-color: #3B82F6;
+        }
+
+        .timeline-blue .timeline-content {
+            background-color: #EBF5FF;
+        }
+
+        .timeline-green {
+            border-left: 2px solid #10B981;
+        }
+
+        .timeline-green .timeline-icon {
+            background-color: #10B981;
+        }
+
+        .timeline-green .timeline-content {
+            background-color: #ECFDF5;
+        }
+
+        .timeline-content {
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        /* Equal height columns */
+        .equal-height-columns {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .equal-height-content {
+            flex: 1;
+        }
     </style>
 </head>
 
-<body class="font-body">
+<body class="font-body">    
     <div class="flex">
         <?php include('components/sidebar.php') ?>
         <div class="flex-1 main-content">
             <?php include('components/header.php') ?>
             <div class="content-wrapper">
-                <!-- Add this back button at the top of the content section -->
                 <section class="p-6">
                     <!-- Back button -->
                     <div class="mb-4">
-
                         <a href="<?= BASE_URL ?>/receptionist/dashboard"
                             class="inline-flex items-center text-sm font-medium text-primary hover:text-primary-dark">
                             <button class="back-button">
                                 <i class="bx bx-arrow-back mr-2"></i> Back to Dashboard
                             </button>
-
                         </a>
                     </div>
 
-                    <!-- Patient Info Header -->
-                    <div class="card shadow-sm rounded-lg p-6 flex-1 fade-in mb-3">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h1 class="text-2xl font-semibold text-gray-900">
-                                    <?= isset($patient->first_name) ? $patient->first_name : 'N/A' ?>
-                                    <?= isset($patient->last_name) ? $patient->last_name : '' ?>
-                                </h1>
-                                <p class="text-gray-500">
-                                    <?= isset($patient->patient_reference_number) ? $patient->patient_reference_number : 'No Reference Number' ?>
-                                </p>
-                                <div class="flex items-center mt-2">
-                                    <i class="bx bx-envelope text-gray-400 mr-2"></i>
-                                    <span
-                                        class="text-gray-600"><?= isset($patient->email) ? $patient->email : 'No Email' ?></span>
-                                    <span class="mx-2 text-gray-300">|</span>
-                                    <i class="bx bx-phone text-gray-400 mr-2"></i>
-                                    <span
-                                        class="text-gray-600"><?= isset($patient->contact_number) ? $patient->contact_number : 'No Contact' ?></span>
-                                </div>
+                    <div>
+                        <div class="">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-3xl font-bold text-gray-900"><?= $patient->first_name . ' ' . $patient->middle_name . ' ' . $patient->last_name . ' ' . $patient->suffix ?></h2>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Appointment History -->
-                    <div class="card shadow-sm rounded-lg p-6 flex-1 fade-in">
-                        <div class="flex justify-between items-center mb-6">
-                            <div>
-                                <h2 class="text-xl font-semibold text-gray-900">Appointment History</h2>
-                                <p class="text-gray-500">Complete record of patient appointments</p>
-                            </div>
-                            <div class="flex gap-3">
-                                <div class="relative">
-                                    <input type="text" placeholder="Search appointments..."
-                                        class="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                                        <i class="bx bx-search text-gray-400"></i>
-                                    </span>
-                                </div>
-                                <div class="relative">
-                                    <select id="statusFilter"
-                                        class="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-primary">
-                                        <option value="">All Statuses</option>
-                                        <option value="completed">Completed</option>
-                                        <option value="cancelled">Cancelled</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="confirmed">Confirmed</option>
-                                        <option value="no-show">No Show</option>
-                                    </select>
-                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                                        <i class="bx bx-filter-alt text-gray-400"></i>
-                                    </span>
-                                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                        <i class="bx bx-chevron-down text-gray-400"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Appointment Timeline -->
-                        <div class="appointment-timeline">
-                            <?php if (!empty($appointments)): ?>
-                                <?php foreach ($appointments as $index => $appointment): ?>
-                                    <?php if (!is_object($appointment))
-                                        continue; // Skip if not an object ?>
-                                    <?php
-                                    // Define status classes and icons
-                                    $statusMapping = [
-                                        'completed' => ['class' => 'bg-green-100 border-green-500 text-green-800', 'icon' => 'bx-check-circle text-green-500'],
-                                        'cancelled' => ['class' => 'bg-red-100 border-red-500 text-red-800', 'icon' => 'bx-x-circle text-red-500'],
-                                        'cancelled_by_clinic' => ['class' => 'bg-red-100 border-red-500 text-red-800', 'icon' => 'bx-x-circle text-red-500'],
-                                        'cancellation_requested' => ['class' => 'bg-yellow-100 border-yellow-500 text-yellow-800', 'icon' => 'bx-time text-yellow-500'],
-                                        'no-show' => ['class' => 'bg-red-100 border-red-500 text-red-800', 'icon' => 'bx-error-circle text-red-500'],
-                                        'pending' => ['class' => 'bg-blue-100 border-blue-500 text-blue-800', 'icon' => 'bx-hourglass text-blue-500'],
-                                        'confirmed' => ['class' => 'bg-green-100 border-green-500 text-green-800', 'icon' => 'bx-calendar-check text-green-500'],
-                                        'checked-in' => ['class' => 'bg-indigo-100 border-indigo-500 text-indigo-800', 'icon' => 'bx-log-in-circle text-indigo-500'],
-                                        'in_progress' => ['class' => 'bg-indigo-100 border-indigo-500 text-indigo-800', 'icon' => 'bx-hourglass text-indigo-500'],
-                                        'rescheduled' => ['class' => 'bg-yellow-100 border-yellow-500 text-yellow-800', 'icon' => 'bx-calendar-exclamation text-yellow-500'],
-                                    ];
-
-                                    $status = isset($appointment->status) ? $appointment->status : 'pending';
-                                    $statusInfo = $statusMapping[$status] ?? $statusMapping['pending'];
-                                    $statusLabel = ucwords(str_replace('_', ' ', $status));
-
-                                    // Define appointment type classes
-                                    $typeClass = '';
-                                    $appointmentType = $appointment->appointment_type ?? $appointment->type ?? 'checkup';
-                                    switch (strtolower($appointmentType)) {
-                                        case 'checkup':
-                                            $typeClass = 'bg-blue-100 text-blue-800';
-                                            break;
-                                        case 'follow_up':
-                                            $typeClass = 'bg-purple-100 text-purple-800';
-                                            break;
-                                        case 'consultation':
-                                            $typeClass = 'bg-indigo-100 text-indigo-800';
-                                            break;
-                                        case 'treatment':
-                                            $typeClass = 'bg-green-100 text-green-800';
-                                            break;
-                                        case 'emergency':
-                                            $typeClass = 'bg-red-100 text-red-800';
-                                            break;
-                                        case 'specialist':
-                                            $typeClass = 'bg-yellow-100 text-yellow-800';
-                                            break;
-                                        default:
-                                            $typeClass = 'bg-gray-100 text-gray-800';
-                                            break;
-                                    }
-                                    ?>
-                                    <div
-                                        class="appointment-card border-l-4 <?= str_replace('bg-', 'border-', $statusInfo['class']) ?> bg-white p-4 rounded-r-lg shadow-sm mb-4 hover:shadow-md transition-shadow">
-                                        <div class="flex justify-between items-start">
-                                            <div class="flex-1">
-                                                <div class="flex items-center mb-2">
-                                                    <span
-                                                        class="text-sm font-medium text-gray-900"><?= date('l, F j, Y', strtotime($appointment->appointment_date)) ?></span>
-                                                    <span class="mx-2 text-gray-300">•</span>
-                                                    <span
-                                                        class="text-sm text-gray-600"><?= date('h:i A', strtotime($appointment->appointment_time)) ?></span>
-                                                    <span class="mx-2 text-gray-300">•</span>
-                                                    <span class="text-sm font-medium">Dr. <?= $appointment->doctor_first_name ?>
-                                                        <?= $appointment->doctor_last_name ?></span>
-                                                </div>
-                                                <div class="flex items-center gap-2 mb-3">
-                                                    <span class="px-2 py-1 rounded-full text-xs font-medium <?= $typeClass ?>">
-                                                        <?= ucwords(str_replace('_', ' ', $appointmentType)) ?>
-                                                    </span>
-                                                    <span
-                                                        class="px-2 py-1 rounded-full text-xs font-medium <?= $statusInfo['class'] ?>">
-                                                        <i class="bx <?= $statusInfo['icon'] ?> mr-1"></i>
-                                                        <?= $statusLabel ?>
-                                                    </span>
-                                                </div>
-                                                <p class="text-sm text-gray-600 mb-2">
-                                                    <span class="font-medium">Reason:</span>
-                                                    <?= $appointment->reason ?? 'General appointment' ?>
-                                                </p>
-                                                <?php if (!empty($appointment->notes)): ?>
-                                                    <p class="text-sm text-gray-600">
-                                                        <span class="font-medium">Notes:</span> <?= $appointment->notes ?>
-                                                    </p>
-                                                <?php endif; ?>
-                                            </div>
-                                            <div class="flex flex-col gap-2">
-                                                <button class="action-button-sm bg-primary text-white"
-                                                    onclick="viewAppointmentDetails(<?= $appointment->id ?>)">
-                                                    <i class="bx bx-show mr-1"></i> View
-                                                </button>
-                                                <?php if ($appointment->status == 'pending'): ?>
-                                                    <button class="action-button-sm bg-success text-white"
-                                                        onclick="confirmAppointment(<?= $appointment->id ?>)">
-                                                        <i class="bx bx-check mr-1"></i> Confirm
-                                                    </button>
-                                                <?php elseif ($appointment->status == 'confirmed'): ?>
-                                                    <button class="action-button-sm bg-indigo-500 text-white"
-                                                        onclick="checkInPatient(<?= $appointment->id ?>)">
-                                                        <i class="bx bx-log-in mr-1"></i> Check In
-                                                    </button>
-                                                <?php elseif ($appointment->status == 'checked-in' || $appointment->status == 'in_progress'): ?>
-                                                    <button class="action-button-sm bg-green-600 text-white"
-                                                        onclick="completeAppointment(<?= $appointment->id ?>)">
-                                                        <i class="bx bx-check-double mr-1"></i> Complete
-                                                    </button>
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
+                    <div class="flex flex-col md:flex-row gap-6">
+                   
+                        <div class="md:w-50">
+                            <div class="card bg-white shadow-sm rounded-lg w-full p-6 fade-in equal-height-columns">
+                                <h2 class="text-xl font-semibold text-gray-900 mb-4">Patient Information</h2>
+                                <div class="flex flex-col items-center mb-6">
+                                    <div class="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center text-3xl font-semibold text-blue-500 mb-2">
+                                        <?= substr($patient->first_name ?? 'J', 0, 1) ?>
                                     </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                            <?php endif; ?>
-                        </div>
-
-                        <!-- Pagination -->
-                        <?php if (!empty($appointments) && count($appointments) > 10): ?>
-                            <div class="flex justify-center mt-6">
-                                <nav class="flex items-center space-x-2">
-                                    <a href="#"
-                                        class="px-3 py-1 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50">
-                                        <i class="bx bx-chevron-left"></i>
-                                    </a>
-                                    <a href="#"
-                                        class="px-3 py-1 rounded-md border border-gray-300 bg-primary text-white">1</a>
-                                    <a href="#"
-                                        class="px-3 py-1 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50">2</a>
-                                    <a href="#"
-                                        class="px-3 py-1 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50">3</a>
-                                    <span class="px-3 py-1 text-gray-600">...</span>
-                                    <a href="#"
-                                        class="px-3 py-1 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50">8</a>
-                                    <a href="#"
-                                        class="px-3 py-1 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50">
-                                        <i class="bx bx-chevron-right"></i>
-                                    </a>
-                                </nav>
+                                </div>
+                                <!-- Patient details -->
+                                <div class="space-y-3 equal-height-content">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-500">Age:</span>
+                                        <span class=""><?= isset($patient->age) ? $patient->age : '45' ?></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-500">Gender:</span>
+                                        <span class=""><?= isset($patient->gender) ? $patient->gender : 'Male' ?></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-500">Date of Birth:</span>
+                                        <span class=""><?= isset($patient->date_of_birth) ? $patient->date_of_birth : '1979-03-15' ?></span>
+                                    </div>        
+                                    <div class="border-t pt-3 mt-3">
+                                        <span class="text-gray-500">Contact:</span>
+                                        <div class=" mt-1"><?= isset($patient->contact_number) ? $patient->contact_number : '(123) 456-7890' ?></div>
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="text-gray-500">Email:</span>
+                                        <div class=" mt-1 break-words"><?= isset($patient->email) ? $patient->email : 'john.doe@example.com' ?></div>
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="text-gray-500">Address:</span>
+                                        <div class="mt-1"><?= isset($patient->address) ? $patient->address : '123 Main St, Tupi, South Cotabato' ?></div>
+                                    </div>
+                                </div>
                             </div>
-                        <?php endif; ?>
+                        </div>
+                        
+                        <!-- Right column - Appointment History -->
+                        <div class="w-full md:flex-1">
+                            <div class="card bg-white shadow-sm rounded-lg w-full p-6 fade-in equal-height-columns">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h2 class="text-xl font-semibold text-gray-900">Appointment History</h2>
+                                </div>
+                                
+                                <p class="text-sm text-gray-500 mb-4">Chronological view of patient's appointment history.</p>
+                                <div class="appointment-timeline equal-height-content">
+                                    <?php if (!empty($appointments)): ?>
+                                        <?php foreach ($appointments as $index => $appointment): ?>
+                                            <!-- Timeline Item -->
+                                            <div class="timeline-item">
+                                                <div class="timeline-icon">
+                                                    <i class="bx <?= $index === 0 ? 'bx-calendar' : 'bx-check-circle' ?>"></i>
+                                                </div>
+                                                <div class="timeline-content p-4 cursor-pointer hover:bg-<?= $index === 0 ? 'blue' : 'green' ?>-50 transition-colors bg-<?= $index === 0 ? 'blue' : 'green' ?>-50 rounded-lg" onclick="viewAppointmentDetails(<?= $appointment->id ?>)">
+                                                    <div class="flex justify-between items-start mb-2">
+                                                        <div>
+                                                            <h4 class="font-medium text-<?= $index === 0 ? 'blue' : 'green' ?>-700">
+                                                                <?= htmlspecialchars($appointment->appointment_type ?? 'Regular Checkup') ?>
+                                                            </h4>
+                                                            <p class="text-sm text-gray-600">
+                                                                Doctor: Dr. <?= htmlspecialchars($appointment->doctor_first_name . ' ' . $appointment->doctor_last_name) ?>
+                                                            </p>
+                                                        </div>
+                                                        <span class="text-sm text-gray-500">
+                                                            <?= date('Y-m-d', strtotime($appointment->appointment_date)) ?> • 
+                                                            <?= date('g:i A', strtotime($appointment->appointment_time)) ?>
+                                                        </span>
+                                                    </div>
+                                                    <?php if (!empty($appointment->notes)): ?>
+                                                        <p class="text-sm text-gray-700"><?= htmlspecialchars($appointment->notes) ?></p>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <div class="text-center py-8">
+                                            <p class="text-gray-500">No appointment history found for this patient.</p>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -278,7 +249,7 @@
                     </button>
                 </div>
                 <div id="appointmentDetailsContent">
-                    <!-- Content will be loaded dynamically -->
+                   
                 </div>
             </div>
         </div>
@@ -288,68 +259,89 @@
         // Set base URL for JavaScript use
         window.BASE_URL = '<?= BASE_URL ?>';
 
-        // Initialize date pickers
+        // Initialize when document is ready
         document.addEventListener('DOMContentLoaded', function () {
-            // Status filter functionality
-            const statusFilter = document.getElementById('statusFilter');
-            if (statusFilter) {
-                statusFilter.addEventListener('change', function () {
-                    filterAppointments();
-                });
+            // Set the first timeline icon to blue
+            const firstIcon = document.querySelector('.timeline-item:first-child .timeline-icon');
+            if (firstIcon) {
+                firstIcon.style.backgroundColor = '#3B82F6'; // Blue
             }
-
-            // Search functionality
-            const searchInput = document.querySelector('input[placeholder="Search appointments..."]');
-            if (searchInput) {
-                searchInput.addEventListener('input', function () {
-                    filterAppointments();
-                });
-            }
-        });
-
-        // Filter appointments based on search and status
-        function filterAppointments() {
-            const searchTerm = document.querySelector('input[placeholder="Search appointments..."]').value.toLowerCase();
-            const statusFilter = document.getElementById('statusFilter').value;
-
-            const appointmentCards = document.querySelectorAll('.appointment-card');
-
-            appointmentCards.forEach(card => {
-                const cardText = card.textContent.toLowerCase();
-                const cardStatus = card.querySelector('.rounded-full:nth-child(2)').textContent.trim().toLowerCase();
-
-                const matchesSearch = searchTerm === '' || cardText.includes(searchTerm);
-                const matchesStatus = statusFilter === '' || cardStatus.includes(statusFilter);
-
-                card.style.display = matchesSearch && matchesStatus ? 'block' : 'none';
+            
+            // Set all other timeline icons to green
+            const otherIcons = document.querySelectorAll('.timeline-item:not(:first-child) .timeline-icon');
+            otherIcons.forEach(icon => {
+                icon.style.backgroundColor = '#10B981'; // Green
             });
-        }
+        });
 
         // View appointment details
         function viewAppointmentDetails(appointmentId) {
-            // This would typically fetch appointment details via AJAX
-            // For now, we'll just show the modal
+            // Show the modal
             const modal = document.getElementById('appointmentDetailsModal');
             modal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
 
-            // In a real implementation, you would fetch the details and populate the modal
+            // Show loading state
             document.getElementById('appointmentDetailsContent').innerHTML = `
                 <p class="text-center text-gray-500">Loading appointment details...</p>
             `;
 
-            // Simulate loading data
-            setTimeout(() => {
-                // This would be replaced with actual data from your AJAX call
+            // Fetch appointment details via AJAX
+            fetch(`${window.BASE_URL}/receptionist/getAppointmentDetails`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `appointmentId=${appointmentId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('appointmentDetailsContent').innerHTML = `
+                        <p class="text-center text-red-500">${data.error}</p>
+                    `;
+                    return;
+                }
+                
+                const appointment = data.appointment;
+                const patient = data.patient;
+                const doctor = data.doctor;
+                
+                // Format date and time
+                const appointmentDate = new Date(appointment.appointment_date);
+                const formattedDate = appointmentDate.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                
+                const appointmentTime = new Date(`${appointment.appointment_date}T${appointment.appointment_time}`);
+                const formattedTime = appointmentTime.toLocaleTimeString('en-US', { 
+                    hour: 'numeric', 
+                    minute: '2-digit' 
+                });
+                
+                // Determine status class
+                let statusClass = 'bg-gray-100 text-gray-800';
+                if (appointment.status === 'completed') {
+                    statusClass = 'bg-green-100 text-green-800';
+                } else if (appointment.status === 'cancelled' || appointment.status === 'cancelled_by_clinic' || appointment.status === 'no-show') {
+                    statusClass = 'bg-red-100 text-red-800';
+                } else if (appointment.status === 'confirmed') {
+                    statusClass = 'bg-blue-100 text-blue-800';
+                }
+                
+                // Populate modal with appointment details
                 document.getElementById('appointmentDetailsContent').innerHTML = `
                     <div class="border-b pb-4 mb-4">
                         <div class="flex justify-between">
                             <div>
                                 <p class="text-sm text-gray-500">Appointment Date & Time</p>
-                                <p class="text-lg font-medium">Monday, June 12, 2023 at 10:30 AM</p>
+                                <p class="text-lg font-medium">${formattedDate} at ${formattedTime}</p>
                             </div>
-                            <span class="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                <i class="bx bx-check-circle mr-1"></i> Completed
+                            <span class="px-3 py-1 rounded-full text-sm font-medium ${statusClass}">
+                                <i class="bx bx-check-circle mr-1"></i> ${appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1).replace('_', ' ')}
                             </span>
                         </div>
                     </div>
@@ -357,30 +349,30 @@
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
                             <p class="text-sm text-gray-500">Doctor</p>
-                            <p class="font-medium">Dr. Jane Smith</p>
+                            <p class="font-medium">Dr. ${doctor ? doctor.first_name + ' ' + doctor.last_name : 'Not Assigned'}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Appointment Type</p>
-                            <p class="font-medium">Follow-up</p>
+                            <p class="font-medium">${appointment.appointment_type || 'Regular Checkup'}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Location</p>
-                            <p class="font-medium">Main Clinic, Room 204</p>
+                            <p class="font-medium">${appointment.location || 'Main Clinic'}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Duration</p>
-                            <p class="font-medium">30 minutes</p>
+                            <p class="text-sm text-gray-500">Tracking Number</p>
+                            <p class="font-medium">${appointment.tracking_number || 'N/A'}</p>
                         </div>
                     </div>
                     
                     <div class="mb-4">
                         <p class="text-sm text-gray-500">Reason for Visit</p>
-                        <p>Follow-up on previous treatment and medication review</p>
+                        <p>${appointment.reason || 'Not specified'}</p>
                     </div>
                     
                     <div class="mb-4">
                         <p class="text-sm text-gray-500">Notes</p>
-                        <p>Patient reported improvement in symptoms. Medication dosage adjusted.</p>
+                        <p>${appointment.notes || 'No notes available'}</p>
                     </div>
                     
                     <div class="border-t pt-4">
@@ -394,7 +386,13 @@
                         </div>
                     </div>
                 `;
-            }, 500);
+            })
+            .catch(error => {
+                document.getElementById('appointmentDetailsContent').innerHTML = `
+                    <p class="text-center text-red-500">Error loading appointment details. Please try again.</p>
+                `;
+                console.error('Error:', error);
+            });
         }
 
         // Close appointment details modal
@@ -403,43 +401,10 @@
             modal.classList.add('hidden');
             document.body.style.overflow = 'auto';
         }
-
-        // Add CSS for action buttons
-        document.head.insertAdjacentHTML('beforeend', `
-            <style>
-                .action-button-sm {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 0.375rem 0.75rem;
-                    font-size: 0.75rem;
-                    border-radius: 0.375rem;
-                    transition: all 0.2s;
-                    white-space: nowrap;
-                }
-                
-                .appointment-card {
-                    position: relative;
-                    transition: all 0.3s ease;
-                }
-                
-                .appointment-card:hover {
-                    transform: translateY(-2px);
-                }
-                
-                .fade-in {
-                    animation: fadeIn 0.5s ease-in-out;
-                }
-                
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(10px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-            </style>
-        `);
     </script>
     <script src="<?= BASE_URL ?>/js/receptionist/reception.js"></script>
     <script src="<?= BASE_URL ?>/js/receptionist/appointments.js"></script>
 </body>
 
 </html>
+
