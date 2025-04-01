@@ -40,71 +40,99 @@
             margin-right: 0.5rem;
         }
 
-        /* Timeline styles - cleaned up and simplified */
+        /* Improved Timeline styles */
+        .appointment-timeline {
+            position: relative;
+            padding: 0.5rem 0.3rem;
+        }
+
         .timeline-item {
             position: relative;
-            padding-left: 40px;
-            margin-bottom: 4px;
+            padding-left: 48px;
+            margin-bottom: 16px;
+            transition: transform 0.2s ease;
+        }
+
+        .timeline-item:hover {
+            transform: translateX(4px);
         }
 
         .timeline-icon {
             position: absolute;
             left: 0;
             top: 16px;
-            width: 24px;
-            height: 24px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 14px;
-            z-index: 1;
+            font-size: 16px;
+            z-index: 2;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         /* Timeline connector line */
-        .timeline-item:before {
-            content: "";
+        .timeline-connector {
             position: absolute;
-            left: 12px;
-            top: 40px; /* Adjusted to start below the icon */
-            bottom: -4px;
+            left: 20px;
+            top: 0;
+            bottom: 0;
             width: 2px;
             background-color: #e5e7eb;
-        }
-
-        .timeline-item:last-child:before {
-            display: none;
+            z-index: 0;
         }
 
         /* Timeline colors */
-        .timeline-blue {
-            border-left: 2px solid #3B82F6;
-        }
-
-        .timeline-blue .timeline-icon {
+        .timeline-current .timeline-icon {
             background-color: #3B82F6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
         }
 
-        .timeline-blue .timeline-content {
-            background-color: #EBF5FF;
+        .timeline-current .timeline-content {
+            border-left: 3px solid #3B82F6;
+            background-color: #EFF6FF;
         }
 
-        .timeline-green {
-            border-left: 2px solid #10B981;
-        }
-
-        .timeline-green .timeline-icon {
+        .timeline-past .timeline-icon {
             background-color: #10B981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
         }
 
-        .timeline-green .timeline-content {
+        .timeline-past .timeline-content {
+            border-left: 3px solid #10B981;
             background-color: #ECFDF5;
         }
 
         .timeline-content {
             border-radius: 8px;
+            padding: 16px;
             transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .timeline-content:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-date {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .timeline-current .timeline-date {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #1E40AF;
+        }
+
+        .timeline-past .timeline-date {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #065F46;
         }
 
         /* Equal height columns */
@@ -116,6 +144,112 @@
         
         .equal-height-content {
             flex: 1;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            max-height: none; /* Remove the max height to prevent scrolling */
+        }
+
+        /* Remove scrollbar styling since we don't need it anymore */
+        .equal-height-content::-webkit-scrollbar {
+            width: 0;
+            display: none;
+        }
+
+        .equal-height-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .equal-height-content::-webkit-scrollbar-thumb {
+            background: transparent;
+            border-radius: 0;
+        }
+        
+        /* Add consistent padding to both cards */
+        .card {
+            padding: 1.5rem !important; /* Override any existing padding */
+        }
+        
+        /* Ensure consistent spacing between elements */
+        .patient-info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0; 
+            border-bottom: 1px solid #f3f4f6;
+            margin-bottom: 5px;
+        }
+        
+        /* Add more space between timeline items */
+        .timeline-item {
+            position: relative;
+            padding-left: 48px;
+            margin-bottom: 24px; /* Increase margin between timeline items */
+            transition: transform 0.2s ease;
+        }
+
+        .equal-height-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .equal-height-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .equal-height-content::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+
+        /* Patient card improvements */
+        .patient-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+        }
+
+        .patient-info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .patient-info-item:last-child {
+            border-bottom: none;
+        }
+
+        .patient-info-label {
+            color: #6B7280;
+            font-size: 0.875rem;
+        }
+
+        .patient-info-value {
+            font-weight: regular;
+            text-align: right;
+            font-size: 0.875rem;
+        }
+
+        /* Modal improvements */
+        .modal-content {
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -145,42 +279,41 @@
                         </div>
                     </div>
                     <div class="flex flex-col md:flex-row gap-6">
-                   
-                        <div class="md:w-50">
+                        <div class="md:w-2/5">
                             <div class="card bg-white shadow-sm rounded-lg w-full p-6 fade-in equal-height-columns">
                                 <h2 class="text-xl font-semibold text-gray-900 mb-4">Patient Information</h2>
                                 <div class="flex flex-col items-center mb-6">
-                                    <div class="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center text-3xl font-semibold text-blue-500 mb-2">
+                                    <div class="patient-avatar">
                                         <?= substr($patient->first_name ?? 'J', 0, 1) ?>
                                     </div>
                                 </div>
                                 <!-- Patient details -->
-                                <div class="space-y-3 equal-height-content">
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-500">Age:</span>
-                                        <span class=""><?= isset($patient->age) ? $patient->age : '45' ?></span>
+                                <div class="space-y-1 equal-height-content">
+                                    <div class="patient-info-item">
+                                        <span class="patient-info-label">Age:</span>
+                                        <span class="patient-info-value"><?= isset($patient->age) ? $patient->age : '45' ?></span>
                                     </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-500">Gender:</span>
-                                        <span class=""><?= isset($patient->gender) ? $patient->gender : 'Male' ?></span>
+                                    <div class="patient-info-item">
+                                        <span class="patient-info-label">Gender:</span>
+                                        <span class="patient-info-value"><?= isset($patient->gender) ? $patient->gender : 'Male' ?></span>
                                     </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-500">Date of Birth:</span>
-                                        <span class=""><?= isset($patient->date_of_birth) ? $patient->date_of_birth : '1979-03-15' ?></span>
+                                    <div class="patient-info-item">
+                                        <span class="patient-info-label">Date of Birth:</span>
+                                        <span class="patient-info-value"><?= isset($patient->date_of_birth) ? $patient->date_of_birth : '1979-03-15' ?></span>
                                     </div>        
-                                    <div class="border-t pt-3 mt-3">
-                                        <span class="text-gray-500">Contact:</span>
-                                        <div class=" mt-1"><?= isset($patient->contact_number) ? $patient->contact_number : '(123) 456-7890' ?></div>
+                                    <div class="patient-info-item">
+                                        <span class="patient-info-label">Contact:</span>
+                                        <span class="patient-info-value"><?= isset($patient->contact_number) ? $patient->contact_number : '(123) 456-7890' ?></span>
                                     </div>
                                     
-                                    <div>
-                                        <span class="text-gray-500">Email:</span>
-                                        <div class=" mt-1 break-words"><?= isset($patient->email) ? $patient->email : 'john.doe@example.com' ?></div>
+                                    <div class="patient-info-item">
+                                        <span class="patient-info-label">Email:</span>
+                                        <span class="patient-info-value break-words"><?= isset($patient->email) ? $patient->email : 'john.doe@example.com' ?></span>
                                     </div>
                                     
-                                    <div>
-                                        <span class="text-gray-500">Address:</span>
-                                        <div class="mt-1"><?= isset($patient->address) ? $patient->address : '123 Main St, Tupi, South Cotabato' ?></div>
+                                    <div class="patient-info-item">
+                                        <span class="patient-info-label">Address:</span>
+                                        <span class="patient-info-value"><?= isset($patient->address) ? $patient->address : '123 Main St, Tupi, South Cotabato' ?></span>
                                     </div>
                                 </div>
                             </div>
@@ -195,36 +328,45 @@
                                 
                                 <p class="text-sm text-gray-500 mb-4">Chronological view of patient's appointment history.</p>
                                 <div class="appointment-timeline equal-height-content">
+                                    <div class="timeline-connector"></div>
+                                    
                                     <?php if (!empty($appointments)): ?>
                                         <?php foreach ($appointments as $index => $appointment): ?>
                                             <!-- Timeline Item -->
-                                            <div class="timeline-item">
+                                            <div class="timeline-item <?= $index === 0 ? 'timeline-current' : 'timeline-past' ?>">
                                                 <div class="timeline-icon">
-                                                    <i class="bx <?= $index === 0 ? 'bx-calendar' : 'bx-check-circle' ?>"></i>
+                                                    <i class="bx <?= $index === 0 ? 'bx-calendar-check' : 'bx-check-circle' ?>"></i>
                                                 </div>
-                                                <div class="timeline-content p-4 cursor-pointer hover:bg-<?= $index === 0 ? 'blue' : 'green' ?>-50 transition-colors bg-<?= $index === 0 ? 'blue' : 'green' ?>-50 rounded-lg" onclick="viewAppointmentDetails(<?= $appointment->id ?>)">
+                                                <div class="timeline-content cursor-pointer hover:bg-<?= $index === 0 ? 'blue' : 'green' ?>-50 transition-colors" onclick="viewAppointmentDetails(<?= $appointment->id ?>)">
+                                                    <span class="timeline-date">
+                                                        <?= date('M d, Y', strtotime($appointment->appointment_date)) ?>
+                                                    </span>
                                                     <div class="flex justify-between items-start mb-2">
                                                         <div>
-                                                            <h4 class="font-medium text-<?= $index === 0 ? 'blue' : 'green' ?>-700">
+                                                            <h4 class="font-medium capitalize text-<?= $index === 0 ? 'blue' : 'green' ?>-700">
                                                                 <?= htmlspecialchars($appointment->appointment_type ?? 'Regular Checkup') ?>
                                                             </h4>
                                                             <p class="text-sm text-gray-600">
-                                                                Doctor: Dr. <?= htmlspecialchars($appointment->doctor_first_name . ' ' . $appointment->doctor_last_name) ?>
+                                                                <i class="bx bx-user-circle mr-1"></i> Dr. <?= htmlspecialchars($appointment->doctor_first_name . ' ' . $appointment->doctor_last_name) ?>
                                                             </p>
                                                         </div>
-                                                        <span class="text-sm text-gray-500">
-                                                            <?= date('Y-m-d', strtotime($appointment->appointment_date)) ?> • 
-                                                            <?= date('g:i A', strtotime($appointment->appointment_time)) ?>
+                                                        <span class="text-sm font-medium text-<?= $index === 0 ? 'blue' : 'green' ?>-600">
+                                                            <i class="bx bx-time mr-1"></i> <?= date('g:i A', strtotime($appointment->appointment_time)) ?>
                                                         </span>
                                                     </div>
                                                     <?php if (!empty($appointment->notes)): ?>
-                                                        <p class="text-sm text-gray-700"><?= htmlspecialchars($appointment->notes) ?></p>
+                                                        <p class="text-sm text-gray-700 mt-2 bg-gray-50 p-2 rounded-md">
+                                                            <i class="bx bx-note mr-1"></i> <?= htmlspecialchars($appointment->notes) ?>
+                                                        </p>
                                                     <?php endif; ?>
                                                 </div>
                                             </div>
                                         <?php endforeach; ?>
                                     <?php else: ?>
                                         <div class="text-center py-8">
+                                            <div class="text-gray-400 mb-3">
+                                                <i class="bx bx-calendar-x text-5xl"></i>
+                                            </div>
                                             <p class="text-gray-500">No appointment history found for this patient.</p>
                                         </div>
                                     <?php endif; ?>
@@ -240,7 +382,7 @@
     <!-- Appointment Details Modal -->
     <div id="appointmentDetailsModal"
         class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto modal-content">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-xl font-semibold text-gray-900">Appointment Details</h3>
@@ -249,7 +391,7 @@
                     </button>
                 </div>
                 <div id="appointmentDetailsContent">
-                   
+                   <!-- Content will be loaded dynamically -->
                 </div>
             </div>
         </div>
@@ -261,28 +403,39 @@
 
         // Initialize when document is ready
         document.addEventListener('DOMContentLoaded', function () {
-            // Set the first timeline icon to blue
-            const firstIcon = document.querySelector('.timeline-item:first-child .timeline-icon');
-            if (firstIcon) {
-                firstIcon.style.backgroundColor = '#3B82F6'; // Blue
-            }
-            
-            // Set all other timeline icons to green
-            const otherIcons = document.querySelectorAll('.timeline-item:not(:first-child) .timeline-icon');
-            otherIcons.forEach(icon => {
-                icon.style.backgroundColor = '#10B981'; // Green
+            // Add animation to timeline items
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            timelineItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, 100 + (index * 150));
             });
         });
 
         // View appointment details
         function viewAppointmentDetails(appointmentId) {
-            // Show the modal
+            // Show the modal with fade-in effect
             const modal = document.getElementById('appointmentDetailsModal');
+            modal.style.opacity = '0';
             modal.classList.remove('hidden');
+            
+            setTimeout(() => {
+                modal.style.transition = 'opacity 0.3s ease';
+                modal.style.opacity = '1';
+            }, 10);
+            
             document.body.style.overflow = 'hidden';
 
-            // Show loading state
+            // Show loading state with animation
             document.getElementById('appointmentDetailsContent').innerHTML = `
+                <div class="flex justify-center items-center py-8">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                </div>
                 <p class="text-center text-gray-500">Loading appointment details...</p>
             `;
 
@@ -298,7 +451,12 @@
             .then(data => {
                 if (data.error) {
                     document.getElementById('appointmentDetailsContent').innerHTML = `
-                        <p class="text-center text-red-500">${data.error}</p>
+                        <div class="text-center py-6">
+                            <div class="text-red-500 mb-2">
+                                <i class="bx bx-error-circle text-4xl"></i>
+                            </div>
+                            <p class="text-red-500">${data.error}</p>
+                        </div>
                     `;
                     return;
                 }
@@ -322,65 +480,88 @@
                     minute: '2-digit' 
                 });
                 
-                // Determine status class
+                // Determine status class and icon
                 let statusClass = 'bg-gray-100 text-gray-800';
+                let statusIcon = 'bx-time';
+                
                 if (appointment.status === 'completed') {
                     statusClass = 'bg-green-100 text-green-800';
+                    statusIcon = 'bx-check-circle';
                 } else if (appointment.status === 'cancelled' || appointment.status === 'cancelled_by_clinic' || appointment.status === 'no-show') {
                     statusClass = 'bg-red-100 text-red-800';
+                    statusIcon = 'bx-x-circle';
                 } else if (appointment.status === 'confirmed') {
                     statusClass = 'bg-blue-100 text-blue-800';
+                    statusIcon = 'bx-calendar-check';
                 }
                 
                 // Populate modal with appointment details
                 document.getElementById('appointmentDetailsContent').innerHTML = `
                     <div class="border-b pb-4 mb-4">
-                        <div class="flex justify-between">
+                        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
                             <div>
                                 <p class="text-sm text-gray-500">Appointment Date & Time</p>
                                 <p class="text-lg font-medium">${formattedDate} at ${formattedTime}</p>
                             </div>
-                            <span class="px-3 py-1 rounded-full text-sm font-medium ${statusClass}">
-                                <i class="bx bx-check-circle mr-1"></i> ${appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1).replace('_', ' ')}
+                            <span class="status-badge ${statusClass} self-start md:self-center">
+                                <i class="bx ${statusIcon} mr-1"></i> ${appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1).replace('_', ' ')}
                             </span>
                         </div>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-gray-50 p-3 rounded-md">
                             <p class="text-sm text-gray-500">Doctor</p>
-                            <p class="font-medium">Dr. ${doctor ? doctor.first_name + ' ' + doctor.last_name : 'Not Assigned'}</p>
+                            <p class="font-medium flex items-center">
+                                <i class="bx bx-user-circle mr-2 text-blue-500"></i>
+                                Dr. ${doctor ? doctor.first_name + ' ' + doctor.last_name : 'Not Assigned'}
+                            </p>
                         </div>
-                        <div>
+                        <div class="bg-gray-50 p-3 rounded-md">
                             <p class="text-sm text-gray-500">Appointment Type</p>
-                            <p class="font-medium">${appointment.appointment_type || 'Regular Checkup'}</p>
+                            <p class="font-medium flex items-center">
+                                <i class="bx bx-calendar mr-2 text-blue-500"></i>
+                                ${appointment.appointment_type || 'Regular Checkup'}
+                            </p>
                         </div>
-                        <div>
+                        <div class="bg-gray-50 p-3 rounded-md">
                             <p class="text-sm text-gray-500">Location</p>
-                            <p class="font-medium">${appointment.location || 'Main Clinic'}</p>
+                            <p class="font-medium flex items-center">
+                                <i class="bx bx-map mr-2 text-blue-500"></i>
+                                ${appointment.location || 'Main Clinic'}
+                            </p>
                         </div>
-                        <div>
+                        <div class="bg-gray-50 p-3 rounded-md">
                             <p class="text-sm text-gray-500">Tracking Number</p>
-                            <p class="font-medium">${appointment.tracking_number || 'N/A'}</p>
+                            <p class="font-medium flex items-center">
+                                <i class="bx bx-hash mr-2 text-blue-500"></i>
+                                ${appointment.tracking_number || 'N/A'}
+                            </p>
                         </div>
                     </div>
                     
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-500">Reason for Visit</p>
-                        <p>${appointment.reason || 'Not specified'}</p>
+                    <div class="mb-4 bg-blue-50 p-4 rounded-md">
+                        <p class="text-sm text-gray-500 mb-1">Reason for Visit</p>
+                        <p class="flex items-start">
+                            <i class="bx bx-info-circle mr-2 text-blue-500 mt-1"></i>
+                            <span>${appointment.reason || 'Not specified'}</span>
+                        </p>
                     </div>
                     
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-500">Notes</p>
-                        <p>${appointment.notes || 'No notes available'}</p>
+                    <div class="mb-6 bg-gray-50 p-4 rounded-md">
+                        <p class="text-sm text-gray-500 mb-1">Notes</p>
+                        <p class="flex items-start">
+                            <i class="bx bx-note mr-2 text-gray-500 mt-1"></i>
+                            <span>${appointment.notes || 'No notes available'}</span>
+                        </p>
                     </div>
                     
                     <div class="border-t pt-4">
-                        <div class="flex justify-end gap-3">
-                            <button class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50" onclick="closeAppointmentDetailsModal()">
+                        <div class="flex flex-col sm:flex-row justify-end gap-3">
+                            <button class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors" onclick="closeAppointmentDetailsModal()">
                                 Close
                             </button>
-                            <button class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark">
+                            <button class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors">
                                 <i class="bx bx-printer mr-2"></i>Print Details
                             </button>
                         </div>
@@ -389,7 +570,12 @@
             })
             .catch(error => {
                 document.getElementById('appointmentDetailsContent').innerHTML = `
-                    <p class="text-center text-red-500">Error loading appointment details. Please try again.</p>
+                    <div class="text-center py-6">
+                        <div class="text-red-500 mb-2">
+                            <i class="bx bx-error-circle text-4xl"></i>
+                        </div>
+                        <p class="text-red-500">Error loading appointment details. Please try again.</p>
+                    </div>
                 `;
                 console.error('Error:', error);
             });
@@ -398,13 +584,24 @@
         // Close appointment details modal
         function closeAppointmentDetailsModal() {
             const modal = document.getElementById('appointmentDetailsModal');
-            modal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
+            modal.style.transition = 'opacity 0.3s ease';
+            modal.style.opacity = '0';
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }, 300);
         }
+
+        // Close modal when clicking outside
+        document.getElementById('appointmentDetailsModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAppointmentDetailsModal();
+            }
+        });
     </script>
     <script src="<?= BASE_URL ?>/js/receptionist/reception.js"></script>
     <script src="<?= BASE_URL ?>/js/receptionist/appointments.js"></script>
 </body>
 
 </html>
-
