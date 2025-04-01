@@ -47,5 +47,11 @@ $router->get('/receptionist/appointments/records', 'ReceptionistController@viewP
 
 
 
+// Doctor routes
 $router->get('/doctor/dashboard', 'DoctorController@dashboard');
+$router->get('/doctor/patients', 'DoctorController@patientList');
+$router->get('/doctor/patientView', 'DoctorController@patientView');
+$router->get('/doctor/inventory', 'DoctorController@inventory');
+$router->get('/doctor/notification', 'DoctorController@notifications');
+
 

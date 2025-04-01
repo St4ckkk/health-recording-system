@@ -216,5 +216,23 @@ class Doctor extends Model
         return $appointmentModel->getTodayAppointmentsByDoctor($doctorId);
     }
     
+    public function getPatientsByDoctor($doctorId) {
+        $sql = "SELECT DISTINCT 
+                p.*,
+                (SELECT last_visit 
+                 FROM appointments a2 
+                 WHERE a2.patient_id = p.id 
+                 AND a2.doctor_id = :doctor_id 
+                 ORDER BY a2.last_visit DESC 
+                 LIMIT 1) as last_visit
+                FROM patients p
+                INNER JOIN appointments a ON p.id = a.patient_id
+                WHERE a.doctor_id = :doctor_id
+                ORDER BY p.last_name, p.first_name";
+    
+        $this->db->query($sql);
+        $this->db->bind(':doctor_id', $doctorId);
+        return $this->db->resultSet();
+    }
 }
 

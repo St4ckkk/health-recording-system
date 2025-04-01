@@ -88,7 +88,7 @@
                 </section>
                 <section class="p-6 pt-0">
                     <div class="mb-8">
-                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Patient Appointments</h2>
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Patients Appointments</h2>
                         <div class="flex space-x-4 overflow-x-auto pb-2">
                             <?php foreach ($recentAppointments as $index => $appointment): ?>
                                 <div class="flex items-center rounded-lg min-w-[240px] rounded-lg p-3 shadow-sm border border-gray-100 fade-in">
