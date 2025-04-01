@@ -16,7 +16,31 @@ class Appointment extends Model
     private function buildBaseQuery(bool $includeType = false): string
     {
         $typeField = $includeType ? ", COALESCE(a.appointment_type, 'Checkup') as type" : '';
-        return "SELECT a.*, 
+        return "SELECT a.id,
+                a.original_appointment_id,
+                a.patient_id,
+                a.doctor_id,
+                a.appointment_date,
+                a.appointment_time,
+                a.reason,
+                a.special_instructions,
+                a.status,
+                a.cancellation_reason,
+                a.cancellation_details,
+                a.tracking_number,
+                a.created_at,
+                a.updated_at,
+                a.appointment_type,
+                a.reference_number,
+                a.guardian_name,
+                a.guardian_relationship,
+                a.insurance_verified,
+                a.id_verified,
+                a.forms_completed,
+                a.checked_in_at,
+                a.completed_at,
+                a.last_visit,
+                a.is_follow_up,
                 p.first_name, p.last_name, p.middle_name, p.suffix, p.contact_number, 
                 p.email, p.patient_reference_number, p.id as patient_id, p.profile,
                 d.first_name as doctor_first_name, d.last_name as doctor_last_name, 
@@ -211,10 +235,34 @@ class Appointment extends Model
 
     public function completeAppointment($appointmentId, $additionalData = [])
     {
-        return $this->update($appointmentId, array_merge(
+        // Update the current appointment
+        $success = $this->update($appointmentId, array_merge(
             $additionalData,
-            ['status' => 'completed', 'updated_at' => date('Y-m-d H:i:s')]
+            [
+                'status' => 'completed',
+                'completed_at' => date('Y-m-d H:i:s'),
+                'last_visit' => date('Y-m-d'), // Add this line to update last_visit
+                'updated_at' => date('Y-m-d H:i:s')
+            ]
         ));
+
+        if ($success) {
+            // Get the patient ID from the appointment
+            $appointment = $this->getAppointmentById($appointmentId);
+            if ($appointment) {
+                // Update last_visit for all future appointments of this patient
+                $this->db->query("UPDATE {$this->table} 
+                    SET last_visit = :current_date 
+                    WHERE patient_id = :patient_id 
+                    AND appointment_date > :current_date");
+                
+                $this->db->bind(':current_date', date('Y-m-d'));
+                $this->db->bind(':patient_id', $appointment->patient_id);
+                $this->db->execute();
+            }
+        }
+
+        return $success;
     }
 
 
@@ -333,5 +381,38 @@ class Appointment extends Model
             'appointments' => array_map([$this, 'formatAppointmentDetails'], $appointments)
         ];
          
+    }
+
+
+    public function getRecentVisitsByPatientsAssignedToDoctor($doctorId, $limit = 10) {
+        $sql = "SELECT DISTINCT 
+                a.*,
+                p.first_name, p.last_name, p.middle_name, p.suffix,
+                p.contact_number, p.email, p.profile,
+                d.first_name as doctor_first_name, 
+                d.last_name as doctor_last_name,
+                d.specialization,
+                prev.appointment_date as last_visit_date,
+                prev_doc.first_name as previous_doctor_first_name,
+                prev_doc.last_name as previous_doctor_last_name,
+                prev_doc.specialization as previous_doctor_specialization
+                FROM {$this->table} a
+                JOIN patients p ON a.patient_id = p.id
+                JOIN doctors d ON a.doctor_id = d.id
+                LEFT JOIN {$this->table} prev ON a.patient_id = prev.patient_id 
+                    AND prev.status = 'completed'
+                    AND prev.appointment_date < a.appointment_date
+                LEFT JOIN doctors prev_doc ON prev.doctor_id = prev_doc.id
+                WHERE a.doctor_id = :doctor_id
+                AND a.status NOT IN ('cancelled', 'no-show')
+                ORDER BY prev.appointment_date DESC
+                LIMIT :limit";
+
+        $this->db->query($sql);
+        $this->db->bind(':doctor_id', $doctorId);
+        $this->db->bind(':limit', $limit);
+
+        $visits = $this->db->resultSet();
+        return array_map([$this, 'formatAppointmentDetails'], $visits);
     }
 }

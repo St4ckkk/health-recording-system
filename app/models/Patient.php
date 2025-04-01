@@ -127,6 +127,11 @@ class Patient extends Model
           suffix = :suffix,
           date_of_birth = :date_of_birth,
           age = :age,
+          diagnosis = :diagnosis,
+          status = :status,
+          allergies = :allergies,
+          blood_type = :blood_type,
+          notes = :notes,
           profile = :profile,
           gender = :gender,
           email = :email,
@@ -135,6 +140,13 @@ class Patient extends Model
           updated_at = :updated_at
       WHERE id = :id');
 
+        // Add new bindings
+        $this->db->bind(':diagnosis', $data['diagnosis'] ?? null);
+        $this->db->bind(':status', $data['status'] ?? null);
+        $this->db->bind(':allergies', $data['allergies'] ?? null);
+        $this->db->bind(':blood_type', $data['blood_type'] ?? null);
+        $this->db->bind(':notes', $data['notes'] ?? null);
+        
         // Bind values
         $this->db->bind(':id', $id);
         $this->db->bind(':first_name', $data['first_name']);
@@ -163,5 +175,27 @@ class Patient extends Model
     {
         $this->db->query('SELECT * FROM patients ORDER BY last_name, first_name');
         return $this->db->resultSet();
+    }
+
+
+    public function getPatientWithVitals($id)
+    {
+        $this->db->query('SELECT p.*, 
+            v.blood_pressure, 
+            v.temperature,
+            v.heart_rate,
+            v.respiratory_rate,
+            v.oxygen_saturation,
+            v.weight,
+            v.height,
+            v.recorded_at as vitals_recorded_at
+        FROM patients p
+        LEFT JOIN vitals v ON p.id = v.patient_id
+        WHERE p.id = :id
+        ORDER BY v.recorded_at DESC
+        LIMIT 1');
+
+        $this->db->bind(':id', $id);
+        return $this->db->single();
     }
 }

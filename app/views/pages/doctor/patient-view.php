@@ -400,14 +400,7 @@
                     
                     <!-- Medical Information -->
                     <h4 class="text-md font-medium mt-6 mb-3">Medical Information</h4>
-                    <div class="space-y-2">
-                        <div class="flex justify-between py-2 border-b border-gray-100">
-                            <span class="text-gray-600 text-sm">Primary Care:</span>
-                            <span class="text-gray-900 text-sm">
-                                <?= isset($patient->primary_doctor) ? 'Dr. ' . $patient->primary_doctor : 'Dr. Sarah Johnson' ?>
-                            </span>
-                        </div>
-                        
+                    <div class="space-y-2">  
                         <div class="flex justify-between py-2 border-b border-gray-100">
                             <span class="text-gray-600 text-sm">Insurance:</span>
                             <span class="text-gray-900 text-sm">
@@ -433,7 +426,7 @@
                             <span class="text-gray-600 text-sm mb-1">Conditions:</span>
                             <div class="flex flex-wrap gap-1 mt-1">
                                 <?php 
-                                $conditions = isset($patient->conditions) ? explode(',', $patient->conditions) : ['Hypertension', 'Type 2 Diabetes', 'Hyperlipidemia'];
+                                $conditions = isset($patient->diagnosis) ? explode(',', $patient->diagnosis) : ['Hypertension', 'Type 2 Diabetes', 'Hyperlipidemia'];
                                 foreach ($conditions as $condition): 
                                 ?>
                                     <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">

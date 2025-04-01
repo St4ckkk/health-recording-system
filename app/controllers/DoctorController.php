@@ -9,19 +9,30 @@ use app\models\Patient;
 use app\models\MedicineInventory;
 use app\helpers\EmailHelper;
 use app\helpers\TrackingNumber;
+use app\models\Vitals;
+use app\models\LabResults;
+use app\models\Medications;
 
 class DoctorController extends Controller {
     private $doctorModel;
     private $patientModel;
     private $appointmentModel;
     private $medicineInventoryModel;
-    
+    private $vitalsModel;
+    private $labResultsModel;
+    private $medicationsModel;
+
     public function __construct() {
         $this->doctorModel = new Doctor();
         $this->patientModel = new Patient();
         $this->appointmentModel = new Appointment();
         $this->medicineInventoryModel = new MedicineInventory();
+        $this->vitalsModel = new Vitals();
+        $this->labResultsModel = new LabResults(); 
+        $this->medicationsModel = new Medications();
     }
+
+    
 
     public function dashboard() {
         $doctorId = $_SESSION['doctor']['id'] ?? null;
@@ -70,6 +81,8 @@ class DoctorController extends Controller {
     public function patientView() {
         $patientId = isset($_GET['id']) ? intval($_GET['id']) : 0;
         $patient = $this->patientModel->getPatientById($patientId);
+        $vitals = $this->vitalsModel->getLatestVitalsByPatientId($patientId);
+        $medications = $this->medicationsModel->getCurrentMedicationsByPatientId($patientId);
 
         if (!$patient) {
             $this->redirect('/doctor/patient-list');
@@ -77,11 +90,21 @@ class DoctorController extends Controller {
         }
 
         $appointments = $this->appointmentModel->getAppointmentsByPatientId($patientId);
+        $recentVisits = $this->appointmentModel->getRecentVisitsByPatientsAssignedToDoctor(
+            $_SESSION['doctor_id'],
+            10
+        );
+        $labResults = $this->labResultsModel->getRecentLabResults($patientId, 10);
+
 
         $this->view('pages/doctor/patient-view', [
             'title' => 'Patient Record',
             'patient' => $patient,
-            'appointments' => $appointments
+            'vitals' => $vitals,
+            'appointments' => $appointments,
+            'recentVisits' => $recentVisits,
+            'labResults' => $labResults,
+            'medications' => $medications
         ]);
     }
 }

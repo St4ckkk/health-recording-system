@@ -62,17 +62,21 @@ class Router
 
     protected function callAction($controller, $action)
     {
-        $controller = "app\\controllers\\{$controller}";
-        $controller = new $controller();
+        $controllerClass = "app\\controllers\\{$controller}";
 
-        if (!method_exists($controller, $action)) {
-            // Change from app\core\Exception to \Exception
+        if (!class_exists($controllerClass)) {
+            throw new \Exception("Controller {$controller} does not exist.");
+        }
+
+        $controllerInstance = new $controllerClass();
+
+        if (!method_exists($controllerInstance, $action)) {
             throw new \Exception(
                 "{$controller} does not respond to the {$action} action."
             );
         }
 
-        return $controller->$action();
+        return $controllerInstance->$action();
     }
 }
 

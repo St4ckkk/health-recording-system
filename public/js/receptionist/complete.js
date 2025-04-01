@@ -374,3 +374,36 @@ window.scheduleFollowUp = (appointmentId) => {
     // Prevent body scrolling
     document.body.style.overflow = "hidden";
 };
+
+// Inside the form submit event listener
+    completedForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(completedForm);
+        const appointmentId = document.getElementById("completedAppointmentId").value;
+
+        try {
+            const response = await fetch(`${BASE_URL}/receptionist/complete-appointment/${appointmentId}`, {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Close modal and show success message
+                closeCompletedModalFn();
+                showToast("Appointment completed successfully", "success");
+                
+                // Refresh the page after a short delay to show updated last_visit
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                showToast(data.message || "Failed to complete appointment", "error");
+            }
+        } catch (error) {
+            console.error("Error completing appointment:", error);
+            showToast("An error occurred while completing the appointment", "error");
+        }
+    });
