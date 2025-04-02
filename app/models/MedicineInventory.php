@@ -13,35 +13,54 @@ class MedicineInventory extends Model
         parent::__construct();
     }
 
+    private function buildBaseQuery(bool $includeType = false): string
+    {
+        $fields = [
+            'm.id',
+            'm.name',
+            'm.category',
+            'm.form',
+            'm.dosage',
+            'm.stock_level',
+            'm.expiry_date',
+            'm.status',
+            'm.created_at',
+            'm.updated_at'
+        ];
+        return "SELECT " . implode(', ', $fields) . " FROM {$this->table} m";
+    }
+
     public function getAllMedicines()
     {
-        $this->db->query("SELECT * FROM {$this->table} ORDER BY name ASC");
+        $query = $this->buildBaseQuery();
+        $this->db->query($query . " ORDER BY m.name ASC");
         return $this->db->resultSet();
     }
 
+
     public function getMedicineById($id)
     {
-        return $this->getById($id);
-    }
-
-    public function getMedicineByName($name)
-    {
-        return $this->getSingleByField('name', $name);
+        $query = $this->buildBaseQuery() . " WHERE m.id = :id";
+        $this->db->query($query);
+        $this->db->bind(':id', $id);
+        return $this->db->single();
     }
 
     public function getLowStockMedicines($threshold = 10)
     {
-        $this->db->query("SELECT * FROM {$this->table} WHERE stock_level <= :threshold");
+        $query = $this->buildBaseQuery() . " WHERE m.stock_level <= :threshold";
+        $this->db->query($query);
         $this->db->bind(':threshold', $threshold);
         return $this->db->resultSet();
     }
 
     public function getExpiringSoonMedicines($daysThreshold = 30)
     {
-        $this->db->query("SELECT * FROM {$this->table} 
-            WHERE expiry_date <= DATE_ADD(CURDATE(), INTERVAL :days DAY)
-            AND expiry_date >= CURDATE()
-            ORDER BY expiry_date ASC");
+        $query = $this->buildBaseQuery() . " 
+            WHERE m.expiry_date <= DATE_ADD(CURDATE(), INTERVAL :days DAY)
+            AND m.expiry_date >= CURDATE()
+            ORDER BY m.expiry_date ASC";
+        $this->db->query($query);
         $this->db->bind(':days', $daysThreshold);
         return $this->db->resultSet();
     }
@@ -87,21 +106,21 @@ class MedicineInventory extends Model
             COUNT(CASE WHEN expiry_date <= DATE_ADD(CURDATE(), INTERVAL 30 DAY) 
                       AND expiry_date >= CURDATE() THEN 1 END) as expiring_soon
             FROM {$this->table}");
-            
+
         return $this->db->single();
     }
 
     public function getLowStockCount()
-        {
-            $this->db->query("SELECT COUNT(*) as count, 
+    {
+        $this->db->query("SELECT COUNT(*) as count, 
                 GROUP_CONCAT(CONCAT(name, ' (', stock_level, ' remaining)') SEPARATOR ', ') as low_stock_items 
                 FROM {$this->table} 
                 WHERE status = 'Low Stock'");
-            
-            $result = $this->db->single();
-            return [
-                'count' => $result ? $result->count : 0,
-                'items' => $result && $result->low_stock_items ? $result->low_stock_items : ''
-            ];
-        }
+
+        $result = $this->db->single();
+        return [
+            'count' => $result ? $result->count : 0,
+            'items' => $result && $result->low_stock_items ? $result->low_stock_items : ''
+        ];
+    }
 }

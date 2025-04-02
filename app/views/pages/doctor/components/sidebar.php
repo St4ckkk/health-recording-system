@@ -10,7 +10,8 @@ $notification_count = 3;
     <div class=" p-4 mb-6 bg-green-600 rounded-lg">
         <div class="flex items-center">
             <div class="logo">
-                <div class="w-12 h-12 flex justify-center items-center font-bold text-white border-2 border-white rounded-lg">
+                <div
+                    class="w-12 h-12 flex justify-center items-center font-bold text-white border-2 border-white rounded-lg">
                     <span class="text-xl">TC</span>
                 </div>
             </div>
@@ -36,9 +37,9 @@ $notification_count = 3;
                 </li>
             </a>
 
-            <a href="<?= BASE_URL ?>/doctor/inventory">
+            <a href="<?= BASE_URL ?>/doctor/medicinesInventory">
                 <li class="px-sm py-2 rounded-md hover:bg-green-600 hover:text-white flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1 mb-2"
-                    style="<?php echo strpos($request_uri, '/doctor/inventory') !== false ? 'background-color: rgb(22 163 74); color: white;' : ''; ?>">
+                    style="<?php echo strpos($request_uri, '/doctor/medicinesInventory') !== false ? 'background-color: rgb(22 163 74); color: white;' : ''; ?>">
                     <i class='bx bx-capsule text-lg mr-2 ml-1'></i> Medicine Inventory
                 </li>
             </a>
@@ -59,17 +60,17 @@ $notification_count = 3;
                 </li>
             </a>
         </ul>
-        
+
     </div>
     <div class="logout-container mt-auto">
-        
+
         <button id="sidebarLogoutBtn"
             class="px-sm py-2 rounded-md hover:bg-green-600 flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1 hover:text-white">
             <i class='bx bx-log-out text-lg mr-2 ml-1'></i> Logout
         </button>
-        
+
         <!-- Doctor Profile Section -->
-      
+
     </div>
 </nav>
 
@@ -80,7 +81,8 @@ $notification_count = 3;
         class="w-full max-w-md transform rounded-lg bg-white shadow-xl transition-all duration-300 scale-95 opacity-0">
         <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
             <h3 class="text-lg font-medium text-gray-900">Confirm Logout</h3>
-            <button type="button" class="text-gray-400 hover:text-gray-500 focus:outline-none" id="closeSidebarLogoutModal">
+            <button type="button" class="text-gray-400 hover:text-gray-500 focus:outline-none"
+                id="closeSidebarLogoutModal">
                 <i class="bx bx-x text-2xl"></i>
             </button>
         </div>
@@ -105,7 +107,7 @@ $notification_count = 3;
 <script>
     // Only initialize once by checking if the function already exists
     if (typeof window.openSidebarLogoutModal === 'undefined') {
-        window.openSidebarLogoutModal = function() {
+        window.openSidebarLogoutModal = function () {
             const modal = document.getElementById('sidebarLogoutModal');
             const modalContent = document.getElementById('sidebarLogoutModalContent');
 
@@ -120,7 +122,7 @@ $notification_count = 3;
             document.body.style.overflow = 'hidden';
         };
 
-        window.closeSidebarLogoutModal = function() {
+        window.closeSidebarLogoutModal = function () {
             const modal = document.getElementById('sidebarLogoutModal');
             const modalContent = document.getElementById('sidebarLogoutModalContent');
 
@@ -134,7 +136,7 @@ $notification_count = 3;
             }, 300);
         };
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const logoutBtn = document.getElementById('sidebarLogoutBtn');
             const modal = document.getElementById('sidebarLogoutModal');
             const closeModal = document.getElementById('closeSidebarLogoutModal');
@@ -145,7 +147,7 @@ $notification_count = 3;
             if (cancelBtn) cancelBtn.addEventListener('click', window.closeSidebarLogoutModal);
 
             if (modal) {
-                modal.addEventListener('click', function(e) {
+                modal.addEventListener('click', function (e) {
                     if (e.target === modal) {
                         window.closeSidebarLogoutModal();
                     }

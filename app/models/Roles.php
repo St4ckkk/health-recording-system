@@ -13,11 +13,12 @@ class Roles extends Model
         parent::__construct();
     }
 
-    private function buildBaseQuery(bool $includeType = false): string {
+    private function buildBaseQuery(bool $includeType = false): string
+    {
         $fields = [
             'a.id',
-            'a.role_name', 
-        ]
+            'a.role_name'
+        ];
         return "SELECT " . implode(', ', $fields) . " FROM $this->table a";
     }
 

@@ -33,6 +33,8 @@ class ReceptionistController extends Controller
      */
     public function dashboard()
     {
+
+       
         // Get appointment statistics and categorized appointments
         $stats = $this->appointmentModel->getAppointmentStats();
         $upcomingAppointments = $this->appointmentModel->getUpcomingAppointments();
@@ -1082,7 +1084,7 @@ class ReceptionistController extends Controller
      */
     public function viewPatientAppointmentRecords()
     {
-        
+
         $patientId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
         if ($patientId <= 0) {

@@ -12,8 +12,10 @@ use app\helpers\TrackingNumber;
 use app\models\Vitals;
 use app\models\LabResults;
 use app\models\Medications;
+use \app\models\MedicineLogs;
 
-class DoctorController extends Controller {
+class DoctorController extends Controller
+{
     private $doctorModel;
     private $patientModel;
     private $appointmentModel;
@@ -21,22 +23,26 @@ class DoctorController extends Controller {
     private $vitalsModel;
     private $labResultsModel;
     private $medicationsModel;
+    private $medicineLogsModel;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->doctorModel = new Doctor();
         $this->patientModel = new Patient();
         $this->appointmentModel = new Appointment();
         $this->medicineInventoryModel = new MedicineInventory();
         $this->vitalsModel = new Vitals();
-        $this->labResultsModel = new LabResults(); 
+        $this->labResultsModel = new LabResults();
         $this->medicationsModel = new Medications();
+        $this->medicineLogsModel = new MedicineLogs();
     }
 
-    
 
-    public function dashboard() {
+
+    public function dashboard()
+    {
         $doctorId = $_SESSION['doctor']['id'] ?? null;
-        
+
         if (!$doctorId) {
             $this->redirect('/doctor');
             return;
@@ -61,7 +67,8 @@ class DoctorController extends Controller {
         ]);
     }
 
-    public function patientList() {
+    public function patientList()
+    {
         $doctorId = $_SESSION['doctor_id'] ?? null;
 
         if (!$doctorId) {
@@ -78,7 +85,8 @@ class DoctorController extends Controller {
     }
 
 
-    public function patientView() {
+    public function patientView()
+    {
         $patientId = isset($_GET['id']) ? intval($_GET['id']) : 0;
         $patient = $this->patientModel->getPatientById($patientId);
         $vitals = $this->vitalsModel->getLatestVitalsByPatientId($patientId);
@@ -105,6 +113,41 @@ class DoctorController extends Controller {
             'recentVisits' => $recentVisits,
             'labResults' => $labResults,
             'medications' => $medications
+        ]);
+    }
+
+
+    public function medicineInventory()
+    {
+        $doctorId = $_SESSION['doctor_id'] ?? null;
+
+        if (!$doctorId) {
+            $this->redirect('/doctor');
+            return;
+        }
+
+        $medicines = $this->medicineInventoryModel->getAllMedicines();
+        $this->view('pages/doctor/medicine-inventory.view', [
+            'title' => 'Medicine Inventory',
+            'medicines' => $medicines
+        ]);
+    }
+
+
+    public function medicineLogs()
+    {
+        $doctorId = $_SESSION['doctor_id'] ?? null;
+
+        if (!$doctorId) {
+            $this->redirect('/doctor');
+            return;
+        }
+
+        $medicineLogs = $this->medicineLogsModel->getMedicineLogs();
+
+        $this->view('pages/doctor/medicine-logs.view', [
+            'title' => 'Medicine Logs',
+            'medicineLogs' => $medicineLogs,
         ]);
     }
 }
