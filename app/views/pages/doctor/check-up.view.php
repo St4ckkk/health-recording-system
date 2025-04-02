@@ -59,7 +59,7 @@
     </div>
 
     <!-- Include all modals -->
-    <?php include(VIEW_ROOT . '/pages/doctor/components/checkup/modals.php') ?>
+    <?php include(VIEW_ROOT . '/pages/doctor/components/common/modals.php') ?>
 
     <script src="<?= BASE_URL ?>/js/doctor/checkup.js"></script>
 </body>
