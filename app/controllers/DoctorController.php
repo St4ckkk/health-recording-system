@@ -150,4 +150,19 @@ class DoctorController extends Controller
             'medicineLogs' => $medicineLogs,
         ]);
     }
+
+
+    public function checkUp()
+    {
+        $doctorId = $_SESSION['doctor_id'] ?? null;
+
+        if (!$doctorId) {
+            $this->redirect('/doctor');
+            return;
+        }
+
+        $this->view('pages/doctor/check-up.view', [
+            'title' => 'Check Up',
+        ]);
+    }
 }

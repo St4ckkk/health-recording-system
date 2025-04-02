@@ -284,10 +284,14 @@
                             <h2 class="text-2xl font-bold text-gray-900">Medicine Inventory Logs</h2>
                             <p class="text-sm text-gray-500">Track all medicine inventory activities.</p>
                         </div>
-                        <button class="return-btn" onclick="window.location.href='<?= BASE_URL ?>/doctor/medicines'">
-                            <i class='bx bx-arrow-back'></i>
-                            <span>Return to Inventory</span>
-                        </button>
+                        <div class="mb-3">
+                            <a href="<?= BASE_URL ?>/doctor/medicinesInventory"
+                                class="inline-flex items-center text-sm font-medium text-primary hover:text-primary-dark">
+                                <button class="back-button">
+                                    <i class="bx bx-arrow-back mr-2"></i> Back to Inventory
+                                </button>
+                            </a>
+                        </div>
                     </div>
                     <div class="filter-section">
                         <div class="filter-row">
@@ -471,17 +475,21 @@
             document.querySelectorAll('.logs-table tbody tr').forEach(row => {
                 if (row.querySelector('td[colspan]')) return;
 
-                const medicineCell = row.querySelector('td:nth-child(2)');
-                const actionTypeCell = row.querySelector('td:nth-child(3)');
-                const patientCell = row.querySelector('td:nth-child(6)');
-                const timestampCell = row.querySelector('td:nth-child(9)');
+                const medicineCell = row.querySelector('td:nth-child(1)');
+                const actionTypeCell = row.querySelector('td:nth-child(2)');
+                const patientCell = row.querySelector('td:nth-child(5)');
+                const userCell = row.querySelector('td:nth-child(6)');
+                const timestampCell = row.querySelector('td:nth-child(8)');
 
                 const medicineName = medicineCell.textContent.toLowerCase();
                 const actionTypeText = actionTypeCell.textContent.trim().toLowerCase();
                 const patientInfo = patientCell.textContent.toLowerCase();
+                const userInfo = userCell.textContent.toLowerCase();
                 const timestamp = timestampCell.textContent;
 
-                const matchesSearch = medicineName.includes(searchTerm) || patientInfo.includes(searchTerm);
+                const matchesSearch = medicineName.includes(searchTerm) ||
+                    patientInfo.includes(searchTerm) ||
+                    userInfo.includes(searchTerm);
                 const matchesActionType = !actionType || actionTypeText.includes(actionType);
                 const matchesDate = !dateRange || dateRange.split(' to ').some(date => timestamp.includes(date.trim()));
 
