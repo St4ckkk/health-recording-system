@@ -179,7 +179,8 @@ class Doctor extends Model
     }
 
 
-    public function getTotalPatientCount($doctorId) {
+    public function getTotalPatientCount($doctorId)
+    {
         $appointmentModel = new Appointment();
         return $appointmentModel->getTotalAssignedPatientsByDoctorId($doctorId);
     }
@@ -190,33 +191,36 @@ class Doctor extends Model
      * @param int $doctorId The doctor ID
      * @return array Contains total count and percentage change
      */
-    public function getPatientCountChange($doctorId) {
+    public function getPatientCountChange($doctorId)
+    {
         $appointmentModel = new Appointment();
-        
+
         // Get current month's count
         $currentCount = $appointmentModel->getTotalAssignedPatientsByDoctorId($doctorId);
-        
+
         // Get last month's count
         $lastMonthCount = $appointmentModel->getTotalAssignedPatientsByDoctorId($doctorId, true);
-        
+
         // Calculate percentage change
         $percentageChange = 0;
         if ($lastMonthCount > 0) {
             $percentageChange = (($currentCount - $lastMonthCount) / $lastMonthCount) * 100;
         }
-        
+
         return [
             'total' => $currentCount,
             'percentage' => round($percentageChange, 1)
         ];
     }
 
-    public function getTodayAppointments($doctorId) {
+    public function getTodayAppointments($doctorId)
+    {
         $appointmentModel = new Appointment();
         return $appointmentModel->getTodayAppointmentsByDoctor($doctorId);
     }
-    
-    public function getPatientsByDoctor($doctorId) {
+
+    public function getPatientsByDoctor($doctorId)
+    {
         $sql = "SELECT DISTINCT 
                 p.*,
                 (SELECT last_visit 
@@ -229,7 +233,7 @@ class Doctor extends Model
                 INNER JOIN appointments a ON p.id = a.patient_id
                 WHERE a.doctor_id = :doctor_id
                 ORDER BY p.last_name, p.first_name";
-    
+
         $this->db->query($sql);
         $this->db->bind(':doctor_id', $doctorId);
         return $this->db->resultSet();

@@ -52,8 +52,10 @@ class DoctorController extends Controller
         $patientStats = $this->doctorModel->getPatientCountChange($doctorId);
         $todayAppointmentsData = $appointmentModel->getTodayAppointmentsByDoctor($doctorId);
         $upcomingAppointmentsData = $appointmentModel->getUpcomingAppointmentsByDoctor($doctorId);
-        $recentAppointments = array_slice($todayAppointmentsData['appointments'], 0, 5); // Get last 5 appointments
+        $recentAppointments = array_slice($todayAppointmentsData['appointments'], 0, 5);
         $lowStockMedicines = $this->medicineInventoryModel->getLowStockCount();
+        $visitStats = $appointmentModel->getMonthlyVisitStats($doctorId); // Add this line
+        $diagnosisStats = $this->patientModel->getDiagnosisDistribution();
 
         $this->view('pages/doctor/dashboard.view', [
             'title' => 'Doctor Dashboard',
@@ -63,13 +65,15 @@ class DoctorController extends Controller
             'recentAppointments' => $recentAppointments,
             'upcomingAppointments' => $upcomingAppointmentsData['appointments'],
             'lowStockCount' => $lowStockMedicines['count'],
-            'lowStockItems' => $lowStockMedicines['items']
+            'lowStockItems' => $lowStockMedicines['items'],
+            'visitStats' => $visitStats,
+            'diagnosisStats' => $diagnosisStats // Add this line
         ]);
     }
 
     public function patientList()
     {
-        $doctorId = $_SESSION['doctor_id'] ?? null;
+        $doctorId = $_SESSION['doctor']['id'] ?? null;  // Changed from doctor_id to doctor['id']
 
         if (!$doctorId) {
             $this->redirect('/doctor');

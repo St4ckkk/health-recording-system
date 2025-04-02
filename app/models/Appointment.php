@@ -189,7 +189,7 @@ class Appointment extends Model
             "$appointment->first_name " .
             ($appointment->middle_name ? "$appointment->middle_name " : '') .
             $appointment->last_name .
-            ($appointment->suffix ? " $appointment->suffix" : '')   
+            ($appointment->suffix ? " $appointment->suffix" : '')
         );
 
         $appointment->formatted_date = date('M j, Y', strtotime($appointment->appointment_date));
@@ -255,7 +255,7 @@ class Appointment extends Model
                     SET last_visit = :current_date 
                     WHERE patient_id = :patient_id 
                     AND appointment_date > :current_date");
-                
+
                 $this->db->bind(':current_date', date('Y-m-d'));
                 $this->db->bind(':patient_id', $appointment->patient_id);
                 $this->db->execute();
@@ -316,7 +316,7 @@ class Appointment extends Model
         $query = 'SELECT COUNT(DISTINCT patient_id) as total 
                  FROM appointments 
                  WHERE doctor_id = :doctor_id';
-        
+
         if ($lastMonth) {
             $query .= ' AND MONTH(created_at) = MONTH(DATE_SUB(NOW(), INTERVAL 1 MONTH))
                        AND YEAR(created_at) = YEAR(DATE_SUB(NOW(), INTERVAL 1 MONTH))';
@@ -324,24 +324,25 @@ class Appointment extends Model
             $query .= ' AND MONTH(created_at) = MONTH(NOW())
                        AND YEAR(created_at) = YEAR(NOW())';
         }
-        
+
         $this->db->query($query);
         $this->db->bind(':doctor_id', $doctorId);
-        
+
         $result = $this->db->single();
         return $result ? $result->total : 0;
     }
 
 
-    public function getTodayAppointmentsByDoctor($doctorId) {
+    public function getTodayAppointmentsByDoctor($doctorId)
+    {
         $sql = $this->buildBaseQuery(true) . "
             WHERE a.doctor_id = :doctor_id 
             AND DATE(a.appointment_date) = CURDATE()
             ORDER BY a.appointment_time ASC";
-            
+
         $this->db->query($sql);
         $this->db->bind(':doctor_id', $doctorId);
-        
+
         $appointments = $this->db->resultSet();
         return [
             'total' => count($appointments),
@@ -349,11 +350,12 @@ class Appointment extends Model
         ];
     }
 
-    public function getUpcomingAppointmentsByDoctor($doctorId) {
-        $sql = $this->buildBaseQuery(true). "
+    public function getUpcomingAppointmentsByDoctor($doctorId)
+    {
+        $sql = $this->buildBaseQuery(true) . "
             WHERE a.doctor_id = :doctor_id
             AND a.appointment_date > CURDATE()
-            ORDER BY a.appointment_date ASC, a.appointment_time ASC"; 
+            ORDER BY a.appointment_date ASC, a.appointment_time ASC";
 
         $this->db->query($sql);
         $this->db->bind(':doctor_id', $doctorId);
@@ -366,8 +368,9 @@ class Appointment extends Model
     }
 
 
-    public function getPastAppointmentsByDoctor($doctorId) {
-        $sql = $this->buildBaseQuery(true). "
+    public function getPastAppointmentsByDoctor($doctorId)
+    {
+        $sql = $this->buildBaseQuery(true) . "
             WHERE a.doctor_id = :doctor_id
             AND (a.appointment_date < CURDATE() OR (a.appointment_date = CURDATE() AND a.status IN ('completed', 'no-show', 'cancelled')))
             ORDER BY a.appointment_date DESC, a.appointment_time DESC";
@@ -380,11 +383,12 @@ class Appointment extends Model
             'total' => count($appointments),
             'appointments' => array_map([$this, 'formatAppointmentDetails'], $appointments)
         ];
-         
+
     }
 
 
-    public function getRecentVisitsByPatientsAssignedToDoctor($doctorId, $limit = 10) {
+    public function getRecentVisitsByPatientsAssignedToDoctor($doctorId, $limit = 10)
+    {
         $sql = "SELECT DISTINCT 
                 a.*,
                 p.first_name, p.last_name, p.middle_name, p.suffix,
@@ -414,5 +418,39 @@ class Appointment extends Model
 
         $visits = $this->db->resultSet();
         return array_map([$this, 'formatAppointmentDetails'], $visits);
+    }
+
+
+    public function getMonthlyVisitStats($doctorId)
+    {
+        $sql = "SELECT 
+        DATE_FORMAT(appointment_date, '%b') as month,
+        COUNT(*) as visit_count
+        FROM appointments 
+        WHERE doctor_id = :doctor_id 
+        AND status = 'completed'
+        AND appointment_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+        GROUP BY MONTH(appointment_date)
+        ORDER BY appointment_date ASC";
+
+        $this->db->query($sql);
+        $this->db->bind(':doctor_id', $doctorId);
+
+        $results = $this->db->resultSet();
+
+        // Create array with all months (including zeros for months with no visits)
+        $months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $visitData = array_fill_keys($months, 0);
+
+        foreach ($results as $row) {
+            if (isset($visitData[$row->month])) {
+                $visitData[$row->month] = (int) $row->visit_count;
+            }
+        }
+
+        return [
+            'labels' => array_keys($visitData),
+            'data' => array_values($visitData)
+        ];
     }
 }

@@ -292,7 +292,7 @@
         }
 
         .appointments-table thead th {
-            background-color: rgba(22, 163, 74); 
+            background-color: rgba(22, 163, 74);
             color: white;
             font-weight: 500;
             padding: 0.75rem 1rem;
@@ -308,7 +308,7 @@
         <main class="flex-1 main-content">
             <?php include(VIEW_ROOT . '/pages/doctor/components/header.php') ?>
             <div class="content-wrapper">
-            <section id="appointmentsView" class="p-6 view-transition visible-view">
+                <section id="appointmentsView" class="p-6 view-transition visible-view">
                     <!-- Header section -->
                     <div class="mb-4">
                         <h2 class="text-2xl font-bold text-gray-900">Patients</h2>
@@ -372,7 +372,7 @@
                                         <th>Name</th>
                                         <th>Age</th>
                                         <th>Gender</th>
-                                        <th>Condition</th>
+                                        <th>Diagnosis</th>
                                         <th>Status</th>
                                         <th>Last Visit</th>
                                         <th>Actions</th>
@@ -393,10 +393,13 @@
                                                     </div>
                                                 </td>
                                                 <td class="py-3 px-4"><?= htmlspecialchars($patient->age ?? 'N/A') ?></td>
-                                                <td class="py-3 px-4 capitalize"><?= htmlspecialchars($patient->gender ?? 'N/A') ?></td>
-                                                <td class="py-3 px-4"><?= htmlspecialchars($patient->condition ?? 'N/A') ?></td>
+                                                <td class="py-3 px-4 capitalize">
+                                                    <?= htmlspecialchars($patient->gender ?? 'N/A') ?>
+                                                </td>
+                                                <td class="py-3 px-4"><?= htmlspecialchars($patient->diagnosis ?? 'N/A') ?></td>
                                                 <td class="py-3 px-4">
-                                                    <span class="status-badge border <?= $patient->status === 'active' ? 'border-success text-success' : 'border-warning text-warning' ?>">
+                                                    <span
+                                                        class="status-badge border <?= $patient->status === 'active' ? 'border-success text-success' : 'border-warning text-warning' ?>">
                                                         <?= htmlspecialchars($patient->status ?? 'N/A') ?>
                                                     </span>
                                                 </td>
@@ -406,16 +409,16 @@
                                                 <td class="py-3 px-4">
                                                     <div class="action-buttons-container">
                                                         <div class="tooltip">
-                                                            <button class="p-2 text-blue-600 hover:text-blue-800" 
-                                                                    onclick="window.location.href='<?= BASE_URL ?>/doctor/patientView/?id=<?= $patient->id ?>'"
-                                                                    data-patient-id="<?= htmlspecialchars($patient->id) ?>">
+                                                            <button class="p-2 text-blue-600 hover:text-blue-800"
+                                                                onclick="window.location.href='<?= BASE_URL ?>/doctor/patientView/?id=<?= $patient->id ?>'"
+                                                                data-patient-id="<?= htmlspecialchars($patient->id) ?>">
                                                                 <i class="bx bx-show text-lg"></i>
                                                                 <span class="tooltip-text">View Details</span>
                                                             </button>
                                                         </div>
                                                         <div class="tooltip">
-                                                            <button class="p-2 text-yellow-600 hover:text-yellow-800" 
-                                                                    data-patient-id="<?= htmlspecialchars($patient->id) ?>">
+                                                            <button class="p-2 text-yellow-600 hover:text-yellow-800"
+                                                                data-patient-id="<?= htmlspecialchars($patient->id) ?>">
                                                                 <i class="bx bx-edit text-lg"></i>
                                                                 <span class="tooltip-text">Edit Patient</span>
                                                             </button>
@@ -437,11 +440,11 @@
             </div>
         </main>
     </div>
-    
+
 
 </body>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const searchInput = document.querySelector('input[placeholder="Search by patient name or ID..."]');
         const statusFilter = document.getElementById('statusFilter');
         const dateFilter = document.getElementById('dateFilter');
@@ -477,7 +480,7 @@
         dateFilter.addEventListener('change', filterPatients);
 
         // Clear filters function
-        window.clearFilters = function() {
+        window.clearFilters = function () {
             searchInput.value = '';
             statusFilter.value = '';
             dateFilter.value = '';
@@ -491,4 +494,5 @@
         });
     });
 </script>
+
 </html>
