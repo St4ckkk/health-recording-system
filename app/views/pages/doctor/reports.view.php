@@ -27,28 +27,35 @@
             <?php include(VIEW_ROOT . '/pages/doctor/components/header.php') ?>
             <div class="content-wrapper">
                 <section class="p-6">
-                    <!-- Tabs Navigation -->
-                    <div class="px-6">
-                        <div class="border-b border-gray-200">
-                            <nav class="flex -mb-px space-x-8" aria-label="Statistics">
-                                <button class="tab-button active" data-tab="visits">
-                                    <i class='bx bx-line-chart mr-2'></i>
-                                    Patient Visits
-                                </button>
-                                <button class="tab-button" data-tab="diagnosis">
-                                    <i class='bx bx-pie-chart-alt-2 mr-2'></i>
-                                    Diagnosis Distribution
-                                </button>
-                                <button class="tab-button" data-tab="medicine">
-                                    <i class='bx bx-bar-chart-alt-2 mr-2'></i>
-                                    Medicine Usage
-                                </button>
-                            </nav>
+                    <!-- Header section -->
+                    <div class="mb-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900">Reports & Analytics</h2>
+                            <p class="text-sm text-gray-500">View and analyze patient visits, diagnoses, and medicine
+                                usage statistics.</p>
                         </div>
                     </div>
 
+                    <!-- Tabs Navigation -->
+                    <div class="border-b border-gray-200">
+                        <nav class="flex -mb-px space-x-8" aria-label="Statistics">
+                            <button class="tab-button active" data-tab="visits">
+                                <i class='bx bx-line-chart mr-2'></i>
+                                Patient Visits
+                            </button>
+                            <button class="tab-button" data-tab="diagnosis">
+                                <i class='bx bx-pie-chart-alt-2 mr-2'></i>
+                                Diagnosis Distribution
+                            </button>
+                            <button class="tab-button" data-tab="medicine">
+                                <i class='bx bx-bar-chart-alt-2 mr-2'></i>
+                                Medicine Usage
+                            </button>
+                        </nav>
+                    </div>
+
                     <!-- Tab Content -->
-                    <div class="p-6">
+                    <div class="">
                         <div id="visits-tab" class="tab-content active">
                             <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100 fade-in">
                                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Patient Visits Over Time</h2>
