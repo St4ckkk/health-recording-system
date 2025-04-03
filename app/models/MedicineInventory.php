@@ -123,4 +123,19 @@ class MedicineInventory extends Model
             'items' => $result && $result->low_stock_items ? $result->low_stock_items : ''
         ];
     }
+
+    public function getMedicineUsageStats()
+    {
+        $this->db->query("SELECT 
+                m.category,
+                COUNT(CASE WHEN ml.action_type = 'restock' THEN 1 END) as prescribed_count,
+                COUNT(CASE WHEN ml.action_type = 'dispense' THEN 1 END) as dispensed_count
+                FROM medicine_inventory m
+                LEFT JOIN medicine_logs ml ON m.id = ml.medicine_id
+                GROUP BY m.category
+                ORDER BY prescribed_count DESC
+                LIMIT 5");
+
+        return $this->db->resultSet();
+    }
 }

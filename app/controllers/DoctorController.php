@@ -54,8 +54,7 @@ class DoctorController extends Controller
         $upcomingAppointmentsData = $appointmentModel->getUpcomingAppointmentsByDoctor($doctorId);
         $recentAppointments = array_slice($todayAppointmentsData['appointments'], 0, 5);
         $lowStockMedicines = $this->medicineInventoryModel->getLowStockCount();
-        $visitStats = $appointmentModel->getMonthlyVisitStats($doctorId); // Add this line
-        $diagnosisStats = $this->patientModel->getDiagnosisDistribution();
+
 
         $this->view('pages/doctor/dashboard.view', [
             'title' => 'Doctor Dashboard',
@@ -66,8 +65,7 @@ class DoctorController extends Controller
             'upcomingAppointments' => $upcomingAppointmentsData['appointments'],
             'lowStockCount' => $lowStockMedicines['count'],
             'lowStockItems' => $lowStockMedicines['items'],
-            'visitStats' => $visitStats,
-            'diagnosisStats' => $diagnosisStats // Add this line
+
         ]);
     }
 
@@ -167,6 +165,28 @@ class DoctorController extends Controller
 
         $this->view('pages/doctor/check-up.view', [
             'title' => 'Check Up',
+        ]);
+    }
+
+
+    public function reports()
+    {
+        $doctorId = $_SESSION['doctor_id'] ?? null;
+
+        if (!$doctorId) {
+            $this->redirect('/doctor');
+            return;
+        }
+
+        $visitStats = $this->appointmentModel->getMonthlyVisitStats($doctorId);
+        $diagnosisStats = $this->patientModel->getDiagnosisDistribution();
+        $medicineUsageStats = $this->medicineInventoryModel->getMedicineUsageStats();
+
+        $this->view('pages/doctor/reports.view', [
+            'title' => 'Reports',
+            'visitStats' => $visitStats,
+            'diagnosisStats' => $diagnosisStats,
+            'medicineUsageStats' => $medicineUsageStats
         ]);
     }
 }
