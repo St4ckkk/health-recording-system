@@ -1,4 +1,3 @@
-
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
     <!-- Blood Pressure Card -->
     <div class="border border-gray-200 rounded-lg p-4">
@@ -13,7 +12,7 @@
             Last checked: <?= isset($vitals->bp_date) ? $vitals->blood_pressure_date : date('Y-m-d') ?>
         </p>
     </div>
-    
+
     <!-- Weight Card -->
     <div class="border border-gray-200 rounded-lg p-4">
         <h4 class="text-md font-medium mb-2">Weight</h4>
@@ -24,10 +23,11 @@
             </span>
         </div>
         <p class="text-xs text-gray-500 mt-2">
-            Last checked: <?= isset($vitals->weight_date) ? $vitals->weight_date : date('Y-m-d', strtotime('-3 days')) ?>
+            Last checked:
+            <?= isset($vitals->weight_date) ? $vitals->weight_date : date('Y-m-d', strtotime('-3 days')) ?>
         </p>
     </div>
-    
+
     <!-- Blood Glucose Card -->
     <div class="border border-gray-200 rounded-lg p-4">
         <h4 class="text-md font-medium mb-2">Height</h4>
@@ -38,7 +38,8 @@
             </span>
         </div>
         <p class="text-xs text-gray-500 mt-2">
-            Last checked: <?= isset($vitals->height_date) ? $vitals->height_date : date('Y-m-d', strtotime('-3 days')) ?>
+            Last checked:
+            <?= isset($vitals->height_date) ? $vitals->height_date : date('Y-m-d', strtotime('-3 days')) ?>
         </p>
     </div>
 
@@ -51,7 +52,8 @@
             </span>
         </div>
         <p class="text-xs text-gray-500 mt-2">
-            Last checked: <?= isset($vitals->glucose_date) ? $vitals->glucose_date : date('Y-m-d', strtotime('-3 days')) ?>
+            Last checked:
+            <?= isset($vitals->glucose_date) ? $vitals->glucose_date : date('Y-m-d', strtotime('-3 days')) ?>
         </p>
     </div>
 
@@ -64,51 +66,55 @@
             </span>
         </div>
         <p class="text-xs text-gray-500 mt-2">
-            Last checked: <?= isset($vitals->glucose_date) ? $vitals->glucose_date : date('Y-m-d', strtotime('-3 days')) ?>
+            Last checked:
+            <?= isset($vitals->glucose_date) ? $vitals->glucose_date : date('Y-m-d', strtotime('-3 days')) ?>
         </p>
     </div>
 
     <!-- Temperature Card -->
-        <div class="border border-gray-200 rounded-lg p-4">
-            <h4 class="text-md font-medium mb-2">Temperature</h4>
-            <div class="flex items-center">
-                <i class="bx bx-thermometer text-orange-500 mr-2"></i>
-                <span class="text-2xl font-bold">
-                    <?= isset($vitals->temperature) ? $vitals->temperature : '37.0' ?>°C
-                </span>
-            </div>
-            <p class="text-xs text-gray-500 mt-2">
-                Last checked: <?= isset($vitals->temperature_date) ? $vitals->temperature_date : date('Y-m-d', strtotime('-3 days')) ?>
-            </p>
+    <div class="border border-gray-200 rounded-lg p-4">
+        <h4 class="text-md font-medium mb-2">Temperature</h4>
+        <div class="flex items-center">
+            <i class="bx bx-thermometer text-orange-500 mr-2"></i>
+            <span class="text-2xl font-bold">
+                <?= isset($vitals->temperature) ? $vitals->temperature : '37.0' ?>°C
+            </span>
         </div>
-    
-        <!-- Respiratory Rate Card -->
-        <div class="border border-gray-200 rounded-lg p-4">
-            <h4 class="text-md font-medium mb-2">Respiratory Rate</h4>
-            <div class="flex items-center">
-                <i class="bx bx-wind text-blue-500 mr-2"></i>
-                <span class="text-2xl font-bold">
-                    <?= isset($vitals->respiratory_rate) ? $vitals->respiratory_rate : '16' ?> /min
-                </span>
-            </div>
-            <p class="text-xs text-gray-500 mt-2">
-                Last checked: <?= isset($vitals->respiratory_rate_date) ? $vitals->respiratory_rate_date : date('Y-m-d', strtotime('-3 days')) ?>
-            </p>
+        <p class="text-xs text-gray-500 mt-2">
+            Last checked:
+            <?= isset($vitals->temperature_date) ? $vitals->temperature_date : date('Y-m-d', strtotime('-3 days')) ?>
+        </p>
+    </div>
+
+    <!-- Respiratory Rate Card -->
+    <div class="border border-gray-200 rounded-lg p-4">
+        <h4 class="text-md font-medium mb-2">Respiratory Rate</h4>
+        <div class="flex items-center">
+            <i class="bx bx-wind text-blue-500 mr-2"></i>
+            <span class="text-2xl font-bold">
+                <?= isset($vitals->respiratory_rate) ? $vitals->respiratory_rate : '16' ?> /min
+            </span>
         </div>
-    
-        <!-- Oxygen Saturation Card -->
-        <div class="border border-gray-200 rounded-lg p-4">
-            <h4 class="text-md font-medium mb-2">O2 Saturation</h4>
-            <div class="flex items-center">
-                <i class="bx bx-water text-cyan-500 mr-2"></i>
-                <span class="text-2xl font-bold">
-                    <?= isset($vitals->oxygen_saturation) ? $vitals->oxygen_saturation : '98' ?>%
-                </span>
-            </div>
-            <p class="text-xs text-gray-500 mt-2">
-                Last checked: <?= isset($vitals->oxygen_saturation_date) ? $vitals->oxygen_saturation_date : date('Y-m-d', strtotime('-3 days')) ?>
-            </p>
+        <p class="text-xs text-gray-500 mt-2">
+            Last checked:
+            <?= isset($vitals->respiratory_rate_date) ? $vitals->respiratory_rate_date : date('Y-m-d', strtotime('-3 days')) ?>
+        </p>
+    </div>
+
+    <!-- Oxygen Saturation Card -->
+    <div class="border border-gray-200 rounded-lg p-4">
+        <h4 class="text-md font-medium mb-2">O2 Saturation</h4>
+        <div class="flex items-center">
+            <i class="bx bx-water text-cyan-500 mr-2"></i>
+            <span class="text-2xl font-bold">
+                <?= isset($vitals->oxygen_saturation) ? $vitals->oxygen_saturation : '98' ?>%
+            </span>
         </div>
+        <p class="text-xs text-gray-500 mt-2">
+            Last checked:
+            <?= isset($vitals->oxygen_saturation_date) ? $vitals->oxygen_saturation_date : date('Y-m-d', strtotime('-3 days')) ?>
+        </p>
+    </div>
 </div>
 
 <!-- Recent Visits Section -->
@@ -117,38 +123,39 @@
     <?php if (!empty($recentVisits)): ?>
         <div class="space-y-3">
             <?php foreach ($recentVisits as $visit): ?>
-            <div class="border border-gray-200 rounded-lg p-4">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h4 class="font-medium capitalize"><?= htmlspecialchars($visit->appointment_type ?? 'Regular Checkup') ?></h4>
-                        <p class="text-sm text-gray-500 capitalize">
-                            Dr. <?= htmlspecialchars($visit->doctor_first_name . ' ' . $visit->doctor_last_name) ?>
-                            <?php if (!empty($visit->specialization)): ?>
-                                (<?= htmlspecialchars($visit->specialization) ?>)
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-medium capitalize">
+                                <?= htmlspecialchars($visit->appointment_type ?? 'Regular Checkup') ?>
+                            </h4>
+                            <p class="text-sm text-gray-500 capitalize">
+                                Dr. <?= htmlspecialchars($visit->doctor_first_name . ' ' . $visit->doctor_last_name) ?>
+                                <?php if (!empty($visit->specialization)): ?>
+                                    (<?= htmlspecialchars($visit->specialization) ?>)
+                                <?php endif; ?>
+                            </p>
+
+                            <p class="text-sm">
+                                <?php if (!empty($visit->diagnosis)): ?>
+                                    <?= htmlspecialchars($visit->diagnosis) ?>
+                                <?php endif; ?>
+                            </p>
+
+                            <a href="<?= BASE_URL ?>/doctor/appointment/view/<?= $visit->id ?>"
+                                class="text-blue-600 text-sm mt-2 inline-block">View Details →</a>
+                        </div>
+                        <div class="text-right">
+                            <span
+                                class="text-sm text-gray-500"><?= date('M j, Y', strtotime($visit->appointment_date)) ?></span>
+                            <?php if ($visit->last_visit): ?>
+                                <p class="text-xs text-gray-400 mt-1">
+                                    Last Visit: <?= date('M j, Y', strtotime($visit->last_visit)) ?>
+                                </p>
                             <?php endif; ?>
-                        </p>
-                        <?php if (!empty($visit->reason)): ?>
-                            <p class="text-sm mt-2 capitalize"><?= htmlspecialchars($visit->reason) ?></p>
-                        <?php endif; ?>
-                        <?php if ($visit->previous_doctor_first_name): ?>
-                            <p class="text-sm text-gray-500 mt-1">
-                                Previous Visit: Dr. <?= htmlspecialchars($visit->previous_doctor_first_name . ' ' . $visit->previous_doctor_last_name) ?>
-                                (<?= htmlspecialchars($visit->previous_doctor_specialization) ?>)
-                            </p>
-                        <?php endif; ?>
-                        <a href="<?= BASE_URL ?>/doctor/appointment/view/<?= $visit->id ?>" 
-                           class="text-blue-600 text-sm mt-2 inline-block">View Details →</a>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-sm text-gray-500"><?= date('M j, Y', strtotime($visit->appointment_date)) ?></span>
-                        <?php if ($visit->last_visit): ?>
-                            <p class="text-xs text-gray-400 mt-1">
-                                Last Visit: <?= date('M j, Y', strtotime($visit->last_visit)) ?>
-                            </p>
-                        <?php endif; ?>
+                        </div>
                     </div>
                 </div>
-            </div>
             <?php endforeach; ?>
         </div>
     <?php else: ?>
@@ -164,40 +171,43 @@
     <?php if (!empty($labResults)): ?>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <?php foreach ($labResults as $lab): ?>
-            <div class="border border-gray-200 rounded-lg p-4">
-                <div class="flex flex-col h-full">
-                    <div>
-                        <h4 class="font-medium"><?= htmlspecialchars($lab->test_name) ?></h4>
-                        <p class="text-sm text-gray-500 capitalize">
-                            Dr. <?= htmlspecialchars($lab->doctor_first_name . ' ' . $lab->doctor_last_name) ?>
-                            <?php if (!empty($lab->doctor_specialization)): ?>
-                                (<?= htmlspecialchars($lab->doctor_specialization) ?>)
-                            <?php endif; ?>
-                        </p>
-                        <div class="mt-2">
-                            <p class="text-sm"><span class="font-medium">Result:</span> <?= htmlspecialchars($lab->result) ?></p>
-                            <?php if (!empty($lab->reference_range)): ?>
-                                <p class="text-sm"><span class="font-medium">Reference Range:</span> <?= htmlspecialchars($lab->reference_range) ?></p>
-                            <?php endif; ?>
-                            <?php if (!empty($lab->flag)): ?>
-                                <p class="text-sm"><span class="font-medium">Flag:</span> 
-                                    <span class="<?= $lab->flag === 'H' ? 'text-red-500' : ($lab->flag === 'L' ? 'text-blue-500' : 'text-gray-500') ?>">
-                                        <?= htmlspecialchars($lab->flag) ?>
-                                    </span>
-                                </p>
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex flex-col h-full">
+                        <div>
+                            <h4 class="font-medium"><?= htmlspecialchars($lab->test_name) ?></h4>
+                            <p class="text-sm text-gray-500 capitalize">
+                                Dr. <?= htmlspecialchars($lab->doctor_first_name . ' ' . $lab->doctor_last_name) ?>
+                                <?php if (!empty($lab->doctor_specialization)): ?>
+                                    (<?= htmlspecialchars($lab->doctor_specialization) ?>)
+                                <?php endif; ?>
+                            </p>
+                            <div class="mt-2">
+                                <p class="text-sm"><span class="font-medium">Result:</span>
+                                    <?= htmlspecialchars($lab->result) ?></p>
+                                <?php if (!empty($lab->reference_range)): ?>
+                                    <p class="text-sm"><span class="font-medium">Reference Range:</span>
+                                        <?= htmlspecialchars($lab->reference_range) ?></p>
+                                <?php endif; ?>
+                                <?php if (!empty($lab->flag)): ?>
+                                    <p class="text-sm"><span class="font-medium">Flag:</span>
+                                        <span
+                                            class="<?= $lab->flag === 'H' ? 'text-red-500' : ($lab->flag === 'L' ? 'text-blue-500' : 'text-gray-500') ?>">
+                                            <?= htmlspecialchars($lab->flag) ?>
+                                        </span>
+                                    </p>
+                                <?php endif; ?>
+                            </div>
+                            <?php if (!empty($lab->notes)): ?>
+                                <p class="text-sm mt-2 text-gray-600"><?= htmlspecialchars($lab->notes) ?></p>
                             <?php endif; ?>
                         </div>
-                        <?php if (!empty($lab->notes)): ?>
-                            <p class="text-sm mt-2 text-gray-600"><?= htmlspecialchars($lab->notes) ?></p>
-                        <?php endif; ?>
-                    </div>
-                    <div class="mt-2 pt-3 flex justify-between items-center">
-                        <a href="<?= BASE_URL ?>/doctor/lab-results/view/<?= $lab->id ?>" 
-                           class="text-blue-600 text-sm inline-block">View Details →</a>
-                        <span class="text-sm text-gray-500"><?= date('M j, Y', strtotime($lab->test_date)) ?></span>
+                        <div class="mt-2 pt-3 flex justify-between items-center">
+                            <a href="<?= BASE_URL ?>/doctor/lab-results/view/<?= $lab->id ?>"
+                                class="text-blue-600 text-sm inline-block">View Details →</a>
+                            <span class="text-sm text-gray-500"><?= date('M j, Y', strtotime($lab->test_date)) ?></span>
+                        </div>
                     </div>
                 </div>
-            </div>
             <?php endforeach; ?>
         </div>
     <?php else: ?>
@@ -214,21 +224,31 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead>
                 <tr>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Medication</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dosage</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Frequency</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Purpose</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Medication</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dosage
+                    </th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Frequency
+                    </th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Purpose
+                    </th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
                 <?php if (!empty($medications)): ?>
                     <?php foreach ($medications as $med): ?>
-                    <tr>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900"><?= htmlspecialchars($med->medication_name) ?></td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500"><?= htmlspecialchars($med->dosage) ?></td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500"><?= htmlspecialchars($med->frequency) ?></td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500"><?= htmlspecialchars($med->purpose) ?></td>
-                    </tr>
+                        <tr>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                                <?= htmlspecialchars($med->medication_name) ?>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500"><?= htmlspecialchars($med->dosage) ?>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                <?= htmlspecialchars($med->frequency) ?>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500"><?= htmlspecialchars($med->purpose) ?>
+                            </td>
+                        </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <!-- Sample data if no medications -->

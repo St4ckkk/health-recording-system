@@ -111,14 +111,14 @@
         <div class="absolute bottom-16 right-0 mb-2 hidden transform group-hover:block">
             <div class="bg-white rounded-lg shadow-lg p-4 text-sm text-gray-700 whitespace-nowrap relative">
                 <div class="typing-animation">
-                    <span class="typing-text">Hello! My name is Mitchy. Would you like to check your symptoms?</span>
+                    <span class="typing-text">Hello! Would you like to check your symptoms?</span>
                 </div>
                 <div class="absolute -bottom-2 right-5 w-4 h-4 bg-white transform rotate-45"></div>
             </div>
         </div>
         <a href="<?= BASE_URL ?>/symptom-checker"
-            class="bot-icon flex items-center justify-center w-14 h-14 hover:scale-110 transition-all duration-300">
-            <img src="<?= BASE_URL ?>/images/icons/bot.png" alt="AI Bot" class="w-full h-full">
+            class="bot-icon flex items-center justify-center w-14 h-14 bg-primary rounded-full shadow-lg hover:scale-110 hover:shadow-xl transition-all duration-300">
+            <img src="<?= BASE_URL ?>/images/icons/bot.png" alt="AI Bot" class="w-8 h-8">
         </a>
     </div>
 

@@ -453,4 +453,6 @@ class Appointment extends Model
             'data' => array_values($visitData)
         ];
     }
+
+
 }

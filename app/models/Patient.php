@@ -32,36 +32,38 @@ class Patient extends Model
             'p.updated_at',
             'p.patient_reference_number',
             'p.status',
-            'p.diagnosis',
-            'p.allergies',
-            'p.blood_type',
             'p.insurance',
-            'p.notes'
+            'd.diagnosis',
+            'd.notes',
+            'a.allergy_name'
         ];
 
         $query = "SELECT " . implode(', ', $fields) . " FROM {$this->table} p";
         return $query;
     }
 
-    // Update getAllPatients to use the new buildBaseQuery
-    public function getAllPatients()
-    {
-        $query = $this->buildBaseQuery() . ' ORDER BY p.last_name, p.first_name';
-        $this->db->query($query);
-        return $this->db->resultSet();
-    }
-
     public function getPatientById($id)
     {
         error_log("Attempting to get patient with ID: " . $id);
 
-        $query = $this->buildBaseQuery() . ' WHERE p.id = :id';
+        $query = $this->buildBaseQuery() . "
+            LEFT JOIN diagnosis d ON d.patient_id = p.id
+            LEFT JOIN allergies a ON a.patient_id = p.id
+            WHERE p.id = :id
+            ORDER BY d.diagnosed_at DESC, a.recorded_at DESC
+            LIMIT 1";
+
         $this->db->query($query);
         $this->db->bind(':id', $id);
         $patient = $this->db->single();
 
         if (!$patient && is_string($id) && strpos($id, 'PAT-') === 0) {
-            $query = $this->buildBaseQuery() . ' WHERE p.patient_reference_number = :ref';
+            $query = $this->buildBaseQuery() . "
+                LEFT JOIN diagnosis d ON d.patient_id = p.id
+                LEFT JOIN allergies a ON a.patient_id = p.id
+                WHERE p.patient_reference_number = :ref
+                ORDER BY d.diagnosed_at DESC, a.recorded_at DESC
+                LIMIT 1";
             $this->db->query($query);
             $this->db->bind(':ref', $id);
             $patient = $this->db->single();
@@ -108,14 +110,13 @@ class Patient extends Model
         return $this->db->single();
     }
 
-    // Add this method to get diagnosis distribution
+    // Update the diagnosis distribution method
     public function getDiagnosisDistribution()
     {
-        $query = "SELECT diagnosis, COUNT(*) as count 
-                 FROM {$this->table} 
-                 WHERE diagnosis IS NOT NULL 
-                 GROUP BY diagnosis";
-        
+        $query = "SELECT d.diagnosis, COUNT(*) as count 
+                 FROM diagnosis d
+                 GROUP BY d.diagnosis";
+
         $this->db->query($query);
         return $this->db->resultSet();
     }

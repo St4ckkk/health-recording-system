@@ -12,7 +12,8 @@ use app\helpers\TrackingNumber;
 use app\models\Vitals;
 use app\models\LabResults;
 use app\models\Medications;
-use \app\models\MedicineLogs;
+use app\models\MedicineLogs;
+use app\models\MedicalRecords;
 
 class DoctorController extends Controller
 {
@@ -24,6 +25,7 @@ class DoctorController extends Controller
     private $labResultsModel;
     private $medicationsModel;
     private $medicineLogsModel;
+    private $medicalRecordsModel;
 
     public function __construct()
     {
@@ -35,6 +37,7 @@ class DoctorController extends Controller
         $this->labResultsModel = new LabResults();
         $this->medicationsModel = new Medications();
         $this->medicineLogsModel = new MedicineLogs();
+        $this->medicalRecordsModel = new MedicalRecords();
     }
 
 
@@ -99,6 +102,9 @@ class DoctorController extends Controller
             return;
         }
 
+
+        $visits = $this->medicalRecordsModel->getPatientVisitsWithDetails($patientId);
+
         $appointments = $this->appointmentModel->getAppointmentsByPatientId($patientId);
         $recentVisits = $this->appointmentModel->getRecentVisitsByPatientsAssignedToDoctor(
             $_SESSION['doctor_id'],
@@ -106,11 +112,11 @@ class DoctorController extends Controller
         );
         $labResults = $this->labResultsModel->getRecentLabResults($patientId, 10);
 
-
         $this->view('pages/doctor/patient-view', [
             'title' => 'Patient Record',
             'patient' => $patient,
             'vitals' => $vitals,
+            'visits' => $visits,  
             'appointments' => $appointments,
             'recentVisits' => $recentVisits,
             'labResults' => $labResults,
