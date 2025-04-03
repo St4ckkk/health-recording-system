@@ -313,11 +313,8 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = "<?= BASE_URL ?>/receptionist/appointments"
     }
 
-    // Action functions
-    window.cancelAppointment = (appointmentId) => {
-        console.log("Cancelling appointment:", appointmentId)
-        // Implement AJAX call to cancel appointment
-    }
+    // // Action functions
+
 
     // Add pagination functionality
     const paginationButtons = document.querySelectorAll(".pagination-btn")

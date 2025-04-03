@@ -387,7 +387,7 @@
 
                                         <hr class="border-gray-200 my-6 mt-5 mb-4 space">
 
-            
+
 
                                         <div class="">
                                             <p class="text-sm mb-2 font-medium">Appointment Information</p>
@@ -643,6 +643,7 @@
     </div>
     <script src="<?= BASE_URL ?>/js/receptionist/reception.js"></script>
     <script src="<?= BASE_URL ?>/js/receptionist/check-in.js"></script>
+    <script src="<?= BASE_URL ?>/js/receptionist/cancel.js"></script>
     <script src="<?= BASE_URL ?>/js/receptionist/start-appointment.js"></script>
     <script src="<?= BASE_URL ?>/js/receptionist/complete.js"></script>
     <script src="<?= BASE_URL ?>/js/receptionist/confirm.js"></script>

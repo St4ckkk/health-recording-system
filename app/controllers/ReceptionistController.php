@@ -6,7 +6,9 @@ use app\models\Appointment;
 use app\models\Doctor;
 use app\models\DoctorTimeSlot;
 use app\models\Patient;
-use app\helpers\EmailHelper;
+use app\helpers\email\AppointmentConfirmation;
+use app\helpers\email\ReminderEmail;
+use app\helpers\email\FollowUpEmail;
 use app\helpers\TrackingNumber;
 
 class ReceptionistController extends Controller
@@ -15,7 +17,9 @@ class ReceptionistController extends Controller
     private $doctorModel;
     private $timeSlotModel;
     private $patientModel;
-    private $emailHelper;
+    private $reminderEmailHelper;
+    private $followUpEmailHelper;
+    private $appointmentConfirmationHelper;
     private $trackingNumberHelper;
 
     public function __construct()
@@ -24,7 +28,9 @@ class ReceptionistController extends Controller
         $this->doctorModel = new Doctor();
         $this->timeSlotModel = new DoctorTimeSlot();
         $this->patientModel = new Patient();
-        $this->emailHelper = new EmailHelper();
+        $this->appointmentConfirmationHelper = new AppointmentConfirmation();
+        $this->reminderEmailHelper = new ReminderEmail();
+        $this->followUpEmailHelper = new FollowUpEmail();
         $this->trackingNumberHelper = new TrackingNumber();
     }
 
@@ -34,7 +40,7 @@ class ReceptionistController extends Controller
     public function dashboard()
     {
 
-       
+
         // Get appointment statistics and categorized appointments
         $stats = $this->appointmentModel->getAppointmentStats();
         $upcomingAppointments = $this->appointmentModel->getUpcomingAppointments();
@@ -422,7 +428,7 @@ class ReceptionistController extends Controller
                 // Send confirmation email if requested
                 if ($sendConfirmation && !empty($appointment->email)) {
                     try {
-                        $emailSent = $this->emailHelper->sendAppointmentConfirmation($appointment, $notes);
+                        $emailSent = $this->appointmentConfirmationHelper->sendAppointmentConfirmation($appointment, $notes);
                     } catch (\Exception $e) {
                         error_log('Email error: ' . $e->getMessage());
                         // Continue with success response even if email fails
@@ -719,7 +725,7 @@ class ReceptionistController extends Controller
         $template = $reminderType === 'detailed' ? 'appointment_reminder_detailed' : 'appointment_reminder_standard';
 
         // Send the email
-        return $this->emailHelper->sendAppointmentReminder(
+        return $this->reminderEmailHelper->sendAppointmentReminder(
             $appointment->email,
             $appointment->first_name . ' ' . $appointment->last_name,
             $template,
@@ -1045,7 +1051,7 @@ class ReceptionistController extends Controller
 
                     try {
                         // Send the follow-up notification email
-                        $this->emailHelper->sendFollowUpNotification(
+                        $this->followUpEmailHelper->sendFollowUpNotification(
                             $originalAppointment->email,
                             $originalAppointment->first_name . ' ' . $originalAppointment->last_name,
                             $emailData
