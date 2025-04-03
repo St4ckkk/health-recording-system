@@ -78,6 +78,17 @@
                         class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                         placeholder="Please provide any additional information..."></textarea>
                 </div>
+
+                <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                    <label class="flex cursor-pointer items-start">
+                        <input type="checkbox" name="send_cancellation" id="send_cancellation" value="1"
+                            class="mt-1 mr-2" checked>
+                        <div>
+                            <span class="block text-sm font-medium">Send cancellation to patient</span>
+                            <span class="text-xs text-gray-500">Patient will receive an email notification</span>
+                        </div>
+                    </label>
+                </div>
             </form>
         </div>
 

@@ -106,6 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         })
         const details = document.getElementById("cancellation_details").value
+        const sendCancellation = document.getElementById("send_cancellation").checked
 
         // Show loading state
         confirmBtn.disabled = true
@@ -137,6 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
             appointmentId: appointmentId,
             reason: reason,
             details: details,
+            send_cancellation: sendCancellation
         })
 
         // Send AJAX request to cancel the appointment
@@ -150,6 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 appointmentId: appointmentId,
                 reason: reason,
                 details: details,
+                send_cancellation: sendCancellation
             }),
         })
             .then((response) => {

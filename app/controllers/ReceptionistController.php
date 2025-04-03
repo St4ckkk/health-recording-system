@@ -7,6 +7,7 @@ use app\models\Doctor;
 use app\models\DoctorTimeSlot;
 use app\models\Patient;
 use app\helpers\email\AppointmentConfirmation;
+use app\helpers\email\CancelAppointment;
 use app\helpers\email\ReminderEmail;
 use app\helpers\email\FollowUpEmail;
 use app\helpers\TrackingNumber;
@@ -19,6 +20,7 @@ class ReceptionistController extends Controller
     private $patientModel;
     private $reminderEmailHelper;
     private $followUpEmailHelper;
+    private $cancelAppointmentHelper;
     private $appointmentConfirmationHelper;
     private $trackingNumberHelper;
 
@@ -31,6 +33,7 @@ class ReceptionistController extends Controller
         $this->appointmentConfirmationHelper = new AppointmentConfirmation();
         $this->reminderEmailHelper = new ReminderEmail();
         $this->followUpEmailHelper = new FollowUpEmail();
+        $this->cancelAppointmentHelper = new CancelAppointment();
         $this->trackingNumberHelper = new TrackingNumber();
     }
 
@@ -481,6 +484,7 @@ class ReceptionistController extends Controller
             $appointmentId = intval($data['appointmentId']);
             $reason = $data['reason'];
             $details = $data['details'] ?? '';
+            $sendCancellationEmail = isset($data['send_cancellation']) ? (bool) $data['send_cancellation'] : true;
 
             // Get the appointment
             $appointment = $this->appointmentModel->getAppointmentById($appointmentId);
@@ -503,6 +507,18 @@ class ReceptionistController extends Controller
 
             $success = $this->appointmentModel->update($appointmentId, $updateData);
 
+            if ($success) {
+                // Send cancellation email if requested
+                if ($sendCancellationEmail && !empty($appointment->email)) {
+                    try {
+                        $emailSent = $this->cancelAppointmentHelper->sendCancellationNotice($appointment, $reason, $details);
+                    } catch (\Exception $e) {
+                        error_log('Email error: ' . $e->getMessage());
+                        // Continue with success response even if email fails
+                    }
+                }
+            }
+
             $this->jsonResponse([
                 'success' => $success,
                 'message' => $success ? 'Appointment cancelled successfully' : 'Failed to cancel appointment'
@@ -515,7 +531,6 @@ class ReceptionistController extends Controller
             ]);
         }
     }
-
     /**
      * Get appointment details via AJAX
      */
