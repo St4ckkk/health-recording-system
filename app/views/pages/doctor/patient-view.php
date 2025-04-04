@@ -253,6 +253,121 @@
             font-size: 0.75rem;
             font-weight: 600;
         }
+
+        /* Glowing Checkup Button */
+        .checkup-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #0FBE3EFF 0%, #03E50BFF 100%);
+            color: white;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.25);
+            margin-top: 1rem;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .checkup-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(59, 130, 246, 0.3);
+        }
+
+        .checkup-button i {
+            margin-right: 0.5rem;
+            font-size: 1.25rem;
+        }
+
+        /* Pulse animation */
+        .pulse {
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(59, 130, 246, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+            }
+        }
+
+        /* Glow effect */
+        .glow {
+            position: relative;
+        }
+
+        .glow::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #4f46e5, #3b82f6, #0ea5e9, #4f46e5);
+            border-radius: 0.625rem;
+            z-index: -1;
+            animation: glowing 3s linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes glowing {
+            0% {
+                background-position: 0 0;
+            }
+
+            50% {
+                background-position: 400% 0;
+            }
+
+            100% {
+                background-position: 0 0;
+            }
+        }
+
+        /* Shine effect */
+        .shine {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shine::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to right,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0.3) 50%,
+                    rgba(255, 255, 255, 0) 100%);
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%) rotate(30deg);
+            }
+
+            100% {
+                transform: translateX(100%) rotate(30deg);
+            }
+        }
     </style>
 </head>
 
@@ -440,6 +555,16 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- Glowing Checkup Button -->
+                                    <div class="mt-6">
+                                        <a href="<?= BASE_URL ?>/doctor/checkup?id=<?= $patient->id ?>" class="block">
+                                            <button id="checkupButton" class="checkup-button pulse glow shine">
+                                                <i class="bx bx-plus-medical"></i>
+                                                Start Checkup
+                                            </button>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -465,8 +590,6 @@
                                     <?php include('components/tab/overview.php'); ?>
                                 </div>
 
-
-
                                 <!-- Visits Tab Content -->
                                 <div class="tab-content p-6 hidden" id="tab-content-visits">
                                     <?php include('components/tab/visits.php'); ?>
@@ -490,40 +613,66 @@
                         </div>
                     </div>
                 </section>
+            </div>
+        </div>
+    </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Tab functionality
+            document.getElementById('tab-overview').classList.add('border-b-2', 'border-blue-500', 'text-blue-600', 'font-medium');
+            document.getElementById('tab-content-overview').classList.remove('hidden');
 
-                <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-
-                        document.getElementById('tab-overview').classList.add('border-b-2', 'border-blue-500', 'text-blue-600', 'font-medium');
-                        document.getElementById('tab-content-overview').classList.remove('hidden');
-
-                        const tabs = document.querySelectorAll('.tab-button');
-                        tabs.forEach(tab => {
-                            tab.addEventListener('click', function () {
-                                // Remove active class from all tabs
-                                tabs.forEach(t => {
-                                    t.classList.remove('border-b-2', 'border-blue-500', 'text-blue-600', 'font-medium');
-                                    t.classList.add('text-gray-500');
-                                });
-
-                                // Add active class to clicked tab
-                                this.classList.add('border-b-2', 'border-blue-500', 'text-blue-600', 'font-medium');
-                                this.classList.remove('text-gray-500');
-
-                                // Hide all tab content
-                                const tabContents = document.querySelectorAll('.tab-content');
-                                tabContents.forEach(content => {
-                                    content.classList.add('hidden');
-                                });
-
-                                // Show selected tab content
-                                const tabId = this.getAttribute('data-tab');
-                                document.getElementById(`tab-content-${tabId}`).classList.remove('hidden');
-                            });
-                        });
+            const tabs = document.querySelectorAll('.tab-button');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function () {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => {
+                        t.classList.remove('border-b-2', 'border-blue-500', 'text-blue-600', 'font-medium');
+                        t.classList.add('text-gray-500');
                     });
-                </script>
+
+                    // Add active class to clicked tab
+                    this.classList.add('border-b-2', 'border-blue-500', 'text-blue-600', 'font-medium');
+                    this.classList.remove('text-gray-500');
+
+                    // Hide all tab content
+                    const tabContents = document.querySelectorAll('.tab-content');
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+
+                    // Show selected tab content
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(`tab-content-${tabId}`).classList.remove('hidden');
+                });
+            });
+
+            // Checkup button animation effects
+            const checkupButton = document.getElementById('checkupButton');
+
+            // Add hover effect to pause animations
+            if (checkupButton) {
+                checkupButton.addEventListener('mouseenter', function () {
+                    this.classList.remove('pulse');
+                    this.classList.add('hover:shadow-lg');
+                });
+
+                checkupButton.addEventListener('mouseleave', function () {
+                    this.classList.add('pulse');
+                    this.classList.remove('hover:shadow-lg');
+                });
+
+                // Add click effect
+                checkupButton.addEventListener('click', function () {
+                    this.classList.add('scale-95');
+                    setTimeout(() => {
+                        this.classList.remove('scale-95');
+                    }, 100);
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

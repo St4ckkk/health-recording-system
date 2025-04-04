@@ -178,6 +178,14 @@ class DoctorController extends Controller
     public function checkUp()
     {
         $doctorId = $_SESSION['doctor_id'] ?? null;
+        $patientId = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+        $patient = $this->patientModel->getPatientById($patientId);
+
+        if (!$patient) {
+            $this->redirect('/doctor/patient-list');
+            return;
+        }
 
         if (!$doctorId) {
             $this->redirect('/doctor');
@@ -186,6 +194,7 @@ class DoctorController extends Controller
 
         $this->view('pages/doctor/check-up.view', [
             'title' => 'Check Up',
+            'patient' => $patient,
         ]);
     }
 

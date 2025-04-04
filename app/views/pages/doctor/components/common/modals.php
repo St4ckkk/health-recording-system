@@ -6,9 +6,8 @@
             <button class="modal-close" onclick="closeModal('add-vitals-modal')">&times;</button>
         </div>
         <div class="modal-body">
-            <form id="vitals-form" action="<?= BASE_URL ?>/doctor/recordVitals" method="POST">
-                <!-- <input type="hidden" name="patient_id" value="<?= $patient->id ?>"> -->
-
+            <form id="vitalsForm" onsubmit="handleVitalsSubmit(event)">
+                <input type="hidden" name="patient_id" value="<?= $patient->id ?? 0 ?>">
                 <div class="grid">
                     <div class="col-span-6">
                         <div class="form-group">
@@ -100,9 +99,8 @@
             </form>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeModal('add-vitals-modal')">Cancel</button>
-            <button class="btn btn-primary" onclick="document.getElementById('vitals-form').submit()">Save
-                Vitals</button>
+            <button type="button" class="btn btn-secondary" onclick="closeModal('add-vitals-modal')">Cancel</button>
+            <button type="submit" class="btn btn-primary" form="vitalsForm">Save Vitals</button>
         </div>
     </div>
 </div>
@@ -111,23 +109,17 @@
 <div id="add-medication-modal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3 class="modal-title">Add Medication</h3>
+            <h3 class="modal-title" id="medication-modal-title">Add Medication</h3>
             <button class="modal-close" onclick="closeModal('add-medication-modal')">&times;</button>
         </div>
         <div class="modal-body">
-            <form id="medication-form" action="<?= BASE_URL ?>/doctor/addMedication" method="POST">
-                <input type="hidden" name="patient_id" value="<?= $patient->id ?>">
+            <form id="medicationForm" onsubmit="handleMedicationSubmit(event)">
+                <input type="hidden" name="patient_id" value="<?= $patient->id ?? 0 ?>">
+                <input type="hidden" name="medication_id" id="medication_id" value="">
 
                 <div class="form-group">
-                    <label for="medicine_id" class="form-label">Medicine</label>
-                    <select id="medicine_id" name="medicine_id" class="form-select" required>
-                        <option value="">Select Medicine</option>
-                        <?php foreach ($medicines as $medicine): ?>
-                            <option value="<?= $medicine->id ?>"><?= htmlspecialchars($medicine->name) ?>
-                                (<?= htmlspecialchars($medicine->form) ?> - <?= htmlspecialchars($medicine->dosage) ?>)
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
+                    <label for="medicine_name" class="form-label">Medicine Name</label>
+                    <input type="text" id="medicine_name" name="medicine_name" class="form-input" placeholder="Medicine name" required>
                 </div>
 
                 <div class="form-group">
@@ -137,14 +129,12 @@
 
                 <div class="form-group">
                     <label for="frequency" class="form-label">Frequency</label>
-                    <input type="text" id="frequency" name="frequency" class="form-input" placeholder="Twice daily"
-                        required>
+                    <input type="text" id="frequency" name="frequency" class="form-input" placeholder="Twice daily" required>
                 </div>
 
                 <div class="form-group">
                     <label for="start_date" class="form-label">Start Date</label>
-                    <input type="date" id="start_date" name="start_date" class="form-input" value="<?= date('Y-m-d') ?>"
-                        required>
+                    <input type="date" id="start_date" name="start_date" class="form-input" value="<?= date('Y-m-d') ?>" required>
                 </div>
 
                 <div class="form-group">
@@ -154,9 +144,8 @@
             </form>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeModal('add-medication-modal')">Cancel</button>
-            <button class="btn btn-primary" onclick="document.getElementById('medication-form').submit()">Add
-                Medication</button>
+            <button type="button" class="btn btn-secondary" onclick="closeModal('add-medication-modal')">Cancel</button>
+            <button type="submit" class="btn btn-primary" form="medicationForm">Save Medication</button>
         </div>
     </div>
 </div>
@@ -165,42 +154,38 @@
 <div id="add-diagnosis-modal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3 class="modal-title">Add Diagnosis</h3>
+            <h3 class="modal-title" id="diagnosis-modal-title">Add Diagnosis</h3>
             <button class="modal-close" onclick="closeModal('add-diagnosis-modal')">&times;</button>
         </div>
         <div class="modal-body">
-            <form id="diagnosis-form" action="<?= BASE_URL ?>/doctor/addDiagnosis" method="POST">
-                <input type="hidden" name="patient_id" value="<?= $patient->id ?>">
+            <form id="diagnosisForm" onsubmit="handleDiagnosisSubmit(event)">
+                <input type="hidden" name="patient_id" value="<?= $patient->id ?? 0 ?>">
+                <input type="hidden" name="diagnosis_id" id="diagnosis_id" value="">
 
                 <div class="form-group">
-                    <label for="title" class="form-label">Diagnosis Title</label>
-                    <input type="text" id="title" name="title" class="form-input" placeholder="e.g., Hypertension"
-                        required>
+                    <label for="diagnosis_title" class="form-label">Diagnosis Title</label>
+                    <input type="text" id="diagnosis_title" name="diagnosis_title" class="form-input" placeholder="e.g. Hypertension, Type 2 Diabetes" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea id="description" name="description" class="form-textarea"
-                        placeholder="Detailed diagnosis description..." required></textarea>
+                    <label for="diagnosis_description" class="form-label">Description</label>
+                    <textarea id="diagnosis_description" name="diagnosis_description" class="form-textarea" rows="4" placeholder="Detailed description of the diagnosis" required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="tags" class="form-label">Tags (comma separated)</label>
-                    <input type="text" id="tags" name="tags" class="form-input"
-                        placeholder="e.g., chronic, cardiovascular">
+                    <label for="diagnosis_tags" class="form-label">Tags (comma separated)</label>
+                    <input type="text" id="diagnosis_tags" name="diagnosis_tags" class="form-input" placeholder="e.g. chronic, cardiovascular, urgent">
                 </div>
 
                 <div class="form-group">
-                    <label for="treatment_plan" class="form-label">Treatment Plan</label>
-                    <textarea id="treatment_plan" name="treatment_plan" class="form-textarea"
-                        placeholder="Recommended treatment plan..."></textarea>
+                    <label for="diagnosis_date" class="form-label">Date</label>
+                    <input type="date" id="diagnosis_date" name="diagnosis_date" class="form-input" value="<?= date('Y-m-d') ?>" required>
                 </div>
             </form>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeModal('add-diagnosis-modal')">Cancel</button>
-            <button class="btn btn-primary" onclick="document.getElementById('diagnosis-form').submit()">Add
-                Diagnosis</button>
+            <button type="button" class="btn btn-secondary" onclick="closeModal('add-diagnosis-modal')">Cancel</button>
+            <button type="submit" class="btn btn-primary" form="diagnosisForm">Save Diagnosis</button>
         </div>
     </div>
 </div>

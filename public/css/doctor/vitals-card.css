@@ -1,0 +1,165 @@
+/* Vitals Preview Styles */
+.vitals-preview {
+  margin: 1rem;
+  border: 2px dashed #ff9800;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background-color: #fff9e6;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #ffe0b2;
+}
+
+.preview-header h4 {
+  color: #e65100;
+  margin: 0;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.preview-header h4:before {
+  content: '⚠️';
+  margin-right: 0.5rem;
+}
+
+.preview-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.preview-content {
+  padding: 0.5rem;
+}
+
+/* Vitals Cards Grid */
+.vitals-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+/* Vital Card Styles - Based on the provided design */
+.vital-card {
+  position: relative;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  min-height: 150px;
+}
+
+.vital-icon {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.vital-icon.heart-rate {
+  background-color: #e91e63;
+}
+
+.vital-icon.blood-pressure {
+  background-color: #2196f3;
+}
+
+.vital-icon.temperature {
+  background-color: #ff9800;
+}
+
+.vital-icon.respiratory {
+  background-color: #4caf50;
+}
+
+.vital-icon.oxygen {
+  background-color: #9c27b0;
+}
+
+.vital-icon.glucose {
+  background-color: #795548;
+}
+
+.vital-previous {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.vital-value-container {
+  display: flex;
+  align-items: baseline;
+  margin-top: 2.5rem;
+  margin-left: 0.5rem;
+}
+
+.vital-value {
+  font-size: 2rem;
+  font-weight: 500;
+  margin-right: 0.5rem;
+}
+
+.vital-unit {
+  font-size: 1rem;
+  color: #666;
+}
+
+.vital-name {
+  margin-left: 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+.vital-change {
+  margin-left: 0.5rem;
+  font-size: 0.85rem;
+  color: #f44336;
+  margin-top: 0.5rem;
+}
+
+.vital-change.positive {
+  color: #f44336;
+}
+
+.vital-change.negative {
+  color: #4caf50;
+}
+
+.vital-change.neutral {
+  color: #757575;
+}
+
+/* Button styles */
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.btn-success {
+  background-color: #4caf50;
+  color: white;
+}
+
+.btn-danger {
+  background-color: #f44336;
+  color: white;
+}
