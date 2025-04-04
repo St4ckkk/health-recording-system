@@ -24,6 +24,7 @@ class Medications extends Model
             'm.start_date',
             'm.prescribed_by',
             'm.purpose',
+            "m.status",
             'm.created_at',
             'm.updated_at'
         ];
@@ -47,6 +48,57 @@ class Medications extends Model
             LEFT JOIN patients p ON m.patient_id = p.id
             WHERE m.patient_id = :patient_id
             ORDER BY m.start_date DESC";
+
+        $this->db->query($sql);
+        $this->db->bind(':patient_id', $patientId);
+
+        return $this->db->resultSet();
+    }
+
+
+    public function getPatientActiveMedications($patientId)
+    {
+        $sql = "SELECT 
+                m.*,
+                mi.name as medication_name,
+                mi.form,
+                mi.category,
+                CONCAT(d.first_name, ' ', d.last_name) as doctor_name,
+                d.specialization as doctor_specialization,
+                p.first_name as patient_first_name,
+                p.last_name as patient_last_name
+            FROM {$this->table} m
+            LEFT JOIN medicine_inventory mi ON m.medicine_id = mi.id
+            LEFT JOIN doctors d ON m.prescribed_by = d.id
+            LEFT JOIN patients p ON m.patient_id = p.id
+            WHERE m.patient_id = :patient_id
+            AND m.status = 'active'
+            ORDER BY m.start_date DESC";
+
+        $this->db->query($sql);
+        $this->db->bind(':patient_id', $patientId);
+
+        return $this->db->resultSet();
+    }
+
+    public function getPatientMedicationHistory($patientId)
+    {
+        $sql = "SELECT 
+                m.*,
+                mi.name as medication_name,
+                mi.form,
+                mi.category,
+                CONCAT(d.first_name, ' ', d.last_name) as doctor_name,
+                d.specialization as doctor_specialization,
+                p.first_name as patient_first_name,
+                p.last_name as patient_last_name
+            FROM {$this->table} m
+            LEFT JOIN medicine_inventory mi ON m.medicine_id = mi.id
+            LEFT JOIN doctors d ON m.prescribed_by = d.id
+            LEFT JOIN patients p ON m.patient_id = p.id
+            WHERE m.patient_id = :patient_id
+            AND m.status IN ('completed', 'discontinued')
+            ORDER BY m.updated_at DESC";
 
         $this->db->query($sql);
         $this->db->bind(':patient_id', $patientId);

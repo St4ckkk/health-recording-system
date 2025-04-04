@@ -14,6 +14,7 @@ use app\models\LabResults;
 use app\models\Medications;
 use app\models\MedicineLogs;
 use app\models\MedicalRecords;
+use app\models\Immunization;
 
 class DoctorController extends Controller
 {
@@ -26,6 +27,7 @@ class DoctorController extends Controller
     private $medicationsModel;
     private $medicineLogsModel;
     private $medicalRecordsModel;
+    private $immunizationModel;
 
     public function __construct()
     {
@@ -38,6 +40,7 @@ class DoctorController extends Controller
         $this->medicationsModel = new Medications();
         $this->medicineLogsModel = new MedicineLogs();
         $this->medicalRecordsModel = new MedicalRecords();
+        $this->immunizationModel = new Immunization();
     }
 
 
@@ -93,18 +96,26 @@ class DoctorController extends Controller
     public function patientView()
     {
         $patientId = isset($_GET['id']) ? intval($_GET['id']) : 0;
+        $doctorId = $_SESSION['doctor']['id'] ?? null;
+
+        if (!$doctorId) {
+            $this->redirect('/doctor');
+            return;
+        }
+
         $patient = $this->patientModel->getPatientById($patientId);
         $vitals = $this->vitalsModel->getLatestVitalsByPatientId($patientId);
-        $medications = $this->medicationsModel->getCurrentMedicationsByPatientId($patientId);
-
+        $currentMedications = $this->medicationsModel->getCurrentMedicationsByPatientId($patientId);
+        $medicationHistory = $this->medicationsModel->getPatientMedicationHistory($patientId);
+        $immunizationHistory = $this->immunizationModel->getPatientImmunizations($patientId);
         if (!$patient) {
             $this->redirect('/doctor/patient-list');
             return;
         }
 
-
+        $activeMedications = $this->medicationsModel->getPatientActiveMedications($patientId);
         $visits = $this->medicalRecordsModel->getPatientVisitsWithDetails($patientId);
-
+        $patientLabResults = $this->labResultsModel->getPatientLabResults($patientId);
         $appointments = $this->appointmentModel->getAppointmentsByPatientId($patientId);
         $recentVisits = $this->appointmentModel->getRecentVisitsByPatientsAssignedToDoctor(
             $_SESSION['doctor_id'],
@@ -116,11 +127,15 @@ class DoctorController extends Controller
             'title' => 'Patient Record',
             'patient' => $patient,
             'vitals' => $vitals,
-            'visits' => $visits,  
+            'visits' => $visits,
             'appointments' => $appointments,
             'recentVisits' => $recentVisits,
             'labResults' => $labResults,
-            'medications' => $medications
+            'medications' => $currentMedications,
+            'patientLabResults' => $patientLabResults,
+            'activeMedications' => $activeMedications,
+            'medicationHistory' => $medicationHistory,
+            'immunizationHistory' => $immunizationHistory,
         ]);
     }
 
