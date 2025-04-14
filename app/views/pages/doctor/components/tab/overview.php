@@ -162,19 +162,7 @@
         </p>
     </div>
 
-    <div class="border border-gray-200 rounded-lg p-4">
-        <h4 class="text-md font-medium mb-2">Blood Glucose</h4>
-        <div class="flex items-center">
-            <i class="bx bx-droplet text-purple-500 mr-2"></i>
-            <span class="text-2xl font-bold">
-                <?= isset($vitals->glucose_level) ? $vitals->glucose_level : '126' ?> mg/dL
-            </span>
-        </div>
-        <p class="text-xs text-gray-500 mt-2">
-            Last checked:
-            <?= isset($vitals->glucose_date) ? $vitals->glucose_date : date('Y-m-d', strtotime('-3 days')) ?>
-        </p>
-    </div>
+
 
 
     <!-- Temperature Card -->
@@ -195,11 +183,30 @@
                      </div>';
             } elseif ($temp >= 37.8) {
                 echo '<span class="ml-2 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">Low-grade Fever</span>';
+            } elseif ($temp >= 36.5 && $temp <= 37.5) {
+                echo '<span class="ml-2 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Normal</span>';
             } elseif ($temp < 36.0) {
                 echo '<span class="ml-2 px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">Hypothermia</span>';
+                echo '<div class="absolute top-0 right-0 m-2 text-blue-500 cursor-help" 
+                     title="Consider warming measures and evaluate underlying causes">
+                     <i class="bx bx-info-circle"></i>
+                     </div>';
             }
             ?>
         </div>
+        <?php if (isset($vitals->temperature_trend)): ?>
+            <div class="mt-2 text-xs">
+                <div class="flex items-center">
+                    <?php if ($vitals->temperature_trend === 'up'): ?>
+                        <i class="bx bx-trending-up text-red-500"></i>
+                        <span class="text-red-500 ml-1">Temperature rising - Monitor closely</span>
+                    <?php elseif ($vitals->temperature_trend === 'down'): ?>
+                        <i class="bx bx-trending-down text-green-500"></i>
+                        <span class="text-green-500 ml-1">Temperature normalizing</span>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endif; ?>
         <p class="text-xs text-gray-500 mt-2">
             Last checked:
             <?= isset($vitals->temperature_date) ? $vitals->temperature_date : date('Y-m-d', strtotime('-3 days')) ?>
@@ -222,11 +229,30 @@
                      title="Consider blood gas analysis and respiratory assessment">
                      <i class="bx bx-info-circle"></i>
                      </div>';
+            } elseif ($respRate >= 12 && $respRate <= 20) {
+                echo '<span class="ml-2 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Normal</span>';
             } elseif ($respRate < 12) {
                 echo '<span class="ml-2 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">Bradypnea</span>';
+                echo '<div class="absolute top-0 right-0 m-2 text-yellow-500 cursor-help" 
+                     title="Evaluate for respiratory depression and medication effects">
+                     <i class="bx bx-info-circle"></i>
+                     </div>';
             }
             ?>
         </div>
+        <?php if (isset($vitals->respiratory_trend)): ?>
+            <div class="mt-2 text-xs">
+                <div class="flex items-center">
+                    <?php if ($vitals->respiratory_trend === 'up'): ?>
+                        <i class="bx bx-trending-up text-red-500"></i>
+                        <span class="text-red-500 ml-1">Rate increasing - Monitor closely</span>
+                    <?php elseif ($vitals->respiratory_trend === 'down'): ?>
+                        <i class="bx bx-trending-down text-green-500"></i>
+                        <span class="text-green-500 ml-1">Rate normalizing</span>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endif; ?>
         <p class="text-xs text-gray-500 mt-2">
             Last checked:
             <?= isset($vitals->respiratory_rate_date) ? $vitals->respiratory_rate_date : date('Y-m-d', strtotime('-3 days')) ?>
@@ -246,14 +272,33 @@
             if ($o2sat < 90) {
                 echo '<span class="ml-2 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">Severe</span>';
                 echo '<div class="absolute top-0 right-0 m-2 text-red-500 cursor-help" 
-                     title="Consider immediate oxygen therapy">
+                     title="Consider immediate oxygen therapy and cardiopulmonary evaluation">
                      <i class="bx bx-info-circle"></i>
                      </div>';
             } elseif ($o2sat < 95) {
                 echo '<span class="ml-2 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">Low</span>';
+                echo '<div class="absolute top-0 right-0 m-2 text-yellow-500 cursor-help" 
+                     title="Monitor closely and consider supplemental oxygen">
+                     <i class="bx bx-info-circle"></i>
+                     </div>';
+            } elseif ($o2sat >= 95 && $o2sat <= 100) {
+                echo '<span class="ml-2 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Normal</span>';
             }
             ?>
         </div>
+        <?php if (isset($vitals->oxygen_trend)): ?>
+            <div class="mt-2 text-xs">
+                <div class="flex items-center">
+                    <?php if ($vitals->oxygen_trend === 'down'): ?>
+                        <i class="bx bx-trending-down text-red-500"></i>
+                        <span class="text-red-500 ml-1">Saturation decreasing - Monitor closely</span>
+                    <?php elseif ($vitals->oxygen_trend === 'up'): ?>
+                        <i class="bx bx-trending-up text-green-500"></i>
+                        <span class="text-green-500 ml-1">Saturation improving</span>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endif; ?>
         <p class="text-xs text-gray-500 mt-2">
             Last checked:
             <?= isset($vitals->oxygen_saturation_date) ? $vitals->oxygen_saturation_date : date('Y-m-d', strtotime('-3 days')) ?>

@@ -201,8 +201,6 @@ class DoctorController extends Controller
         ]);
     }
 
-    // Add this new method to the DoctorController class
-
     public function saveCheckup()
     {
         // Check if this is an AJAX request
@@ -239,44 +237,29 @@ class DoctorController extends Controller
         $medications = $data['medications'] ?? [];
         $diagnoses = $data['diagnoses'] ?? [];
 
-        // Start transaction
-        // $this->db->beginTransaction();
-
         try {
             // Save vitals if provided
             if ($vitals) {
                 $vitalsData = [
-                    'patient_id' => $patientId,
                     'blood_pressure' => $vitals['blood_pressure'] ?? null,
-                    'blood_pressure_date' => date('Y-m-d H:i:s'),
                     'temperature' => $vitals['temperature'] ?? null,
-                    'temperature_date' => date('Y-m-d H:i:s'),
                     'heart_rate' => $vitals['heart_rate'] ?? null,
-                    'heart_rate_date' => date('Y-m-d H:i:s'),
                     'respiratory_rate' => $vitals['respiratory_rate'] ?? null,
-                    'respiratory_rate_date' => date('Y-m-d H:i:s'),
                     'oxygen_saturation' => $vitals['oxygen_saturation'] ?? null,
-                    'oxygen_saturation_date' => date('Y-m-d H:i:s'),
                     'glucose_level' => $vitals['glucose_level'] ?? null,
-                    'glucose_date' => date('Y-m-d H:i:s'),
                     'weight' => $vitals['weight'] ?? null,
-                    'weight_date' => date('Y-m-d H:i:s'),
-                    'height' => $vitals['height'] ?? null,
-                    'height_date' => date('Y-m-d H:i:s'),
-                    'recorded_at' => date('Y-m-d H:i:s')
+                    'height' => $vitals['height'] ?? null
                 ];
 
-                $vitalsId = $this->vitalsModel->insert($vitalsData);
+                $vitalsSuccess = $this->vitalsModel->addVitals($patientId, $vitalsData);
 
-                if (!$vitalsId) {
+                if (!$vitalsSuccess) {
                     throw new \Exception('Failed to save vitals data');
                 }
             }
 
-            // Inside saveCheckup method where medications are processed
             if (!empty($medications)) {
                 foreach ($medications as $medication) {
-                    // First save the medication record
                     $medicationData = [
                         'patient_id' => $patientId,
                         'medicine_id' => $medication['medicine_inventory_id'],
@@ -294,14 +277,12 @@ class DoctorController extends Controller
                     if (!$medicationId) {
                         throw new \Exception('Failed to save medication data');
                     }
-
-                    // Get current medicine stock
                     $medicine = $this->medicineInventoryModel->getMedicineById($medication['medicine_inventory_id']);
                     if ($medicine) {
                         $previousStock = $medicine->stock_level;
                         $newStock = $previousStock - 1;
 
-                        // Update inventory
+
                         if (!$this->medicineInventoryModel->updateStock($medicine->id, $newStock)) {
                             throw new \Exception('Failed to update medicine stock');
                         }

@@ -3,20 +3,14 @@
 namespace app\models;
 
 use app\models\Model;
-use app\models\VitalsHistory;
 
-
-class Vitals extends Model
+class VitalsHistory extends Model
 {
-    protected $table = 'vitals';
-    protected $vitalsHistory;
-
+    protected $table = 'vital_history';
 
     public function __construct()
     {
         parent::__construct();
-        $this->vitalsHistory = new VitalsHistory();
-
     }
 
     private function buildBaseQuery(bool $includeType = false): string
@@ -45,22 +39,9 @@ class Vitals extends Model
         return "SELECT " . implode(', ', $fields) . " FROM $this->table v";
     }
 
-    public function getAllVitals()
-    {
-        $query = $this->buildBaseQuery();
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-    }
 
-    public function getLatestVitalsByPatientId($patientId)
-    {
-        $query = $this->buildBaseQuery() . " WHERE v.patient_id = :patient_id ORDER BY v.recorded_at DESC LIMIT 1";
-        $this->db->query($query);
-        $this->db->bind(':patient_id', $patientId);
-        return $this->db->single();
-    }
 
-    public function insert($data)
+    public function insertHistory($data)
     {
         $sql = "INSERT INTO {$this->table} (
             patient_id,
@@ -125,11 +106,10 @@ class Vitals extends Model
         return $this->db->execute();
     }
 
-    public function addVitals($patientId, $vitalsData)
+    public function addVitalsHistory($patientId, $vitalsData)
     {
         $currentDateTime = date('Y-m-d H:i:s');
 
-        // Prepare vitals data
         $data = [
             'patient_id' => $patientId,
             'blood_pressure' => $vitalsData['blood_pressure'],
@@ -150,63 +130,8 @@ class Vitals extends Model
             'height_date' => $currentDateTime
         ];
 
-        // Check if patient already has vitals
-        $existingVitals = $this->getLatestVitalsByPatientId($patientId);
-
-        // Always save to vitals history before any changes
-        if ($existingVitals) {
-            $historyData = (array) $existingVitals;
-            $this->vitalsHistory->insertHistory($historyData);
-            return $this->update($patientId, $data);
-        }
-
-        // If no existing vitals, create new record
-        return $this->insert($data);
+        return $this->insertHistory($data);
     }
 
-    // Add this new update method
-    public function update($patientId, $data)
-    {
-        $sql = "UPDATE {$this->table} SET 
-            blood_pressure = :blood_pressure,
-            blood_pressure_date = :blood_pressure_date,
-            temperature = :temperature,
-            temperature_date = :temperature_date,
-            heart_rate = :heart_rate,
-            heart_rate_date = :heart_rate_date,
-            respiratory_rate = :respiratory_rate,
-            respiratory_rate_date = :respiratory_rate_date,
-            oxygen_saturation = :oxygen_saturation,
-            oxygen_saturation_date = :oxygen_saturation_date,
-            glucose_level = :glucose_level,
-            glucose_date = :glucose_date,
-            weight = :weight,
-            weight_date = :weight_date,
-            height = :height,
-            height_date = :height_date,
-            recorded_at = NOW()
-            WHERE patient_id = :patient_id";
 
-        $this->db->query($sql);
-
-        $this->db->bind(':patient_id', $patientId);
-        $this->db->bind(':blood_pressure', $data['blood_pressure']);
-        $this->db->bind(':blood_pressure_date', $data['blood_pressure_date']);
-        $this->db->bind(':temperature', $data['temperature']);
-        $this->db->bind(':temperature_date', $data['temperature_date']);
-        $this->db->bind(':heart_rate', $data['heart_rate']);
-        $this->db->bind(':heart_rate_date', $data['heart_rate_date']);
-        $this->db->bind(':respiratory_rate', $data['respiratory_rate']);
-        $this->db->bind(':respiratory_rate_date', $data['respiratory_rate_date']);
-        $this->db->bind(':oxygen_saturation', $data['oxygen_saturation']);
-        $this->db->bind(':oxygen_saturation_date', $data['oxygen_saturation_date']);
-        $this->db->bind(':glucose_level', $data['glucose_level']);
-        $this->db->bind(':glucose_date', $data['glucose_date']);
-        $this->db->bind(':weight', $data['weight']);
-        $this->db->bind(':weight_date', $data['weight_date']);
-        $this->db->bind(':height', $data['height']);
-        $this->db->bind(':height_date', $data['height_date']);
-
-        return $this->db->execute();
-    }
 }

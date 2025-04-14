@@ -2,10 +2,10 @@
 function isNormalBloodPressure(bp) {
     const parts = bp.split('/');
     if (parts.length !== 2) return false;
-    
+
     const systolic = parseInt(parts[0]);
     const diastolic = parseInt(parts[1]);
-    
+
     return systolic >= 90 && systolic <= 120 && diastolic >= 60 && diastolic <= 80;
 }
 
@@ -40,15 +40,23 @@ function handleVitalsSubmit(event) {
     const form = event.target;
     const formData = new FormData(form);
 
-    // Get values from form
-    const bloodPressure = formData.get('blood_pressure') || '120/80';
-    const temperature = formData.get('temperature') || '36.5';
-    const heartRate = formData.get('heart_rate') || '75';
-    const respiratoryRate = formData.get('respiratory_rate') || '16';
-    const oxygenSaturation = formData.get('oxygen_saturation') || '98';
-    const glucoseLevel = formData.get('glucose_level') || '90';
-    const weight = formData.get('weight') || '70';
-    const height = formData.get('height') || '170';
+    // Get values from form without default values
+    const vitalsData = {
+        blood_pressure: formData.get('blood_pressure'),
+        temperature: formData.get('temperature'),
+        heart_rate: formData.get('heart_rate'),
+        respiratory_rate: formData.get('respiratory_rate'),
+        oxygen_saturation: formData.get('oxygen_saturation'),
+        glucose_level: formData.get('glucose_level'),
+        weight: formData.get('weight'),
+        height: formData.get('height')
+    };
+
+    // Validate that at least one vital sign is entered
+    if (Object.values(vitalsData).every(value => !value)) {
+        showToast('error', 'Validation Error', 'Please enter at least one vital sign.');
+        return;
+    }
 
     // Get the vitals container
     const vitalsContainer = document.getElementById('vitals-container');
@@ -62,6 +70,7 @@ function handleVitalsSubmit(event) {
     // Create HTML for vital cards
     const vitalsHTML = `
         <!-- Blood Pressure Card -->
+        ${vitalsData.blood_pressure ? `
         <div class="col-span-4">
             <div class="vital-card">
                 <div class="vital-header">
@@ -70,8 +79,8 @@ function handleVitalsSubmit(event) {
                         <i class="bx bx-edit"></i>
                     </button>
                 </div>
-                <div class="vital-value ${isNormalBloodPressure(bloodPressure) ? 'vital-normal' : 'vital-warning'}">
-                    ${bloodPressure} mmHg
+                <div class="vital-value ${isNormalBloodPressure(vitalsData.blood_pressure) ? 'vital-normal' : 'vital-warning'}">
+                    ${vitalsData.blood_pressure} mmHg
                 </div>
                 <div class="vital-meta">
                     <div class="vital-date">
@@ -82,8 +91,10 @@ function handleVitalsSubmit(event) {
                 </div>
             </div>
         </div>
+        ` : ''}
         
         <!-- Temperature Card -->
+        ${vitalsData.temperature ? `
         <div class="col-span-4">
             <div class="vital-card">
                 <div class="vital-header">
@@ -92,8 +103,8 @@ function handleVitalsSubmit(event) {
                         <i class="bx bx-edit"></i>
                     </button>
                 </div>
-                <div class="vital-value ${isNormalTemperature(temperature) ? 'vital-normal' : 'vital-warning'}">
-                    ${temperature} °C
+                <div class="vital-value ${isNormalTemperature(vitalsData.temperature) ? 'vital-normal' : 'vital-warning'}">
+                    ${vitalsData.temperature} °C
                 </div>
                 <div class="vital-meta">
                     <div class="vital-date">
@@ -104,8 +115,10 @@ function handleVitalsSubmit(event) {
                 </div>
             </div>
         </div>
+        ` : ''}
         
         <!-- Heart Rate Card -->
+        ${vitalsData.heart_rate ? `
         <div class="col-span-4">
             <div class="vital-card">
                 <div class="vital-header">
@@ -114,8 +127,8 @@ function handleVitalsSubmit(event) {
                         <i class="bx bx-edit"></i>
                     </button>
                 </div>
-                <div class="vital-value ${isNormalHeartRate(heartRate) ? 'vital-normal' : 'vital-warning'}">
-                    ${heartRate} bpm
+                <div class="vital-value ${isNormalHeartRate(vitalsData.heart_rate) ? 'vital-normal' : 'vital-warning'}">
+                    ${vitalsData.heart_rate} bpm
                 </div>
                 <div class="vital-meta">
                     <div class="vital-date">
@@ -126,8 +139,10 @@ function handleVitalsSubmit(event) {
                 </div>
             </div>
         </div>
+        ` : ''}
         
         <!-- Respiratory Rate Card -->
+        ${vitalsData.respiratory_rate ? `
         <div class="col-span-4">
             <div class="vital-card">
                 <div class="vital-header">
@@ -136,8 +151,8 @@ function handleVitalsSubmit(event) {
                         <i class="bx bx-edit"></i>
                     </button>
                 </div>
-                <div class="vital-value ${isNormalRespiratoryRate(respiratoryRate) ? 'vital-normal' : 'vital-warning'}">
-                    ${respiratoryRate} breaths/min
+                <div class="vital-value ${isNormalRespiratoryRate(vitalsData.respiratory_rate) ? 'vital-normal' : 'vital-warning'}">
+                    ${vitalsData.respiratory_rate} breaths/min
                 </div>
                 <div class="vital-meta">
                     <div class="vital-date">
@@ -148,8 +163,10 @@ function handleVitalsSubmit(event) {
                 </div>
             </div>
         </div>
+        ` : ''}
         
         <!-- Oxygen Saturation Card -->
+        ${vitalsData.oxygen_saturation ? `
         <div class="col-span-4">
             <div class="vital-card">
                 <div class="vital-header">
@@ -158,8 +175,8 @@ function handleVitalsSubmit(event) {
                         <i class="bx bx-edit"></i>
                     </button>
                 </div>
-                <div class="vital-value ${isNormalOxygenSaturation(oxygenSaturation) ? 'vital-normal' : 'vital-warning'}">
-                    ${oxygenSaturation}%
+                <div class="vital-value ${isNormalOxygenSaturation(vitalsData.oxygen_saturation) ? 'vital-normal' : 'vital-warning'}">
+                    ${vitalsData.oxygen_saturation}%
                 </div>
                 <div class="vital-meta">
                     <div class="vital-date">
@@ -170,8 +187,10 @@ function handleVitalsSubmit(event) {
                 </div>
             </div>
         </div>
+        ` : ''}
         
         <!-- Glucose Level Card -->
+        ${vitalsData.glucose_level ? `
         <div class="col-span-4">
             <div class="vital-card">
                 <div class="vital-header">
@@ -180,8 +199,8 @@ function handleVitalsSubmit(event) {
                         <i class="bx bx-edit"></i>
                     </button>
                 </div>
-                <div class="vital-value ${isNormalGlucoseLevel(glucoseLevel) ? 'vital-normal' : 'vital-warning'}">
-                    ${glucoseLevel} mg/dL
+                <div class="vital-value ${isNormalGlucoseLevel(vitalsData.glucose_level) ? 'vital-normal' : 'vital-warning'}">
+                    ${vitalsData.glucose_level} mg/dL
                 </div>
                 <div class="vital-meta">
                     <div class="vital-date">
@@ -192,29 +211,27 @@ function handleVitalsSubmit(event) {
                 </div>
             </div>
         </div>
+        ` : ''}
     `;
 
     // Update the vitals container
     vitalsContainer.innerHTML = vitalsHTML;
 
-    // Store the vitals data in localStorage for later submission
-    const vitalsData = {
-        blood_pressure: bloodPressure,
-        temperature: temperature,
-        heart_rate: heartRate,
-        respiratory_rate: respiratoryRate,
-        oxygen_saturation: oxygenSaturation,
-        glucose_level: glucoseLevel,
-        weight: weight,
-        height: height,
-        recorded_at: new Date().toISOString()
-    };
+    // Store only the entered vitals data in localStorage
+    const cleanVitalsData = {};
+    Object.entries(vitalsData).forEach(([key, value]) => {
+        if (value) {
+            cleanVitalsData[key] = value;
+        }
+    });
+
+    cleanVitalsData.recorded_at = new Date().toISOString();
 
     // Get patient ID from the page
     const patientId = document.querySelector('input[name="patient_id"]')?.value || '0';
 
-    // Save to localStorage with patient ID to keep separate records for different patients
-    localStorage.setItem('pendingVitals_' + patientId, JSON.stringify(vitalsData));
+    // Save to localStorage with patient ID
+    localStorage.setItem('pendingVitals_' + patientId, JSON.stringify(cleanVitalsData));
 
     // Close the modal
     closeModal('add-vitals-modal');
@@ -414,10 +431,10 @@ function displayVitalsCards(vitalsData) {
 }
 
 // Initialize vitals functionality when the DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Load saved vitals on page load
     loadSavedVitals();
-    
+
     // Add event listener to vitals form if it exists
     const vitalsForm = document.getElementById('vitalsForm');
     if (vitalsForm) {
