@@ -265,6 +265,37 @@
         .save-draft-btn i {
             margin-right: 0.5rem;
         }
+
+        /* Fix for double scrollbar issue */
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .main-content {
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        section.p-6 {
+            height: 100%;
+            overflow-y: auto;
+            padding-bottom: 100px;
+            /* Add extra padding at bottom for floating buttons */
+        }
+
+        /* Ensure tab content doesn't create its own scrollbar */
+        .tab-content {
+            overflow: visible;
+        }
     </style>
 </head>
 
@@ -297,7 +328,7 @@
                                 <?php endif; ?>
                             </div>
                             <div>
-                                <h3 class="text-lg font-semibold">
+                                <h3 class="text-lg font-semibold uppercase">
                                     <?= htmlspecialchars($patient->first_name . ' ' . $patient->last_name) ?>
                                 </h3>
                                 <div class="flex text-sm text-gray-500 gap-4">
@@ -357,14 +388,17 @@
     </div>
 
     <!-- Floating Save Button -->
-    <button class="floating-save-btn glow-effect" onclick="saveDraft()">
+    <!-- <button class="floating-save-btn glow-effect" onclick="saveDraft()">
         <i class="bx bx-save"></i>
-    </button>
+    </button> -->
 
     <!-- Include all modals -->
     <?php include(VIEW_ROOT . '/pages/doctor/components/common/modals.php') ?>
-
+    <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/l10n/fr.js"></script>
     <script src="<?= BASE_URL ?>/js/doctor/checkup.js"></script>
+    <script src="/js/doctor/vitals.js"></script>
+    <script src="/js/doctor/medications.js"></script>
+    <script src="/js/doctor/diagnosis.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Tab switching functionality
@@ -400,13 +434,7 @@
             }, 1000);
         });
     </script>
-    <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/l10n/fr.js"></script>
-    <script src="<?= BASE_URL ?>/js/doctor/checkup.js"></script>
-    <script src="/js/doctor/vitals.js"></script>
-    <script src="/js/doctor/medications.js"></script>
-    <script src="/js/doctor/diagnosis.js"></script>
+
 </body>
 
 </html>
-
-]
