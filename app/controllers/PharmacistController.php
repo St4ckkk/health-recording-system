@@ -258,4 +258,40 @@ class PharmacistController extends Controller
             ]);
         }
     }
+
+
+    public function deleteMedicine()
+    {
+        if (!$this->isAjaxRequest()) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+            exit;
+        }
+
+        $data = $this->getJsonRequestData();
+
+        if (!isset($data['medicineId'])) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Medicine ID is required']);
+            exit;
+        }
+
+        try {
+            if ($this->medicineInventoryModel->delete($data['medicineId'])) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => true, 'message' => 'Medicine deleted successfully']);
+            } else {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => 'Failed to delete medicine']);
+            }
+        } catch (\Exception $e) {
+            error_log('Exception while deleting medicine: ' . $e->getMessage());
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => false,
+                'message' => 'Database error: ' . $e->getMessage()
+            ]);
+        }
+        exit;
+    }
 }

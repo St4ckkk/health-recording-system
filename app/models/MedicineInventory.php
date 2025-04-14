@@ -89,6 +89,13 @@ class MedicineInventory extends Model
         return $this->db->execute() ? $this->db->lastInsertId() : false;
     }
 
+    public function delete($id)
+    {
+        $this->db->query("DELETE FROM {$this->table} WHERE id = :id");
+        $this->db->bind(':id', $id);
+        return $this->db->execute();
+    }
+
 
 
     public function updateStock($id, $newStockLevel)

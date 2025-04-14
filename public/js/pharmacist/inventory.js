@@ -41,10 +41,4 @@ document.addEventListener('DOMCondtentLoaded', function () {
     }
 });
 
-// Function to confirm deletion
-function confirmDelete(medicineId) {
-    if (confirm('Are you sure you want to delete this medicine?')) {
-        window.location.href = `<?= BASE_URL ?>/doctor/deleteMedicine/?id=${medicineId}`;
-    }
-}
 

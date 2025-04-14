@@ -625,7 +625,7 @@
                                                         </div>
                                                         <div class="tooltip">
                                                             <button class="p-2 text-red-600 hover:text-red-800"
-                                                                onclick="confirmDelete(<?= $medicine->id ?>)"
+                                                                onclick="openDeleteModal(<?= $medicine->id ?>, '<?= htmlspecialchars($medicine->name, ENT_QUOTES) ?>')"
                                                                 data-medicine-id="<?= htmlspecialchars($medicine->id) ?>">
                                                                 <i class="bx bx-trash text-lg"></i>
                                                                 <span class="tooltip-text">Delete</span>
@@ -659,8 +659,11 @@
 
 
     <?php include(VIEW_ROOT . '/pages/pharmacist/components/modals/add-medicine.php') ?>
+
+    <?php include(VIEW_ROOT . '/pages/pharmacist/components/modals/delete-medicine.php') ?>
     <script src="<?= BASE_URL ?>/js/pharmacist/inventory.js"></script>
     <script src="<?= BASE_URL ?>/js/pharmacist/addMed.js"></script>
+    <script src="<?= BASE_URL ?>/js/pharmacist/deleteMed.js"></script>
     <script>
         const BASE_URL = '<?= BASE_URL ?>';
     </script>
