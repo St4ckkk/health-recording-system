@@ -90,13 +90,13 @@
             </span>
             <?php
             $heartRate = $vitals->heart_rate ?? 72;
-            if ($heartRate > 100) {
+            if ($heartRate >= 100) {
                 echo '<span class="ml-2 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">Tachycardia</span>';
                 echo '<div class="absolute top-0 right-0 m-2 text-red-500 cursor-help" 
                      title="Consider ECG and cardiac evaluation">
                      <i class="bx bx-info-circle"></i>
                      </div>';
-            } elseif ($heartRate < 60) {
+            } elseif ($heartRate <= 60) {
                 echo '<span class="ml-2 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">Bradycardia</span>';
             }
             ?>
