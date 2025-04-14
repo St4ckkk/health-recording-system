@@ -24,6 +24,8 @@ class MedicineInventory extends Model
             'm.stock_level',
             'm.expiry_date',
             'm.status',
+            'm.supplier',
+            'm.manufacturer',
             'm.created_at',
             'm.updated_at'
         ];
@@ -68,9 +70,9 @@ class MedicineInventory extends Model
     public function insert($data)
     {
         $this->db->query("INSERT INTO {$this->table} 
-            (name, category, form, dosage, stock_level, expiry_date, status, created_at, updated_at) 
+            (name, category, form, dosage, stock_level, expiry_date, status, supplier, manufacturer, created_at, updated_at) 
             VALUES 
-            (:name, :category, :form, :dosage, :stock_level, :expiry_date, :status, :created_at, :updated_at)");
+            (:name, :category, :form, :dosage, :stock_level, :expiry_date, :status, :supplier, :manufacturer, :created_at, :updated_at)");
 
         $this->db->bind(':name', $data['name']);
         $this->db->bind(':category', $data['category']);
@@ -79,6 +81,8 @@ class MedicineInventory extends Model
         $this->db->bind(':stock_level', $data['stock_level']);
         $this->db->bind(':expiry_date', $data['expiry_date']);
         $this->db->bind(':status', $data['status'] ?? 'active');
+        $this->db->bind(':supplier', $data['supplier']);
+        $this->db->bind(':manufacturer', $data['manufacturer']);
         $this->db->bind(':created_at', date('Y-m-d H:i:s'));
         $this->db->bind(':updated_at', date('Y-m-d H:i:s'));
 
@@ -114,16 +118,39 @@ class MedicineInventory extends Model
 
     public function getLowStockCount()
     {
-        $this->db->query("SELECT COUNT(*) as count, 
-                GROUP_CONCAT(CONCAT(name, ' (', stock_level, ' remaining)') SEPARATOR ', ') as low_stock_items 
-                FROM {$this->table} 
-                WHERE status = 'Low Stock'");
+        $this->db->query("SELECT 
+            COUNT(*) as count,
+            SUM(CASE WHEN stock_level = 0 THEN 1 ELSE 0 END) as out_of_stock_count,
+            GROUP_CONCAT(
+                CASE 
+                    WHEN stock_level = 0 THEN CONCAT(name, ' (Out of Stock)')
+                    ELSE CONCAT(name, ' (', stock_level, ' remaining)')
+                END 
+                SEPARATOR ', '
+            ) as low_stock_items 
+            FROM {$this->table} 
+            WHERE status = 'Low Stock' OR stock_level = 0");
 
         $result = $this->db->single();
         return [
             'count' => $result ? $result->count : 0,
+            'out_of_stock' => $result ? $result->out_of_stock_count : 0,
             'items' => $result && $result->low_stock_items ? $result->low_stock_items : ''
         ];
+    }
+
+    public function getMonthlyUsageStats()
+    {
+        $this->db->query("SELECT 
+            MONTH(ml.created_at) as month,
+            SUM(CASE WHEN ml.action_type = 'dispense' THEN ml.quantity ELSE 0 END) as dispensed,
+            SUM(CASE WHEN ml.action_type = 'restock' THEN ml.quantity ELSE 0 END) as restocked
+            FROM medicine_logs ml
+            WHERE YEAR(ml.created_at) = YEAR(CURRENT_DATE)
+            GROUP BY MONTH(ml.created_at)
+            ORDER BY month ASC");
+
+        return $this->db->resultSet();
     }
 
     public function getMedicineUsageStats()
@@ -149,12 +176,12 @@ class MedicineInventory extends Model
                 GROUP BY m.category, COALESCE(ml.doctor_id, ml.staff_id)
                 ORDER BY total_dispensed DESC
                 LIMIT 5");
-    
+
         return $this->db->resultSet();
     }
 
 
-  
+
 
     public function getAllMedicineCategories()
     {
@@ -176,7 +203,7 @@ class MedicineInventory extends Model
         $conditions = [];
         $params = [];
 
-     
+
         if (!empty($category)) {
             $conditions[] = "m.category = :category";
             $params[':category'] = $category;
@@ -194,7 +221,7 @@ class MedicineInventory extends Model
 
         $conditions[] = "m.stock_level > 0";
 
-       
+
         if (!empty($conditions)) {
             $query .= " WHERE " . implode(" AND ", $conditions);
         }
@@ -212,7 +239,7 @@ class MedicineInventory extends Model
     }
 
 
-  
+
 
     public function updateStockLevel($id, $newStockLevel)
     {

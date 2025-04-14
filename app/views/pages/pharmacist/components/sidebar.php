@@ -33,7 +33,7 @@ $notification_count = 3;
                 <li class="px-sm py-2 rounded-md hover:bg-purple-600 hover:text-white flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1 mb-2"
                     style="<?php echo (strpos($request_uri, '/pharmacist/medicinesInventory') !== false || strpos($request_uri, '/pharmacist/medicineLogs') !== false) ? 'background-color: rgb(147 51 234); color: white;' : ''; ?>">
                     <i class='bx bx-capsule text-lg mr-2 ml-1'></i> Medicine Inventory
-                </li>   
+                </li>
             </a>
 
             <a href="<?= BASE_URL ?>/pharmacist/reports">
@@ -62,13 +62,13 @@ $notification_count = 3;
     </div>
 
     <div class="logout-container mt-auto">
-
         <button id="sidebarLogoutBtn"
-            class="px-sm py-2 rounded-md hover:bg-green-600 flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1 hover:text-white">
+            class="px-sm py-2 rounded-md hover:bg-purple-600 flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1 hover:text-white w-full">
             <i class='bx bx-log-out text-lg mr-2 ml-1'></i> Logout
         </button>
+    </div>
 
-        <!-- Doctor Profile Section -->
+ 
 
     </div>
 </nav>
@@ -95,7 +95,7 @@ $notification_count = 3;
                 class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
                 Cancel
             </button>
-            <a href="<?= BASE_URL ?>/doctor/logout"
+            <a href="<?= BASE_URL ?>/logout"
                 class="rounded-md bg-danger px-4 py-2 text-sm font-medium text-white hover:bg-danger-dark focus:outline-none">
                 Yes, Logout
             </a>

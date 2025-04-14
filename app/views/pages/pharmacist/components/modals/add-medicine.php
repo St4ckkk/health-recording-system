@@ -15,22 +15,16 @@
         <div class="px-6 py-3 max-h-[60vh] overflow-y-auto">
             <form id="addMedicineForm" class="space-y-3">
                 <div>
-                    <label for="medicineName" class="block text-sm font-medium text-gray-700 mb-1">Medicine
-                        Name</label>
+                    <label for="medicineName" class="block text-sm font-medium text-gray-700 mb-1">Medicine Name</label>
                     <input type="text" id="medicineName" name="medicineName" required
                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
                 </div>
 
                 <div>
                     <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                    <select id="category" name="category" required
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
-                        <option value="">Select Category</option>
-                        <option value="analgesic">Analgesic</option>
-                        <option value="antibiotic">Antibiotic</option>
-                        <option value="antiviral">Antiviral</option>
-                        <option value="antipyretic">Antipyretic</option>
-                    </select>
+                    <input type="text" id="category" name="category" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                        placeholder="Enter medicine category">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
@@ -39,10 +33,10 @@
                         <select id="form" name="form" required
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
                             <option value="">Select Form</option>
-                            <option value="tablet">Tablet</option>
-                            <option value="capsule">Capsule</option>
-                            <option value="syrup">Syrup</option>
-                            <option value="injection">Injection</option>
+                            <option value="Table">Tablet</option>
+                            <option value="Capsule">Capsule</option>
+                            <option value="Syrup">Syrup</option>
+                            <option value="Injection">Injection</option>
                         </select>
                     </div>
                     <div>
@@ -54,23 +48,35 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label for="stockLevel" class="block text-sm font-medium text-gray-700 mb-1">Stock
-                            Level</label>
+                        <label for="stockLevel" class="block text-sm font-medium text-gray-700 mb-1">Stock Level</label>
                         <input type="number" id="stockLevel" name="stockLevel" min="0" required
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
                     </div>
                     <div>
-                        <label for="maxStock" class="block text-sm font-medium text-gray-700 mb-1">Max Stock</label>
-                        <input type="number" id="maxStock" name="maxStock" min="0" required
+                        <label for="expiryDate" class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                        <input type="date" id="expiryDate" name="expiryDate" required
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
                     </div>
                 </div>
 
-                <div>
-                    <label for="expiryDate" class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
-                    <input type="date" id="expiryDate" name="expiryDate" required
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="manufacturer"
+                            class="block text-sm font-medium text-gray-700 mb-1">Manufacturer</label>
+                        <input type="text" id="manufacturer" name="manufacturer" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                            placeholder="e.g., Pfizer, Johnson & Johnson">
+                    </div>
+                    <div>
+                        <label for="supplier" class="block text-sm font-medium text-gray-700 mb-1">Supplier</label>
+                        <input type="text" id="supplier" name="supplier" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                            placeholder="Enter supplier name">
+                    </div>
                 </div>
+
             </form>
         </div>
 

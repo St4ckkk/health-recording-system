@@ -7,10 +7,11 @@ $notification_count = 3;
 ?>
 
 <nav class="bg-white p-4 sidebar border border-gray-200">
-<div class=" p-4 mb-6 bg-primary rounded-lg">
+    <div class=" p-4 mb-6 bg-primary rounded-lg">
         <div class="flex items-center">
             <div class="logo">
-                <div class="w-12 h-12 flex justify-center items-center font-bold text-white border-2 border-white rounded-lg">
+                <div
+                    class="w-12 h-12 flex justify-center items-center font-bold text-white border-2 border-white rounded-lg">
                     <span class="text-xl">TC</span>
                 </div>
             </div>

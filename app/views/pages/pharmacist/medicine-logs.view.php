@@ -323,7 +323,7 @@
                             <p class="text-sm text-gray-500">Track all medicine inventory activities.</p>
                         </div>
                         <div class="mb-3">
-                            <a href="<?= BASE_URL ?>/doctor/medicinesInventory"
+                            <a href="<?= BASE_URL ?>/pharmacist/medicinesInventory"
                                 class="inline-flex items-center text-sm font-medium text-primary hover:text-primary-dark">
                                 <button class="back-button">
                                     <i class="bx bx-arrow-back mr-2"></i> Back to Inventory

@@ -52,33 +52,70 @@
                             </div>
                         </div>
 
-                        <!-- Expiring Soon Card -->
-                        <div class="bg-white rounded-lg p-6 flex-1 shadow-sm border border-gray-100 fade-in">
+                        <!-- Low Stock Card -->
+                        <div class="bg-white rounded-lg p-6 flex-1 shadow-sm border border-yellow-200 fade-in">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-gray-500 text-sm">Expiring Soon</p>
-                                    <h3 class="text-2xl font-semibold mt-1"><?= $expiringCount ?></h3>
-                                    <p class="text-gray-500 text-xs mt-1">Within 30 days</p>
+                                    <p class="text-gray-500 text-sm">Low Stock Alert</p>
+                                    <h3 class="text-2xl font-semibold text-yellow-600 mt-1"><?= $lowStockCount ?></h3>
+                                    <div class="text-yellow-600 text-xs mt-2 max-w-[200px]">
+                                        <?php
+                                        $lowStockArray = explode(', ', $lowStockItems);
+                                        $lowStockOnly = array_filter($lowStockArray, function ($item) {
+                                            return !strpos($item, 'Out of Stock');
+                                        });
+                                        echo implode(', ', $lowStockOnly) ?: 'No low stock items';
+                                        ?>
+                                    </div>
                                 </div>
-                                <div class="bg-teal-50 p-3 rounded-full">
-                                    <i class='bx bx-time text-2xl text-teal-500'></i>
+                                <div class="bg-yellow-50 p-3 rounded-full">
+                                    <i class='bx bx-error text-2xl text-yellow-500'></i>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Low Stock Alerts Card -->
-                        <div class="bg-white rounded-lg p-6 flex-1 shadow-sm border border-gray-100 fade-in">
+                        <!-- Out of Stock Card -->
+                        <div class="bg-white rounded-lg p-6 flex-1 shadow-sm border border-red-200 fade-in">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-gray-500 text-sm">Low Stock Alerts</p>
-                                    <h3 class="text-2xl font-semibold mt-1"><?= $lowStockCount ?></h3>
-                                    <p class="text-gray-500 text-xs mt-1"
-                                        title="<?= htmlspecialchars($lowStockItems) ?>">
-                                        <?= $lowStockCount > 0 ? (strlen($lowStockItems) > 30 ? substr($lowStockItems, 0, 30) . '...' : $lowStockItems) : 'All stocks normal' ?>
-                                    </p>
+                                    <p class="text-gray-500 text-sm">Out of Stock Alert</p>
+                                    <h3 class="text-2xl font-semibold text-red-600 mt-1"><?= $outOfStockCount ?></h3>
+                                    <div class="text-red-600 text-xs mt-2 max-w-[200px]">
+                                        <?php
+                                        $outOfStockArray = explode(', ', $lowStockItems);
+                                        $outOfStockOnly = array_filter($outOfStockArray, function ($item) {
+                                            return strpos($item, 'Out of Stock');
+                                        });
+                                        echo implode(', ', $outOfStockOnly) ?: 'No out of stock items';
+                                        ?>
+                                    </div>
                                 </div>
-                                <div class="bg-amber-50 p-3 rounded-full">
-                                    <i class='bx bx-error text-2xl text-amber-500'></i>
+                                <div class="bg-red-50 p-3 rounded-full">
+                                    <i class='bx bx-x-circle text-2xl text-red-500'></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Expiring Soon Card -->
+                        <div class="bg-white rounded-lg p-6 flex-1 shadow-sm border border-orange-200 fade-in">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-500 text-sm">Expiring Soon</p>
+                                    <h3 class="text-2xl font-semibold text-orange-600 mt-1"><?= $expiringCount ?></h3>
+                                    <div class="text-orange-600 text-xs mt-2 max-w-[200px]">
+                                        <?php
+                                        if (isset($expiringItems)) {
+                                            echo strlen($expiringItems) > 30 ?
+                                                substr($expiringItems, 0, 30) . '...' :
+                                                $expiringItems;
+                                        } else {
+                                            echo 'No medicines expiring soon';
+                                        }
+                                        ?>
+                                    </div>
+                                </div>
+                                <div class="bg-orange-50 p-3 rounded-full">
+                                    <i class='bx bx-time text-2xl text-orange-500'></i>
                                 </div>
                             </div>
                         </div>
