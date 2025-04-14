@@ -12,6 +12,7 @@ class Allergies extends Model
     {
         parent::__construct();
     }
+    
 
     private function buildBaseQuery(bool $includeJoins = false): string
     {

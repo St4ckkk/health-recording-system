@@ -37,14 +37,6 @@ $notification_count = 3;
                 </li>
             </a>
 
-            <a href="<?= BASE_URL ?>/doctor/medicinesInventory">
-                <li class="px-sm py-2 rounded-md hover:bg-green-600 hover:text-white flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1 mb-2"
-                    style="<?php echo (strpos($request_uri, '/doctor/medicinesInventory') !== false || strpos($request_uri, '/doctor/medicineLogs') !== false) ? 'background-color: rgb(22 163 74); color: white;' : ''; ?>">
-                    <i class='bx bx-capsule text-lg mr-2 ml-1'></i> Medicine Inventory
-                </li>
-            </a>
-
-
             <a href="<?= BASE_URL ?>/doctor/reports">
                 <li class="px-sm py-2 rounded-md hover:bg-green-600 hover:text-white flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1 mb-2"
                     style="<?php echo (strpos($request_uri, '/doctor/reports') !== false || strpos($request_uri, '/doctor/reports') !== false) ? 'background-color: rgb(22 163 74); color: white;' : ''; ?>">
@@ -52,7 +44,12 @@ $notification_count = 3;
                 </li>
             </a>
 
-
+            <a href="<?= BASE_URL ?>/doctor/appointments">
+                <li class="px-sm py-2 rounded-md hover:bg-green-600 hover:text-white flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1 mb-2"
+                    style="<?php echo strpos($request_uri, '/doctor/appointments') !== false ? 'background-color: rgb(22 163 74); color: white;' : ''; ?>">
+                    <i class='bx bx-calendar text-lg mr-2 ml-1'></i> Appointments
+                </li>
+            </a>
 
             <a href="<?= BASE_URL ?>/doctor/notification">
                 <li class="px-sm py-2 rounded-md hover:bg-green-600 hover:text-white flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1"

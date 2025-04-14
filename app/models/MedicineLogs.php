@@ -40,5 +40,45 @@ class MedicineLogs extends Model
         return $this->db->resultSet();
     }
 
+    public function insert($data)
+    {
+        $sql = "INSERT INTO {$this->table} (
+            medicine_id,
+            patient_id,
+            doctor_id,
+            quantity,
+            previous_stock,
+            new_stock,
+            remarks,
+            timestamp,
+            created_at,
+            updated_at
+        ) VALUES (
+            :medicine_id,
+            :patient_id,
+            :doctor_id,
+            :quantity,
+            :previous_stock,
+            :new_stock,
+            :remarks,
+            NOW(),
+            :created_at,
+            :updated_at
+        )";
 
+        $this->db->query($sql);
+
+        // Bind values
+        $this->db->bind(':medicine_id', $data['medicine_id']);
+        $this->db->bind(':patient_id', $data['patient_id']);
+        $this->db->bind(':doctor_id', $data['doctor_id']);
+        $this->db->bind(':quantity', $data['quantity']);
+        $this->db->bind(':previous_stock', $data['previous_stock']);
+        $this->db->bind(':new_stock', $data['new_stock']);
+        $this->db->bind(':remarks', $data['remarks']);
+        $this->db->bind(':created_at', date('Y-m-d H:i:s'));
+        $this->db->bind(':updated_at', date('Y-m-d H:i:s'));
+
+        return $this->db->execute() ? $this->db->lastInsertId() : false;
+    }
 }

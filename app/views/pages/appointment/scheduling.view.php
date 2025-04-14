@@ -281,7 +281,7 @@
                         </div>
                         <div>
                             <h2 class="text-xl font-bold text-gray-800">Dr. <?= $doctor->full_name ?></h2>
-                            <h1 class="text-gray-500 text-sm"><?= $doctor->specialization ?></h1>
+                            <h1 class="text-gray-500 text-sm capitalize"><?= $doctor->specialization ?></h1>
                         </div>
                     </div>
 
@@ -387,7 +387,8 @@
                         Back
                     </button>
                 </div>
-                <form id="patientForm" action="<?= BASE_URL ?>/appointment/book" method="POST" class="space-y-6" enctype="multipart/form-data">
+                <form id="patientForm" action="<?= BASE_URL ?>/appointment/book" method="POST" class="space-y-6"
+                    enctype="multipart/form-data">
                     <!-- Hidden fields for appointment data -->
                     <input type="hidden" id="doctor_id" name="doctor_id" value="<?= $doctor->id ?>">
                     <input type="hidden" id="appointment_date" name="appointment_date">
@@ -405,11 +406,12 @@
                         <label class="upload-btn">
                             <i class="bx bx-upload"></i>
                             <span>Upload Profile Photo</span>
-                            <input type="file" id="profileImage" name="profileImage" accept="image/*" class="hidden" onchange="previewImage(this)">
+                            <input type="file" id="profileImage" name="profileImage" accept="image/*" class="hidden"
+                                onchange="previewImage(this)">
                         </label>
                         <p class="upload-instructions">Optional: Upload a clear photo for yours</p>
                     </div>
-                    
+
 
                     <!-- Patient Name Section -->
                     <div class="space-y-4">
@@ -453,7 +455,8 @@
                             </div>
                             <div>
                                 <label for="age" class="block text-sm font-medium text-gray-700 mb-1">Age*</label>
-                                <input type="number" id="age" name="age" required class="form-input w-full" min="0" max="120">
+                                <input type="number" id="age" name="age" required class="form-input w-full" min="0"
+                                    max="120">
                             </div>
                             <div>
                                 <label for="legalSex" class="block text-sm font-medium text-gray-700 mb-1">Legal
@@ -514,7 +517,7 @@
                         </div>
                     </div>
 
-                   
+
 
                     <!-- Guardian Information -->
                     <div class="space-y-4">
@@ -764,17 +767,17 @@
             function calculateAge() {
                 const dobInput = document.getElementById('dateOfBirth');
                 const ageInput = document.getElementById('age');
-                
+
                 if (dobInput.value) {
                     const dob = new Date(dobInput.value);
                     const today = new Date();
                     let age = today.getFullYear() - dob.getFullYear();
                     const monthDiff = today.getMonth() - dob.getMonth();
-                    
+
                     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
                         age--;
                     }
-                    
+
                     ageInput.value = age;
                 }
             }
@@ -783,42 +786,42 @@
             function previewImage(input) {
                 const preview = document.getElementById('profilePreview');
                 const removeBtn = document.getElementById('removeImageBtn');
-                
+
                 if (input.files && input.files[0]) {
                     const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
+
+                    reader.onload = function (e) {
                         preview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
                         preview.appendChild(removeBtn);
                         removeBtn.style.display = 'flex';
                     }
-                    
+
                     reader.readAsDataURL(input.files[0]);
                 } else {
                     resetProfilePreview();
                 }
             }
-            
+
             // Function to remove profile image
             function removeProfileImage() {
                 const input = document.getElementById('profileImage');
                 input.value = '';
                 resetProfilePreview();
             }
-            
+
             // Function to reset profile preview
             function resetProfilePreview() {
                 const preview = document.getElementById('profilePreview');
                 const removeBtn = document.getElementById('removeImageBtn');
-                
+
                 preview.innerHTML = `<i class="bx bx-user text-4xl text-gray-400"></i>`;
                 preview.appendChild(removeBtn);
                 removeBtn.style.display = 'none';
             }
-            
+
             // Add event listener for remove button
             document.getElementById('removeImageBtn').addEventListener('click', removeProfileImage);
-            
+
             // Make these functions available globally
             window.calculateAge = calculateAge;
             window.previewImage = previewImage;

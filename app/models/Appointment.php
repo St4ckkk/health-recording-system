@@ -353,9 +353,15 @@ class Appointment extends Model
     public function getUpcomingAppointmentsByDoctor($doctorId)
     {
         $sql = $this->buildBaseQuery(true) . "
-            WHERE a.doctor_id = :doctor_id
-            AND a.appointment_date > CURDATE()
-            ORDER BY a.appointment_date ASC, a.appointment_time ASC";
+            WHERE a.doctor_id = :doctor_id 
+            ORDER BY 
+                CASE 
+                    WHEN a.appointment_date = CURDATE() THEN 0
+                    WHEN a.appointment_date > CURDATE() THEN 1
+                    ELSE 2
+                END,
+                a.appointment_date ASC,
+                a.appointment_time ASC";
 
         $this->db->query($sql);
         $this->db->bind(':doctor_id', $doctorId);
@@ -452,6 +458,46 @@ class Appointment extends Model
             'labels' => array_keys($visitData),
             'data' => array_values($visitData)
         ];
+    }
+
+    public function getAppointmentsByDoctorId($doctorId)
+    {
+        $sql = $this->buildBaseQuery(true) . "
+            WHERE a.doctor_id = :doctor_id 
+            ORDER BY 
+                CASE 
+                    WHEN a.appointment_date = CURDATE() THEN 0
+                    WHEN a.appointment_date > CURDATE() THEN 1
+                    ELSE 2
+                END,
+                a.appointment_date ASC,
+                a.appointment_time ASC";
+
+        $this->db->query($sql);
+        $this->db->bind(':doctor_id', $doctorId);
+
+        $appointments = $this->db->resultSet();
+        return array_map(function ($appointment) {
+            $appointment = $this->formatAppointmentDetails($appointment);
+
+            // Add additional formatted fields
+            $appointment->patient_name = trim(
+                $appointment->first_name . ' ' .
+                ($appointment->middle_name ? $appointment->middle_name . ' ' : '') .
+                $appointment->last_name .
+                ($appointment->suffix ? ' ' . $appointment->suffix : '')
+            );
+
+            $appointment->doctor_name = trim(
+                $appointment->doctor_first_name . ' ' .
+                $appointment->doctor_last_name
+            );
+
+            $appointment->formatted_date = date('M d, Y', strtotime($appointment->appointment_date));
+            $appointment->formatted_time = date('h:i A', strtotime($appointment->appointment_time));
+
+            return $appointment;
+        }, $appointments);
     }
 
 

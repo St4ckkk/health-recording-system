@@ -15,6 +15,7 @@ use app\models\Medications;
 use app\models\MedicineLogs;
 use app\models\MedicalRecords;
 use app\models\Immunization;
+use app\models\Diagnosis;
 
 class DoctorController extends Controller
 {
@@ -28,6 +29,7 @@ class DoctorController extends Controller
     private $medicineLogsModel;
     private $medicalRecordsModel;
     private $immunizationModel;
+    private $diagnosisModel;
 
     public function __construct()
     {
@@ -41,6 +43,7 @@ class DoctorController extends Controller
         $this->medicineLogsModel = new MedicineLogs();
         $this->medicalRecordsModel = new MedicalRecords();
         $this->immunizationModel = new Immunization();
+        $this->diagnosisModel = new Diagnosis();
     }
 
 
@@ -198,6 +201,259 @@ class DoctorController extends Controller
         ]);
     }
 
+    // Add this new method to the DoctorController class
+
+    public function saveCheckup()
+    {
+        // Check if this is an AJAX request
+        if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
+            $this->redirect('/doctor/dashboard');
+            return;
+        }
+
+        $doctorId = $_SESSION['doctor_id'] ?? null;
+
+        if (!$doctorId) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Unauthorized access'
+            ]);
+            return;
+        }
+
+        // Get JSON data from request
+        $jsonData = file_get_contents('php://input');
+        $data = json_decode($jsonData, true);
+
+        if (!$data) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Invalid data format'
+            ]);
+            return;
+        }
+
+        // Extract data
+        $patientId = $data['patient_id'] ?? 0;
+        $vitals = $data['vitals'] ?? null;
+        $medications = $data['medications'] ?? [];
+        $diagnoses = $data['diagnoses'] ?? [];
+
+        // Start transaction
+        // $this->db->beginTransaction();
+
+        try {
+            // Save vitals if provided
+            if ($vitals) {
+                $vitalsData = [
+                    'patient_id' => $patientId,
+                    'blood_pressure' => $vitals['blood_pressure'] ?? null,
+                    'blood_pressure_date' => date('Y-m-d H:i:s'),
+                    'temperature' => $vitals['temperature'] ?? null,
+                    'temperature_date' => date('Y-m-d H:i:s'),
+                    'heart_rate' => $vitals['heart_rate'] ?? null,
+                    'heart_rate_date' => date('Y-m-d H:i:s'),
+                    'respiratory_rate' => $vitals['respiratory_rate'] ?? null,
+                    'respiratory_rate_date' => date('Y-m-d H:i:s'),
+                    'oxygen_saturation' => $vitals['oxygen_saturation'] ?? null,
+                    'oxygen_saturation_date' => date('Y-m-d H:i:s'),
+                    'glucose_level' => $vitals['glucose_level'] ?? null,
+                    'glucose_date' => date('Y-m-d H:i:s'),
+                    'weight' => $vitals['weight'] ?? null,
+                    'weight_date' => date('Y-m-d H:i:s'),
+                    'height' => $vitals['height'] ?? null,
+                    'height_date' => date('Y-m-d H:i:s'),
+                    'recorded_at' => date('Y-m-d H:i:s')
+                ];
+
+                $vitalsId = $this->vitalsModel->insert($vitalsData);
+
+                if (!$vitalsId) {
+                    throw new \Exception('Failed to save vitals data');
+                }
+            }
+
+            // Inside saveCheckup method where medications are processed
+            if (!empty($medications)) {
+                foreach ($medications as $medication) {
+                    // First save the medication record
+                    $medicationData = [
+                        'patient_id' => $patientId,
+                        'medicine_id' => $medication['medicine_inventory_id'],
+                        'dosage' => $medication['dosage'],
+                        'frequency' => $medication['frequency'],
+                        'start_date' => $medication['start_date'],
+                        'prescribed_by' => $doctorId,
+                        'status' => 'active',
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ];
+
+                    $medicationId = $this->medicationsModel->insert($medicationData);
+
+                    if (!$medicationId) {
+                        throw new \Exception('Failed to save medication data');
+                    }
+
+                    // Get current medicine stock
+                    $medicine = $this->medicineInventoryModel->getMedicineById($medication['medicine_inventory_id']);
+                    if ($medicine) {
+                        $previousStock = $medicine->stock_level;
+                        $newStock = $previousStock - 1;
+
+                        // Update inventory
+                        if (!$this->medicineInventoryModel->updateStock($medicine->id, $newStock)) {
+                            throw new \Exception('Failed to update medicine stock');
+                        }
+
+                        // Add to medicine logs
+                        $logData = [
+                            'medicine_id' => $medicine->id,
+                            'patient_id' => $patientId,
+                            'doctor_id' => $doctorId,
+                            'quantity' => 1,
+                            'previous_stock' => $previousStock,
+                            'new_stock' => $newStock,
+                            'remarks' => "Prescribed: {$medication['dosage']} - {$medication['frequency']}"
+                        ];
+
+                        if (!$this->medicineLogsModel->insert($logData)) {
+                            throw new \Exception('Failed to create medicine log');
+                        }
+
+                        // Create medical record entry for this medication
+                        $medicalRecordData = [
+                            'patient_id' => $patientId,
+                            'doctor_id' => $doctorId,
+                            'medication_id' => $medicationId,
+                            'created_at' => date('Y-m-d H:i:s')
+                        ];
+
+                        if (!$this->medicalRecordsModel->insert($medicalRecordData)) {
+                            throw new \Exception('Failed to create medical record for medication');
+                        }
+                    }
+                }
+            }
+
+            // Save diagnoses if provided
+            if (!empty($diagnoses)) {
+                foreach ($diagnoses as $diagnosis) {
+                    $diagnosisData = [
+                        'patient_id' => $patientId,
+                        'diagnosis' => $diagnosis['title'],
+                        'notes' => $diagnosis['description'],
+                        'doctor_id' => $doctorId,
+                        'diagnosed_at' => date('Y-m-d H:i:s')
+                    ];
+
+                    $diagnosisId = $this->diagnosisModel->insert($diagnosisData);
+
+                    if (!$diagnosisId) {
+                        throw new \Exception('Failed to save diagnosis data');
+                    }
+                }
+            }
+
+            // Create a medical record entry for this checkup
+            $recordData = [
+                'patient_id' => $patientId,
+                'doctor_id' => $doctorId,
+                'record_type' => 'checkup',
+                'record_date' => date('Y-m-d H:i:s'),
+                'notes' => 'Regular checkup',
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+
+            $recordId = $this->medicalRecordsModel->insert($recordData);
+
+            if (!$recordId) {
+                throw new \Exception('Failed to create medical record');
+            }
+
+            // Commit transaction
+            // $this->db->commit();
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Checkup data saved successfully'
+            ]);
+        } catch (\Exception $e) {
+            // Rollback transaction on error
+            // $this->db->rollback();
+
+            echo json_encode([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+
+
+    public function getMedicineCategories()
+    {
+        // Check if this is an AJAX request
+        if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
+            $this->redirect('/doctor/dashboard');
+            return;
+        }
+
+        $doctorId = $_SESSION['doctor_id'] ?? null;
+
+        if (!$doctorId) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Unauthorized access'
+            ]);
+            return;
+        }
+
+        // Get all distinct medicine categories
+        $categories = $this->medicineInventoryModel->getAllMedicineCategories();
+
+        echo json_encode([
+            'success' => true,
+            'categories' => $categories
+        ]);
+    }
+
+    public function searchMedicines()
+    {
+        // Check if this is an AJAX request
+        if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
+            $this->redirect('/doctor/dashboard');
+            return;
+        }
+
+        $doctorId = $_SESSION['doctor_id'] ?? null;
+
+        if (!$doctorId) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Unauthorized access'
+            ]);
+            return;
+        }
+
+        // Get search parameters
+        $category = $_GET['category'] ?? '';
+        $searchTerm = $_GET['search'] ?? '';
+
+        // Search medicines based on category and search term
+        $medicines = $this->medicineInventoryModel->searchMedicines($category, $searchTerm);
+
+        // Filter out medicines with zero stock
+        $availableMedicines = array_filter($medicines, function ($medicine) {
+            return $medicine->stock_level > 0 && $medicine->status === 'Available';
+        });
+
+        echo json_encode([
+            'success' => true,
+            'medicines' => $availableMedicines
+        ]);
+    }
+
 
     public function reports()
     {
@@ -217,6 +473,24 @@ class DoctorController extends Controller
             'visitStats' => $visitStats,
             'diagnosisStats' => $diagnosisStats,
             'medicineUsageStats' => $medicineUsageStats
+        ]);
+    }
+
+
+    public function appointments()
+    {
+        $doctorId = $_SESSION['doctor_id'] ?? null;
+
+        if (!$doctorId) {
+            $this->redirect('/doctor');
+            return;
+        }
+
+        $appointments = $this->appointmentModel->getAppointmentsByDoctorId($doctorId);
+
+        $this->view('pages/doctor/appointments.view', [
+            'title' => 'Appointments',
+            'appointments' => $appointments
         ]);
     }
 }

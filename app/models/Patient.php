@@ -33,9 +33,9 @@ class Patient extends Model
             'p.patient_reference_number',
             'p.status',
             'p.insurance',
-            'd.diagnosis',
-            'd.notes',
-            'a.allergy_name'
+            // 'd.diagnosis',
+            // 'd.notes',
+            // 'a.allergy_name'
         ];
 
         $query = "SELECT " . implode(', ', $fields) . " FROM {$this->table} p";
@@ -119,5 +119,78 @@ class Patient extends Model
 
         $this->db->query($query);
         return $this->db->resultSet();
+    }
+
+    public function insert($data)
+    {
+        // Generate patient reference number
+        $referenceNumber = 'PAT-' . date('Ymd') . '-' . strtoupper(substr(md5(uniqid()), 0, 6));
+
+        $sql = "INSERT INTO {$this->table} (
+            first_name,
+            middle_name,
+            last_name,
+            suffix,
+            date_of_birth,
+            age,
+            profile,
+            gender,
+            contact_number,
+            email,
+            address,
+            patient_reference_number,
+            status,
+            insurance,
+            created_at,
+            updated_at
+        ) VALUES (
+            :first_name,
+            :middle_name,
+            :last_name,
+            :suffix,
+            :date_of_birth,
+            :age,
+            :profile,
+            :gender,
+            :contact_number,
+            :email,
+            :address,
+            :patient_reference_number,
+            'Active',
+            :insurance,
+            :created_at,
+            :updated_at
+        )";
+
+        try {
+            $this->db->query($sql);
+
+            // Bind values
+            $this->db->bind(':first_name', $data['first_name']);
+            $this->db->bind(':middle_name', $data['middle_name'] ?? null);
+            $this->db->bind(':last_name', $data['last_name']);
+            $this->db->bind(':suffix', $data['suffix'] ?? null);
+            $this->db->bind(':date_of_birth', $data['date_of_birth']);
+            $this->db->bind(':age', $data['age']);
+            $this->db->bind(':profile', $data['profile'] ?? null);
+            $this->db->bind(':gender', $data['gender']);
+            $this->db->bind(':contact_number', $data['contact_number']);
+            $this->db->bind(':email', $data['email']);
+            $this->db->bind(':address', $data['address']);
+            $this->db->bind(':patient_reference_number', $referenceNumber);
+            $this->db->bind(':insurance', $data['insurance'] ?? null);
+            $this->db->bind(':created_at', $data['created_at'] ?? date('Y-m-d H:i:s'));
+            $this->db->bind(':updated_at', $data['updated_at'] ?? date('Y-m-d H:i:s'));
+
+            // Execute
+            if ($this->db->execute()) {
+                return $this->db->lastInsertId();
+            }
+
+            return false;
+        } catch (\PDOException $e) {
+            error_log('Patient insert error: ' . $e->getMessage());
+            return false;
+        }
     }
 }

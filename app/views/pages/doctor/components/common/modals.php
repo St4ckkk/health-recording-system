@@ -8,6 +8,7 @@
         <div class="modal-body">
             <form id="vitalsForm" onsubmit="handleVitalsSubmit(event)">
                 <input type="hidden" name="patient_id" value="<?= $patient->id ?? 0 ?>">
+                <input type="hidden" name="doctor_id" value="<?= $_SESSION['doctor_id'] ?? 0 ?>">
                 <div class="grid">
                     <div class="col-span-6">
                         <div class="form-group">
@@ -115,11 +116,43 @@
         <div class="modal-body">
             <form id="medicationForm" onsubmit="handleMedicationSubmit(event)">
                 <input type="hidden" name="patient_id" value="<?= $patient->id ?? 0 ?>">
+                <input type="hidden" name="doctor_id" value="<?= $_SESSION['doctor_id'] ?? 0 ?>">
                 <input type="hidden" name="medication_id" id="medication_id" value="">
+                <input type="hidden" name="medicine_inventory_id" id="medicine_inventory_id" value="">
+
+                <div class="form-group">
+                    <label for="medicine_category" class="form-label">Medicine Category</label>
+                    <select id="medicine_category" name="medicine_category" class="form-select">
+                        <option value="">All Categories</option>
+                        <!-- Categories will be loaded via JavaScript -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="medicine_search" class="form-label">Search Medicine</label>
+                    <div class="input-group">
+                        <input type="text" id="medicine_search" name="medicine_search" class="form-input"
+                            placeholder="Type to search...">
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-secondary" onclick="searchMedicines()">
+                                <i class="bx bx-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="medicine_select" class="form-label">Select Medicine</label>
+                    <select id="medicine_select" name="medicine_select" class="form-select" required>
+                        <option value="">Select a medicine</option>
+                        <!-- Options will be loaded via AJAX -->
+                    </select>
+                </div>
 
                 <div class="form-group">
                     <label for="medicine_name" class="form-label">Medicine Name</label>
-                    <input type="text" id="medicine_name" name="medicine_name" class="form-input" placeholder="Medicine name" required>
+                    <input type="text" id="medicine_name" name="medicine_name" class="form-input"
+                        placeholder="Medicine name" readonly>
                 </div>
 
                 <div class="form-group">
@@ -129,12 +162,14 @@
 
                 <div class="form-group">
                     <label for="frequency" class="form-label">Frequency</label>
-                    <input type="text" id="frequency" name="frequency" class="form-input" placeholder="Twice daily" required>
+                    <input type="text" id="frequency" name="frequency" class="form-input" placeholder="Twice daily"
+                        required>
                 </div>
 
                 <div class="form-group">
                     <label for="start_date" class="form-label">Start Date</label>
-                    <input type="date" id="start_date" name="start_date" class="form-input" value="<?= date('Y-m-d') ?>" required>
+                    <input type="date" id="start_date" name="start_date" class="form-input" value="<?= date('Y-m-d') ?>"
+                        required>
                 </div>
 
                 <div class="form-group">
@@ -160,26 +195,25 @@
         <div class="modal-body">
             <form id="diagnosisForm" onsubmit="handleDiagnosisSubmit(event)">
                 <input type="hidden" name="patient_id" value="<?= $patient->id ?? 0 ?>">
+                <input type="hidden" name="doctor_id" value="<?= $_SESSION['doctor_id'] ?? 0 ?>">
                 <input type="hidden" name="diagnosis_id" id="diagnosis_id" value="">
 
                 <div class="form-group">
                     <label for="diagnosis_title" class="form-label">Diagnosis Title</label>
-                    <input type="text" id="diagnosis_title" name="diagnosis_title" class="form-input" placeholder="e.g. Hypertension, Type 2 Diabetes" required>
+                    <input type="text" id="diagnosis_title" name="diagnosis_title" class="form-input"
+                        placeholder="e.g. Hypertension, Type 2 Diabetes" required>
                 </div>
 
                 <div class="form-group">
                     <label for="diagnosis_description" class="form-label">Description</label>
-                    <textarea id="diagnosis_description" name="diagnosis_description" class="form-textarea" rows="4" placeholder="Detailed description of the diagnosis" required></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="diagnosis_tags" class="form-label">Tags (comma separated)</label>
-                    <input type="text" id="diagnosis_tags" name="diagnosis_tags" class="form-input" placeholder="e.g. chronic, cardiovascular, urgent">
+                    <textarea id="diagnosis_description" name="diagnosis_description" class="form-textarea" rows="4"
+                        placeholder="Detailed description of the diagnosis" required></textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="diagnosis_date" class="form-label">Date</label>
-                    <input type="date" id="diagnosis_date" name="diagnosis_date" class="form-input" value="<?= date('Y-m-d') ?>" required>
+                    <input type="date" id="diagnosis_date" name="diagnosis_date" class="form-input"
+                        value="<?= date('Y-m-d') ?>" required>
                 </div>
             </form>
         </div>

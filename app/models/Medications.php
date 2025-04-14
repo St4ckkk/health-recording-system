@@ -105,4 +105,52 @@ class Medications extends Model
 
         return $this->db->resultSet();
     }
+
+
+    public function insert($data)
+    {
+        $sql = "INSERT INTO {$this->table} (
+            patient_id,
+            medicine_id,
+            dosage,
+            frequency,
+            start_date,
+            purpose,
+            prescribed_by,
+            status,
+            created_at,
+            updated_at
+        ) VALUES (
+            :patient_id,
+            :medicine_id,
+            :dosage,
+            :frequency,
+            :start_date,
+            :purpose,
+            :prescribed_by,
+            'active',
+            :created_at,
+            :updated_at
+        )";
+
+        $this->db->query($sql);
+
+        // Bind values
+        $this->db->bind(':patient_id', $data['patient_id']);
+        $this->db->bind(':medicine_id', $data['medicine_id']);
+        $this->db->bind(':dosage', $data['dosage']);
+        $this->db->bind(':frequency', $data['frequency']);
+        $this->db->bind(':start_date', $data['start_date']);
+        $this->db->bind(':purpose', $data['purpose'] ?? 'Prescribed during checkup');
+        $this->db->bind(':prescribed_by', $data['prescribed_by']);
+        $this->db->bind(':created_at', date('Y-m-d H:i:s'));
+        $this->db->bind(':updated_at', date('Y-m-d H:i:s'));
+
+        // Execute
+        if ($this->db->execute()) {
+            return $this->db->lastInsertId();
+        }
+
+        return false;
+    }
 }

@@ -85,6 +85,8 @@ class MedicineInventory extends Model
         return $this->db->execute() ? $this->db->lastInsertId() : false;
     }
 
+
+
     public function updateStock($id, $newStockLevel)
     {
         $this->db->query("UPDATE {$this->table} 
@@ -128,14 +130,96 @@ class MedicineInventory extends Model
     {
         $this->db->query("SELECT 
                 m.category,
-                COUNT(CASE WHEN ml.action_type = 'restock' THEN 1 END) as prescribed_count,
-                COUNT(CASE WHEN ml.action_type = 'dispense' THEN 1 END) as dispensed_count
-                FROM medicine_inventory m
+                CASE 
+                    WHEN ml.doctor_id IS NOT NULL THEN CONCAT('Dr. ', d.first_name, ' ', d.last_name)
+                    WHEN ml.staff_id IS NOT NULL THEN CONCAT(s.first_name, ' ', s.last_name)
+                END as dispenser_name,
+                CASE 
+                    WHEN ml.doctor_id IS NOT NULL THEN 'Doctor'
+                    WHEN ml.staff_id IS NOT NULL THEN r.role_name
+                END as role,
+                COUNT(ml.id) as dispensed_count,
+                SUM(ml.quantity) as total_dispensed
+                FROM {$this->table} m
                 LEFT JOIN medicine_logs ml ON m.id = ml.medicine_id
-                GROUP BY m.category
-                ORDER BY prescribed_count DESC
+                LEFT JOIN staff s ON ml.staff_id = s.id
+                LEFT JOIN doctors d ON ml.doctor_id = d.id
+                LEFT JOIN roles r ON s.role_id = r.id
+                WHERE ml.action_type = 'dispense'
+                GROUP BY m.category, COALESCE(ml.doctor_id, ml.staff_id)
+                ORDER BY total_dispensed DESC
                 LIMIT 5");
+    
+        return $this->db->resultSet();
+    }
+
+
+  
+
+    public function getAllMedicineCategories()
+    {
+        $this->db->query("SELECT DISTINCT category FROM {$this->table} WHERE category IS NOT NULL AND category != '' ORDER BY category ASC");
+        $results = $this->db->resultSet();
+
+        // Extract just the category names from the result objects
+        $categories = [];
+        foreach ($results as $result) {
+            $categories[] = $result->category;
+        }
+
+        return $categories;
+    }
+
+    public function searchMedicines($category = '', $searchTerm = '')
+    {
+        $query = $this->buildBaseQuery();
+        $conditions = [];
+        $params = [];
+
+     
+        if (!empty($category)) {
+            $conditions[] = "m.category = :category";
+            $params[':category'] = $category;
+        }
+
+
+        if (!empty($searchTerm)) {
+            $conditions[] = "(m.name LIKE :search OR m.dosage LIKE :search OR m.form LIKE :search)";
+            $params[':search'] = "%{$searchTerm}%";
+        }
+
+
+        $conditions[] = "m.status = 'Available'";
+
+
+        $conditions[] = "m.stock_level > 0";
+
+       
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        // Add ordering
+        $query .= " ORDER BY m.name ASC";
+
+        $this->db->query($query);
+
+        foreach ($params as $param => $value) {
+            $this->db->bind($param, $value);
+        }
 
         return $this->db->resultSet();
+    }
+
+
+  
+
+    public function updateStockLevel($id, $newStockLevel)
+    {
+        $this->db->query("UPDATE {$this->table} SET stock_level = :stock_level, updated_at = :updated_at WHERE id = :id");
+        $this->db->bind(':stock_level', $newStockLevel);
+        $this->db->bind(':updated_at', date('Y-m-d H:i:s'));
+        $this->db->bind(':id', $id);
+        return $this->db->execute();
     }
 }

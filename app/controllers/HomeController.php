@@ -23,7 +23,7 @@ class HomeController extends Controller
         $this->patientModel = new Patient();
     }
 
-  
+
 
     public function index()
     {
@@ -32,11 +32,12 @@ class HomeController extends Controller
         ]);
     }
 
-    public function onBoarding() {
+    public function onBoarding()
+    {
         $this->view('pages/auth/onBoarding', [
             'title' => 'Health Recording System',
         ]);
-        
+
     }
 
     public function appointment()
@@ -470,7 +471,7 @@ class HomeController extends Controller
 
             // Handle profile image upload
             $profileImagePath = $this->handlePatientProfileImage();
-            
+
             // Check if there was an error with the image upload
             if (is_array($profileImagePath) && isset($profileImagePath['error'])) {
                 error_log("Profile image upload error: " . $profileImagePath['error']);
@@ -485,7 +486,7 @@ class HomeController extends Controller
                 error_log("Calculated age from DOB: $age");
             }
 
-    
+
             $patient = $this->patientModel->getPatientByEmail($email);
 
             // If patient doesn't exist, create a new one
@@ -526,13 +527,13 @@ class HomeController extends Controller
             } else {
                 $patientId = $patient->id;
                 error_log("Existing patient found with ID: $patientId");
-                
+
                 // Update patient profile if a new image was uploaded
                 if (!empty($profileImagePath)) {
                     $this->patientModel->update($patientId, ['profile' => $profileImagePath]);
                     error_log("Updated patient profile image");
                 }
-                
+
                 // Update patient age if it has changed
                 if ($age != $patient->age) {
                     $this->patientModel->update($patientId, ['age' => $age]);
@@ -546,7 +547,7 @@ class HomeController extends Controller
 
             // Create appointment
             $appointmentData = [
-                'patient_id' => $patientId, 
+                'patient_id' => $patientId,
                 'doctor_id' => $doctorId,
                 'appointment_date' => $appointmentDate,
                 'appointment_time' => $appointmentTime,

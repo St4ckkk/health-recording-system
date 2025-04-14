@@ -342,11 +342,11 @@
 
                     <!-- Action Buttons -->
                     <div class="action-buttons">
-                        <button class="save-draft-btn">
+                        <button class="save-draft-btn" onclick="saveDraft()">
                             <i class="bx bx-save"></i>
                             Save Draft
                         </button>
-                        <button class="complete-checkup-btn pulse-animation shine-effect">
+                        <button class="complete-checkup-btn pulse-animation shine-effect" onclick="completeCheckup()">
                             <i class="bx bx-check"></i>
                             Complete Checkup
                         </button>
@@ -357,7 +357,7 @@
     </div>
 
     <!-- Floating Save Button -->
-    <button class="floating-save-btn glow-effect">
+    <button class="floating-save-btn glow-effect" onclick="saveDraft()">
         <i class="bx bx-save"></i>
     </button>
 
@@ -398,33 +398,15 @@
                     });
                 }, 10000);
             }, 1000);
-
-            // Floating save button functionality
-            const floatingSaveBtn = document.querySelector('.floating-save-btn');
-            if (floatingSaveBtn) {
-                floatingSaveBtn.addEventListener('click', function () {
-                    // Quick save functionality
-                    const formData = new FormData(document.querySelector('form'));
-                    formData.append('quick_save', 'true');
-
-                    // Show save indicator
-                    this.innerHTML = '<i class="bx bx-check"></i>';
-                    this.classList.add('bg-green-500');
-
-                    // Reset after 2 seconds
-                    setTimeout(() => {
-                        this.innerHTML = '<i class="bx bx-save"></i>';
-                        this.classList.remove('bg-green-500');
-                    }, 2000);
-
-                    // Here you would normally send the form data to the server
-                    console.log('Quick save triggered');
-                });
-            }
         });
     </script>
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/l10n/fr.js"></script>
     <script src="<?= BASE_URL ?>/js/doctor/checkup.js"></script>
+    <script src="/js/doctor/vitals.js"></script>
+    <script src="/js/doctor/medications.js"></script>
+    <script src="/js/doctor/diagnosis.js"></script>
 </body>
 
 </html>
+
+]
