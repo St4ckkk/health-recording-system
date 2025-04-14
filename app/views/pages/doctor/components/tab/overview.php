@@ -7,11 +7,11 @@
             <span class="text-2xl font-bold">
                 <?= isset($vitals->blood_pressure) ? $vitals->blood_pressure : '138/88' ?>
             </span>
+
             <?php
-            // Clinical Decision Support for Blood Pressure
             $systolic = explode('/', $vitals->blood_pressure ?? '138/88')[0];
             $diastolic = explode('/', $vitals->blood_pressure ?? '138/88')[1];
-
+            
             if ($systolic >= 140 || $diastolic >= 90) {
                 echo '<span class="ml-2 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">High</span>';
                 echo '<div class="absolute top-0 right-0 m-2 text-red-500 cursor-help" title="Consider lifestyle modifications and medication review">
@@ -19,8 +19,25 @@
                       </div>';
             } elseif ($systolic <= 90 || $diastolic <= 60) {
                 echo '<span class="ml-2 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">Low</span>';
+            } else {
+                echo '<span class="ml-2 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Normal</span>';
             }
             ?>
+            
+            <!-- <?php
+            $glucose = $vitals->glucose_level ?? 126;
+            if ($glucose >= 200) {
+                echo '<span class="ml-2 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">High Risk</span>';
+                echo '<div class="absolute top-0 right-0 m-2 text-red-500 cursor-help" 
+                     title="Consider HbA1c test and diabetes management plan">
+                     <i class="bx bx-info-circle px-1"></i>
+                     </div>';
+            } elseif ($glucose >= 140) {
+                echo '<span class="ml-2 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">Pre-diabetic</span>';
+            } else {
+                echo '<span class="ml-2 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Normal</span>';
+            }
+            ?> -->
         </div>
         <div class="mt-2 text-xs">
             <?php if (isset($vitals->bp_trend)): ?>

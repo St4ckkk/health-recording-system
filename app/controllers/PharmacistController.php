@@ -345,4 +345,10 @@ class PharmacistController extends Controller
         }
         exit;
     }
+
+    public function prescriptions() {
+        $this->view('pages/doctor/prescription.view', [
+            'title' => 'Prescriptions',
+        ]);
+    }
 }
