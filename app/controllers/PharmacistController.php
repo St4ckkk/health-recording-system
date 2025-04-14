@@ -103,6 +103,57 @@ class PharmacistController extends Controller
     }
 
 
+    public function updateMedicine()
+    {
+        if (!$this->isAjaxRequest()) {
+            $this->jsonResponse(['success' => false, 'message' => 'Invalid request method']);
+        }
+
+        $data = $this->getJsonRequestData();
+
+        // Get current medicine data for stock comparison
+        $currentMedicine = $this->medicineInventoryModel->getMedicineById($data['medicineId']);
+
+        try {
+            $updated = $this->medicineInventoryModel->updateMed($data);
+
+            if ($updated) {
+                // Check if stock level has changed
+                if ($currentMedicine && $currentMedicine->stock_level != $data['stockLevel']) {
+                    $stockDifference = $data['stockLevel'] - $currentMedicine->stock_level;
+
+                    // Only create log if stock has changed
+                    if ($stockDifference != 0) {
+                        $logData = [
+                            'medicine_id' => $data['medicineId'],
+                            'action_type' => $stockDifference > 0 ? 'restock' : 'adjustment',
+                            'quantity' => abs($stockDifference),
+                            'previous_stock' => $currentMedicine->stock_level,
+                            'new_stock' => $data['stockLevel'],
+                            'staff_id' => $_SESSION['staff_id'] ?? null,
+                            'doctor_id' => null,
+                            'patient_id' => null,
+                            'remarks' => $stockDifference > 0 ? 'Stock restocked' : 'Stock adjusted'
+                        ];
+
+                        $this->medicineLogsModel->insert($logData);
+                    }
+                }
+
+                $this->jsonResponse(['success' => true, 'message' => 'Medicine updated successfully']);
+            } else {
+                $this->jsonResponse(['success' => false, 'message' => 'Failed to update medicine']);
+            }
+        } catch (\Exception $e) {
+            error_log('Exception while updating medicine: ' . $e->getMessage());
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Database error: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+
     public function reports()
     {
         // Get inventory statistics

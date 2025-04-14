@@ -62,3 +62,4 @@ $router->get('/pharmacist/medicineLogs', 'PharmacistController@medicineLogs');
 $router->get('/pharmacist/reports', 'PharmacistController@reports');
 $router->post('/pharmacist/addMedicine', 'PharmacistController@addMedicine');
 $router->post('/pharmacist/deleteMedicine', 'PharmacistController@deleteMedicine');
+$router->post('/pharmacist/updateMedicine', 'PharmacistController@updateMedicine');

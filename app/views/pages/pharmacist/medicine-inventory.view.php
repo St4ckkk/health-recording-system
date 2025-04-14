@@ -467,7 +467,7 @@
                             <button class="view-logs-btn"
                                 onclick="window.location.href='<?= BASE_URL ?>/pharmacist/medicineLogs'">
                                 <i class='bx bx-history'></i>
-                                <span>View Dispense Logs</span>
+                                <span>Medicine Logs</span>
                             </button>
                             <button class="add-medicine-btn"
                                 onclick="window.location.href='<?= BASE_URL ?>/pharmacist/addMedicine'">
@@ -537,12 +537,15 @@
                             <table class="medicines-table w-full">
                                 <thead>
                                     <tr>
+
                                         <th>Name</th>
                                         <th>Category</th>
                                         <th>Form</th>
                                         <th>Dosage</th>
                                         <th>Stock Level</th>
                                         <th>Expiry Date</th>
+                                        <th>Manufacturer</th>
+                                        <th>Supplier</th>
                                         <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
@@ -598,6 +601,9 @@
                                                 </td>
                                                 <td class="py-3 px-4"><?= date('Y-m-d', strtotime($medicine->expiry_date)) ?>
                                                 </td>
+                                                <td class="py-3 px-4"><?= htmlspecialchars($medicine->manufacturer ?? 'N/A') ?>
+                                                </td>
+                                                <td class="py-3 px-4"><?= htmlspecialchars($medicine->supplier ?? 'N/A') ?></td>
                                                 <td class="py-3 px-4">
                                                     <span class="status-badge border 
                                                         <?php
@@ -616,8 +622,17 @@
                                                 <td class="py-3 px-4">
                                                     <div class="action-buttons-container">
                                                         <div class="tooltip">
-                                                            <button class="p-2 text-yellow-600 hover:text-yellow-800"
-                                                                onclick="window.location.href='<?= BASE_URL ?>/doctor/editMedicine/?id=<?= $medicine->id ?>'"
+                                                            <button class="p-2 text-yellow-600 hover:text-yellow-800" onclick="openEditModal({
+                                                                    id: <?= $medicine->id ?>,
+                                                                    name: '<?= htmlspecialchars($medicine->name, ENT_QUOTES) ?>',
+                                                                    category: '<?= htmlspecialchars($medicine->category, ENT_QUOTES) ?>',
+                                                                    form: '<?= htmlspecialchars($medicine->form, ENT_QUOTES) ?>',
+                                                                    dosage: '<?= htmlspecialchars($medicine->dosage, ENT_QUOTES) ?>',
+                                                                    stock_level: <?= $medicine->stock_level ?>,
+                                                                    expiry_date: '<?= date('Y-m-d', strtotime($medicine->expiry_date)) ?>',
+                                                                    manufacturer: '<?= htmlspecialchars($medicine->manufacturer ?? '', ENT_QUOTES) ?>',
+                                                                    supplier: '<?= htmlspecialchars($medicine->supplier ?? '', ENT_QUOTES) ?>'
+                                                                })"
                                                                 data-medicine-id="<?= htmlspecialchars($medicine->id) ?>">
                                                                 <i class="bx bx-edit text-lg"></i>
                                                                 <span class="tooltip-text">Edit</span>
@@ -659,11 +674,12 @@
 
 
     <?php include(VIEW_ROOT . '/pages/pharmacist/components/modals/add-medicine.php') ?>
-
+    <?php include(VIEW_ROOT . '/pages/pharmacist/components/modals/edit-medicine.php') ?>
     <?php include(VIEW_ROOT . '/pages/pharmacist/components/modals/delete-medicine.php') ?>
     <script src="<?= BASE_URL ?>/js/pharmacist/inventory.js"></script>
     <script src="<?= BASE_URL ?>/js/pharmacist/addMed.js"></script>
     <script src="<?= BASE_URL ?>/js/pharmacist/deleteMed.js"></script>
+    <script src="<?= BASE_URL ?>/js/pharmacist/editMed.js"></script>
     <script>
         const BASE_URL = '<?= BASE_URL ?>';
     </script>

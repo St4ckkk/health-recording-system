@@ -32,6 +32,34 @@ class MedicineInventory extends Model
         return "SELECT " . implode(', ', $fields) . " FROM {$this->table} m";
     }
 
+    public function updateMed($data)
+    {
+        $this->db->query("UPDATE {$this->table} SET 
+            name = :name,
+            category = :category,
+            form = :form,
+            dosage = :dosage,
+            stock_level = :stock_level,
+            expiry_date = :expiry_date,
+            supplier = :supplier,
+            manufacturer = :manufacturer,
+            updated_at = :updated_at
+            WHERE id = :id");
+
+        $this->db->bind(':id', $data['medicineId']);
+        $this->db->bind(':name', $data['medicineName']);
+        $this->db->bind(':category', $data['category']);
+        $this->db->bind(':form', $data['form']);
+        $this->db->bind(':dosage', $data['dosage']);
+        $this->db->bind(':stock_level', $data['stockLevel']);
+        $this->db->bind(':expiry_date', $data['expiryDate']);
+        $this->db->bind(':supplier', $data['supplier']);
+        $this->db->bind(':manufacturer', $data['manufacturer']);
+        $this->db->bind(':updated_at', date('Y-m-d H:i:s'));
+
+        return $this->db->execute();
+    }
+
     public function getAllMedicines()
     {
         $query = $this->buildBaseQuery();
@@ -256,4 +284,6 @@ class MedicineInventory extends Model
         $this->db->bind(':id', $id);
         return $this->db->execute();
     }
+
+
 }
