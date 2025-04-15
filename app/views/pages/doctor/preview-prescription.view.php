@@ -18,7 +18,20 @@
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/flatpickr.min.js"></script>
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/l10n/fr.js"></script>
     <script src="<?= BASE_URL ?>/node_modules/jsbarcode/dist/JsBarcode.all.min.js"></script>
+    <!-- Add this before your scripts -->
+    <input type="hidden" id="prescription-data" value='<?= json_encode([
+        "patientId" => $patient->id,
+        "medications" => $medications,
+        "advice" => $advice,
+        "followUpDate" => $followup_date,
+        "vitalsId" => $vitals->id ?? null,
+        "signature" => $_POST['signature'] ?? ''
+    ]) ?>'>
+    
     <script src="<?= BASE_URL ?>/node_modules/html2canvas/dist/html2canvas.min.js"></script>
+    <script>
+        const BASE_URL = document.querySelector('meta[name="base-url"]').content;
+    </script>
     <style>
         @media print {
             body * {
@@ -140,7 +153,8 @@
                                     <tr class="border-t border-b border-gray-800">
                                         <th class="text-left py-2 w-1/4">Medicine Name</th>
                                         <th class="text-left py-2 w-2/5">Dosage</th>
-                                        <th class="text-left py-2 w-1/3">Duration</th>
+                                        <th class="text-left py-2 w-1/4">Duration</th>
+                                        <th class="text-left py-2 w-1/4">Special Instructions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -149,6 +163,7 @@
                                         <td class="py-2"><?= $count ?>) <?= htmlspecialchars($med['name']) ?></td>
                                         <td class="py-2 dosage-cell"><?= htmlspecialchars($med['dosage']) ?></td>
                                         <td class="py-2"><?= htmlspecialchars($med['duration']) ?></td>
+                                        <td class="py-2 instructions-cell"><?= htmlspecialchars($med['instructions'] ?? '') ?></td>
                                     </tr>
                                     <?php $count++; endforeach; ?>
                                 </tbody>
@@ -200,9 +215,11 @@
                             </div>
                         </div>
 
-                        <!-- Print Button -->
-                        <!-- Action Buttons -->
+                       
                                     <div class="p-6 bg-gray-50 no-print flex gap-4 justify-end">
+                                        <button onclick="savePrescription()" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                                            <i class="bx bx-save mr-2"></i>Save Prescription
+                                        </button>
                                         <button onclick="downloadPrescription()" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                                             <i class="bx bx-download mr-2"></i>Download
                                         </button>
@@ -213,16 +230,18 @@
                                             <i class="bx bx-printer mr-2"></i>Print
                                         </button>
                                     </div>
+                                </div>
+                            </section>
+                        </div>
                     </div>
-                </section>
-            </div>
-        </div>
-    </div>
+                </div>
+                
+                <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/l10n/fr.js"></script>
+                <script src="<?= BASE_URL ?>/node_modules/chart.js/dist/chart.umd.js"></script>
 
-     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/l10n/fr.js"></script>
-    <script src="<?= BASE_URL ?>/node_modules/chart.js/dist/chart.umd.js"></script>
+                <script src="<?= BASE_URL ?>/js/doctor/preview-prescription.js"></script>
     <script>
-        // Generate barcode
+        
         document.addEventListener('DOMContentLoaded', function() {
             // Generate barcode using JsBarcode
             JsBarcode("#barcode", "<?= $patient->patient_reference_number ?>", {
@@ -307,46 +326,98 @@
             });
         });
     </script>
-    <script>
-        function downloadPrescription() {
-            const element = document.querySelector('.print-container');
-            
-            html2canvas(element).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'prescription-<?= $patient->patient_reference_number ?>.png';
-                link.href = canvas.toDataURL();
-                link.click();
-            });
-        }
 
-        function emailPrescription() {
-            const element = document.querySelector('.print-container');
-            
-            html2canvas(element).then(canvas => {
-                const imageData = canvas.toDataURL('image/png');
-                
-                // Send to server
-                fetch('<?= BASE_URL ?>/doctor/email-prescription', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        patientId: '<?= $patient->id ?>',
-                        prescriptionImage: imageData
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Prescription has been emailed to the patient.');
-                    } else {
-                        alert('Failed to send email. Please try again.');
-                    }
-                });
-            });
-        }
-    </script>
+
+
+
+<div id="savePrescriptionModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
+    <div class="w-full max-w-md transform rounded-lg bg-white shadow-xl transition-all duration-300 scale-95 opacity-0" id="savePrescriptionModalContent">
+        <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+            <h3 class="text-lg font-medium text-gray-900">Save Prescription</h3>
+            <button type="button" class="text-gray-400 hover:text-gray-500 focus:outline-none" id="closeSavePrescriptionModal">
+                <i class="bx bx-x text-2xl"></i>
+            </button>
+        </div>
+
+        <div class="px-6 py-4">
+            <div class="rounded-md border border-gray-200 p-3 bg-blue-50 mb-4">
+                <div class="flex items-start">
+                    <i class="bx bx-info-circle text-blue-500 text-lg mr-2"></i>
+                    <p class="text-sm text-blue-700">
+                        Please confirm that you want to save this prescription. This action cannot be undone.
+                    </p>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <div class="rounded-md border border-gray-200 p-3 bg-gray-50">
+                    <div class="flex items-center mb-2">
+                        <i class="bx bx-file text-primary mr-2"></i>
+                        <span class="text-sm font-medium">Prescription Details</span>
+                    </div>
+                    <p class="text-sm text-gray-500">All medication details and instructions will be saved to the patient's record.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end space-x-3 border-t border-gray-200 bg-gray-50 px-6 py-3">
+            <button type="button" id="cancelSavePrescriptionBtn" class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                Cancel
+            </button>
+            <button type="button" id="confirmSavePrescriptionBtn" class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark focus:outline-none">
+                Save Prescription
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Email Prescription Modal -->
+<div id="emailPrescriptionModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
+    <div class="w-full max-w-md transform rounded-lg bg-white shadow-xl transition-all duration-300 scale-95 opacity-0" id="emailPrescriptionModalContent">
+        <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+            <h3 class="text-lg font-medium text-gray-900">Email Prescription</h3>
+            <button type="button" class="text-gray-400 hover:text-gray-500 focus:outline-none" id="closeEmailPrescriptionModal">
+                <i class="bx bx-x text-2xl"></i>
+            </button>
+        </div>
+
+        <div class="px-6 py-4">
+            <div class="rounded-md border border-gray-200 p-3 bg-blue-50 mb-4">
+                <div class="flex items-start">
+                    <i class="bx bx-envelope text-blue-500 text-lg mr-2"></i>
+                    <p class="text-sm text-blue-700">
+                        The prescription will be sent to the patient's registered email address.
+                    </p>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <div class="rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                    <label class="flex cursor-pointer items-start">
+                        <input type="checkbox" id="include_instructions" name="include_instructions" value="1" class="mt-1 mr-2" checked>
+                        <div>
+                            <span class="block text-sm font-medium">Include Instructions</span>
+                            <span class="text-xs text-gray-500">Attach detailed medication instructions</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div>
+                    <label for="email_message" class="block text-sm font-medium text-gray-700 mb-1">Additional Message:</label>
+                    <textarea id="email_message" name="email_message" rows="2" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Add any additional message..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end space-x-3 border-t border-gray-200 bg-gray-50 px-6 py-3">
+            <button type="button" id="cancelEmailPrescriptionBtn" class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                Cancel
+            </button>
+            <button type="button" id="confirmEmailPrescriptionBtn" class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark focus:outline-none">
+                Send Email
+            </button>
+        </div>
+    </div>
+</div>
 </body>
-
 </html>

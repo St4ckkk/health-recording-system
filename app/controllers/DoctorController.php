@@ -16,10 +16,15 @@ use app\models\MedicineLogs;
 use app\models\MedicalRecords;
 use app\models\Immunization;
 use app\models\Diagnosis;
+use app\models\EPrescription;
+use app\models\EPrescriptionMedicines;
+
 
 class DoctorController extends Controller
 {
     private $doctorModel;
+    private $ePrescriptionModel;
+    private $ePrescriptionMedicinesModel;
     private $patientModel;
     private $appointmentModel;
     private $medicineInventoryModel;
@@ -44,6 +49,8 @@ class DoctorController extends Controller
         $this->medicalRecordsModel = new MedicalRecords();
         $this->immunizationModel = new Immunization();
         $this->diagnosisModel = new Diagnosis();
+        $this->ePrescriptionModel = new EPrescription();
+        $this->ePrescriptionMedicinesModel = new EPrescriptionMedicines();
     }
 
 
@@ -528,5 +535,76 @@ class DoctorController extends Controller
             'followup_date' => $followupDate,
             'prescription_date' => $prescriptionDate
         ]);
+    }
+
+    public function savePrescription()
+    {
+        header('Content-Type: application/json');
+        
+        try {
+            if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
+                throw new \Exception('Invalid request method');
+            }
+
+            $doctorId = $_SESSION['doctor']['id'] ?? null;
+            if (!$doctorId) {
+                throw new \Exception('Unauthorized access');
+            }
+
+            $jsonData = file_get_contents('php://input');
+            $data = json_decode($jsonData, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new \Exception('Invalid JSON data: ' . json_last_error_msg());
+            }
+
+            if (!isset($data['patientId'])) {
+                throw new \Exception('Patient ID is required');
+            }
+
+            $prescriptionCode = 'RX-' . date('Ymd') . '-' . uniqid();
+            $prescriptionData = [
+                'prescription_code' => $prescriptionCode,
+                'patient_id' => $data['patientId'],
+                'doctor_id' => $doctorId,
+                'vitals_id' => $data['vitalsId'] ?? null,
+                'diagnosis' => $data['diagnosis'] ?? '',
+                'advice' => $data['advice'] ?? '',
+                'follow_up_date' => $data['followUpDate'] ?? null,
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+
+            $prescriptionId = $this->ePrescriptionModel->insert($prescriptionData);
+            if (!$prescriptionId) {
+                throw new \Exception('Failed to save prescription');
+            }
+
+            if (!empty($data['medications'])) {
+                $success = $this->ePrescriptionMedicinesModel->insertBatch($prescriptionId, $data['medications']);
+                if (!$success) {
+                    $this->ePrescriptionModel->delete($prescriptionId);
+                    throw new \Exception('Failed to save prescription medications');
+                }
+            }
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Prescription saved successfully',
+                'prescriptionId' => $prescriptionId
+            ]);
+        
+        } catch (\Exception $e) {
+            error_log("Prescription Save Error: " . $e->getMessage());
+            
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to save prescription: ' . $e->getMessage(),
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ]
+            ]);
+        }
     }
 }
