@@ -474,4 +474,59 @@ class DoctorController extends Controller
             'appointments' => $appointments
         ]);
     }
+
+    public function prescriptions()
+    {
+        $doctorId = $_SESSION['doctor']['id'] ?? null;
+        $patientId = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+        if (!$doctorId) {
+            $this->redirect('/doctor');
+            return;
+        }
+
+        $patient = $this->patientModel->getPatientById($patientId);
+        $vitals = $this->vitalsModel->getLatestVitalsByPatientId($patientId);
+
+        $this->view('pages/doctor/prescription.view', [
+            'title' => 'Create Prescription',
+            'patient' => $patient,
+            'vitals' => $vitals
+        ]);
+    }
+
+    public function previewPrescription()
+    {
+        $doctorId = $_SESSION['doctor']['id'] ?? null;
+        if (!$doctorId) {
+            $this->redirect('/doctor');
+            return;
+        }
+
+        // Get form data
+        $patientId = $_POST['patient_id'] ?? 0;
+        $medications = $_POST['medications'] ?? [];
+        $advice = $_POST['advice'] ?? '';
+        $followupDate = $_POST['followup_date'] ?? '';
+        $prescriptionDate = $_POST['prescription_date'] ?? date('d-M-Y');
+
+        // Get patient and vitals data
+        $patient = $this->patientModel->getPatientById($patientId);
+        $vitals = $this->vitalsModel->getLatestVitalsByPatientId($patientId);
+
+        if (!$patient) {
+            $this->redirect('/doctor/patients');
+            return;
+        }
+
+        $this->view('pages/doctor/preview-prescription.view', [
+            'title' => 'Preview Prescription',
+            'patient' => $patient,
+            'vitals' => $vitals,
+            'medications' => $medications,
+            'advice' => $advice,
+            'followup_date' => $followupDate,
+            'prescription_date' => $prescriptionDate
+        ]);
+    }
 }

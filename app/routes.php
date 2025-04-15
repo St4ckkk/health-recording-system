@@ -54,7 +54,8 @@ $router->get('/doctor/get-medicine-categories', 'DoctorController@getMedicineCat
 $router->get('/doctor/search-medicines', 'DoctorController@searchMedicines');
 $router->post('/doctor/save-checkup', 'DoctorController@saveCheckup');
 $router->get('/doctor/appointments', 'DoctorController@appointments');
-
+$router->get('/doctor/prescriptions', 'DoctorController@prescriptions');
+$router->post('/doctor/preview-prescription', 'DoctorController@previewPrescription');
 // Pharmacist routes
 $router->get('/pharmacist/dashboard', 'PharmacistController@dashboard');
 $router->get('/pharmacist/medicinesInventory', 'PharmacistController@medicineInventory');
@@ -63,4 +64,3 @@ $router->get('/pharmacist/reports', 'PharmacistController@reports');
 $router->post('/pharmacist/addMedicine', 'PharmacistController@addMedicine');
 $router->post('/pharmacist/deleteMedicine', 'PharmacistController@deleteMedicine');
 $router->post('/pharmacist/updateMedicine', 'PharmacistController@updateMedicine');
-$router->get('/pharmacist/prescriptions', 'PharmacistController@prescriptions');

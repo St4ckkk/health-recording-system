@@ -24,7 +24,9 @@ class Doctor extends Model
 
     public function getDoctorById($id)
     {
-        return $this->getById($id);
+        $this->db->query("SELECT * FROM doctors WHERE id = :id");
+        $this->db->bind(':id', $id);
+        return $this->db->single();
     }
 
     public function getDoctorsByStatus($status)
@@ -88,6 +90,7 @@ class Doctor extends Model
             middle_name, 
             suffix, 
             specialization, 
+            license_number,
             contact_number, 
             email, 
             max_appointments_per_day,    
@@ -103,6 +106,7 @@ class Doctor extends Model
             :middle_name, 
             :suffix, 
             :specialization, 
+            :license_number,  
             :contact_number, 
             :email, 
             :max_appointments_per_day, 
@@ -120,6 +124,7 @@ class Doctor extends Model
         $this->db->bind(':middle_name', $data['middle_name']);
         $this->db->bind(':suffix', $data['suffix']);
         $this->db->bind(':specialization', $data['specialization']);
+        $this->db->bind(':license_number', $data['license_number']);
         $this->db->bind(':contact_number', $data['contact_number']);
         $this->db->bind(':email', $data['email']);
         $this->db->bind(':max_appointments_per_day', $data['max_appointments_per_day']);
