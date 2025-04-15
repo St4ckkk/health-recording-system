@@ -18,12 +18,55 @@
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/flatpickr.min.js"></script>
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/l10n/fr.js"></script>
     <script src="<?= BASE_URL ?>/node_modules/jsbarcode/dist/JsBarcode.all.min.js"></script>
+    <script src="<?= BASE_URL ?>/node_modules/html2canvas/dist/html2canvas.min.js"></script>
     <style>
         @media print {
-            .no-print { display: none !important; }
-            .print-container { width: 100%; margin: 0; padding: 0; }
+            body * {
+                visibility: hidden;
+            }
+            .print-container, .print-container * {
+                visibility: visible;
+            }
+            .print-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            .no-print { 
+                display: none !important; 
+            }
+            /* Ensure charts fit in print */
+            .w-1/2 {
+                width: 45% !important;
+            }
+            .h-48 {
+                height: 200px !important;
+            }
+            /* Hide URL and preview elements */
+            @page {
+                margin: 0.5cm;
+                size: A4;
+            }
+            a[href]:after {
+                content: none !important;
+            }
+            .w-1/2 {
+                width: 100% !important;
+            }
+            .h-48 {
+                height: 150px !important;
+            }
+            canvas {
+                max-width: 100% !important;
+                max-height: 100% !important;
+            }
         }
-        .dosage-cell { background-color: rgba(209, 250, 229, 0.4); }
+        .dosage-cell { 
+            background-color: rgba(209, 250, 229, 0.4); 
+        }
     </style>
 </head>
 
@@ -45,7 +88,7 @@
                     </div>
 
                     <!-- Prescription Preview -->
-                    <div class="bg-white shadow-lg rounded-lg overflow-hidden print-container">
+                    <div class="rounded-lg overflow-hidden print-container">
                         <!-- Clinic Header -->
                         <div class="p-6 border-b flex justify-between items-center">
                             <!-- Doctor Info -->
@@ -137,20 +180,39 @@
                                 </div>
                             </div>
                         </div>
-
+                                        
                         <!-- Signature -->
-                        <div class="p-6 text-right">
-                            <p>Signature</p>
-                            <p class="font-medium mt-4">Dr. <?= htmlspecialchars($_SESSION['doctor']['first_name'] . ' ' . $_SESSION['doctor']['last_name']) ?></p>
-                            <p class="text-sm text-gray-600"><?= htmlspecialchars($_SESSION['doctor']['qualifications'] ?? 'M.B.B.S.') ?></p>
+                        <div class="p-6">
+                            <div class="flex flex-col items-end">
+                                <div class="text-right" style="min-height: 100px;">
+                                    <?php if (isset($_POST['signature']) && !empty($_POST['signature'])): ?>
+                                        <img src="<?= $_POST['signature'] ?>" 
+                                             alt="Doctor's Signature" 
+                                             style="height: 80px; display: inline-block; margin-bottom: -20px;">
+                                    <?php endif; ?>
+                                    
+                                    <div class="text-right mt-6">
+                                        <p class="font-medium text-gray-800">Dr. <?= htmlspecialchars($_SESSION['doctor']['first_name'] . ' ' . $_SESSION['doctor']['last_name']) ?></p>
+                                        <p class="text-sm text-blue-600 uppercase"><?= htmlspecialchars($_SESSION['doctor']['specialization'] ?? 'M.B.B.S.') ?></p>
+                                    </div>
+                                </div>
+                              
+                            </div>
                         </div>
 
                         <!-- Print Button -->
-                        <div class="p-6 bg-gray-50 no-print">
-                            <button onclick="window.print()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                <i class="bx bx-printer mr-2"></i>Print Prescription
-                            </button>
-                        </div>
+                        <!-- Action Buttons -->
+                                    <div class="p-6 bg-gray-50 no-print flex gap-4 justify-end">
+                                        <button onclick="downloadPrescription()" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                            <i class="bx bx-download mr-2"></i>Download
+                                        </button>
+                                        <button onclick="emailPrescription()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                            <i class="bx bx-envelope mr-2"></i>Email to Patient
+                                        </button>
+                                        <button onclick="window.print()" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                                            <i class="bx bx-printer mr-2"></i>Print
+                                        </button>
+                                    </div>
                     </div>
                 </section>
             </div>
@@ -244,6 +306,46 @@
                 }
             });
         });
+    </script>
+    <script>
+        function downloadPrescription() {
+            const element = document.querySelector('.print-container');
+            
+            html2canvas(element).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'prescription-<?= $patient->patient_reference_number ?>.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+
+        function emailPrescription() {
+            const element = document.querySelector('.print-container');
+            
+            html2canvas(element).then(canvas => {
+                const imageData = canvas.toDataURL('image/png');
+                
+                // Send to server
+                fetch('<?= BASE_URL ?>/doctor/email-prescription', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        patientId: '<?= $patient->id ?>',
+                        prescriptionImage: imageData
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Prescription has been emailed to the patient.');
+                    } else {
+                        alert('Failed to send email. Please try again.');
+                    }
+                });
+            });
+        }
     </script>
 </body>
 
