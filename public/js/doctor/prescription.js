@@ -79,10 +79,8 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('signatureData').value = signaturePad.toDataURL();
         }
     });
-});
 
-
-document.addEventListener('DOMContentLoaded', function() {
+    // Initialize flatpickr
     flatpickr("input[placeholder='Pick a date']", {
         dateFormat: "d-M-Y",
     });
@@ -92,58 +90,68 @@ document.addEventListener('DOMContentLoaded', function() {
         defaultDate: "27-Apr-2023"
     });
 
- 
+    // Medications functionality
     const medicationsContainer = document.getElementById('medicationsContainer');
     const addMedicationBtn = document.getElementById('addMedication');
     let medicationCount = 0;
 
-    function createMedicationCard() {
-        medicationCount++;
-        const card = document.createElement('div');
-        card.className = 'border rounded-md p-4';
-        card.innerHTML = `
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-medium text-gray-800">Medication #${medicationCount}</h3>
-                <button type="button" class="text-red-500 hover:text-red-700 delete-medication">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                </button>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Medication Name</label>
-                    <input type="text" name="medications[${medicationCount}][name]" placeholder="TAB. DEMO MEDICINE ${medicationCount}" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Total Quantity</label>
-                    <input type="text" name="medications[${medicationCount}][quantity]" placeholder="20" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
-                </div>
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Dosage Instructions</label>
-                    <input type="text" name="medications[${medicationCount}][dosage]" placeholder="1 Morning, 1 Night (Before Food)" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Duration</label>
-                    <input type="text" name="medications[${medicationCount}][duration]" placeholder="10 Days" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
-                </div>
-                <div class="md:col-span-3">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Special Instructions</label>
-                    <textarea name="medications[${medicationCount}][instructions]" placeholder="Take with food, avoid alcohol, etc." rows="2" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"></textarea>
-                </div>
-            </div>
-        `;
+    if (medicationsContainer && addMedicationBtn) {
+        // Add grid class to container
+        medicationsContainer.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4';
 
-        medicationsContainer.appendChild(card);
+        function createMedicationCard() {
+            medicationCount++;
+            const card = document.createElement('div');
+            // Remove margin classes as we're using grid gap
+            card.className = 'bg-white border rounded-md p-4 shadow-sm';
+            
+            // Rest of the createMedicationCard function remains the same
+            card.innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-medium text-gray-800">Medication #${medicationCount}</h3>
+                    <button type="button" class="text-red-500 hover:text-red-700 delete-medication">
+                        <i class="bx bx-trash text-xl"></i>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Medication Name</label>
+                        <input type="text" name="medications[${medicationCount}][name]" required placeholder="Enter medication name" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Total Quantity</label>
+                        <input type="text" name="medications[${medicationCount}][quantity]" required placeholder="e.g., 20 tablets" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Dosage Instructions</label>
+                        <input type="text" name="medications[${medicationCount}][dosage]" required placeholder="e.g., 1 tablet twice daily" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Duration</label>
+                        <input type="text" name="medications[${medicationCount}][duration]" required placeholder="e.g., 7 days" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Special Instructions</label>
+                        <textarea name="medications[${medicationCount}][instructions]" rows="2" placeholder="Any special instructions" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"></textarea>
+                    </div>
+                </div>
+            `;
 
-        // Add delete functionality
-        card.querySelector('.delete-medication').addEventListener('click', function() {
-            card.remove();
-        });
+            medicationsContainer.appendChild(card);
+
+            // Add delete functionality
+            const deleteBtn = card.querySelector('.delete-medication');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', function() {
+                    card.remove();
+                });
+            }
+        }
+
+        // Add click event listener to the Add Medication button
+        addMedicationBtn.addEventListener('click', createMedicationCard);
+
+        // Create initial medication card
+        createMedicationCard();
     }
-
-    addMedicationBtn.addEventListener('click', createMedicationCard);
-
-    // Add initial medication card
-    createMedicationCard();
 });

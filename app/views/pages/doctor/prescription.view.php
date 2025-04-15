@@ -135,7 +135,8 @@
                                     </button>
                                 </div>
                                 <div class="p-4">
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="medicationsContainer">
+                                    <!-- Change the grid layout here -->
+                                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="medicationsContainer">
                                         <!-- Medication cards will be added here -->
                                     </div>
                                 </div>
@@ -220,7 +221,103 @@
 
     <script src="<?= BASE_URL ?>/js/doctor/checkup.js"></script>
     <script src="<?= BASE_URL ?>/js/doctor/prescription.js"></script>
-   
+    <!-- <script>
+        // Initialize flatpickr for date inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr("input[placeholder='Pick a date']", {
+                dateFormat: "d-M-Y",
+            });
+            
+            flatpickr("input[value='27-Apr-2023']", {
+                dateFormat: "d-M-Y",
+                defaultDate: "27-Apr-2023"
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize signature pad
+            const canvas = document.getElementById('signaturePad');
+            
+            // Set canvas width
+            canvas.width = canvas.offsetWidth;
+            
+            const signaturePad = new SignaturePad(canvas, {
+                backgroundColor: 'rgb(255, 255, 255)',
+                penColor: 'rgb(0, 0, 0)',
+                minWidth: 1,
+                maxWidth: 2.5
+            });
+
+            // Handle window resize
+            function resizeCanvas() {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                canvas.width = canvas.offsetWidth * ratio;
+                canvas.height = canvas.height * ratio;
+                canvas.getContext("2d").scale(ratio, ratio);
+            }
+
+            window.onresize = resizeCanvas;
+            resizeCanvas();
+
+            // Clear signature
+            document.getElementById('clearSignature').addEventListener('click', () => {
+                signaturePad.clear();
+            });
+
+            // Handle signature image upload
+                        const uploadBtn = document.getElementById('uploadSignature');
+                        const fileInput = document.getElementById('signatureImage');
+                        
+                        uploadBtn.addEventListener('click', () => {
+                            fileInput.click();
+                        });
+
+                        fileInput.addEventListener('change', function(e) {
+                            const file = e.target.files[0];
+                            if (file) {
+                                const reader = new FileReader();
+                                reader.onload = function(event) {
+                                    const img = new Image();
+                                    img.onload = function() {
+                                        const canvas = document.getElementById('signaturePad');
+                                        const ctx = canvas.getContext('2d');
+                                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                                        
+                                        // Calculate aspect ratio to fit image within canvas
+                                        const scale = Math.min(
+                                            canvas.width / img.width,
+                                            canvas.height / img.height
+                                        );
+                                        const x = (canvas.width - img.width * scale) / 2;
+                                        const y = (canvas.height - img.height * scale) / 2;
+                                        
+                                        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+                                        document.getElementById('signatureData').value = canvas.toDataURL();
+                                    };
+                                    img.src = event.target.result;
+                                };
+                                reader.readAsDataURL(file);
+                            }
+                        });
+            // Handle form submission
+            document.querySelector('form').addEventListener('submit', function(e) {
+                const signatureData = document.getElementById('signatureData').value;
+                if (signaturePad.isEmpty() && !signatureData) {
+                    e.preventDefault();
+                    showToast('error', 'Signature Required', 'Please provide a signature before submitting the prescription.');
+                    return;
+                }
+                
+                // If signature pad is empty but we have uploaded image data, use that
+                if (signaturePad.isEmpty() && signatureData) {
+                    document.getElementById('signatureData').value = signatureData;
+                } else {
+                    document.getElementById('signatureData').value = signaturePad.toDataURL();
+                }
+            });
+        });
+    </script> -->
 </body>
 
 </html>
