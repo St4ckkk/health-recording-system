@@ -121,159 +121,168 @@
                     </div>
 
                     <!-- Prescription Preview -->
-                    <div class="rounded-lg overflow-hidden print-container">
-                        <!-- Clinic Header -->
-                        <div class="p-6 border-b flex justify-between items-center">
-                            <!-- Doctor Info -->
-                            <div class="text-teal-600">
-                                <h2 class="text-xl font-semibold">Dr.
-                                    <?= htmlspecialchars($_SESSION['doctor']['first_name'] . ' ' . $_SESSION['doctor']['last_name']) ?>
-                                </h2>
-                                <p class="text-gray-600 uppercase">
-                                    <?= htmlspecialchars($_SESSION['doctor']['specialization'] ?? 'M.B.B.S.') ?> | Reg.
-                                    No: <?= htmlspecialchars($_SESSION['doctor']['license_number']) ?>
-                                </p>
-                                <p class="text-gray-600">Mob. No:
-                                    <?= htmlspecialchars($_SESSION['doctor']['contact_number'] ?? 'N/A') ?>
-                                </p>
+                    <div class="rounded-lg overflow-hidden">
+                        <!-- Prescription Content - This will be captured -->
+                        <div class="print-container" id="prescription-content">
+                            <!-- Clinic Header -->
+                            <div class="p-6 border-b flex justify-between items-center">
+                                <!-- Doctor Info -->
+                                <div class="text-teal-600">
+                                    <h2 class="text-xl font-semibold">Dr.
+                                        <?= htmlspecialchars($_SESSION['doctor']['first_name'] . ' ' . $_SESSION['doctor']['last_name']) ?>
+                                    </h2>
+                                    <p class="text-gray-600 uppercase">
+                                        <?= htmlspecialchars($_SESSION['doctor']['specialization'] ?? 'M.B.B.S.') ?> |
+                                        Reg.
+                                        No: <?= htmlspecialchars($_SESSION['doctor']['license_number']) ?>
+                                    </p>
+                                    <p class="text-gray-600">Mob. No:
+                                        <?= htmlspecialchars($_SESSION['doctor']['contact_number'] ?? 'N/A') ?>
+                                    </p>
+                                </div>
+
+                                <!-- Logo -->
+                                <div class="flex justify-center items-center">
+                                    <img src="<?= BASE_URL ?>/assets/images/logo.png" alt="Care Clinic" class="h-16">
+                                </div>
+
+                                <div class="text-right text-teal-600">
+                                    <h3 class="text-lg font-semibold">Health Care Center</h3>
+                                    <p class="text-gray-600">123 Medical Plaza, Downtown Area</p>
+                                    <p class="text-gray-600">Ph: (555) 123-4567, Hours: 9:00 AM - 5:00 PM</p>
+                                    <p class="text-gray-600">Weekends: By Appointment Only</p>
+                                </div>
                             </div>
 
-                            <!-- Logo -->
-                            <div class="flex justify-center items-center">
-                                <img src="<?= BASE_URL ?>/assets/images/logo.png" alt="Care Clinic" class="h-16">
+                            <hr class="border-t border-gray-800">
+
+                            <!-- Barcode -->
+                            <div class="px-6 pt-4">
+                                <svg id="barcode"></svg>
                             </div>
 
-                            <div class="text-right text-teal-600">
-                                <h3 class="text-lg font-semibold">Health Care Center</h3>
-                                <p class="text-gray-600">123 Medical Plaza, Downtown Area</p>
-                                <p class="text-gray-600">Ph: (555) 123-4567, Hours: 9:00 AM - 5:00 PM</p>
-                                <p class="text-gray-600">Weekends: By Appointment Only</p>
+                            <!-- Patient Details -->
+                            <div class="p-6 flex justify-between">
+                                <div>
+                                    <p class="font-bold">ID: <?= htmlspecialchars($patient->patient_reference_number) ?>
+                                        -
+                                        <?= htmlspecialchars(strtoupper($patient->first_name . ' ' . $patient->last_name)) ?>
+                                        (<?= htmlspecialchars(substr($patient->gender, 0, 1)) ?>)
+                                    </p>
+                                    <p>Address: <?= htmlspecialchars(strtoupper($patient->address)) ?></p>
+                                    <p>Temp (deg): <?= htmlspecialchars($vitals->temperature ?? 'N/A') ?>, BP:
+                                        <?= htmlspecialchars($vitals->blood_pressure ?? 'N/A') ?> mmHg
+                                    </p>
+                                </div>
+                                <div class="text-right">
+                                    <p>Date: <?= date('d-M-Y, h:i A') ?></p>
+                                </div>
                             </div>
-                        </div>
 
-                        <hr class="border-t border-gray-800">
+                            <hr class="border-t border-gray-800 mx-6">
 
-                        <!-- Barcode -->
-                        <div class="px-6 pt-4">
-                            <svg id="barcode"></svg>
-                        </div>
-
-                        <!-- Patient Details -->
-                        <div class="p-6 flex justify-between">
-                            <div>
-                                <p class="font-bold">ID: <?= htmlspecialchars($patient->patient_reference_number) ?> -
-                                    <?= htmlspecialchars(strtoupper($patient->first_name . ' ' . $patient->last_name)) ?>
-                                    (<?= htmlspecialchars(substr($patient->gender, 0, 1)) ?>)
-                                </p>
-                                <p>Address: <?= htmlspecialchars(strtoupper($patient->address)) ?></p>
-                                <p>Temp (deg): <?= htmlspecialchars($vitals->temperature ?? 'N/A') ?>, BP:
-                                    <?= htmlspecialchars($vitals->blood_pressure ?? 'N/A') ?> mmHg
-                                </p>
-                            </div>
-                            <div class="text-right">
-                                <p>Date: <?= date('d-M-Y, h:i A') ?></p>
-                            </div>
-                        </div>
-
-                        <hr class="border-t border-gray-800 mx-6">
-
-                        <!-- Medications -->
-                        <div class="px-6 py-4">
-                            <h4 class="font-semibold mb-2">R</h4>
-                            <table class="w-full border-collapse">
-                                <thead>
-                                    <tr class="border-t border-b border-gray-800">
-                                        <th class="text-left py-2 w-1/4">Medicine Name</th>
-                                        <th class="text-left py-2 w-2/5">Dosage</th>
-                                        <th class="text-left py-2 w-1/4">Duration</th>
-                                        <th class="text-left py-2 w-1/4">Special Instructions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php $count = 1;
-                                    foreach ($medications as $med): ?>
-                                        <tr class="border-b border-gray-300">
-                                            <td class="py-2"><?= $count ?>) <?= htmlspecialchars($med['name']) ?></td>
-                                            <td class="py-2 dosage-cell"><?= htmlspecialchars($med['dosage']) ?></td>
-                                            <td class="py-2"><?= htmlspecialchars($med['duration']) ?></td>
-                                            <td class="py-2 instructions-cell">
-                                                <?= htmlspecialchars($med['instructions'] ?? '') ?>
-                                            </td>
+                            <!-- Medications -->
+                            <div class="px-6 py-4">
+                                <h4 class="font-semibold mb-2">R</h4>
+                                <table class="w-full border-collapse">
+                                    <thead>
+                                        <tr class="border-t border-b border-gray-800">
+                                            <th class="text-left py-2 w-1/4">Medicine Name</th>
+                                            <th class="text-left py-2 w-2/5">Dosage</th>
+                                            <th class="text-left py-2 w-1/4">Duration</th>
+                                            <th class="text-left py-2 w-1/4">Special Instructions</th>
                                         </tr>
-                                        <?php $count++; endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Advice -->
-                        <div class="px-6 py-2">
-                            <p class="font-bold">Advice Given:</p>
-                            <p class="mt-1">* <?= htmlspecialchars($advice) ?></p>
-                        </div>
-
-                        <!-- Follow Up -->
-                        <div class="px-6 py-2">
-                            <p class="font-bold">Follow Up: <?= htmlspecialchars($followup_date) ?></p>
-                        </div>
-
-                        <!-- Charts -->
-                        <div class="p-6">
-                            <p class="font-bold mb-2">Charts</p>
-                            <div class="flex justify-between space-x-4">
-                                <div class="w-1/2 h-48">
-                                    <!-- Temperature Chart -->
-                                    <canvas id="tempChart"></canvas>
-                                </div>
-                                <div class="w-1/2 h-48">
-                                    <!-- BP Chart -->
-                                    <canvas id="bpChart"></canvas>
-                                </div>
+                                    </thead>
+                                    <tbody>
+                                        <?php $count = 1;
+                                        foreach ($medications as $med): ?>
+                                            <tr class="border-b border-gray-300">
+                                                <td class="py-2"><?= $count ?>) <?= htmlspecialchars($med['name']) ?></td>
+                                                <td class="py-2 dosage-cell"><?= htmlspecialchars($med['dosage']) ?></td>
+                                                <td class="py-2"><?= htmlspecialchars($med['duration']) ?></td>
+                                                <td class="py-2 instructions-cell">
+                                                    <?= htmlspecialchars($med['instructions'] ?? '') ?>
+                                                </td>
+                                            </tr>
+                                            <?php $count++; endforeach; ?>
+                                    </tbody>
+                                </table>
                             </div>
-                        </div>
 
-                        <!-- Signature -->
-                        <div class="p-6">
-                            <div class="flex flex-col items-end">
-                                <div class="text-right" style="min-height: 100px;">
-                                    <?php if (isset($_POST['signature']) && !empty($_POST['signature'])): ?>
-                                        <img src="<?= htmlspecialchars($_POST['signature']) ?>" alt="Doctor's Signature"
-                                            style="height: 80px; display: inline-block; margin-bottom: -20px;">
-                                    <?php endif; ?>
+                            <!-- Advice -->
+                            <div class="px-6 py-2">
+                                <p class="font-bold">Advice Given:</p>
+                                <p class="mt-1">* <?= htmlspecialchars($advice) ?></p>
+                            </div>
 
-                                    <div class="text-right mt-6">
-                                        <p class="font-medium text-gray-800">Dr.
-                                            <?= htmlspecialchars($_SESSION['doctor']['first_name'] . ' ' . $_SESSION['doctor']['last_name']) ?>
-                                        </p>
-                                        <p class="text-sm text-blue-600 uppercase">
-                                            <?= htmlspecialchars($_SESSION['doctor']['specialization'] ?? 'M.B.B.S.') ?>
-                                        </p>
+                            <!-- Follow Up -->
+                            <div class="px-6 py-2">
+                                <p class="font-bold">Follow Up: <?= htmlspecialchars($followup_date) ?></p>
+                            </div>
+
+                            <!-- Charts -->
+                            <div class="p-6">
+                                <p class="font-bold mb-2">Charts</p>
+                                <div class="flex justify-between space-x-4">
+                                    <div class="w-1/2 h-48">
+                                        <!-- Temperature Chart -->
+                                        <canvas id="tempChart"></canvas>
+                                    </div>
+                                    <div class="w-1/2 h-48">
+                                        <!-- BP Chart -->
+                                        <canvas id="bpChart"></canvas>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="p-6 bg-gray-50 no-print flex gap-4 justify-end">
-                            <button onclick="savePrescription()"
-                                class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
-                                <i class="bx bx-save mr-2"></i>Save Prescription
-                            </button>
-                            <button onclick="downloadPrescription()"
-                                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                <i class="bx bx-download mr-2"></i>Download
-                            </button>
-                            <button onclick="emailPrescription()"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                <i class="bx bx-envelope mr-2"></i>Email to Patient
-                            </button>
-                            <button onclick="window.print()"
-                                class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-                                <i class="bx bx-printer mr-2"></i>Print
-                            </button>
+                            <!-- Signature -->
+                            <div class="p-6">
+                                <div class="flex flex-col items-end">
+                                    <div class="text-right" style="min-height: 100px;">
+                                        <?php if (isset($_POST['signature']) && !empty($_POST['signature'])): ?>
+                                            <img src="<?= htmlspecialchars($_POST['signature']) ?>" alt="Doctor's Signature"
+                                                style="height: 80px; display: inline-block; margin-bottom: -20px;">
+                                        <?php endif; ?>
+
+                                        <div class="text-right mt-6">
+                                            <p class="font-medium text-gray-800">Dr.
+                                                <?= htmlspecialchars($_SESSION['doctor']['first_name'] . ' ' . $_SESSION['doctor']['last_name']) ?>
+                                            </p>
+                                            <p class="text-sm text-blue-600 uppercase">
+                                                <?= htmlspecialchars($_SESSION['doctor']['specialization'] ?? 'M.B.B.S.') ?>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- End of Signature div -->
                         </div>
                     </div>
-                </section>
+
+                    <!-- Buttons - Separate from prescription content -->
+                    <div class="p-6 bg-gray-50 no-print flex gap-4 justify-end" id="action-buttons">
+                        <button onclick="savePrescription()"
+                            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                            <i class="bx bx-save mr-2"></i>Save Prescription
+                        </button>
+                        <button onclick="downloadPrescription()"
+                            class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            <i class="bx bx-download mr-2"></i>Download
+                        </button>
+                        <button onclick="emailPrescription()"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="bx bx-envelope mr-2"></i>Email to Patient
+                        </button>
+                        <button onclick="window.print()"
+                            class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                            <i class="bx bx-printer mr-2"></i>Print
+                        </button>
+                    </div>
             </div>
+            </section>
         </div>
+    </div>
     </div>
     <?php include(VIEW_ROOT . '/pages/doctor/components/modals/save-prescription.php') ?>
     <?php include(VIEW_ROOT . '/pages/doctor/components/modals/email-prescription.php') ?>

@@ -18,6 +18,7 @@ use app\models\Immunization;
 use app\models\Diagnosis;
 use app\models\EPrescription;
 use app\models\EPrescriptionMedicines;
+use app\helpers\email\PrescriptionEmail;
 
 
 class DoctorController extends Controller
@@ -36,6 +37,8 @@ class DoctorController extends Controller
     private $immunizationModel;
     private $diagnosisModel;
 
+    private $prescriptionEmailHelper;
+
     public function __construct()
     {
         $this->doctorModel = new Doctor();
@@ -51,6 +54,7 @@ class DoctorController extends Controller
         $this->diagnosisModel = new Diagnosis();
         $this->ePrescriptionModel = new EPrescription();
         $this->ePrescriptionMedicinesModel = new EPrescriptionMedicines();
+        $this->prescriptionEmailHelper = new PrescriptionEmail();
     }
 
 
@@ -540,7 +544,7 @@ class DoctorController extends Controller
     public function savePrescription()
     {
         header('Content-Type: application/json');
-        
+
         try {
             if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
                 throw new \Exception('Invalid request method');
@@ -592,10 +596,10 @@ class DoctorController extends Controller
                 'message' => 'Prescription saved successfully',
                 'prescriptionId' => $prescriptionId
             ]);
-        
+
         } catch (\Exception $e) {
             error_log("Prescription Save Error: " . $e->getMessage());
-            
+
             echo json_encode([
                 'success' => false,
                 'message' => 'Failed to save prescription: ' . $e->getMessage(),
@@ -607,4 +611,136 @@ class DoctorController extends Controller
             ]);
         }
     }
+
+    public function emailPrescription()
+    {
+        if (!$this->isAjaxRequest()) {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Invalid request method'
+            ]);
+            return;
+        }
+
+        try {
+            $jsonData = file_get_contents('php://input');
+            $data = json_decode($jsonData, true);
+
+            if (!$data) {
+                throw new \Exception('Invalid request data');
+            }
+
+            $patientId = $data['patientId'] ?? null;
+            $prescriptionImage = $data['prescriptionImage'] ?? null;
+            $includeInstructions = $data['includeInstructions'] ?? true;
+            $additionalMessage = $data['additionalMessage'] ?? '';
+
+            if (!$patientId || !$prescriptionImage) {
+                throw new \Exception('Missing required data');
+            }
+
+            // Get patient details
+            $patient = $this->patientModel->getPatientById($patientId);
+            if (!$patient || !$patient->email) {
+                throw new \Exception('Patient email not found');
+            }
+
+          
+            $prescriptionEmail = new PrescriptionEmail();
+
+            $emailSent = $prescriptionEmail->sendPrescription(
+                $patient->email,
+                $patient->first_name . ' ' . $patient->last_name,
+                $prescriptionImage,
+                $additionalMessage,
+                $includeInstructions
+            );
+
+            if (!$emailSent) {
+                throw new \Exception('Failed to send email');
+            }
+
+            $this->jsonResponse([
+                'success' => true,
+                'message' => 'Prescription has been emailed successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            error_log('Email Prescription Error: ' . $e->getMessage());
+            $this->jsonResponse([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+
+
+    private function isAjaxRequest()
+    {
+        return isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+    }
+
+
+
+    private function prepareJsonResponse()
+    {
+        // Disable error output to prevent it from corrupting JSON
+        ini_set('display_errors', 0);
+        error_reporting(0);
+
+        // Start output buffering to capture any unexpected output
+
+        ob_start();
+    }
+
+    /**
+     * Get JSON request data
+     */
+    private function getJsonRequestData()
+    {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
+        error_log('Received data: ' . print_r($data, true));
+        return $data;
+    }
+
+    /**
+     * JSON response helper
+     */
+    private function jsonResponse($data)
+    {
+        // Clear any previous output that might corrupt the JSON
+        if (ob_get_length()) {
+            ob_clean();
+        }
+
+        // Discard any output that might have been generated
+        ob_end_clean();
+
+        // Start a new buffer
+        ob_start();
+
+        // Set proper headers
+        header('Content-Type: application/json');
+        header('Cache-Control: no-cache, must-revalidate');
+
+        // Output JSON data
+        echo json_encode($data);
+
+        // Flush the buffer and end the script
+        ob_end_flush();
+        exit;
+    }
+
+    /**
+     * Log error with stack trace
+     */
+    private function logError($message, $exception)
+    {
+        error_log($message . ': ' . $exception->getMessage());
+        error_log('Stack trace: ' . $exception->getTraceAsString());
+    }
+
 }

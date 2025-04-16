@@ -82,6 +82,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const includeInstructions = document.getElementById('include_instructions').checked;
             const additionalMessage = document.getElementById('email_message').value;
 
+            // Show loading indicator
+            showToast('info', 'Processing', 'Preparing prescription email...');
+
             html2canvas(element).then(canvas => {
                 const imageData = canvas.toDataURL('image/png');
 
@@ -89,6 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify({
                         patientId: prescriptionData.patientId,
@@ -224,6 +228,61 @@ async function downloadPrescription() {
     } finally {
         // Restore buttons visibility
         buttonsContainer.style.display = originalDisplay;
+    }
+}
+
+
+function emailPrescription() {
+    // Get only the prescription content
+    const element = document.getElementById('prescription-content');
+
+    try {
+        const prescriptionData = JSON.parse(document.getElementById('prescription-data').value);
+        const additionalMessage = document.getElementById('email_message')?.value || '';
+
+        showToast('info', 'Processing', 'Preparing prescription email...');
+
+        html2canvas(element, {
+            scale: 2,
+            backgroundColor: '#ffffff',
+            logging: false,
+            onclone: function (clonedDoc) {
+                // Ensure buttons are not in the cloned element
+                const buttons = clonedDoc.getElementById('action-buttons');
+                if (buttons) buttons.style.display = 'none';
+            }
+        }).then(canvas => {
+            const imageData = canvas.toDataURL('image/png');
+
+            // Send to server
+            fetch(`${BASE_URL}/doctor/email-prescription`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    patientId: prescriptionData.patientId,
+                    prescriptionImage: imageData,
+                    additionalMessage: additionalMessage
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('success', 'Success', 'Prescription has been emailed to the patient.');
+                    } else {
+                        throw new Error(data.message || 'Failed to send email');
+                    }
+                })
+                .catch(error => {
+                    console.error('Email error:', error);
+                    showToast('error', 'Error', error.message || 'Failed to send email. Please try again.');
+                });
+        });
+    } catch (error) {
+        console.error('Prescription processing error:', error);
+        showToast('error', 'Error', 'Failed to process prescription. Please try again.');
     }
 }
 

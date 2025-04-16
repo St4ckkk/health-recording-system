@@ -55,6 +55,7 @@ $router->get('/doctor/appointments', 'DoctorController@appointments');
 $router->get('/doctor/prescriptions', 'DoctorController@prescriptions');
 $router->post('/doctor/preview-prescription', 'DoctorController@previewPrescription');
 $router->post('/doctor/save-prescription', 'DoctorController@savePrescription');
+$router->post('/doctor/email-prescription', 'DoctorController@emailPrescription');
 
 // Pharmacist routes
 $router->get('/pharmacist/dashboard', 'PharmacistController@dashboard');
