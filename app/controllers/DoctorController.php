@@ -18,6 +18,7 @@ use app\models\Immunization;
 use app\models\Diagnosis;
 use app\models\EPrescription;
 use app\models\EPrescriptionMedicines;
+use app\models\TreatmentRecords;
 use app\helpers\email\PrescriptionEmail;
 
 
@@ -36,6 +37,7 @@ class DoctorController extends Controller
     private $medicalRecordsModel;
     private $immunizationModel;
     private $diagnosisModel;
+    private $treatmentRecordsModel;
 
     private $prescriptionEmailHelper;
 
@@ -55,6 +57,7 @@ class DoctorController extends Controller
         $this->ePrescriptionModel = new EPrescription();
         $this->ePrescriptionMedicinesModel = new EPrescriptionMedicines();
         $this->prescriptionEmailHelper = new PrescriptionEmail();
+        $this->treatmentRecordsModel = new TreatmentRecords();
     }
 
 
@@ -132,6 +135,7 @@ class DoctorController extends Controller
             $_SESSION['doctor_id'],
             10
         );
+        $treatmentRecords = $this->treatmentRecordsModel->getPatientTreatmentRecords($patientId);
         $immunizationHistory = $this->immunizationModel->getPatientImmunizations($patientId);
         $patientLabResults = $this->labResultsModel->getPatientLabResults($patientId);
 
@@ -145,6 +149,7 @@ class DoctorController extends Controller
             'prescriptions' => $prescriptions,
             'immunizationHistory' => $immunizationHistory,
             'patientLabResults' => $patientLabResults,
+            'treatmentRecords' => $treatmentRecords,
         ]);
     }
 

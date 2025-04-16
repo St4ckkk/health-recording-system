@@ -219,6 +219,9 @@
                                         data-tab="medications" id="tab-medications">Medications</button>
                                     <button class="tab-button px-6 py-3 text-gray-500 hover:text-gray-700"
                                         data-tab="immunizations" id="tab-immunizations">Immunizations</button>
+                                    <button class="tab-button px-6 py-3 text-gray-500 hover:text-gray-700"
+                                        data-tab="treatment-records" id="tab-treatment-records">Treatment
+                                        Records</button>
                                 </div>
 
                                 <div class="tab-content p-6" id="tab-content-overview">
@@ -243,6 +246,10 @@
                                 <!-- Immunizations Tab Content -->
                                 <div class="tab-content p-6 hidden" id="tab-content-immunizations">
                                     <?php include('components/tab/immunizations.php'); ?>
+                                </div>
+
+                                <div class="tab-content p-6 hidden" id="tab-content-treatment-records">
+                                    <?php include('components/tab/treatment-records.php'); ?>
                                 </div>
                             </div>
                         </div>

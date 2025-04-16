@@ -11,7 +11,7 @@
             <?php
             $systolic = explode('/', $vitals->blood_pressure ?? '138/88')[0];
             $diastolic = explode('/', $vitals->blood_pressure ?? '138/88')[1];
-            
+
             if ($systolic >= 140 || $diastolic >= 90) {
                 echo '<span class="ml-2 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">High</span>';
                 echo '<div class="absolute top-0 right-0 m-2 text-red-500 cursor-help" title="Consider lifestyle modifications and medication review">
@@ -23,7 +23,7 @@
                 echo '<span class="ml-2 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Normal</span>';
             }
             ?>
-            
+
             <!-- <?php
             $glucose = $vitals->glucose_level ?? 126;
             if ($glucose >= 200) {
@@ -323,8 +323,8 @@
     </div>
 </div>
 
-<!-- Recent Visits Section -->
-<div class="mb-6">
+
+<!-- <div class="mb-6">
     <h3 class="text-lg font-medium mb-4">Recent Visits</h3>
     <?php if (!empty($recentVisits)): ?>
         <div class="space-y-3">
@@ -369,10 +369,9 @@
             No recent visits found.
         </div>
     <?php endif; ?>
-</div>
+</div> -->
 
-<!-- Recent Lab Results Section -->
-<div class="mb-6">
+<!-- <div class="mb-6">
     <h3 class="text-lg font-medium mb-4">Recent Lab Results</h3>
     <?php if (!empty($labResults)): ?>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -421,10 +420,9 @@
             No lab results found.
         </div>
     <?php endif; ?>
-</div>
+</div> -->
 
-<!-- Current Medications Section -->
-<div>
+<!-- <div>
     <h3 class="text-lg font-medium mb-4">Current Medications</h3>
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -457,7 +455,7 @@
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <!-- Sample data if no medications -->
+                    
                     <tr>
                         <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">Lisinopril</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">10mg</td>
@@ -489,7 +487,7 @@
     <div class="mt-4 text-right">
         <a href="#" class="text-blue-600 text-sm inline-block">View All Medications →</a>
     </div>
-</div>
+</div> -->
 
 <!-- Add Clinical Decision Support Summary -->
 <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200 mt-2">

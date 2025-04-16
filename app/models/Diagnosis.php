@@ -18,13 +18,16 @@ class Diagnosis extends Model
         $fields = [
             'd.id',
             'd.patient_id',
-            'doctor_id',
+            'd.doctor_id',
             'd.diagnosis',
-            'd.dianosed_at',
-            'notes',
+            'd.diagnosed_at',
+            'd.notes',
+            'd.status',
+            'd.created_at',
+            'd.updated_at'
         ];
 
-        $query = "SELECT " . implode(', ', $fields) . " FROM {$this->table} p";
+        $query = "SELECT " . implode(', ', $fields) . " FROM {$this->table} d";
         return $query;
     }
 
@@ -50,7 +53,7 @@ class Diagnosis extends Model
 
         $this->db->query($sql);
 
-        // Bind values
+
         $this->db->bind(':patient_id', $data['patient_id']);
         $this->db->bind(':doctor_id', $data['doctor_id']);
         $this->db->bind(':diagnosis', $data['diagnosis']);
