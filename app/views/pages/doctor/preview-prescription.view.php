@@ -143,7 +143,7 @@
 
                                 <!-- Logo -->
                                 <div class="flex justify-center items-center">
-                                    <img src="<?= BASE_URL ?>/assets/images/logo.png" alt="Care Clinic" class="h-16">
+                                    <img src="<?= BASE_URL ?>/images/logo.png" alt="Care Clinic" class="h-16">
                                 </div>
 
                                 <div class="text-right text-teal-600">
