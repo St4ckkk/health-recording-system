@@ -4,7 +4,8 @@ namespace app\models;
 
 use app\models\Model;
 
-class EPrescriptionMedicines extends Model {
+class EPrescriptionMedicines extends Model
+{
     protected $table = 'e_prescription_medicines';
 
     public function __construct()
@@ -12,14 +13,15 @@ class EPrescriptionMedicines extends Model {
         parent::__construct();
     }
 
-    private function buildBaseQuery(bool $includeType = false): string {
+    private function buildBaseQuery(bool $includeType = false): string
+    {
         $fields = [
-           'prmed.id',
-           'prmed.e_prescription_id',
-           'prmed.medicine_name',
-           'prmed.dosage',
-           'prmed.duration',
-           'prmed.special_instructions',
+            'prmed.id',
+            'prmed.e_prescription_id',
+            'prmed.medicine_name',
+            'prmed.dosage',
+            'prmed.duration',
+            'prmed.special_instructions',
         ];
         return "SELECT " . implode(', ', $fields) . " FROM $this->table prmed";
     }
@@ -58,11 +60,45 @@ class EPrescriptionMedicines extends Model {
     {
         $success = true;
         foreach ($medications as $medication) {
-            $medication['e_prescription_id'] = $prescriptionId;
-            if (!$this->insert($medication)) {
+            $data = [
+                'e_prescription_id' => $prescriptionId,
+                'medicine_name' => $medication['medicine_name'],
+                'dosage' => $medication['dosage'],
+                'duration' => $medication['duration'],
+                'special_instructions' => $medication['special_instructions'] ?? ''
+            ];
+            
+            if (!$this->insert($data)) {
                 $success = false;
+                break;
             }
         }
         return $success;
+    }
+
+    public function getMedicationsForPrescription($prescriptionId)
+    {
+        $sql = "SELECT * FROM {$this->table} 
+                WHERE e_prescription_id = :prescription_id 
+                ORDER BY id ASC";
+
+        $this->db->query($sql);
+        $this->db->bind(':prescription_id', $prescriptionId);
+
+        return $this->db->resultSet();
+    }
+
+    public function getMedicationsForPatient($patientId)
+    {
+        $sql = "SELECT m.*, p.created_at as prescribed_date, p.status
+                FROM {$this->table} m
+                JOIN e_prescriptions p ON m.e_prescription_id = p.id
+                WHERE p.patient_id = :patient_id
+                ORDER BY p.created_at DESC, m.id ASC";
+
+        $this->db->query($sql);
+        $this->db->bind(':patient_id', $patientId);
+
+        return $this->db->resultSet();
     }
 }

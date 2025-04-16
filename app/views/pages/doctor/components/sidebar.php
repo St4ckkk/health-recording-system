@@ -32,7 +32,11 @@ $notification_count = 3;
 
             <a href="<?= BASE_URL ?>/doctor/patients">
                 <li class="px-sm py-2 rounded-md hover:bg-green-600 hover:text-white flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1 mb-2"
-                    style="<?php echo (strpos($request_uri, '/doctor/patients') !== false || strpos($request_uri, '/doctor/patientView') !== false) ? 'background-color: rgb(22 163 74); color: white;' : ''; ?>">
+                    style="<?php echo (strpos($request_uri, '/doctor/patients') !== false || 
+                                    strpos($request_uri, '/doctor/patientView') !== false ||
+                                    strpos($request_uri, '/doctor/prescriptions') !== false ||
+                                    strpos($request_uri, '/doctor/preview-prescription') !== false) 
+                            ? 'background-color: rgb(22 163 74); color: white;' : ''; ?>">
                     <i class='bx bx-user-circle text-lg mr-2 ml-1'></i> Patients
                 </li>
             </a>

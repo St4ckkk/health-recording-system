@@ -118,24 +118,22 @@ class DoctorController extends Controller
         }
 
         $patient = $this->patientModel->getPatientById($patientId);
-        $vitals = $this->vitalsModel->getLatestVitalsByPatientId($patientId);
-        $currentMedications = $this->medicationsModel->getCurrentMedicationsByPatientId($patientId);
-        $medicationHistory = $this->medicationsModel->getPatientMedicationHistory($patientId);
-        $immunizationHistory = $this->immunizationModel->getPatientImmunizations($patientId);
-        if (!$patient) {
-            $this->redirect('/doctor/patient-list');
-            return;
+
+        // Get prescriptions data
+        $prescriptions = $this->ePrescriptionModel->getPrescriptionsForPatient($patientId);
+        foreach ($prescriptions as &$prescription) {
+            $prescription->medications = $this->ePrescriptionMedicinesModel->getMedicationsForPrescription($prescription->id);
         }
 
-        $activeMedications = $this->medicationsModel->getPatientActiveMedications($patientId);
+        $vitals = $this->vitalsModel->getLatestVitalsByPatientId($patientId);
         $visits = $this->medicalRecordsModel->getPatientVisitsWithDetails($patientId);
-        $patientLabResults = $this->labResultsModel->getPatientLabResults($patientId);
         $appointments = $this->appointmentModel->getAppointmentsByPatientId($patientId);
         $recentVisits = $this->appointmentModel->getRecentVisitsByPatientsAssignedToDoctor(
             $_SESSION['doctor_id'],
             10
         );
-        $labResults = $this->labResultsModel->getRecentLabResults($patientId, 10);
+        $immunizationHistory = $this->immunizationModel->getPatientImmunizations($patientId);
+        $patientLabResults = $this->labResultsModel->getPatientLabResults($patientId);
 
         $this->view('pages/doctor/patient-view', [
             'title' => 'Patient Record',
@@ -144,12 +142,9 @@ class DoctorController extends Controller
             'visits' => $visits,
             'appointments' => $appointments,
             'recentVisits' => $recentVisits,
-            'labResults' => $labResults,
-            'medications' => $currentMedications,
-            'patientLabResults' => $patientLabResults,
-            'activeMedications' => $activeMedications,
-            'medicationHistory' => $medicationHistory,
+            'prescriptions' => $prescriptions,
             'immunizationHistory' => $immunizationHistory,
+            'patientLabResults' => $patientLabResults,
         ]);
     }
 
@@ -566,6 +561,7 @@ class DoctorController extends Controller
                 throw new \Exception('Patient ID is required');
             }
 
+            // First, save the prescription to get the ID
             $prescriptionCode = 'RX-' . date('Ymd') . '-' . uniqid();
             $prescriptionData = [
                 'prescription_code' => $prescriptionCode,
@@ -575,19 +571,26 @@ class DoctorController extends Controller
                 'diagnosis' => $data['diagnosis'] ?? '',
                 'advice' => $data['advice'] ?? '',
                 'follow_up_date' => $data['followUpDate'] ?? null,
-                'created_at' => date('Y-m-d H:i:s')
+                'created_at' => date('Y-m-d H:i:s'),
+                // 'status' => 'active'
             ];
 
+            // Insert prescription and get the ID
             $prescriptionId = $this->ePrescriptionModel->insert($prescriptionData);
+
             if (!$prescriptionId) {
-                throw new \Exception('Failed to save prescription');
+                echo json_encode(['success' => false, 'message' => 'Failed to save prescription']);
+                return;
             }
 
+            // Now save the medications with the prescription ID
             if (!empty($data['medications'])) {
                 $success = $this->ePrescriptionMedicinesModel->insertBatch($prescriptionId, $data['medications']);
+
                 if (!$success) {
                     $this->ePrescriptionModel->delete($prescriptionId);
-                    throw new \Exception('Failed to save prescription medications');
+                    echo json_encode(['success' => false, 'message' => 'Failed to save medications']);
+                    return;
                 }
             }
 
@@ -645,7 +648,7 @@ class DoctorController extends Controller
                 throw new \Exception('Patient email not found');
             }
 
-          
+
             $prescriptionEmail = new PrescriptionEmail();
 
             $emailSent = $prescriptionEmail->sendPrescription(
