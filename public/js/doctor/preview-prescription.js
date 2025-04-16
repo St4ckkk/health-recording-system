@@ -1,5 +1,5 @@
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Add toast container if not exists
     if (!document.getElementById('toast-container')) {
         const toastContainer = document.createElement('div');
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Save Prescription functionality
-    window.savePrescription = function() {
+    window.savePrescription = function () {
         showModal(savePrescriptionModal, savePrescriptionContent);
     };
 
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Email Prescription functionality
-    window.emailPrescription = function() {
+    window.emailPrescription = function () {
         showModal(emailPrescriptionModal, emailPrescriptionContent);
     };
 
@@ -81,10 +81,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const prescriptionData = JSON.parse(document.getElementById('prescription-data').value);
             const includeInstructions = document.getElementById('include_instructions').checked;
             const additionalMessage = document.getElementById('email_message').value;
-            
+
             html2canvas(element).then(canvas => {
                 const imageData = canvas.toDataURL('image/png');
-                
+
                 return fetch(`${BASE_URL}/doctor/email-prescription`, {
                     method: 'POST',
                     headers: {
@@ -98,18 +98,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                 });
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showToast('success', 'Success', 'Prescription has been emailed to the patient.');
-                } else {
-                    throw new Error(data.message || 'Failed to send email');
-                }
-            })
-            .catch(error => {
-                console.error('Email error:', error);
-                showToast('error', 'Error', error.message || 'Failed to send email. Please try again.');
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('success', 'Success', 'Prescription has been emailed to the patient.');
+                    } else {
+                        throw new Error(data.message || 'Failed to send email');
+                    }
+                })
+                .catch(error => {
+                    console.error('Email error:', error);
+                    showToast('error', 'Error', error.message || 'Failed to send email. Please try again.');
+                });
         } catch (error) {
             console.error('Prescription data parsing error:', error);
             showToast('error', 'Error', 'Invalid prescription data');
@@ -122,11 +122,11 @@ document.addEventListener('DOMContentLoaded', function() {
             showToast('error', 'Error', 'Print container not found');
             return;
         }
-    
+
         // Get prescription data from the hidden input
         const prescriptionDataElement = document.getElementById('prescription-data');
         const prescriptionData = JSON.parse(prescriptionDataElement.value);
-    
+
         // Format the follow-up date
         let followUpDate = prescriptionData.followUpDate || document.querySelector('.followup-date')?.textContent.trim() || '';
         if (followUpDate) {
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 followUpDate = dateObj.toISOString().split('T')[0];
             }
         }
-    
+
         // Prepare prescription data
         const data = {
             patientId: prescriptionData.patientId,
@@ -161,44 +161,71 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(data)
         })
-        .then(response => response.text())
-        .then(text => {
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch (e) {
-                console.error('Server response:', text);
-                throw new Error('Server returned an invalid response');
-            }
-            
-            if (data.success) {
-                showToast('success', 'Success', 'Prescription has been saved successfully.');
-                setTimeout(() => {
-                    window.location.href = `${BASE_URL}/doctor/patientView?id=${prescriptionData.patientId}`;
-                }, 2000);
-            } else {
-                throw new Error(data.message || 'Failed to save prescription');
-            }
-        })
-        .catch(error => {
-            console.error('Prescription save error:', error);
-            showToast('error', 'Error', error.message || 'An error occurred while saving the prescription');
-        });
+            .then(response => response.text())
+            .then(text => {
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    console.error('Server response:', text);
+                    throw new Error('Server returned an invalid response');
+                }
+
+                if (data.success) {
+                    showToast('success', 'Success', 'Prescription has been saved successfully.');
+                    setTimeout(() => {
+                        window.location.href = `${BASE_URL}/doctor/patientView?id=${prescriptionData.patientId}`;
+                    }, 2000);
+                } else {
+                    throw new Error(data.message || 'Failed to save prescription');
+                }
+            })
+            .catch(error => {
+                console.error('Prescription save error:', error);
+                showToast('error', 'Error', error.message || 'An error occurred while saving the prescription');
+            });
     }
 });
 
 // The showToast function remains unchanged
-window.downloadPrescription = function() {
+async function downloadPrescription() {
     const element = document.querySelector('.print-container');
-    const prescriptionData = JSON.parse(document.getElementById('prescription-data').value);
-    
-    html2canvas(element).then(canvas => {
+    const buttonsContainer = document.querySelector('.p-6.bg-gray-50.no-print');
+    const originalDisplay = buttonsContainer.style.display;
+
+    try {
+        // Hide buttons before capture
+        buttonsContainer.style.display = 'none';
+
+        const canvas = await html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            windowWidth: element.scrollWidth,
+            windowHeight: element.scrollHeight - buttonsContainer.offsetHeight,
+            onclone: function (clonedDoc) {
+                // Remove buttons from cloned version
+                const clonedButtons = clonedDoc.querySelector('.p-6.bg-gray-50.no-print');
+                if (clonedButtons) {
+                    clonedButtons.remove();
+                }
+            }
+        });
+
         const link = document.createElement('a');
-        link.download = `prescription-${prescriptionData.patientId}.png`;
-        link.href = canvas.toDataURL();
+        link.download = `prescription-${new Date().getTime()}.png`;
+        link.href = canvas.toDataURL('image/png');
         link.click();
-    });
-};
+
+        showToast('success', 'Success', 'Prescription downloaded successfully');
+    } catch (error) {
+        console.error('Error downloading prescription:', error);
+        showToast('error', 'Error', 'Failed to download prescription');
+    } finally {
+        // Restore buttons visibility
+        buttonsContainer.style.display = originalDisplay;
+    }
+}
 
 function showToast(type, title, message, containerId = 'toast-container') {
     let toastContainer = document.getElementById(containerId);

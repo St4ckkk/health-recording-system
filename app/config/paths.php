@@ -1,5 +1,5 @@
 <?php
-// Base URL detection
+
 $base_url = (isset($_SERVER['HTTPS']) ? 'https://' : 'http://');
 $base_url .= $_SERVER['HTTP_HOST'] . str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
 define('BASE_URL', rtrim($base_url, '/'));

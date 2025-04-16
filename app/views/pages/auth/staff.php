@@ -7,6 +7,7 @@
     <title><?= $title ?? 'Healthcare Staff Portal' ?></title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/globals.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/node_modules/boxicons/css/boxicons.min.css">
+    <!-- <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'> -->
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/output.css">
 </head>
@@ -28,7 +29,7 @@
                 <div class="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-center">
                     <?= $errors['login'] ?>
                 </div>
-            <?php endif; ?> 
+            <?php endif; ?>
 
             <form method="POST" action="<?= BASE_URL ?>/staff"
                 class="max-w-[500px] w-[800px] p-[2.9rem] border border-gray-300 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 bg-white">

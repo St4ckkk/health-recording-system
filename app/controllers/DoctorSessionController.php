@@ -87,6 +87,7 @@ class DoctorSessionController extends Controller
             'contact_number' => $doctor->contact_number,
             'email' => $doctor->email,
             'specialization' => $doctor->specialization,
+            'license_number' => $doctor->license_number,
             'max_appointments_per_day' => $doctor->max_appointments_per_day,
             'status' => $doctor->status,
             'default_location' => $doctor->default_location,

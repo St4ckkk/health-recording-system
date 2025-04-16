@@ -17,7 +17,7 @@ $router->get('/staff', 'SessionController@login');
 $router->post('/staff', 'SessionController@login');
 $router->get('/doctor', 'DoctorSessionController@login');
 $router->post('/doctor', 'DoctorSessionController@login');
-$router->get('/doctor/logout', 'DoctorSessionController@logout');  // Add this line
+$router->get('/doctor/logout', 'DoctorSessionController@logout');
 $router->get('/logout', 'SessionController@logout');
 
 
@@ -41,8 +41,6 @@ $router->post('/receptionist/schedule-follow-up', 'ReceptionistController@schedu
 $router->get('/receptionist/appointments/records/{id}', 'ReceptionistController@viewPatientAppointmentRecords');
 $router->get('/receptionist/appointments/records', 'ReceptionistController@viewPatientAppointmentRecords');
 
-
-
 // Doctor routes
 $router->get('/doctor/dashboard', 'DoctorController@dashboard');
 $router->get('/doctor/patients', 'DoctorController@patientList');
@@ -57,6 +55,7 @@ $router->get('/doctor/appointments', 'DoctorController@appointments');
 $router->get('/doctor/prescriptions', 'DoctorController@prescriptions');
 $router->post('/doctor/preview-prescription', 'DoctorController@previewPrescription');
 $router->post('/doctor/save-prescription', 'DoctorController@savePrescription');
+
 // Pharmacist routes
 $router->get('/pharmacist/dashboard', 'PharmacistController@dashboard');
 $router->get('/pharmacist/medicinesInventory', 'PharmacistController@medicineInventory');
