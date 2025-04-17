@@ -68,3 +68,7 @@ $router->post('/pharmacist/addMedicine', 'PharmacistController@addMedicine');
 $router->post('/pharmacist/deleteMedicine', 'PharmacistController@deleteMedicine');
 $router->post('/pharmacist/updateMedicine', 'PharmacistController@updateMedicine');
 
+
+
+// Patient routes
+$router->get('/patient/dashboard', 'PatientController@dashboard');
