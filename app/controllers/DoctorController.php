@@ -153,6 +153,12 @@ class DoctorController extends Controller
         ]);
     }
 
+    public function treatmentDetails() {
+        $this->view('pages/doctor/treatment-details.view', [
+            'title' => 'Treatment Details',
+        ]);
+    }
+
 
     public function medicineInventory()
     {
@@ -681,6 +687,9 @@ class DoctorController extends Controller
             ]);
         }
     }
+
+
+
 
 
 

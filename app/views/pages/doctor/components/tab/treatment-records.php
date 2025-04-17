@@ -9,7 +9,7 @@
     <?php if (!empty($treatmentRecords)): ?>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+                <thead class="">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
@@ -52,11 +52,14 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <button class="text-blue-600 hover:text-blue-900"
-                                    onclick="viewTreatmentDetails(<?= $record->id ?>)">
-                                    View Details
-                                </button>
+                                <div class="flex justify-between items-center">
+                                    <a href="<?= BASE_URL ?>/doctor/treatment-records/view/<?= $record->id ?>"
+                                        class="text-blue-600 text-sm inline-flex items-center hover:text-blue-900">
+                                        View Details <i class='bx bx-right-arrow-alt ml-1'></i>
+                                    </a>
+                                </div>
                             </td>
+                            
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

@@ -657,9 +657,7 @@ class HomeController extends Controller
         }
     }
 
-    /**
-     * Show appointment confirmation page
-     */
+  
     public function confirmation()
     {
         // Ensure session is started
@@ -725,5 +723,12 @@ class HomeController extends Controller
         // Clear session data
         unset($_SESSION['tracking_number']);
         unset($_SESSION['success']);
+    }
+
+
+    public function rpm() {
+        $this->view('rpm.view', [
+            'title' => 'RPM' 
+        ]);
     }
 }

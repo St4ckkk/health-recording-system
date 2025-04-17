@@ -1,6 +1,7 @@
 <?php
 
 $router->get('/', 'HomeController@index');
+$router->get('/rpm', 'HomeController@rpm');
 $router->get('/appointment/doctor-availability', 'HomeController@appointment');
 $router->get('/appointment/scheduling', 'HomeController@scheduling');
 $router->get('/referral', 'HomeController@referral');
@@ -56,6 +57,7 @@ $router->get('/doctor/prescriptions', 'DoctorController@prescriptions');
 $router->post('/doctor/preview-prescription', 'DoctorController@previewPrescription');
 $router->post('/doctor/save-prescription', 'DoctorController@savePrescription');
 $router->post('/doctor/email-prescription', 'DoctorController@emailPrescription');
+$router->get('/doctor/treatment-records/view', 'DoctorController@treatmentDetails');
 
 // Pharmacist routes
 $router->get('/pharmacist/dashboard', 'PharmacistController@dashboard');
