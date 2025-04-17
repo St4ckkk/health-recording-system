@@ -40,7 +40,10 @@ class Immunization extends Model
                 CONCAT(d.first_name, ' ', d.last_name) as doctor_name,
                 d.specialization as doctor_specialization,
                 p.first_name as patient_first_name,
-                p.last_name as patient_last_name
+                p.last_name as patient_last_name,
+                p.id as patient_id,
+                p.patient_reference_number,
+                p.age
             FROM {$this->table} im
             LEFT JOIN vaccines v ON im.vaccine_id = v.id
             LEFT JOIN doctors d ON im.doctor_id = d.id
@@ -54,4 +57,28 @@ class Immunization extends Model
         return $this->db->resultSet();
     }
 
+    public function getImmunizationById($id)
+    {
+        $sql = "SELECT 
+                im.*,
+                v.name as vaccine_name,
+                v.manufacturer,
+                CONCAT(d.first_name, ' ', d.last_name) as doctor_name,
+                d.specialization as doctor_specialization,
+                p.first_name as patient_first_name,
+                p.last_name as patient_last_name,
+                p.id as patient_id,
+                p.patient_reference_number,
+                p.age
+            FROM {$this->table} im
+            LEFT JOIN vaccines v ON im.vaccine_id = v.id
+            LEFT JOIN doctors d ON im.doctor_id = d.id
+            LEFT JOIN patients p ON im.patient_id = p.id
+            WHERE im.id = :id";
+
+        $this->db->query($sql);
+        $this->db->bind(':id', $id);
+
+        return $this->db->single();
+    }
 }

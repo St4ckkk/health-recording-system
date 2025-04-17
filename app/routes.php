@@ -59,7 +59,7 @@ $router->post('/doctor/save-prescription', 'DoctorController@savePrescription');
 $router->post('/doctor/email-prescription', 'DoctorController@emailPrescription');
 $router->get('/doctor/treatment-records/view', 'DoctorController@treatmentDetails');
 $router->get('/doctor/admission/view', 'DoctorController@admissionDetails'); 
-
+$router->get('/doctor/immunization/view', 'DoctorController@immunizationDetails');
 
 // Pharmacist routes
 $router->get('/pharmacist/dashboard', 'PharmacistController@dashboard');

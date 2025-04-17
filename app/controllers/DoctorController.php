@@ -193,6 +193,44 @@ class DoctorController extends Controller
             'stats' => $stats
         ]);
     }
+
+    public function immunizationDetails()
+    {
+        $immunizationId = isset($_GET['id']) ? intval($_GET['id']) : 0;
+        
+        if (!$immunizationId) {
+            $this->redirect('/doctor/patients');
+            return;
+        }
+        
+        $immunization = $this->immunizationModel->getImmunizationById($immunizationId);
+        if (!$immunization) {
+            $this->redirect('/doctor/patients');
+            return;
+        }
+        
+        $patient = $this->patientModel->getPatientById($immunization->patient_id);
+        $immunizationHistory = $this->immunizationModel->getPatientImmunizations($immunization->patient_id);
+        
+        // Get immunization statistics
+        $stats = [
+            'total' => count($immunizationHistory),
+            'recent' => count(array_filter($immunizationHistory, function($r) {
+                return strtotime($r->immunization_date) > strtotime('-6 months');
+            })),
+            'upcoming' => count(array_filter($immunizationHistory, function($r) {
+                return !empty($r->next_date) && strtotime($r->next_date) > time();
+            }))
+        ];
+        
+        $this->view('pages/doctor/immunization-details.view', [
+            'title' => 'Immunization Details',
+            'patient' => $patient,
+            'currentImmunization' => $immunization,
+            'immunizationHistory' => $immunizationHistory,
+            'stats' => $stats
+        ]);
+    }
     
 
     public function treatmentDetails()

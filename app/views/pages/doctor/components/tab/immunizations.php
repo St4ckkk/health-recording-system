@@ -10,6 +10,7 @@
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lot Number
                 </th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Next Due</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
@@ -30,6 +31,14 @@
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                             <?= $immunization->next_due ? date('Y-m', strtotime($immunization->next_due)) : 'N/A' ?>
+                        </td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                            <div class="flex justify-between items-center">
+                                <a href="<?= BASE_URL ?>/doctor/immunization/view?id=<?= $immunization->id ?>"
+                                    class="text-blue-600 text-sm inline-flex items-center hover:text-blue-900">
+                                    View Details <i class='bx bx-right-arrow-alt ml-1'></i>
+                                </a>
+                            </div>
                         </td>
                     </tr>
                 <?php endforeach; ?>
