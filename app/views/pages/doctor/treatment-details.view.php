@@ -35,15 +35,15 @@
                                 <div class="flex items-center gap-4 mb-4">
                                     <div class="flex items-center gap-2">
                                         <span class="text-gray-500">Patient:</span>
-                                        <span class="font-semibold">John Doe</span>
+                                        <span class="font-semibold"><?= $patient->first_name . ' ' . $patient->last_name ?></span>
                                     </div>
                                     <div class="flex items-center gap-2">
-                                        <span class="text-gray-500">Patient ID:</span>
-                                        <span class="font-semibold">P-10045</span>
+                                        <span class="text-gray-500">PAT ID:</span>
+                                        <span class="font-semibold"><?= $patient->patient_reference_number ?></span>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-gray-500">Age:</span>
-                                        <span class="font-semibold">42</span>
+                                        <span class="font-semibold"><?= $patient->age ?? 'N/A' ?></span>
                                     </div>
                                 </div>
                             </div>
@@ -64,7 +64,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm text-gray-500">Total Treatments</p>
-                                    <h3 class="text-2xl font-bold">12</h3>
+                                    <h3 class="text-2xl font-bold"><?= $stats['total'] ?></h3>
                                 </div>
                                 <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
                                     <i class="bx bx-clipboard text-blue-600 text-xl"></i>
@@ -75,7 +75,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm text-gray-500">Active Treatments</p>
-                                    <h3 class="text-2xl font-bold">3</h3>
+                                    <h3 class="text-2xl font-bold"><?= $stats['active'] ?></h3>
                                 </div>
                                 <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
                                     <i class="bx bx-pulse text-green-600 text-xl"></i>
@@ -86,7 +86,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm text-gray-500">Completed</p>
-                                    <h3 class="text-2xl font-bold">8</h3>
+                                    <h3 class="text-2xl font-bold"><?= $stats['completed'] ?></h3>
                                 </div>
                                 <div class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center">
                                     <i class="bx bx-check-circle text-teal-600 text-xl"></i>
@@ -97,7 +97,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm text-gray-500">Good Adherence</p>
-                                    <h3 class="text-2xl font-bold">7</h3>
+                                    <h3 class="text-2xl font-bold"><?= $stats['goodAdherence'] ?></h3>
                                 </div>
                                 <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
                                     <i class="bx bx-trending-up text-purple-600 text-xl"></i>
@@ -114,79 +114,36 @@
                             <div class="relative">
                                 <div class="absolute h-full w-0.5 bg-gray-200 left-2.5 top-0"></div>
                                 
+                                <?php foreach(array_slice($treatmentRecords, 0, 5) as $index => $record): ?>
                                 <div class="mb-6 relative">
                                     <div class="flex items-start">
-                                        <div class="h-5 w-5 rounded-full bg-green-500 z-10 mt-1.5"></div>
+                                        <div class="h-5 w-5 rounded-full bg-<?= $record->status === 'Active' ? 'green' : 'gray' ?>-500 z-10 mt-1.5"></div>
                                         <div class="ml-4">
                                             <div class="flex items-center">
-                                                <h3 class="font-medium">Intensive Phase</h3>
-                                                <span class="ml-2 px-2 py-0.5 bg-green-100 text-green-800 text-xs rounded-full">Active</span>
+                                                <h3 class="font-medium"><?= htmlspecialchars($record->treatment_type) ?></h3>
+                                                <span class="ml-2 px-2 py-0.5 bg-<?= $record->status === 'Active' ? 'green' : ($record->status === 'Discontinued' ? 'red' : 'gray') ?>-100 text-<?= $record->status === 'Active' ? 'green' : ($record->status === 'Discontinued' ? 'red' : 'gray') ?>-800 text-xs rounded-full"><?= htmlspecialchars($record->status) ?></span>
                                             </div>
-                                            <p class="text-sm text-gray-500">Started: May 15, 2023</p>
-                                            <p class="text-sm text-gray-600 mt-1">Rifampicin + Isoniazid + Pyrazinamide</p>
+                                            <p class="text-sm text-gray-500">
+                                                <?= date('M d, Y', strtotime($record->start_date)) ?> 
+                                                <?= $record->end_date ? '- ' . date('M d, Y', strtotime($record->end_date)) : '' ?>
+                                            </p>
+                                            <p class="text-sm text-gray-600 mt-1"><?= htmlspecialchars($record->regimen_summary) ?></p>
                                         </div>
                                     </div>
                                 </div>
+                                <?php endforeach; ?>
                                 
-                                <div class="mb-6 relative">
-                                    <div class="flex items-start">
-                                        <div class="h-5 w-5 rounded-full bg-blue-500 z-10 mt-1.5"></div>
-                                        <div class="ml-4">
-                                            <div class="flex items-center">
-                                                <h3 class="font-medium">Continuation Phase</h3>
-                                                <span class="ml-2 px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full">Active</span>
-                                            </div>
-                                            <p class="text-sm text-gray-500">Apr 10 - Jun 30, 2023</p>
-                                            <p class="text-sm text-gray-600 mt-1">Rifampicin + Isoniazid</p>
-                                        </div>
-                                    </div>
+                                <?php if(count($treatmentRecords) === 0): ?>
+                                <div class="text-center py-4 text-gray-500">
+                                    No treatment records found.
                                 </div>
-                                
-                                <div class="mb-6 relative">
-                                    <div class="flex items-start">
-                                        <div class="h-5 w-5 rounded-full bg-gray-500 z-10 mt-1.5"></div>
-                                        <div class="ml-4">
-                                            <div class="flex items-center">
-                                                <h3 class="font-medium">Intensive Phase</h3>
-                                                <span class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-800 text-xs rounded-full">Completed</span>
-                                            </div>
-                                            <p class="text-sm text-gray-500">Jan 5 - Mar 20, 2023</p>
-                                            <p class="text-sm text-gray-600 mt-1">Rifampicin + Isoniazid + Ethambutol</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="mb-6 relative">
-                                    <div class="flex items-start">
-                                        <div class="h-5 w-5 rounded-full bg-gray-500 z-10 mt-1.5"></div>
-                                        <div class="ml-4">
-                                            <div class="flex items-center">
-                                                <h3 class="font-medium">Other</h3>
-                                                <span class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-800 text-xs rounded-full">Discontinued</span>
-                                            </div>
-                                            <p class="text-sm text-gray-500">Nov 12, 2022 - Jan 15, 2023</p>
-                                            <p class="text-sm text-gray-600 mt-1">Metformin 500mg, twice daily</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="relative">
-                                    <div class="flex items-start">
-                                        <div class="h-5 w-5 rounded-full bg-gray-500 z-10 mt-1.5"></div>
-                                        <div class="ml-4">
-                                            <div class="flex items-center">
-                                                <h3 class="font-medium">Intensive Phase</h3>
-                                                <span class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-800 text-xs rounded-full">Completed</span>
-                                            </div>
-                                            <p class="text-sm text-gray-500">Aug 3 - Oct 5, 2022</p>
-                                            <p class="text-sm text-gray-600 mt-1">Rifampicin + Isoniazid + Pyrazinamide</p>
-                                        </div>
-                                    </div>
-                                </div>
+                                <?php endif; ?>
                             </div>
+                            <?php if(count($treatmentRecords) > 5): ?>
                             <div class="mt-4 text-center">
                                 <button class="text-blue-600 text-sm hover:underline">View All History</button>
                             </div>
+                            <?php endif; ?>
                         </div>
                         
                         <!-- Charts Section -->
@@ -261,129 +218,63 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">TR-001</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Intensive Phase</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rifampicin + Isoniazid + Pyrazinamide</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">May 15, 2023</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">May 29, 2023</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Good</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Ongoing</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <div class="flex space-x-2">
-                                                <button class="text-blue-600 hover:text-blue-900"><i class="bx bx-edit"></i></button>
-                                                <button class="text-gray-600 hover:text-gray-900"><i class="bx bx-detail"></i></button>
-                                                <button class="text-red-600 hover:text-red-900"><i class="bx bx-trash"></i></button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">TR-002</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Continuation Phase</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rifampicin + Isoniazid</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Apr 10, 2023</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jun 30, 2023</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Irregular</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Ongoing</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Active</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <div class="flex space-x-2">
-                                                <button class="text-blue-600 hover:text-blue-900"><i class="bx bx-edit"></i></button>
-                                                <button class="text-gray-600 hover:text-gray-900"><i class="bx bx-detail"></i></button>
-                                                <button class="text-red-600 hover:text-red-900"><i class="bx bx-trash"></i></button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">TR-003</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Intensive Phase</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rifampicin + Isoniazid + Ethambutol</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jan 5, 2023</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Mar 20, 2023</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Good</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Cured</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Completed</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <div class="flex space-x-2">
-                                                <button class="text-blue-600 hover:text-blue-900"><i class="bx bx-edit"></i></button>
-                                                <button class="text-gray-600 hover:text-gray-900"><i class="bx bx-detail"></i></button>
-                                                <button class="text-red-600 hover:text-red-900"><i class="bx bx-trash"></i></button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">TR-004</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Other</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Metformin 500mg, twice daily</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Nov 12, 2022</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jan 15, 2023</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Poor</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Failed</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Discontinued</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <div class="flex space-x-2">
-                                                <button class="text-blue-600 hover:text-blue-900"><i class="bx bx-edit"></i></button>
-                                                <button class="text-gray-600 hover:text-gray-900"><i class="bx bx-detail"></i></button>
-                                                <button class="text-red-600 hover:text-red-900"><i class="bx bx-trash"></i></button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">TR-005</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Intensive Phase</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rifampicin + Isoniazid + Pyrazinamide</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Aug 3, 2022</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Oct 5, 2022</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Good</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Completed</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Completed</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <div class="flex space-x-2">
-                                                <button class="text-blue-600 hover:text-blue-900"><i class="bx bx-edit"></i></button>
-                                                <button class="text-gray-600 hover:text-gray-900"><i class="bx bx-detail"></i></button>
-                                                <button class="text-red-600 hover:text-red-900"><i class="bx bx-trash"></i></button>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                    <?php if(count($treatmentRecords) > 0): ?>
+                                        <?php foreach($treatmentRecords as $record): ?>
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">TR-<?= str_pad($record->id, 3, '0', STR_PAD_LEFT) ?></td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= htmlspecialchars($record->treatment_type) ?></td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= htmlspecialchars($record->regimen_summary) ?></td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= date('M d, Y', strtotime($record->start_date)) ?></td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= $record->end_date ? date('M d, Y', strtotime($record->end_date)) : 'Ongoing' ?></td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-<?= $record->adherence_status === 'Good' ? 'green' : ($record->adherence_status === 'Irregular' ? 'yellow' : 'red') ?>-100 text-<?= $record->adherence_status === 'Good' ? 'green' : ($record->adherence_status === 'Irregular' ? 'yellow' : 'red') ?>-800"><?= htmlspecialchars($record->adherence_status) ?></span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= htmlspecialchars($record->outcome) ?></td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-<?= $record->status === 'Active' ? 'green' : ($record->status === 'Discontinued' ? 'red' : 'gray') ?>-100 text-<?= $record->status === 'Active' ? 'green' : ($record->status === 'Discontinued' ? 'red' : 'gray') ?>-800"><?= htmlspecialchars($record->status) ?></span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    <div class="flex space-x-2">
+                                                        <button class="text-blue-600 hover:text-blue-900"><i class="bx bx-edit"></i></button>
+                                                        <button class="text-gray-600 hover:text-gray-900"><i class="bx bx-detail"></i></button>
+                                                        <button class="text-red-600 hover:text-red-900"><i class="bx bx-trash"></i></button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <tr>
+                                            <td colspan="9" class="px-6 py-4 text-center text-gray-500">No treatment records found</td>
+                                        </tr>
+                                    <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
                         <div class="flex items-center justify-between mt-4">
                             <div class="text-sm text-gray-700">
-                                Showing <span class="font-medium">1</span> to <span class="font-medium">5</span> of <span class="font-medium">12</span> results
+                                Showing <span class="font-medium">1</span> to <span class="font-medium"><?= count($treatmentRecords) ?></span> of <span class="font-medium"><?= count($treatmentRecords) ?></span> results
                             </div>
                             <div class="flex space-x-2">
                                 <button class="px-3 py-1 border border-gray-300 rounded-md text-sm bg-white text-gray-500 hover:bg-gray-50">Previous</button>
                                 <button class="px-3 py-1 border border-gray-300 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700">1</button>
-                                <button class="px-3 py-1 border border-gray-300 rounded-md text-sm bg-white text-gray-700 hover:bg-gray-50">2</button>
-                                <button class="px-3 py-1 border border-gray-300 rounded-md text-sm bg-white text-gray-700 hover:bg-gray-50">3</button>
                                 <button class="px-3 py-1 border border-gray-300 rounded-md text-sm bg-white text-gray-700 hover:bg-gray-50">Next</button>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Current Treatment Details -->
+                    <?php 
+                    // Get the most recent active treatment
+                    $currentTreatment = null;
+                    foreach($treatmentRecords as $record) {
+                        if($record->status === 'Active') {
+                            $currentTreatment = $record;
+                            break;
+                        }
+                    }
+                    
+                    if($currentTreatment): 
+                    ?>
                     <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100 mb-6 fade-in">
                         <h2 class="text-lg font-semibold mb-4">Current Treatment Details</h2>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -392,8 +283,11 @@
                                 <div class="border-b pb-4 mb-4">
                                     <div class="flex justify-between items-start">
                                         <div>
-                                            <h3 class="font-medium text-gray-900">Intensive Phase</h3>
-                                            <p class="text-sm text-gray-500 mt-1">Started: May 15, 2023 (14 days ago)</p>
+                                            <h3 class="font-medium text-gray-900"><?= htmlspecialchars($currentTreatment->treatment_type) ?></h3>
+                                            <p class="text-sm text-gray-500 mt-1">
+                                                Started: <?= date('M d, Y', strtotime($currentTreatment->start_date)) ?> 
+                                                (<?= floor((time() - strtotime($currentTreatment->start_date)) / (60 * 60 * 24)) ?> days ago)
+                                            </p>
                                         </div>
                                         <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
                                     </div>
@@ -402,38 +296,56 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <h4 class="text-sm font-medium text-gray-500">Regimen</h4>
-                                        <p class="mt-1">Rifampicin + Isoniazid + Pyrazinamide</p>
+                                        <p class="mt-1"><?= htmlspecialchars($currentTreatment->regimen_summary) ?></p>
                                     </div>
                                     <div>
                                         <h4 class="text-sm font-medium text-gray-500">Duration</h4>
-                                        <p class="mt-1">2 months (May 15 - Jul 15, 2023)</p>
+                                        <p class="mt-1">
+                                            <?php 
+                                            if($currentTreatment->end_date) {
+                                                $duration = ceil((strtotime($currentTreatment->end_date) - strtotime($currentTreatment->start_date)) / (60 * 60 * 24 * 30));
+                                                echo $duration . ' months (' . date('M d, Y', strtotime($currentTreatment->start_date)) . ' - ' . date('M d, Y', strtotime($currentTreatment->end_date)) . ')';
+                                            } else {
+                                                echo 'Ongoing since ' . date('M d, Y', strtotime($currentTreatment->start_date));
+                                            }
+                                            ?>
+                                        </p>
                                     </div>
                                     <div>
                                         <h4 class="text-sm font-medium text-gray-500">Prescribed By</h4>
-                                        <p class="mt-1">Dr. Sarah Johnson</p>
+                                        <p class="mt-1">Dr. <?= $currentTreatment->doctor_first_name . ' ' . $currentTreatment->doctor_last_name ?></p>
                                     </div>
                                     <div>
                                         <h4 class="text-sm font-medium text-gray-500">Diagnosis</h4>
-                                        <p class="mt-1">Pulmonary Tuberculosis</p>
+                                        <p class="mt-1"><?= $currentTreatment->outcome ?: 'Ongoing Treatment' ?></p>
                                     </div>
                                 </div>
                                 
                                 <div class="mb-4">
                                     <h4 class="text-sm font-medium text-gray-500 mb-2">Follow-up Notes</h4>
                                     <p class="text-sm text-gray-700">
-                                        Patient responding well to treatment. Sputum test shows decreased bacterial load after 10 days. 
-                                        Continue current regimen until completion. Schedule follow-up appointment after 1 month for reassessment.
+                                        <?= htmlspecialchars($currentTreatment->follow_up_notes ?: 'No follow-up notes available.') ?>
                                     </p>
                                 </div>
                                 
                                 <div>
                                     <h4 class="text-sm font-medium text-gray-500 mb-2">Adherence Tracking</h4>
+                                    <?php
+                                    $adherencePercentage = 0;
+                                    if($currentTreatment->adherence_status === 'Good') {
+                                        $adherencePercentage = 95;
+                                    } elseif($currentTreatment->adherence_status === 'Irregular') {
+                                        $adherencePercentage = 60;
+                                    } elseif($currentTreatment->adherence_status === 'Poor') {
+                                        $adherencePercentage = 30;
+                                    }
+                                    ?>
                                     <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
-                                        <div class="h-full bg-green-500 rounded-full" style="width: 95%"></div>
+                                        <div class="h-full bg-<?= $adherencePercentage > 80 ? 'green' : ($adherencePercentage > 50 ? 'yellow' : 'red') ?>-500 rounded-full" style="width: <?= $adherencePercentage ?>%"></div>
                                     </div>
                                     <div class="flex justify-between mt-1 text-xs text-gray-500">
                                         <span>Poor</span>
-                                        <span>Adherence: Good</span>
+                                        <span>Adherence: <?= $currentTreatment->adherence_status ?></span>
                                         <span>100%</span>
                                     </div>
                                 </div>
@@ -462,12 +374,12 @@
                                     <ul class="space-y-2">
                                         <li>
                                             <a href="#" class="text-blue-600 hover:underline flex items-center">
-                                                <i class="bx bx-file mr-2"></i> Lab Results (May 20, 2023)
+                                                <i class="bx bx-file mr-2"></i> Lab Results (<?= date('M d, Y', strtotime($currentTreatment->created_at)) ?>)
                                             </a>
                                         </li>
                                         <li>
                                             <a href="#" class="text-blue-600 hover:underline flex items-center">
-                                                <i class="bx bx-file mr-2"></i> Initial Diagnosis (May 15, 2023)
+                                                <i class="bx bx-file mr-2"></i> Initial Diagnosis (<?= date('M d, Y', strtotime($currentTreatment->start_date)) ?>)
                                             </a>
                                         </li>
                                         <li>
@@ -480,6 +392,7 @@
                             </div>
                         </div>
                     </div>
+                    <?php endif; ?>
                 </section>
             </div>
         </main>
@@ -494,7 +407,21 @@
             data: {
                 labels: ['Good', 'Irregular', 'Poor'],
                 datasets: [{
-                    data: [65, 25, 10],
+                    data: [
+                        <?php 
+                        $goodCount = 0;
+                        $irregularCount = 0;
+                        $poorCount = 0;
+                        
+                        foreach($treatmentRecords as $record) {
+                            if($record->adherence_status === 'good') $goodCount++;
+                            else if($record->adherence_status === 'irregular') $irregularCount++;
+                            else if($record->adherence_status === 'poor') $poorCount++;
+                        }
+                        
+                        echo $goodCount . ', ' . $irregularCount . ', ' . $poorCount;
+                        ?>
+                    ],
                     backgroundColor: [
                         'rgba(16, 185, 129, 0.8)',  // Green for Good
                         'rgba(245, 158, 11, 0.8)',  // Yellow for Irregular
@@ -519,13 +446,32 @@
         const treatmentTypesChart = new Chart(typesCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Intensive Phase', 'Continuation Phase', 'Other'],
+                labels: [
+                    <?php
+                    $treatmentTypes = [];
+                    $typeCounts = [];
+                    
+                    foreach($treatmentRecords as $record) {
+                        if(!in_array($record->treatment_type, $treatmentTypes)) {
+                            $treatmentTypes[] = $record->treatment_type;
+                            $typeCounts[] = 1;
+                        } else {
+                            $index = array_search($record->treatment_type, $treatmentTypes);
+                            $typeCounts[$index]++;
+                        }
+                    }
+                    
+                    echo "'" . implode("', '", $treatmentTypes) . "'";
+                    ?>
+                ],
                 datasets: [{
-                    data: [60, 30, 10],
+                    data: [<?= implode(', ', $typeCounts) ?>],
                     backgroundColor: [
                         'rgba(59, 130, 246, 0.8)',
                         'rgba(16, 185, 129, 0.8)',
-                        'rgba(156, 163, 175, 0.8)'
+                        'rgba(156, 163, 175, 0.8)',
+                        'rgba(139, 92, 246, 0.8)',
+                        'rgba(249, 115, 22, 0.8)'
                     ],
                     borderWidth: 1
                 }]
@@ -546,10 +492,28 @@
         const outcomesChart = new Chart(outcomesCtx, {
             type: 'bar',
             data: {
-                labels: ['Ongoing', 'Cured', 'Completed', 'Failed', 'Lost to follow-up', 'Died'],
+                labels: [
+                    <?php
+                    $outcomes = [];
+                    $outcomeCounts = [];
+                    
+                    foreach($treatmentRecords as $record) {
+                        $outcome = $record->outcome ?: 'Ongoing';
+                        if(!in_array($outcome, $outcomes)) {
+                            $outcomes[] = $outcome;
+                            $outcomeCounts[] = 1;
+                        } else {
+                            $index = array_search($outcome, $outcomes);
+                            $outcomeCounts[$index]++;
+                        }
+                    }
+                    
+                    echo "'" . implode("', '", $outcomes) . "'";
+                    ?>
+                ],
                 datasets: [{
                     label: 'Treatment Outcomes',
-                    data: [35, 25, 20, 10, 8, 2],
+                    data: [<?= implode(', ', $outcomeCounts) ?>],
                     backgroundColor: [
                         'rgba(59, 130, 246, 0.8)',  // Blue for Ongoing
                         'rgba(16, 185, 129, 0.8)',  // Green for Cured
@@ -577,9 +541,26 @@
         const statusChart = new Chart(statusCtx, {
             type: 'pie',
             data: {
-                labels: ['Active', 'Completed', 'Discontinued'],
+                labels: [
+                    <?php
+                    $statuses = [];
+                    $statusCounts = [];
+                    
+                    foreach($treatmentRecords as $record) {
+                        if(!in_array($record->status, $statuses)) {
+                            $statuses[] = $record->status;
+                            $statusCounts[] = 1;
+                        } else {
+                            $index = array_search($record->status, $statuses);
+                            $statusCounts[$index]++;
+                        }
+                    }
+                    
+                    echo "'" . implode("', '", $statuses) . "'";
+                    ?>
+                ],
                 datasets: [{
-                    data: [30, 60, 10],
+                    data: [<?= implode(', ', $statusCounts) ?>],
                     backgroundColor: [
                         'rgba(16, 185, 129, 0.8)',  // Green for Active
                         'rgba(79, 70, 229, 0.8)',   // Indigo for Completed

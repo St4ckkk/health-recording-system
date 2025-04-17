@@ -50,5 +50,23 @@ class TreatmentRecords extends Model
         return $this->db->resultSet();
     }
 
+    public function getTreatmentById($treatmentId)
+    {
+        $sql = "SELECT tr.*, 
+                       d.first_name as doctor_first_name, 
+                       d.last_name as doctor_last_name,
+                       d.specialization as doctor_specialization,
+                       p.first_name as patient_first_name,
+                       p.last_name as patient_last_name
+                FROM {$this->table} tr
+                LEFT JOIN doctors d ON tr.doctor_id = d.id
+                LEFT JOIN patients p ON tr.patient_id = p.id
+                WHERE tr.id = :treatment_id";
+
+        $this->db->query($sql);
+        $this->db->bind(':treatment_id', $treatmentId);
+
+        return $this->db->single();
+    }
 
 }

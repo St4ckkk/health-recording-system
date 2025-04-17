@@ -153,9 +153,39 @@ class DoctorController extends Controller
         ]);
     }
 
-    public function treatmentDetails() {
+    public function treatmentDetails($id = null) {
+        $treatmentId = $id ?? (isset($_GET['id']) ? intval($_GET['id']) : 0);
+        $patientId = isset($_GET['patient_id']) ? intval($_GET['patient_id']) : 0;
+        
+        if (!$treatmentId) {
+            $this->redirect('/doctor/patients');
+            return;
+        }
+        
+        $treatment = $this->treatmentRecordsModel->getTreatmentById($treatmentId);
+        if (!$treatment) {
+            $this->redirect('/doctor/patients');
+            return;
+        }
+        
+        $patientId = $treatment->patient_id;
+        $patient = $this->patientModel->getPatientById($patientId);
+        $treatmentRecords = $this->treatmentRecordsModel->getPatientTreatmentRecords($patientId);
+        
+        // Get treatment statistics
+        $stats = [
+            'total' => count($treatmentRecords),
+            'active' => count(array_filter($treatmentRecords, fn($r) => $r->status === 'Active')),
+            'completed' => count(array_filter($treatmentRecords, fn($r) => $r->status === 'Completed')),
+            'goodAdherence' => count(array_filter($treatmentRecords, fn($r) => $r->adherence_status === 'Good'))
+        ];
+        
         $this->view('pages/doctor/treatment-details.view', [
             'title' => 'Treatment Details',
+            'patient' => $patient,
+            'treatment' => $treatment,
+            'treatmentRecords' => $treatmentRecords,
+            'stats' => $stats
         ]);
     }
 

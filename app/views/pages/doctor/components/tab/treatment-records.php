@@ -53,13 +53,12 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <div class="flex justify-between items-center">
-                                    <a href="<?= BASE_URL ?>/doctor/treatment-records/view/<?= $record->id ?>"
+                                    <a href="<?= BASE_URL ?>/doctor/treatment-records/view?id=<?= $record->id ?>"
                                         class="text-blue-600 text-sm inline-flex items-center hover:text-blue-900">
                                         View Details <i class='bx bx-right-arrow-alt ml-1'></i>
                                     </a>
                                 </div>
                             </td>
-                            
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
