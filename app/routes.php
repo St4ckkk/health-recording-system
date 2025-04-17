@@ -60,6 +60,7 @@ $router->post('/doctor/email-prescription', 'DoctorController@emailPrescription'
 $router->get('/doctor/treatment-records/view', 'DoctorController@treatmentDetails');
 $router->get('/doctor/admission/view', 'DoctorController@admissionDetails'); 
 $router->get('/doctor/immunization/view', 'DoctorController@immunizationDetails');
+$router->get('/doctor/prescription/view', 'DoctorController@prescriptionDetails');
 
 // Pharmacist routes
 $router->get('/pharmacist/dashboard', 'PharmacistController@dashboard');

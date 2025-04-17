@@ -231,6 +231,44 @@ class DoctorController extends Controller
             'stats' => $stats
         ]);
     }
+
+    public function prescriptionDetails()
+    {
+        $prescriptionId = isset($_GET['id']) ? intval($_GET['id']) : 0;
+        
+        if (!$prescriptionId) {
+            $this->redirect('/doctor/patients');
+            return;
+        }
+        
+        $prescription = $this->ePrescriptionModel->getPrescriptionWithDetails($prescriptionId);
+        if (!$prescription) {
+            $this->redirect('/doctor/patients');
+            return;
+        }
+        
+        $patient = $this->patientModel->getPatientById($prescription->patient_id);
+        $medications = $this->ePrescriptionMedicinesModel->getMedicationsForPrescription($prescriptionId);
+        $prescriptionHistory = $this->ePrescriptionModel->getPrescriptionsForPatient($prescription->patient_id);
+        
+        // Get prescription statistics
+        $stats = [
+            'total' => count($prescriptionHistory),
+            'recent' => count(array_filter($prescriptionHistory, function($r) {
+                return strtotime($r->created_at) > strtotime('-30 days');
+            })),
+            'medications' => count($medications)
+        ];
+        
+        $this->view('pages/doctor/prescription-details.view', [
+            'title' => 'Prescription Details',
+            'patient' => $patient,
+            'prescription' => $prescription,
+            'medications' => $medications,
+            'prescriptionHistory' => $prescriptionHistory,
+            'stats' => $stats
+        ]);
+    }
     
 
     public function treatmentDetails()

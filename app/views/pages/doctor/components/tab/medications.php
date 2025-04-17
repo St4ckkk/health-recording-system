@@ -56,14 +56,14 @@
                                     <?= date('M d, Y', strtotime($prescription->follow_up_date)) ?>
                                 </span>
                             </td>
-                            <td class="px-4 py-3 whitespace-nowrap">
-                                <div class="flex space-x-2">
-                                    <a href="<?= BASE_URL ?>/doctor/preview-prescription?id=<?= $prescription->id ?>"
-                                        class="text-indigo-600 hover:text-indigo-900">
-                                        <i class="bx bx-show"></i> View
-                                    </a>
-                                </div>
-                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                            <div class="flex justify-between items-center">
+                                <a href="<?= BASE_URL ?>/doctor/prescription/view?id=<?= $prescription->id ?>"
+                                    class="text-blue-600 text-sm inline-flex items-center hover:text-blue-900">
+                                    View Details <i class='bx bx-right-arrow-alt ml-1'></i>
+                                </a>
+                            </div>
+                        </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>

@@ -20,7 +20,7 @@
 
 </head>
 
-<body class="font-body">
+<body class="font-body bg-gray-50">
     <div class="flex">
         <?php include('components/sidebar.php') ?>
         <?php
@@ -225,19 +225,19 @@
                                     <?php include('components/tab/overview.php'); ?>
                                 </div>
 
-                                <div class="tab-content p-6" id="tab-content-admission">
+                                <div class="tab-content p-6 hidden" id="tab-content-admission">
                                     <?php include('components/tab/admission.php'); ?>
                                 </div>
 
                                 <!-- Visits Tab Content -->
-                                <div class="tab-content p-6 hidden" id="tab-content-visits">
+                                <!-- <div class="tab-content p-6 hidden" id="tab-content-visits">
                                     <?php include('components/tab/visits.php'); ?>
-                                </div>
+                                </div> -->
 
                                 <!-- Lab Results Tab Content -->
-                                <div class="tab-content p-6 hidden" id="tab-content-lab-results">
+                                <!-- <div class="tab-content p-6 hidden" id="tab-content-lab-results">
                                     <?php include('components/tab/lab-results.php'); ?>
-                                </div>
+                                </div> -->
 
                                 <!-- Medications Tab Content -->
                                 <div class="tab-content p-6 hidden" id="tab-content-medications">
