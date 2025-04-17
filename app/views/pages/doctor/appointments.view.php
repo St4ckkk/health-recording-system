@@ -368,7 +368,7 @@
                     <div class="card bg-white shadow-sm rounded-lg w-full fade-in">
                         <div class="p-4">
                             <table class="appointments-table">
-                                <thead>
+                                <thead class="bg-gray-50">
                                     <tr>
                                         <th>Patient</th>
                                         <th>Date & Time</th>

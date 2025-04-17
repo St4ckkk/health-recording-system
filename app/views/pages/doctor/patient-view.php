@@ -212,20 +212,21 @@
                                     <button class="tab-button px-6 py-3 text-gray-500 hover:text-gray-700"
                                         data-tab="overview" id="tab-overview">Overview</button>
                                     <button class="tab-button px-6 py-3 text-gray-500 hover:text-gray-700"
-                                        data-tab="visits" id="tab-visits">Visits</button>
-                                    <button class="tab-button px-6 py-3 text-gray-500 hover:text-gray-700"
-                                        data-tab="lab-results" id="tab-lab-results">Lab Results</button>
+                                        data-tab="admission" id="tab-admission">Admission</button>
                                     <button class="tab-button px-6 py-3 text-gray-500 hover:text-gray-700"
                                         data-tab="medications" id="tab-medications">Medications</button>
                                     <button class="tab-button px-6 py-3 text-gray-500 hover:text-gray-700"
                                         data-tab="immunizations" id="tab-immunizations">Immunizations</button>
                                     <button class="tab-button px-6 py-3 text-gray-500 hover:text-gray-700"
-                                        data-tab="treatment-records" id="tab-treatment-records">Treatment
-                                        Records</button>
+                                        data-tab="treatment-records" id="tab-treatment-records">Treatment</button>
                                 </div>
 
                                 <div class="tab-content p-6" id="tab-content-overview">
                                     <?php include('components/tab/overview.php'); ?>
+                                </div>
+
+                                <div class="tab-content p-6" id="tab-content-admission">
+                                    <?php include('components/tab/admission.php'); ?>
                                 </div>
 
                                 <!-- Visits Tab Content -->

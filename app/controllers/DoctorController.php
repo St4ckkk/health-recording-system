@@ -20,6 +20,7 @@ use app\models\EPrescription;
 use app\models\EPrescriptionMedicines;
 use app\models\TreatmentRecords;
 use app\helpers\email\PrescriptionEmail;
+use app\models\PatientAdmission;
 
 
 class DoctorController extends Controller
@@ -38,6 +39,7 @@ class DoctorController extends Controller
     private $immunizationModel;
     private $diagnosisModel;
     private $treatmentRecordsModel;
+    private $patientAdmissionModel;
 
     private $prescriptionEmailHelper;
 
@@ -58,6 +60,7 @@ class DoctorController extends Controller
         $this->ePrescriptionMedicinesModel = new EPrescriptionMedicines();
         $this->prescriptionEmailHelper = new PrescriptionEmail();
         $this->treatmentRecordsModel = new TreatmentRecords();
+        $this->patientAdmissionModel = new PatientAdmission();
     }
 
 
@@ -139,6 +142,9 @@ class DoctorController extends Controller
         $immunizationHistory = $this->immunizationModel->getPatientImmunizations($patientId);
         $patientLabResults = $this->labResultsModel->getPatientLabResults($patientId);
 
+       
+        $admissionHistory = $this->patientAdmissionModel->getPatientAdmissions($patientId);
+        
         $this->view('pages/doctor/patient-view', [
             'title' => 'Patient Record',
             'patient' => $patient,
@@ -150,12 +156,48 @@ class DoctorController extends Controller
             'immunizationHistory' => $immunizationHistory,
             'patientLabResults' => $patientLabResults,
             'treatmentRecords' => $treatmentRecords,
+            'admissionHistory' => $admissionHistory, 
         ]);
     }
 
-    public function treatmentDetails($id = null) {
-        $treatmentId = $id ?? (isset($_GET['id']) ? intval($_GET['id']) : 0);
-        $patientId = isset($_GET['patient_id']) ? intval($_GET['patient_id']) : 0;
+    public function admissionDetails()
+    {
+        $admissionId = isset($_GET['id']) ? intval($_GET['id']) : 0;
+        
+        if (!$admissionId) {
+            $this->redirect('/doctor/patients');
+            return;
+        }
+        
+        $admission = $this->patientAdmissionModel->getAdmissionById($admissionId);
+        if (!$admission) {
+            $this->redirect('/doctor/patients');
+            return;
+        }
+        
+        $patient = $this->patientModel->getPatientById($admission->patient_id);
+        $admissionHistory = $this->patientAdmissionModel->getPatientAdmissions($admission->patient_id);
+        
+        // Get admission statistics
+        $stats = [
+            'total' => count($admissionHistory),
+            'active' => count(array_filter($admissionHistory, fn($r) => strtolower($r->status) === 'active')),
+            'discharged' => count(array_filter($admissionHistory, fn($r) => strtolower($r->status) === 'discharged'))
+        ];
+        
+        $this->view('pages/doctor/admission-details.view', [
+            'title' => 'Admission Details',
+            'patient' => $patient,
+            'currentAdmission' => $admission,
+            'admissionHistory' => $admissionHistory,
+            'stats' => $stats
+        ]);
+    }
+    
+
+    public function treatmentDetails()
+    {
+        $treatmentId = isset($_GET['id']) ? intval($_GET['id']) : 0;
         
         if (!$treatmentId) {
             $this->redirect('/doctor/patients');
@@ -168,22 +210,21 @@ class DoctorController extends Controller
             return;
         }
         
-        $patientId = $treatment->patient_id;
-        $patient = $this->patientModel->getPatientById($patientId);
-        $treatmentRecords = $this->treatmentRecordsModel->getPatientTreatmentRecords($patientId);
+        $patient = $this->patientModel->getPatientById($treatment->patient_id);
+        $treatmentRecords = $this->treatmentRecordsModel->getPatientTreatmentRecords($treatment->patient_id);
         
         // Get treatment statistics
         $stats = [
             'total' => count($treatmentRecords),
-            'active' => count(array_filter($treatmentRecords, fn($r) => $r->status === 'Active')),
-            'completed' => count(array_filter($treatmentRecords, fn($r) => $r->status === 'Completed')),
-            'goodAdherence' => count(array_filter($treatmentRecords, fn($r) => $r->adherence_status === 'Good'))
+            'active' => count(array_filter($treatmentRecords, fn($r) => strtolower($r->status) === 'active')),
+            'completed' => count(array_filter($treatmentRecords, fn($r) => strtolower($r->status) === 'completed')),
+            'goodAdherence' => count(array_filter($treatmentRecords, fn($r) => strtolower($r->adherence_status) === 'good'))
         ];
         
         $this->view('pages/doctor/treatment-details.view', [
             'title' => 'Treatment Details',
             'patient' => $patient,
-            'treatment' => $treatment,
+            'currentTreatment' => $treatment,
             'treatmentRecords' => $treatmentRecords,
             'stats' => $stats
         ]);

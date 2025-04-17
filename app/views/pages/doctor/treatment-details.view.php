@@ -106,6 +106,127 @@
                         </div>
                     </div>
 
+                     <!-- Current Treatment Details -->
+                     <?php if($currentTreatment): ?>
+                    <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100 mb-6 fade-in">
+                        <h2 class="text-lg font-semibold mb-4">Treatment Details</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Treatment Info -->
+                            <div class="md:col-span-2">
+                                <div class="border-b pb-4 mb-4">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h3 class="font-medium text-gray-900"><?= htmlspecialchars($currentTreatment->treatment_type) ?></h3>
+                                            <p class="text-sm text-gray-500 mt-1">
+                                                Started: <?= date('M d, Y', strtotime($currentTreatment->start_date)) ?> 
+                                                (<?= floor((time() - strtotime($currentTreatment->start_date)) / (60 * 60 * 24)) ?> days ago)
+                                            </p>
+                                        </div>
+                                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-500">Regimen</h4>
+                                        <p class="mt-1"><?= htmlspecialchars($currentTreatment->regimen_summary) ?></p>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-500">Duration</h4>
+                                        <p class="mt-1">
+                                            <?php 
+                                            if($currentTreatment->end_date) {
+                                                $duration = ceil((strtotime($currentTreatment->end_date) - strtotime($currentTreatment->start_date)) / (60 * 60 * 24 * 30));
+                                                echo $duration . ' months (' . date('M d, Y', strtotime($currentTreatment->start_date)) . ' - ' . date('M d, Y', strtotime($currentTreatment->end_date)) . ')';
+                                            } else {
+                                                echo 'Ongoing since ' . date('M d, Y', strtotime($currentTreatment->start_date));
+                                            }
+                                            ?>
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-500">Prescribed By</h4>
+                                        <p class="mt-1">Dr. <?= $currentTreatment->doctor_first_name . ' ' . $currentTreatment->doctor_last_name ?></p>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-500">Diagnosis</h4>
+                                        <p class="mt-1"><?= $currentTreatment->outcome ?: 'Ongoing Treatment' ?></p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h4 class="text-sm font-medium text-gray-500 mb-2">Follow-up Notes</h4>
+                                    <p class="text-sm text-gray-700">
+                                        <?= htmlspecialchars($currentTreatment->follow_up_notes ?: 'No follow-up notes available.') ?>
+                                    </p>
+                                </div>
+                                
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-500 mb-2">Adherence Tracking</h4>
+                                    <?php
+                                    $adherencePercentage = 0;
+                                    if($currentTreatment->adherence_status === 'good') {
+                                        $adherencePercentage = 95;
+                                    } elseif($currentTreatment->adherence_status === 'irregular') {
+                                        $adherencePercentage = 60;
+                                    } elseif($currentTreatment->adherence_status === 'poor') {
+                                        $adherencePercentage = 30;
+                                    }
+                                    ?>
+                                    <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                        <div class="h-full bg-<?= $adherencePercentage > 80 ? 'green' : ($adherencePercentage > 50 ? 'yellow' : 'red') ?>-500 rounded-full" style="width: <?= $adherencePercentage ?>%"></div>
+                                    </div>
+                                    <div class="flex justify-between mt-1 text-xs text-gray-500">
+                                        <span>Poor</span>
+                                        <span>Adherence: <?= $currentTreatment->adherence_status ?></span>
+                                        <span>100%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Side Actions -->
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h3 class="font-medium text-gray-900 mb-3">Actions</h3>
+                                <div class="space-y-3">
+                                    <button class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center">
+                                        <i class="bx bx-edit mr-2"></i> Update Treatment
+                                    </button>
+                                    <button class="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center justify-center">
+                                        <i class="bx bx-check-circle mr-2"></i> Mark as Completed
+                                    </button>
+                                    <button class="w-full px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors flex items-center justify-center">
+                                        <i class="bx bx-calendar-plus mr-2"></i> Schedule Follow-up
+                                    </button>
+                                    <button class="w-full px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors flex items-center justify-center">
+                                        <i class="bx bx-printer mr-2"></i> Print Details
+                                    </button>
+                                </div>
+                                
+                                <!-- <div class="mt-6">
+                                    <h3 class="font-medium text-gray-900 mb-3">Related Records</h3>
+                                    <ul class="space-y-2">
+                                        <li>
+                                            <a href="#" class="text-blue-600 hover:underline flex items-center">
+                                                <i class="bx bx-file mr-2"></i> Lab Results (<?= date('M d, Y', strtotime($currentTreatment->created_at)) ?>)
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="text-blue-600 hover:underline flex items-center">
+                                                <i class="bx bx-file mr-2"></i> Initial Diagnosis (<?= date('M d, Y', strtotime($currentTreatment->start_date)) ?>)
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="text-blue-600 hover:underline flex items-center">
+                                                <i class="bx bx-file mr-2"></i> Prescription Details
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div> -->
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
                     <!-- Treatment Timeline and Charts Section -->
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                         <!-- Treatment Timeline -->
@@ -204,17 +325,17 @@
                         </div>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                                <thead style="background-color: rgba(22, 163, 74);">
                                     <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Treatment Type</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Regimen</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Adherence</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Outcome</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">ID</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Treatment Type</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Regimen</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Start Date</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">End Date</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Adherence</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Outcome</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Status</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
@@ -235,9 +356,15 @@
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                     <div class="flex space-x-2">
-                                                        <button class="text-blue-600 hover:text-blue-900"><i class="bx bx-edit"></i></button>
-                                                        <button class="text-gray-600 hover:text-gray-900"><i class="bx bx-detail"></i></button>
-                                                        <button class="text-red-600 hover:text-red-900"><i class="bx bx-trash"></i></button>
+                                                        <button class="text-blue-600 hover:text-blue-900" title="Edit Treatment">
+                                                            <i class="bx bx-edit"></i>
+                                                        </button>
+                                                        <button class="text-gray-600 hover:text-gray-900" title="View Details">
+                                                            <i class="bx bx-detail"></i>
+                                                        </button>
+                                                        <button class="text-red-600 hover:text-red-900" title="Delete Treatment">
+                                                            <i class="bx bx-trash"></i>
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -262,137 +389,7 @@
                         </div>
                     </div>
                     
-                    <!-- Current Treatment Details -->
-                    <?php 
-                    // Get the most recent active treatment
-                    $currentTreatment = null;
-                    foreach($treatmentRecords as $record) {
-                        if($record->status === 'Active') {
-                            $currentTreatment = $record;
-                            break;
-                        }
-                    }
-                    
-                    if($currentTreatment): 
-                    ?>
-                    <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100 mb-6 fade-in">
-                        <h2 class="text-lg font-semibold mb-4">Current Treatment Details</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <!-- Treatment Info -->
-                            <div class="md:col-span-2">
-                                <div class="border-b pb-4 mb-4">
-                                    <div class="flex justify-between items-start">
-                                        <div>
-                                            <h3 class="font-medium text-gray-900"><?= htmlspecialchars($currentTreatment->treatment_type) ?></h3>
-                                            <p class="text-sm text-gray-500 mt-1">
-                                                Started: <?= date('M d, Y', strtotime($currentTreatment->start_date)) ?> 
-                                                (<?= floor((time() - strtotime($currentTreatment->start_date)) / (60 * 60 * 24)) ?> days ago)
-                                            </p>
-                                        </div>
-                                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                    <div>
-                                        <h4 class="text-sm font-medium text-gray-500">Regimen</h4>
-                                        <p class="mt-1"><?= htmlspecialchars($currentTreatment->regimen_summary) ?></p>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-sm font-medium text-gray-500">Duration</h4>
-                                        <p class="mt-1">
-                                            <?php 
-                                            if($currentTreatment->end_date) {
-                                                $duration = ceil((strtotime($currentTreatment->end_date) - strtotime($currentTreatment->start_date)) / (60 * 60 * 24 * 30));
-                                                echo $duration . ' months (' . date('M d, Y', strtotime($currentTreatment->start_date)) . ' - ' . date('M d, Y', strtotime($currentTreatment->end_date)) . ')';
-                                            } else {
-                                                echo 'Ongoing since ' . date('M d, Y', strtotime($currentTreatment->start_date));
-                                            }
-                                            ?>
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-sm font-medium text-gray-500">Prescribed By</h4>
-                                        <p class="mt-1">Dr. <?= $currentTreatment->doctor_first_name . ' ' . $currentTreatment->doctor_last_name ?></p>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-sm font-medium text-gray-500">Diagnosis</h4>
-                                        <p class="mt-1"><?= $currentTreatment->outcome ?: 'Ongoing Treatment' ?></p>
-                                    </div>
-                                </div>
-                                
-                                <div class="mb-4">
-                                    <h4 class="text-sm font-medium text-gray-500 mb-2">Follow-up Notes</h4>
-                                    <p class="text-sm text-gray-700">
-                                        <?= htmlspecialchars($currentTreatment->follow_up_notes ?: 'No follow-up notes available.') ?>
-                                    </p>
-                                </div>
-                                
-                                <div>
-                                    <h4 class="text-sm font-medium text-gray-500 mb-2">Adherence Tracking</h4>
-                                    <?php
-                                    $adherencePercentage = 0;
-                                    if($currentTreatment->adherence_status === 'Good') {
-                                        $adherencePercentage = 95;
-                                    } elseif($currentTreatment->adherence_status === 'Irregular') {
-                                        $adherencePercentage = 60;
-                                    } elseif($currentTreatment->adherence_status === 'Poor') {
-                                        $adherencePercentage = 30;
-                                    }
-                                    ?>
-                                    <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
-                                        <div class="h-full bg-<?= $adherencePercentage > 80 ? 'green' : ($adherencePercentage > 50 ? 'yellow' : 'red') ?>-500 rounded-full" style="width: <?= $adherencePercentage ?>%"></div>
-                                    </div>
-                                    <div class="flex justify-between mt-1 text-xs text-gray-500">
-                                        <span>Poor</span>
-                                        <span>Adherence: <?= $currentTreatment->adherence_status ?></span>
-                                        <span>100%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Side Actions -->
-                            <div class="bg-gray-50 p-4 rounded-lg">
-                                <h3 class="font-medium text-gray-900 mb-3">Actions</h3>
-                                <div class="space-y-3">
-                                    <button class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center">
-                                        <i class="bx bx-edit mr-2"></i> Update Treatment
-                                    </button>
-                                    <button class="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center justify-center">
-                                        <i class="bx bx-check-circle mr-2"></i> Mark as Completed
-                                    </button>
-                                    <button class="w-full px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors flex items-center justify-center">
-                                        <i class="bx bx-calendar-plus mr-2"></i> Schedule Follow-up
-                                    </button>
-                                    <button class="w-full px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors flex items-center justify-center">
-                                        <i class="bx bx-printer mr-2"></i> Print Details
-                                    </button>
-                                </div>
-                                
-                                <div class="mt-6">
-                                    <h3 class="font-medium text-gray-900 mb-3">Related Records</h3>
-                                    <ul class="space-y-2">
-                                        <li>
-                                            <a href="#" class="text-blue-600 hover:underline flex items-center">
-                                                <i class="bx bx-file mr-2"></i> Lab Results (<?= date('M d, Y', strtotime($currentTreatment->created_at)) ?>)
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#" class="text-blue-600 hover:underline flex items-center">
-                                                <i class="bx bx-file mr-2"></i> Initial Diagnosis (<?= date('M d, Y', strtotime($currentTreatment->start_date)) ?>)
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#" class="text-blue-600 hover:underline flex items-center">
-                                                <i class="bx bx-file mr-2"></i> Prescription Details
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <?php endif; ?>
+                   
                 </section>
             </div>
         </main>
@@ -498,7 +495,7 @@
                     $outcomeCounts = [];
                     
                     foreach($treatmentRecords as $record) {
-                        $outcome = $record->outcome ?: 'Ongoing';
+                        $outcome = $record->outcome ?: 'ongoing';
                         if(!in_array($outcome, $outcomes)) {
                             $outcomes[] = $outcome;
                             $outcomeCounts[] = 1;

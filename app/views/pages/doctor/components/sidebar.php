@@ -35,7 +35,8 @@ $notification_count = 3;
                     style="<?php echo (strpos($request_uri, '/doctor/patients') !== false || 
                                     strpos($request_uri, '/doctor/patientView') !== false ||
                                     strpos($request_uri, '/doctor/prescriptions') !== false ||
-                                    strpos($request_uri, '/doctor/preview-prescription') !== false) 
+                                    strpos($request_uri, '/doctor/preview-prescription') !== false ||
+                                    strpos($request_uri, '/doctor/treatment-records/view') !== false) 
                             ? 'background-color: rgb(22 163 74); color: white;' : ''; ?>">
                     <i class='bx bx-user-circle text-lg mr-2 ml-1'></i> Patients
                 </li>

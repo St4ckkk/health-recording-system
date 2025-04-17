@@ -57,7 +57,8 @@ $router->get('/doctor/prescriptions', 'DoctorController@prescriptions');
 $router->post('/doctor/preview-prescription', 'DoctorController@previewPrescription');
 $router->post('/doctor/save-prescription', 'DoctorController@savePrescription');
 $router->post('/doctor/email-prescription', 'DoctorController@emailPrescription');
-$router->get('/doctor/treatment-records/view', 'DoctorController@treatmentDetails');  // Changed from '/doctor/treatment-records/view/{id}'
+$router->get('/doctor/treatment-records/view', 'DoctorController@treatmentDetails');
+$router->get('/doctor/admission/view', 'DoctorController@admissionDetails'); 
 
 
 // Pharmacist routes
