@@ -351,6 +351,7 @@
                     <div class="border-b border-gray-200 mb-6">
                         <div class="flex">
                             <button class="tab-button active" data-tab="vitals">Vital Signs</button>
+                            <button class="tab-button" data-tab="symptoms">Symptoms</button>
                             <button class="tab-button" data-tab="medications">Medications</button>
                             <button class="tab-button" data-tab="diagnosis">Diagnosis</button>
                         </div>
@@ -359,6 +360,11 @@
                     <!-- Vitals Tab Component -->
                     <div id="vitals-tab" class="tab-content active">
                         <?php include(VIEW_ROOT . '/pages/doctor/components/checkup/vitals.php') ?>
+                    </div>
+
+
+                    <div id="symptoms-tab" class="tab-content">
+                        <?php include(VIEW_ROOT . '/pages/doctor/components/checkup/symptoms.php') ?>
                     </div>
 
                     <!-- Medications Tab Component -->
@@ -387,18 +393,15 @@
         </main>
     </div>
 
-    <!-- Floating Save Button -->
-    <!-- <button class="floating-save-btn glow-effect" onclick="saveDraft()">
-        <i class="bx bx-save"></i>
-    </button> -->
 
     <!-- Include all modals -->
     <?php include(VIEW_ROOT . '/pages/doctor/components/common/modals.php') ?>
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/l10n/fr.js"></script>
     <script src="<?= BASE_URL ?>/js/doctor/checkup.js"></script>
-    <script src="/js/doctor/vitals.js"></script>
-    <script src="/js/doctor/medications.js"></script>
-    <script src="/js/doctor/diagnosis.js"></script>
+    <script src="<?= BASE_URL ?>/js/doctor/symptoms.js"></script>
+    <script src="<?= BASE_URL ?>/js/doctor/vitals.js"></script>
+    <script src="<?= BASE_URL ?>/js/doctor/medications.js"></script>
+    <script src="<?= BASE_URL ?>/js/doctor/diagnosis.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Tab switching functionality

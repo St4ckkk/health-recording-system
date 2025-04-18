@@ -223,3 +223,47 @@
         </div>
     </div>
 </div>
+
+
+<!-- Add Symptoms Modal -->
+<div id="add-symptoms-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title" id="symptoms-modal-title">Add Symptom</h3>
+            <button class="modal-close" onclick="closeModal('add-symptoms-modal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="symptomsForm" onsubmit="handleSymptomsSubmit(event)">
+                <input type="hidden" name="patient_id" value="<?= $patient->id ?? 0 ?>">
+                <input type="hidden" name="doctor_id" value="<?= $_SESSION['doctor_id'] ?? 0 ?>">
+                <input type="hidden" name="symptom_id" id="symptom_id" value="">
+
+                <div class="form-group">
+                    <label for="symptom_name" class="form-label">Symptom Name</label>
+                    <input type="text" id="symptom_name" name="symptom_name" class="form-input"
+                        placeholder="e.g. Headache, Fever, Cough" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="severity_level" class="form-label">Severity Level</label>
+                    <select id="severity_level" name="severity_level" class="form-select" required>
+                        <option value="">Select severity</option>
+                        <option value="Mild">Mild</option>
+                        <option value="Moderate">Moderate</option>
+                        <option value="Severe">Severe</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="symptom_notes" class="form-label">Notes</label>
+                    <textarea id="symptom_notes" name="symptom_notes" class="form-textarea" rows="4"
+                        placeholder="Additional details about the symptom" required></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('add-symptoms-modal')">Cancel</button>
+            <button type="submit" class="btn btn-primary" form="symptomsForm">Save Symptom</button>
+        </div>
+    </div>
+</div>

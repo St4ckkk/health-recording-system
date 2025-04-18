@@ -66,4 +66,28 @@ class TreatmentRecords extends Model
         return $this->db->single();
     }
 
+    public function insert($data)
+    {
+        $this->db->query("INSERT INTO {$this->table} (patient_id, doctor_id, treatment_type, regimen_summary, 
+                          start_date, end_date, adherence_status, outcome, follow_up_notes, status, created_at, updated_at) 
+                          VALUES (:patient_id, :doctor_id, :treatment_type, :regimen_summary, 
+                          :start_date, :end_date, :adherence_status, :outcome, :follow_up_notes, :status, NOW(), NOW())");
+
+        $this->db->bind(':patient_id', $data['patient_id']);
+        $this->db->bind(':doctor_id', $data['doctor_id']);
+        $this->db->bind(':treatment_type', $data['treatment_type']);
+        $this->db->bind(':regimen_summary', $data['regimen_summary']);
+        $this->db->bind(':start_date', $data['start_date']);
+        $this->db->bind(':end_date', $data['end_date'] ?? null);
+        $this->db->bind(':adherence_status', $data['adherence_status'] ?? null);
+        $this->db->bind(':outcome', $data['outcome'] ?? null);
+        $this->db->bind(':follow_up_notes', $data['follow_up_notes'] ?? null);
+        $this->db->bind(':status', $data['status']);
+
+        if ($this->db->execute()) {
+            return $this->db->lastInsertId();
+        }
+
+        return false;
+    }
 }

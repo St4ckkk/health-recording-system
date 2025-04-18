@@ -121,6 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (typeof loadSavedVitals === 'function') loadSavedVitals();
     if (typeof loadSavedMedications === 'function') loadSavedMedications();
     if (typeof loadSavedDiagnoses === 'function') loadSavedDiagnoses();
+    if (typeof loadSavedSymptoms === 'function') loadSavedSymptoms();
 
     // Add event listeners to forms if they exist
     const vitalsForm = document.getElementById('vitalsForm');
@@ -137,32 +138,46 @@ document.addEventListener('DOMContentLoaded', function () {
     if (diagnosisForm && typeof handleDiagnosisSubmit === 'function') {
         diagnosisForm.addEventListener('submit', handleDiagnosisSubmit);
     }
+
+    const symptomForm = document.getElementById('symptomForm');
+    if (symptomForm && typeof handleSymptomSubmit === 'function') {
+        symptomForm.addEventListener('submit', handleSymptomSubmit);
+    }
+
+
 });
 
 
 
-// Function to handle complete checkup
-// Inside completeCheckup function, update the checkupData structure
 function completeCheckup() {
-    const patientId = document.querySelector('input[name="patient_id"]')?.value || '0';
-    const doctorId = document.querySelector('input[name="doctor_id"]')?.value || '0';
+    const patientId = document.querySelector('input[name="patient_id"]')?.value || "0"
+    const doctorId = document.querySelector('input[name="doctor_id"]')?.value || "0"
 
     // Get all data from localStorage
-    const pendingVitals = JSON.parse(localStorage.getItem('pendingVitals_' + patientId) || 'null');
-    const pendingMedications = JSON.parse(localStorage.getItem('pendingMedications_' + patientId) || '[]');
-    const pendingDiagnoses = JSON.parse(localStorage.getItem('pendingDiagnoses_' + patientId) || '[]');
+    const pendingVitals = JSON.parse(localStorage.getItem("pendingVitals_" + patientId) || "null")
+    const pendingMedications = JSON.parse(localStorage.getItem("pendingMedications_" + patientId) || "[]")
+    const pendingDiagnoses = JSON.parse(localStorage.getItem("pendingDiagnoses_" + patientId) || "[]")
+    const pendingSymptoms = JSON.parse(localStorage.getItem("pendingSymptoms_" + patientId) || "[]")
 
     // Update the medications data structure to match the database
-    const medications = pendingMedications.map(med => ({
+    const medications = pendingMedications.map((med) => ({
         ...med,
-        type: 'prescribed',
+        type: "prescribed",
         patient_id: patientId,
         prescribed_by: doctorId,
-        start_date: med.start_date || new Date().toISOString().split('T')[0],
+        start_date: med.start_date || new Date().toISOString().split("T")[0],
         quantity: med.quantity || 1,
-        purpose: med.purpose || 'Prescribed during checkup',
-        remarks: `Prescribed: ${med.dosage} - ${med.frequency}`
-    }));
+        purpose: med.purpose || "Prescribed during checkup",
+        remarks: `Prescribed: ${med.dosage} - ${med.frequency}`,
+    }))
+
+    // Update the symptoms data structure to match the database
+    const symptoms = pendingSymptoms.map((symp) => ({
+        patient_id: patientId,
+        name: symp.name,
+        severity_level: symp.severity_level,
+        notes: symp.notes,
+    }))
 
     // Prepare data for submission
     const checkupData = {
@@ -171,64 +186,74 @@ function completeCheckup() {
         vitals: pendingVitals,
         medications: medications,
         diagnoses: pendingDiagnoses,
-        notes: document.getElementById('checkup_notes')?.value || ''
-    };
+        symptoms: symptoms,
+        notes: document.getElementById("checkup_notes")?.value || "",
+    }
 
     // Show loading state
-    const completeBtn = document.querySelector('.complete-checkup-btn');
-    const originalBtnText = completeBtn.innerHTML;
-    completeBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Saving...';
-    completeBtn.disabled = true;
+    const completeBtn = document.querySelector(".complete-checkup-btn")
+    const originalBtnText = completeBtn.innerHTML
+    completeBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Saving...'
+    completeBtn.disabled = true
 
     // Send data to server
-    fetch('/doctor/save-checkup', {
-        method: 'POST',
+    fetch("/doctor/save-checkup", {
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest",
         },
-        body: JSON.stringify(checkupData)
+        body: JSON.stringify(checkupData),
     })
-        .then(response => {
+        .then((response) => {
             // First check if response is ok
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`HTTP error! status: ${response.status}`)
             }
             // Then try to parse JSON
-            return response.text().then(text => {
+            return response.text().then((text) => {
                 try {
-                    return JSON.parse(text);
+                    return JSON.parse(text)
                 } catch (e) {
-                    throw new Error('Invalid JSON response: ' + text);
+                    throw new Error("Invalid JSON response: " + text)
                 }
-            });
+            })
         })
-        .then(data => {
+        .then((data) => {
             if (data.success) {
                 // Clear localStorage
-                localStorage.removeItem('pendingVitals_' + patientId);
-                localStorage.removeItem('pendingMedications_' + patientId);
-                localStorage.removeItem('pendingDiagnoses_' + patientId);
+                localStorage.removeItem("pendingVitals_" + patientId)
+                localStorage.removeItem("pendingMedications_" + patientId)
+                localStorage.removeItem("pendingDiagnoses_" + patientId)
+                localStorage.removeItem("pendingSymptoms_" + patientId)
 
                 // Show success message
-                showToast('success', 'Checkup Completed', 'Patient checkup data has been saved successfully!');
+                try {
+                    showToast("success", "Checkup Completed", "Patient checkup data has been saved successfully!")
+                } catch (e) {
+                    console.error("showToast is not defined. Ensure it is imported or declared.")
+                }
 
                 // Redirect to patient view after a short delay
                 setTimeout(() => {
-                    window.location.href = `/doctor/patientView?id=${patientId}`;
-                }, 2000);
+                    window.location.href = `/doctor/patientView?id=${patientId}`
+                }, 2000)
             } else {
-                throw new Error(data.message || 'Failed to save checkup data');
+                throw new Error(data.message || "Failed to save checkup data")
             }
         })
-        .catch(error => {
-            console.error('Error saving checkup:', error);
-            showToast('error', 'Error', 'An unexpected error occurred. Please try again.');
+        .catch((error) => {
+            console.error("Error saving checkup:", error)
+            try {
+                showToast("error", "Error", "An unexpected error occurred. Please try again.")
+            } catch (e) {
+                console.error("showToast is not defined. Ensure it is imported or declared.")
+            }
 
             // Reset button
-            completeBtn.innerHTML = originalBtnText;
-            completeBtn.disabled = false;
-        });
+            completeBtn.innerHTML = originalBtnText
+            completeBtn.disabled = false
+        })
 }
 
 // Function to save draft

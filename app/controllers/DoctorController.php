@@ -22,6 +22,7 @@ use app\models\TreatmentRecords;
 use app\helpers\email\PrescriptionEmail;
 use app\models\PatientAdmission;
 use app\models\Vaccines;
+use app\models\Symptoms;
 
 
 class DoctorController extends Controller
@@ -43,6 +44,7 @@ class DoctorController extends Controller
     private $patientAdmissionModel;
     private $prescriptionEmailHelper;
     private $vaccinesModel;
+    private $symptomsModel;
 
     public function __construct()
     {
@@ -63,6 +65,7 @@ class DoctorController extends Controller
         $this->treatmentRecordsModel = new TreatmentRecords();
         $this->patientAdmissionModel = new PatientAdmission();
         $this->vaccinesModel = new Vaccines();
+        $this->symptomsModel = new Symptoms();
     }
 
 
@@ -540,6 +543,9 @@ class DoctorController extends Controller
         ]);
     }
 
+
+
+
     public function saveCheckup()
     {
         // Check if this is an AJAX request
@@ -575,6 +581,7 @@ class DoctorController extends Controller
         $vitals = $data['vitals'] ?? null;
         $medications = $data['medications'] ?? [];
         $diagnoses = $data['diagnoses'] ?? [];
+        $symptoms = $data['symptoms'] ?? [];
 
         try {
             // Save vitals if provided
@@ -594,6 +601,26 @@ class DoctorController extends Controller
 
                 if (!$vitalsSuccess) {
                     throw new \Exception('Failed to save vitals data');
+                }
+            }
+
+
+            if (!empty($symptoms)) {
+                foreach ($symptoms as $symptom) {
+                    $symptomData = [
+                        'patient_id' => $patientId,
+                        'name' => $symptom['name'] ?? null,
+                        'severity_level' => $symptom['severity_level'] ?? null,
+                        'notes' => $symptom['notes'] ?? null,
+                        'created_at' => date('Y-m-d H:i:s'),
+
+                    ];
+
+                    $symptomSuccess = $this->symptomsModel->insert($symptomData);
+
+                    if (!$symptomSuccess) {
+                        throw new \Exception('Failed to save symptom data');
+                    }
                 }
             }
 
@@ -631,6 +658,8 @@ class DoctorController extends Controller
                             'medicine_id' => $medicine->id,
                             'patient_id' => $patientId,
                             'doctor_id' => $doctorId,
+                            // 'staff_id' => null,
+                            'action_type' => 'Prescribed',
                             'quantity' => 1,
                             'previous_stock' => $previousStock,
                             'new_stock' => $newStock,
@@ -646,6 +675,7 @@ class DoctorController extends Controller
                             'patient_id' => $patientId,
                             'doctor_id' => $doctorId,
                             'medication_id' => $medicationId,
+                            'record_type' => 'Medication',
                             'created_at' => date('Y-m-d H:i:s')
                         ];
 

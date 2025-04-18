@@ -64,7 +64,7 @@ $router->get('/doctor/prescription/view', 'DoctorController@prescriptionDetails'
 $router->post('/doctor/saveAdmission', 'DoctorController@saveAdmission');
 $router->post('/doctor/updateAdmissionStatus', 'DoctorController@updateAdmissionStatus');
 $router->post('/doctor/saveImmunization', 'DoctorController@saveImmunization');
-
+$router->post('/doctor/saveTreatment', 'DoctorController@saveTreatment');
 
 // Pharmacist routes
 $router->get('/pharmacist/dashboard', 'PharmacistController@dashboard');
