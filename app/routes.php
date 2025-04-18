@@ -63,6 +63,9 @@ $router->get('/doctor/immunization/view', 'DoctorController@immunizationDetails'
 $router->get('/doctor/prescription/view', 'DoctorController@prescriptionDetails');
 $router->post('/doctor/saveAdmission', 'DoctorController@saveAdmission');
 $router->post('/doctor/updateAdmissionStatus', 'DoctorController@updateAdmissionStatus');
+$router->post('/doctor/saveImmunization', 'DoctorController@saveImmunization');
+
+
 // Pharmacist routes
 $router->get('/pharmacist/dashboard', 'PharmacistController@dashboard');
 $router->get('/pharmacist/medicinesInventory', 'PharmacistController@medicineInventory');

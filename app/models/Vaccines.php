@@ -27,4 +27,10 @@ class Vaccines extends Model
         return "SELECT " . implode(', ', $fields) . " FROM $this->table v";
     }
 
+    public function getAllVaccines()
+    {
+        $sql = $this->buildBaseQuery();
+        $this->db->query($sql);
+        return $this->db->resultSet();
+    }
 }

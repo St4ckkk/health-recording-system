@@ -21,6 +21,7 @@ use app\models\EPrescriptionMedicines;
 use app\models\TreatmentRecords;
 use app\helpers\email\PrescriptionEmail;
 use app\models\PatientAdmission;
+use app\models\Vaccines;
 
 
 class DoctorController extends Controller
@@ -40,8 +41,8 @@ class DoctorController extends Controller
     private $diagnosisModel;
     private $treatmentRecordsModel;
     private $patientAdmissionModel;
-
     private $prescriptionEmailHelper;
+    private $vaccinesModel;
 
     public function __construct()
     {
@@ -61,6 +62,7 @@ class DoctorController extends Controller
         $this->prescriptionEmailHelper = new PrescriptionEmail();
         $this->treatmentRecordsModel = new TreatmentRecords();
         $this->patientAdmissionModel = new PatientAdmission();
+        $this->vaccinesModel = new Vaccines();
     }
 
 
@@ -145,6 +147,8 @@ class DoctorController extends Controller
         $admissionHistory = $this->patientAdmissionModel->getPatientAdmissions($patientId);
         $patientDiagnosis = $this->diagnosisModel->getPatientDiagnoses($patientId);
 
+        $vaccines = $this->vaccinesModel->getAllVaccines();
+
         $this->view('pages/doctor/patient-view', [
             'title' => 'Patient Record',
             'patient' => $patient,
@@ -158,6 +162,7 @@ class DoctorController extends Controller
             'treatmentRecords' => $treatmentRecords,
             'admissionHistory' => $admissionHistory,
             'patientDiagnosis' => $patientDiagnosis,
+            'vaccines' => $vaccines,
         ]);
     }
 
@@ -193,6 +198,72 @@ class DoctorController extends Controller
             'admissionHistory' => $admissionHistory,
             'stats' => $stats
         ]);
+    }
+
+
+    public function saveImmunization()
+    {
+        try {
+            // Set headers to prevent any output before JSON
+            ob_clean(); // Clear any previous output
+            header('Content-Type: application/json');
+
+            if (!isset($_SESSION['doctor']['id'])) {
+                throw new \Exception('Doctor session not found');
+            }
+
+            $doctorId = $_SESSION['doctor']['id'];
+
+            // Prepare immunization data
+            $immunizationData = [
+                'patient_id' => $_POST['patient_id'] ?? null,
+                'doctor_id' => $doctorId,
+                'vaccine_id' => $_POST['vaccine_id'] ?? null,
+                'immunization_date' => $_POST['immunization_date'] ?? null,
+                'administrator' => $_POST['administrator'] ?? null,
+                'lot_number' => $_POST['lot_number'] ?? null,
+                'next_date' => !empty($_POST['next_date']) ? $_POST['next_date'] : null,
+                'notes' => $_POST['notes'] ?? null
+            ];
+
+            // Validate required fields
+            foreach (['patient_id', 'doctor_id', 'vaccine_id', 'immunization_date', 'administrator', 'lot_number'] as $field) {
+                if (empty($immunizationData[$field])) {
+                    throw new \Exception("Missing required field: $field");
+                }
+            }
+
+            // Insert immunization record
+            $immunizationId = $this->immunizationModel->insert($immunizationData);
+
+            if (!$immunizationId) {
+                throw new \Exception('Failed to save immunization record');
+            }
+
+            // Create medical record entry
+            $medicalRecordData = [
+                'patient_id' => $immunizationData['patient_id'],
+                'doctor_id' => $doctorId,
+                'record_type' => 'Immunization',
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+
+            $this->medicalRecordsModel->insert($medicalRecordData);
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Immunization record saved successfully',
+                'immunizationId' => $immunizationId
+            ]);
+
+        } catch (\Exception $e) {
+            error_log('Immunization Save Error: ' . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+        exit;
     }
 
 

@@ -23,7 +23,7 @@ class Immunization extends Model
             'im.immunization_date',
             'im.administrator',
             'lot_number',
-            'im.next_date',
+            'im.next_due',
             'im.notes',
             'im.created_at',
             'im.updated_at',
@@ -80,5 +80,26 @@ class Immunization extends Model
         $this->db->bind(':id', $id);
 
         return $this->db->single();
+    }
+
+    public function insert($data)
+    {
+        $this->db->query("INSERT INTO {$this->table} (patient_id, doctor_id, vaccine_id, immunization_date, administrator, lot_number, next_due, notes, created_at, updated_at) 
+                          VALUES (:patient_id, :doctor_id, :vaccine_id, :immunization_date, :administrator, :lot_number, :next_due, :notes, NOW(), NOW())");
+
+        $this->db->bind(':patient_id', $data['patient_id']);
+        $this->db->bind(':doctor_id', $data['doctor_id']);
+        $this->db->bind(':vaccine_id', $data['vaccine_id']);
+        $this->db->bind(':immunization_date', $data['immunization_date']);
+        $this->db->bind(':administrator', $data['administrator']);
+        $this->db->bind(':lot_number', $data['lot_number']);
+        $this->db->bind(':next_due', $data['next_date']);
+        $this->db->bind(':notes', $data['notes']);
+
+        if ($this->db->execute()) {
+            return $this->db->lastInsertId();
+        }
+
+        return false;
     }
 }

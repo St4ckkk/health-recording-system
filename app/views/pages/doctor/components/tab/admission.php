@@ -2,8 +2,9 @@
     <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-semibold">Admission History</h3>
         <button id="openAdmissionModalBtn"
-            class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded text-sm hover:bg-gray-200 transition-colors">
-            <i class='bx bx-plus mr-1'></i> Add
+            class="flex items-center gap-1 px-3 py-1.5 text-blue-600 rounded-md text-sm hover:bg-blue-50 transition-colors">
+            <i class='bx bx-plus'></i>
+            <span>New Admission</span>
         </button>
     </div>
     <table class="min-w-full divide-y divide-gray-200">
