@@ -182,7 +182,7 @@ class DoctorController extends Controller
         // Get admission statistics
         $stats = [
             'total' => count($admissionHistory),
-            'active' => count(array_filter($admissionHistory, fn($r) => strtolower($r->status) === 'active')),
+            'active' => count(array_filter($admissionHistory, fn($r) => strtolower($r->status) === 'admitted')),
             'discharged' => count(array_filter($admissionHistory, fn($r) => strtolower($r->status) === 'discharged'))
         ];
 
@@ -256,6 +256,37 @@ class DoctorController extends Controller
 
         } catch (\Exception $e) {
             error_log('Admission Save Error: ' . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+        exit;
+    }
+
+    public function updateAdmissionStatus()
+    {
+        try {
+            ob_clean();
+            header('Content-Type: application/json');
+
+            if (!isset($_SESSION['doctor']['id'])) {
+                throw new \Exception('Doctor session not found');
+            }
+
+            $result = $this->patientAdmissionModel->updateStatus($_POST);
+
+            if (isset($result['error'])) {
+                throw new \Exception($result['error']);
+            }
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Admission status updated successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            error_log('Admission Status Update Error: ' . $e->getMessage());
             echo json_encode([
                 'success' => false,
                 'message' => $e->getMessage()

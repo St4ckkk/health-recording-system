@@ -47,9 +47,24 @@
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap">
                             <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize
-                                <?= $admission->status === 'active' ? 'bg-green-100 text-green-800' :
-                                    ($admission->status === 'discharged' ? 'bg-gray-100 text-gray-800' :
-                                        'bg-yellow-100 text-yellow-800') ?>">
+                                <?php
+                                switch ($admission->status) {
+                                    case 'admitted':
+                                        echo 'bg-green-100 text-green-800';
+                                        break;
+                                    case 'discharged':
+                                        echo 'bg-gray-100 text-gray-800';
+                                        break;
+                                    case 'referred':
+                                        echo 'bg-blue-100 text-blue-800';
+                                        break;
+                                    case 'transferred':
+                                        echo 'bg-purple-100 text-purple-800';
+                                        break;
+                                    default:
+                                        echo 'bg-yellow-100 text-yellow-800';
+                                }
+                                ?>">
                                 <?= htmlspecialchars($admission->status) ?>
                             </span>
                         </td>
@@ -60,16 +75,6 @@
                                     View Details <i class='bx bx-right-arrow-alt ml-1'></i>
                                 </a>
 
-                                <?php if ($admission->status === 'active'): ?>
-                                    <a href="<?= BASE_URL ?>/doctor/admission/update?id=<?= $admission->id ?>"
-                                        class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-medium hover:bg-yellow-200">
-                                        Update
-                                    </a>
-                                    <a href="<?= BASE_URL ?>/doctor/admission/discharge?id=<?= $admission->id ?>"
-                                        class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium hover:bg-green-200">
-                                        Discharge
-                                    </a>
-                                <?php endif; ?>
                             </div>
                         </td>
                     </tr>
@@ -180,7 +185,7 @@
                     Cancel
                 </button>
                 <button type="submit" id="saveAdmissionBtn"
-                    class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark focus:outline-none">
+                    class="rounded-md bg-success px-4 py-2 text-sm font-medium text-white hover:bg-success-dark focus:outline-none">
                     Save Admission
                 </button>
             </div>

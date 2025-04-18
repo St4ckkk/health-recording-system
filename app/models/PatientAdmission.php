@@ -22,10 +22,15 @@ class PatientAdmission extends Model
             'pa.admitted_by',
             'pa.admission_date',
             'pa.discharge_date',
+            'pa.transferred_date',
+            'pa.transferred_to',
+            'pa.referral_date',
+            'pa.referred_to',
             'pa.reason',
             'pa.ward',
             'pa.bed_no',
             'pa.status',
+            'pa.remarks',
             'pa.created_at',
             'pa.updated_at',
         ];
@@ -110,6 +115,63 @@ class PatientAdmission extends Model
         $this->db->bind(':status', $data['status']);
 
         return $this->db->execute() ? $this->db->lastInsertId() : false;
+    }
+
+
+    public function updateStatus($data)
+    {
+        $fields = ['status' => $data['status']];
+
+        // Add fields based on status
+        switch ($data['status']) {
+            case 'discharged':
+                if (empty($data['discharge_date'])) {
+                    return ['error' => 'Discharge date is required'];
+                }
+                $fields['discharge_date'] = $data['discharge_date'];
+                break;
+
+            case 'referred':
+                if (empty($data['discharge_date']) || empty($data['referred_to'])) {
+                    return ['error' => 'Referral date and doctor name are required'];
+                }
+                $fields['discharge_date'] = $data['discharge_date'];
+                $fields['referred_to'] = $data['referred_to'];
+                $fields['referral_date'] = $data['discharge_date'];
+                break;
+
+            case 'transferred':
+                if (empty($data['discharge_date']) || empty($data['transferred_to'])) {
+                    return ['error' => 'Transfer date and hospital name are required'];
+                }
+                $fields['discharge_date'] = $data['discharge_date'];
+                $fields['transferred_to'] = $data['transferred_to'];
+                $fields['transferred_date'] = $data['discharge_date'];
+                break;
+        }
+
+        // Add remarks if provided
+        if (!empty($data['remarks'])) {
+            $fields['remarks'] = $data['remarks'];
+        }
+
+        // Build SQL query dynamically
+        $setFields = [];
+        $params = [':id' => $data['admission_id']];
+
+        foreach ($fields as $key => $value) {
+            $setFields[] = "$key = :$key";
+            $params[":$key"] = $value;
+        }
+
+        $sql = "UPDATE {$this->table} SET " . implode(', ', $setFields) . ", updated_at = NOW() WHERE id = :id";
+
+        $this->db->query($sql);
+        foreach ($params as $key => $value) {
+            $this->db->bind($key, $value);
+        }
+
+        return $this->db->execute() ? true : ['error' => 'Failed to update status'];
     }
 
 }
