@@ -67,4 +67,20 @@ class Diagnosis extends Model
 
         return false;
     }
+
+    public function getPatientDiagnoses($patientId)
+    {
+        $sql = "SELECT id, diagnosis, diagnosed_at, notes 
+                FROM {$this->table} 
+                WHERE patient_id = :patient_id 
+                ORDER BY diagnosed_at DESC";
+
+        $this->db->query($sql);
+        $this->db->bind(':patient_id', $patientId);
+
+        return $this->db->resultSet();
+    }
+
+
+
 }

@@ -138,7 +138,7 @@
                                     </div>
 
                                     <!-- Emergency Contact -->
-                                    <h4 class="text-md font-medium mt-6 mb-3">Emergency Contact</h4>
+                                    <!-- <h4 class="text-md font-medium mt-6 mb-3">Emergency Contact</h4>
                                     <div class="space-y-2">
                                         <div class="flex justify-between py-2 border-b border-gray-100">
                                             <span class="text-gray-600 text-sm">Name:</span>
@@ -160,7 +160,7 @@
                                                 <?= isset($patient->emergency_contact_number) ? $patient->emergency_contact_number : '(555) 987-6543' ?>
                                             </span>
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <!-- Medical Information -->
                                     <h4 class="text-md font-medium mt-6 mb-3">Medical Information</h4>

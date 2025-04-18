@@ -32,7 +32,14 @@ class MedicalRecords extends Model
                 vitals_id,
                 lab_result_id,
                 medication_id,
-                created_at
+                created_at,
+                diagnosis_id,
+                symptoms_id,
+                treatment_records_id,
+                admission_id,
+                e_prescription_id,
+                immunization_id,
+                record_type
             ) VALUES (
                 :patient_id,
                 :doctor_id,
@@ -40,7 +47,15 @@ class MedicalRecords extends Model
                 :vitals_id,
                 :lab_result_id,
                 :medication_id,
-                :created_at
+                :created_at,
+                :diagnosis_id,
+                :symptoms_id,
+                :treatment_records_id,
+                :admission_id,
+                :e_prescription_id,
+                :immunization_id,
+                :record_type
+
             )");
 
             // Bind values
@@ -51,6 +66,13 @@ class MedicalRecords extends Model
             $this->db->bind(':lab_result_id', $data['lab_result_id'] ?? null);
             $this->db->bind(':medication_id', $data['medication_id'] ?? null);
             $this->db->bind(':created_at', $data['created_at'] ?? date('Y-m-d H:i:s'));
+            $this->db->bind(':diagnosis_id', $data['diagnosis_id'] ?? null);
+            $this->db->bind(':symptoms_id', $data['symptoms_id'] ?? null);
+            $this->db->bind(':treatment_records_id', $data['treatment_records_id'] ?? null);
+            $this->db->bind(':admission_id', $data['admission_id'] ?? null);
+            $this->db->bind(':e_prescription_id', $data['e_prescription_id'] ?? null);
+            $this->db->bind(':immunization_id', $data['immunization_id'] ?? null);
+            $this->db->bind(':record_type', $data['record_type'] ?? null);
 
             error_log("MedicalRecords::insert - All values bound, executing query");
 

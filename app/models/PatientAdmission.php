@@ -70,4 +70,46 @@ class PatientAdmission extends Model
 
         return $this->db->single();
     }
+
+
+
+    public function insert($data)
+    {
+        $sql = "INSERT INTO {$this->table} (
+            patient_id,
+            diagnosis_id,
+            admitted_by,
+            admission_date,
+            reason,
+            ward,
+            bed_no,
+            status,
+            created_at,
+            updated_at
+        ) VALUES (
+            :patient_id,
+            :diagnosis_id,
+            :admitted_by,
+            :admission_date,
+            :reason,
+            :ward,
+            :bed_no,
+            :status,
+            NOW(),
+            NOW()
+        )";
+
+        $this->db->query($sql);
+        $this->db->bind(':patient_id', $data['patient_id']);
+        $this->db->bind(':diagnosis_id', $data['diagnosis_id']);
+        $this->db->bind(':admitted_by', $data['admitted_by']);
+        $this->db->bind(':admission_date', $data['admission_date']);
+        $this->db->bind(':reason', $data['reason']);
+        $this->db->bind(':ward', $data['ward']);
+        $this->db->bind(':bed_no', $data['bed_no']);
+        $this->db->bind(':status', $data['status']);
+
+        return $this->db->execute() ? $this->db->lastInsertId() : false;
+    }
+
 }
