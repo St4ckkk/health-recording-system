@@ -267,3 +267,58 @@
         </div>
     </div>
 </div>
+
+<!-- Add Allergies Modal -->
+<div id="add-allergies-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title" id="allergies-modal-title">Add Allergy</h3>
+            <button class="modal-close" onclick="closeModal('add-allergies-modal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="allergiesForm" onsubmit="handleAllergiesSubmit(event)">
+                <input type="hidden" name="patient_id" value="<?= $patient->id ?? 0 ?>">
+                <input type="hidden" name="doctor_id" value="<?= $_SESSION['doctor_id'] ?? 0 ?>">
+                <input type="hidden" name="allergy_id" id="allergy_id" value="">
+
+                <div class="form-group">
+                    <label for="allergy_type" class="form-label">Allergy Type</label>
+                    <input type="text" id="allergy_type" name="allergy_type" class="form-input"
+                        placeholder="e.g. Food, Drug, Environmental" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="allergy_name" class="form-label">Allergy Name</label>
+                    <input type="text" id="allergy_name" name="allergy_name" class="form-input"
+                        placeholder="e.g. Peanuts, Penicillin, Pollen" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="severity" class="form-label">Severity</label>
+                    <select id="severity" name="severity" class="form-select" required>
+                        <option value="">Select Severity</option>
+                        <option value="Mild">Mild</option>
+                        <option value="Moderate">Moderate</option>
+                        <option value="Severe">Severe</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="reaction" class="form-label">Reaction</label>
+                    <input type="text" id="reaction" name="reaction" class="form-input"
+                        placeholder="e.g. Rash, Swelling, Difficulty Breathing" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes" class="form-label">Additional Notes</label>
+                    <textarea id="notes" name="notes" class="form-textarea" rows="4"
+                        placeholder="Additional details about the allergy"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('add-allergies-modal')">Cancel</button>
+            <button type="submit" class="btn btn-primary" form="allergiesForm">Save Allergy</button>
+        </div>
+    </div>
+</div>

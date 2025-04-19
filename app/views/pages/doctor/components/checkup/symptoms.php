@@ -103,6 +103,12 @@
         </div>
     </div>
 
-    <!-- Toast container for symptoms notifications -->
+    <div class="add-item-btn mt-4" onclick="openModal('add-symptoms-modal')">
+        <i class="bx bx-plus"></i>
+        Add New Symptoms
+    </div>
+
     <div id="symptoms-toast-container" class="fixed top-4 right-4 z-50"></div>
+
+
 </div>

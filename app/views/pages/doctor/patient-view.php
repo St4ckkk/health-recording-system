@@ -24,7 +24,7 @@
     <div class="flex">
         <?php include('components/sidebar.php') ?>
         <?php
-        require_once(__DIR__ . '/../../../helpers/VitalsHelper.php');
+        require_once(__DIR__ . '/../../../helpers/CDS.php');
         ?>
         <div class="flex-1 main-content">
             <?php include('components/header.php') ?>
@@ -176,13 +176,20 @@
                                             <span class="text-gray-600 text-sm mb-1">Allergies:</span>
                                             <div class="flex flex-wrap gap-1 mt-1">
                                                 <?php
-                                                $allergies = isset($patient->allergy_name) ? explode(',', $patient->allergy_name) : ['Sulfa drugs'];
-                                                foreach ($allergies as $allergy):
+                                                if ($allergies && !empty($allergies)) {
+                                                    foreach ($allergies as $allergy) {
+                                                        ?>
+                                                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
+                                                            <?= htmlspecialchars($allergy->allergy_name) ?>
+                                                        </span>
+                                                        <?php
+                                                    }
+                                                } else {
                                                     ?>
-                                                    <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
-                                                        <?= trim($allergy) ?>
-                                                    </span>
-                                                <?php endforeach; ?>
+                                                    <span class="text-gray-500 text-sm">No known allergies</span>
+                                                    <?php
+                                                }
+                                                ?>
                                             </div>
                                         </div>
 
@@ -190,13 +197,20 @@
                                             <span class="text-gray-600 text-sm mb-1">Conditions:</span>
                                             <div class="flex flex-wrap gap-1 mt-1">
                                                 <?php
-                                                $conditions = isset($patient->diagnosis) ? explode(',', $patient->diagnosis) : ['Hypertension', 'Type 2 Diabetes', 'Hyperlipidemia'];
-                                                foreach ($conditions as $condition):
+                                                if ($patientDiagnosis && !empty($patientDiagnosis)) {
+                                                    foreach ($patientDiagnosis as $diagnosis) {
+                                                        ?>
+                                                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                                                            <?= htmlspecialchars($diagnosis->diagnosis) ?>
+                                                        </span>
+                                                        <?php
+                                                    }
+                                                } else {
                                                     ?>
-                                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-                                                        <?= trim($condition) ?>
-                                                    </span>
-                                                <?php endforeach; ?>
+                                                    <span class="text-gray-500 text-sm">No diagnoses recorded</span>
+                                                    <?php
+                                                }
+                                                ?>
                                             </div>
                                         </div>
                                     </div>

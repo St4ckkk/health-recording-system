@@ -43,6 +43,16 @@ class Symptoms extends Model
         return false;
     }
 
+
+    public function getPatientSymptoms($patientId)
+    {
+        $this->db->query("SELECT * FROM symptoms WHERE patient_id = :patient_id ORDER BY created_at DESC");
+        $this->db->bind(':patient_id', $patientId);
+        return $this->db->resultSet();
+    }
+
+
+
     public function getByPatientId($patientId)
     {
         $this->db->query("SELECT * FROM symptoms WHERE patient_id = :patient_id ORDER BY date DESC");

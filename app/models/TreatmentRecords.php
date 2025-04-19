@@ -90,4 +90,45 @@ class TreatmentRecords extends Model
 
         return false;
     }
+
+    public function updateTreatment($data)
+    {
+        try {
+            // Validate treatment exists
+            $exists = $this->getTreatmentById($data['treatment_id']);
+            if (!$exists) {
+                throw new \Exception('Treatment record not found');
+            }
+
+            $sql = "UPDATE {$this->table} SET 
+                    treatment_type = :treatment_type,
+                    regimen_summary = :regimen_summary,
+                    start_date = :start_date,
+                    end_date = :end_date,
+                    status = :status,
+                    outcome = :outcome,
+                    adherence_status = :adherence_status,
+                    follow_up_notes = :follow_up_notes,
+                    updated_at = NOW()
+                    WHERE id = :id";
+
+            $this->db->query($sql);
+
+            $this->db->bind(':id', $data['treatment_id']);
+            $this->db->bind(':treatment_type', $data['treatment_type']);
+            $this->db->bind(':regimen_summary', $data['regimen_summary']);
+            $this->db->bind(':start_date', $data['start_date']);
+            $this->db->bind(':end_date', $data['end_date']);
+            $this->db->bind(':status', $data['status']);
+            $this->db->bind(':outcome', $data['outcome']);
+            $this->db->bind(':adherence_status', $data['adherence_status']);
+            $this->db->bind(':follow_up_notes', $data['follow_up_notes']);
+
+            return $this->db->execute();
+
+        } catch (\PDOException $e) {
+            error_log('Database Error: ' . $e->getMessage());
+            throw new \Exception('Database error occurred');
+        }
+    }
 }

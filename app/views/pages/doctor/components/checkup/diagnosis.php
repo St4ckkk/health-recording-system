@@ -137,10 +137,3 @@
 
 <!-- Toast Container for Diagnosis -->
 <div id="diagnosis-toast-container" class="fixed top-4 right-4 z-50"></div>
-
-<script>
-    // Load saved diagnoses from localStorage on page load
-    document.addEventListener('DOMContentLoaded', function () {
-        loadSavedDiagnoses();
-    });
-</script>

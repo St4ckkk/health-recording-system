@@ -23,6 +23,7 @@ use app\helpers\email\PrescriptionEmail;
 use app\models\PatientAdmission;
 use app\models\Vaccines;
 use app\models\Symptoms;
+use \app\models\Allergies;
 
 
 class DoctorController extends Controller
@@ -45,6 +46,7 @@ class DoctorController extends Controller
     private $prescriptionEmailHelper;
     private $vaccinesModel;
     private $symptomsModel;
+    private $allergiesModel;
 
     public function __construct()
     {
@@ -66,6 +68,7 @@ class DoctorController extends Controller
         $this->patientAdmissionModel = new PatientAdmission();
         $this->vaccinesModel = new Vaccines();
         $this->symptomsModel = new Symptoms();
+        $this->allergiesModel = new Allergies();
     }
 
 
@@ -139,6 +142,7 @@ class DoctorController extends Controller
         $vitals = $this->vitalsModel->getLatestVitalsByPatientId($patientId);
         $visits = $this->medicalRecordsModel->getPatientVisitsWithDetails($patientId);
         $appointments = $this->appointmentModel->getAppointmentsByPatientId($patientId);
+        $symptoms = $this->symptomsModel->getPatientSymptoms($patientId);
         $recentVisits = $this->appointmentModel->getRecentVisitsByPatientsAssignedToDoctor(
             $_SESSION['doctor_id'],
             10
@@ -149,6 +153,8 @@ class DoctorController extends Controller
 
         $admissionHistory = $this->patientAdmissionModel->getPatientAdmissions($patientId);
         $patientDiagnosis = $this->diagnosisModel->getPatientDiagnoses($patientId);
+        $allergies = $this->allergiesModel->getPatientAllergies($patientId);
+
 
         $vaccines = $this->vaccinesModel->getAllVaccines();
 
@@ -166,6 +172,8 @@ class DoctorController extends Controller
             'admissionHistory' => $admissionHistory,
             'patientDiagnosis' => $patientDiagnosis,
             'vaccines' => $vaccines,
+            'allergies' => $allergies,
+            'symptoms' => $symptoms,
         ]);
     }
 
@@ -369,8 +377,84 @@ class DoctorController extends Controller
         exit;
     }
 
+    public function updateTreatment()
+    {
+        try {
+            // Prevent any PHP errors from being output
+            error_reporting(0);
 
+            // Clear any previous output
+            while (ob_get_level()) {
+                ob_end_clean();
+            }
 
+            // Set JSON headers
+            header('Content-Type: application/json');
+            header('Cache-Control: no-cache, must-revalidate');
+
+            // Validate session
+            if (!isset($_SESSION['doctor']['id'])) {
+                throw new \Exception('Unauthorized access');
+            }
+
+            // Validate required POST data
+            if (!isset($_POST['treatment_id'])) {
+                throw new \Exception('Treatment ID is required');
+            }
+
+            // Prepare treatment data with validation
+            $treatmentData = [
+                'treatment_id' => filter_var($_POST['treatment_id'], FILTER_SANITIZE_NUMBER_INT),
+                'treatment_type' => filter_var($_POST['treatment_type'] ?? '', FILTER_SANITIZE_STRING),
+                'regimen_summary' => filter_var($_POST['regimen_summary'] ?? '', FILTER_SANITIZE_STRING),
+                'start_date' => filter_var($_POST['start_date'] ?? '', FILTER_SANITIZE_STRING),
+                'end_date' => !empty($_POST['end_date']) ? filter_var($_POST['end_date'], FILTER_SANITIZE_STRING) : null,
+                'status' => filter_var($_POST['status'] ?? '', FILTER_SANITIZE_STRING),
+                'adherence_status' => filter_var($_POST['adherence_status'] ?? '', FILTER_SANITIZE_STRING),
+                'outcome' => filter_var($_POST['outcome'] ?? '', FILTER_SANITIZE_STRING),
+                'follow_up_notes' => filter_var($_POST['follow_up_notes'] ?? '', FILTER_SANITIZE_STRING)
+            ];
+
+            // Additional validation
+            if (
+                empty($treatmentData['treatment_type']) ||
+                empty($treatmentData['regimen_summary']) ||
+                empty($treatmentData['start_date']) ||
+                empty($treatmentData['status'])
+            ) {
+                throw new \Exception('Missing required fields');
+            }
+
+            $result = $this->treatmentRecordsModel->updateTreatment($treatmentData);
+
+            if (!$result) {
+                throw new \Exception('Failed to update treatment record');
+            }
+
+            // Create medical record entry
+            $this->medicalRecordsModel->insert([
+                'patient_id' => $_POST['patient_id'],
+                'doctor_id' => $_SESSION['doctor']['id'],
+                'treatment_id' => $treatmentData['treatment_id'],
+                'record_type' => 'Treatment Update',
+                'notes' => "Treatment updated: {$treatmentData['treatment_type']}",
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Treatment updated successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            error_log('Treatment Update Error: ' . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
+        exit;
+    }
 
     public function immunizationDetails()
     {
@@ -582,6 +666,7 @@ class DoctorController extends Controller
         $medications = $data['medications'] ?? [];
         $diagnoses = $data['diagnoses'] ?? [];
         $symptoms = $data['symptoms'] ?? [];
+        $allergies = $data['allergies'] ?? [];
 
         try {
             // Save vitals if provided
@@ -605,6 +690,29 @@ class DoctorController extends Controller
             }
 
 
+            if (!empty($allergies)) {
+                foreach ($allergies as $allergy) {
+                    $allergyData = [
+                        'patient_id' => $patientId,
+                        'allergy_type' => $allergy['allergy_type'] ?? null,
+                        'allergy_name' => $allergy['allergy_name'] ?? null,
+                        'severity' => $allergy['severity'] ?? null,
+                        'reaction' => $allergy['reaction'] ?? null,
+                        'recorded_at' => date('Y-m-d H:i:s'),
+                        'notes' => $allergy['notes'] ?? null,
+                        'created_at' => date('Y-m-d H:i:s'),
+
+                    ];
+
+                    $allergySuccess = $this->allergiesModel->insert($allergyData);
+
+                    if (!$allergySuccess) {
+                        throw new \Exception('Failed to save allergy data');
+                    }
+                }
+            }
+
+
             if (!empty($symptoms)) {
                 foreach ($symptoms as $symptom) {
                     $symptomData = [
@@ -612,7 +720,6 @@ class DoctorController extends Controller
                         'name' => $symptom['name'] ?? null,
                         'severity_level' => $symptom['severity_level'] ?? null,
                         'notes' => $symptom['notes'] ?? null,
-                        'created_at' => date('Y-m-d H:i:s'),
 
                     ];
 

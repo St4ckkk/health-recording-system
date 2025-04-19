@@ -117,13 +117,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Load saved data on page load
+    // Only load vitals and medications here
     if (typeof loadSavedVitals === 'function') loadSavedVitals();
     if (typeof loadSavedMedications === 'function') loadSavedMedications();
-    if (typeof loadSavedDiagnoses === 'function') loadSavedDiagnoses();
-    if (typeof loadSavedSymptoms === 'function') loadSavedSymptoms();
 
-    // Add event listeners to forms if they exist
+    // Only add event listeners for vitals and medications
     const vitalsForm = document.getElementById('vitalsForm');
     if (vitalsForm && typeof handleVitalsSubmit === 'function') {
         vitalsForm.addEventListener('submit', handleVitalsSubmit);
@@ -133,18 +131,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (medicationForm && typeof handleMedicationSubmit === 'function') {
         medicationForm.addEventListener('submit', handleMedicationSubmit);
     }
-
-    const diagnosisForm = document.getElementById('diagnosisForm');
-    if (diagnosisForm && typeof handleDiagnosisSubmit === 'function') {
-        diagnosisForm.addEventListener('submit', handleDiagnosisSubmit);
-    }
-
-    const symptomForm = document.getElementById('symptomForm');
-    if (symptomForm && typeof handleSymptomSubmit === 'function') {
-        symptomForm.addEventListener('submit', handleSymptomSubmit);
-    }
-
-
 });
 
 
@@ -158,8 +144,19 @@ function completeCheckup() {
     const pendingMedications = JSON.parse(localStorage.getItem("pendingMedications_" + patientId) || "[]")
     const pendingDiagnoses = JSON.parse(localStorage.getItem("pendingDiagnoses_" + patientId) || "[]")
     const pendingSymptoms = JSON.parse(localStorage.getItem("pendingSymptoms_" + patientId) || "[]")
+    const pendingAllergies = JSON.parse(localStorage.getItem("pendingAllergies_" + patientId) || "[]")
 
-    // Update the medications data structure to match the database
+    const allergies = pendingAllergies.map((allergy) => ({
+        patient_id: patientId,
+        allergy_type: allergy.type,
+        allergy_name: allergy.name,
+        severity: allergy.severity,
+        reaction: allergy.reaction,
+        notes: allergy.notes
+    }))
+
+
+
     const medications = pendingMedications.map((med) => ({
         ...med,
         type: "prescribed",
@@ -187,6 +184,7 @@ function completeCheckup() {
         medications: medications,
         diagnoses: pendingDiagnoses,
         symptoms: symptoms,
+        allergies: allergies,
         notes: document.getElementById("checkup_notes")?.value || "",
     }
 
@@ -226,6 +224,7 @@ function completeCheckup() {
                 localStorage.removeItem("pendingMedications_" + patientId)
                 localStorage.removeItem("pendingDiagnoses_" + patientId)
                 localStorage.removeItem("pendingSymptoms_" + patientId)
+                localStorage.removeItem("pendingAllergies_" + patientId)
 
                 // Show success message
                 try {

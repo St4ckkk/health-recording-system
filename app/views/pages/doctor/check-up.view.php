@@ -299,7 +299,7 @@
     </style>
 </head>
 
-<body class="font-body">
+<body class="font-body bg-gray-50">
     <div class="flex">
         <?php include(VIEW_ROOT . '/pages/doctor/components/sidebar.php') ?>
         <main class="flex-1 main-content">
@@ -308,7 +308,7 @@
                 <section class="p-6">
                     <!-- Back button -->
                     <div class="mb-4">
-                        <a href="<?= BASE_URL ?>/doctor/patientView"
+                        <a href="<?= BASE_URL ?>/doctor/patientView/?id=<?= $patient->id ?>"
                             class="inline-flex items-center text-sm font-medium text-primary hover:text-primary-dark">
                             <button class="back-button">
                                 <i class="bx bx-arrow-back mr-2"></i> Back
@@ -352,8 +352,9 @@
                         <div class="flex">
                             <button class="tab-button active" data-tab="vitals">Vital Signs</button>
                             <button class="tab-button" data-tab="symptoms">Symptoms</button>
-                            <button class="tab-button" data-tab="medications">Medications</button>
                             <button class="tab-button" data-tab="diagnosis">Diagnosis</button>
+                            <button class="tab-button" data-tab="allergies">Allergies</button>
+                            <button class="tab-button" data-tab="medications">Medications</button>
                         </div>
                     </div>
 
@@ -365,6 +366,10 @@
 
                     <div id="symptoms-tab" class="tab-content">
                         <?php include(VIEW_ROOT . '/pages/doctor/components/checkup/symptoms.php') ?>
+                    </div>
+
+                    <div id="allergies-tab" class="tab-content">
+                        <?php include(VIEW_ROOT . '/pages/doctor/components/checkup/allergies.php') ?>
                     </div>
 
                     <!-- Medications Tab Component -->
@@ -398,10 +403,11 @@
     <?php include(VIEW_ROOT . '/pages/doctor/components/common/modals.php') ?>
     <script src="<?= BASE_URL ?>/node_modules/flatpickr/dist/l10n/fr.js"></script>
     <script src="<?= BASE_URL ?>/js/doctor/checkup.js"></script>
-    <script src="<?= BASE_URL ?>/js/doctor/symptoms.js"></script>
     <script src="<?= BASE_URL ?>/js/doctor/vitals.js"></script>
     <script src="<?= BASE_URL ?>/js/doctor/medications.js"></script>
     <script src="<?= BASE_URL ?>/js/doctor/diagnosis.js"></script>
+    <script src="<?= BASE_URL ?>/js/doctor/symptoms.js"></script>
+    <script src="<?= BASE_URL ?>/js/doctor/allergies.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Tab switching functionality

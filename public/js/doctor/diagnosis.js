@@ -155,22 +155,6 @@ function deleteDiagnosis(id) {
     }
 }
 
-function loadSavedDiagnoses() {
-    const patientId = document.querySelector('input[name="patient_id"]')?.value || '0';
-    const savedDiagnoses = localStorage.getItem('pendingDiagnoses_' + patientId);
-
-    if (savedDiagnoses) {
-        try {
-            const diagnosesData = JSON.parse(savedDiagnoses);
-            if (diagnosesData.length > 0) {
-                displayDiagnosisCards(diagnosesData);
-            }
-        } catch (e) {
-            console.error('Error loading saved diagnoses:', e);
-        }
-    }
-}
-
 function displayDiagnosisCards(diagnosesData) {
     // Get the diagnosis container
     const diagnosisContainer = document.getElementById('diagnosis-container');
@@ -232,14 +216,30 @@ function displayDiagnosisCards(diagnosesData) {
     diagnosisContainer.innerHTML = diagnosisHTML;
 }
 
-// Initialize diagnosis functionality when the DOM is loaded
-document.addEventListener('DOMContentLoaded', function () {
-    // Load saved diagnoses on page load
-    loadSavedDiagnoses();
 
-    // Add event listener to diagnosis form if it exists
+function initializeDiagnosis() {
     const diagnosisForm = document.getElementById('diagnosisForm');
-    if (diagnosisForm) {
-        diagnosisForm.addEventListener('submit', handleDiagnosisSubmit);
+
+
+    const patientId = document.querySelector('input[name="patient_id"]')?.value || '0';
+    const savedDiagnoses = localStorage.getItem('pendingDiagnoses_' + patientId);
+
+    if (savedDiagnoses) {
+        try {
+            const diagnosesData = JSON.parse(savedDiagnoses);
+            if (diagnosesData.length > 0) {
+                displayDiagnosisCards(diagnosesData);
+            }
+        } catch (e) {
+            console.error('Error loading saved diagnoses:', e);
+        }
     }
+}
+
+// Use DOMContentLoaded to initialize once
+document.addEventListener('DOMContentLoaded', function () {
+
+    initializeDiagnosis();
 });
+
+

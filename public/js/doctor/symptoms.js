@@ -164,22 +164,6 @@ function deleteSymptom(id) {
     }
 }
 
-function loadSavedSymptoms() {
-    const patientId = document.querySelector('input[name="patient_id"]')?.value || '0';
-    const savedSymptoms = localStorage.getItem('pendingSymptoms_' + patientId);
-
-    if (savedSymptoms) {
-        try {
-            const symptomsData = JSON.parse(savedSymptoms);
-            if (symptomsData.length > 0) {
-                displaySymptomCards(symptomsData);
-            }
-        } catch (e) {
-            console.error('Error loading saved symptoms:', e);
-        }
-    }
-}
-
 function displaySymptomCards(symptomsData) {
     // Get the symptoms container
     const symptomsContainer = document.getElementById('symptoms-container');
@@ -195,28 +179,12 @@ function displaySymptomCards(symptomsData) {
     let symptomsHTML = '';
 
     symptomsData.forEach(symptom => {
-        // Get severity class for color coding
-        let severityClass = '';
-        switch (symptom.severity_level) {
-            case 'Mild':
-                severityClass = 'bg-green-100 text-green-800';
-                break;
-            case 'Moderate':
-                severityClass = 'bg-yellow-100 text-yellow-800';
-                break;
-            case 'Severe':
-                severityClass = 'bg-red-100 text-red-800';
-                break;
-            default:
-                severityClass = 'bg-gray-100 text-gray-800';
-        }
-
         symptomsHTML += `
             <div class="col-span-6">
-                <div class="symptom-card">
-                    <div class="symptom-header">
-                        <div class="symptom-title">${symptom.name}</div>
-                        <div class="symptom-actions">
+                <div class="diagnosis-card">
+                    <div class="diagnosis-header">
+                        <div class="diagnosis-title">${symptom.name}</div>
+                        <div class="diagnosis-actions">
                             <button class="action-icon edit" onclick="editSymptom('${symptom.id}')">
                                 <i class="bx bx-edit"></i>
                             </button>
@@ -225,14 +193,14 @@ function displaySymptomCards(symptomsData) {
                             </button>
                         </div>
                     </div>
-                    <div class="symptom-severity">
-                        <span class="severity-badge ${severityClass}">${symptom.severity_level}</span>
-                    </div>
-                    <div class="symptom-description">
+                    <div class="diagnosis-description">
                         ${symptom.notes}
                     </div>
-                    <div class="symptom-meta">
-                        <div class="symptom-date">
+                    <div class="diagnosis-meta">
+                        <div class="diagnosis-tags">
+                            <span class="diagnosis-tag ${getSeverityClass(symptom.severity_level)}">${symptom.severity_level}</span>
+                        </div>
+                        <div class="diagnosis-date">
                             <i class="bx bx-calendar"></i>
                             <span>${formatDate(symptom.created_at)}</span>
                         </div>
@@ -246,15 +214,42 @@ function displaySymptomCards(symptomsData) {
     symptomsContainer.innerHTML = symptomsHTML;
 }
 
-// Initialize symptoms functionality when the DOM is loaded
-document.addEventListener('DOMContentLoaded', function () {
-    // Load saved symptoms on page load
-    loadSavedSymptoms();
-
-    // Add event listener to symptoms form if it exists
-    const symptomsForm = document.getElementById('symptomsForm');
-    if (symptomsForm) {
-        symptomsForm.addEventListener('submit', handleSymptomsSubmit);
+// Add this helper function for severity classes
+function getSeverityClass(severity) {
+    switch (severity) {
+        case 'Mild':
+            return 'bg-green-100 text-green-800';
+        case 'Moderate':
+            return 'bg-yellow-100 text-yellow-800';
+        case 'Severe':
+            return 'bg-red-100 text-red-800';
+        default:
+            return 'bg-gray-100 text-gray-800';
     }
+}
+
+// Initialize symptoms functionality
+function initializeSymptoms() {
+    const symptomsForm = document.getElementById('symptomsForm');
+    const patientId = document.querySelector('input[name="patient_id"]')?.value || '0';
+    const savedSymptoms = localStorage.getItem('pendingSymptoms_' + patientId);
+
+    if (savedSymptoms) {
+        try {
+            const symptomsData = JSON.parse(savedSymptoms);
+            if (symptomsData.length > 0) {
+                displaySymptomCards(symptomsData);
+            }
+        } catch (e) {
+            console.error('Error loading saved symptoms:', e);
+        }
+    }
+}
+
+// Use DOMContentLoaded to initialize once
+document.addEventListener('DOMContentLoaded', function () {
+    initializeSymptoms();
 });
+
+
 
