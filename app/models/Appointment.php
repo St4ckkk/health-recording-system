@@ -50,6 +50,98 @@ class Appointment extends Model
                 LEFT JOIN doctors d ON a.doctor_id = d.id";
     }
 
+
+    // ... existing code ...
+
+    public function getDoctorVisitStats($doctorId)
+    {
+        // Get monthly visit counts for the past 12 months
+        $monthlySql = "SELECT 
+                            DATE_FORMAT(appointment_date, '%Y-%m') as month,
+                            COUNT(*) as total_visits,
+                            SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
+                            SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled,
+                            SUM(CASE WHEN status = 'no_show' THEN 1 ELSE 0 END) as no_shows
+                        FROM {$this->table}
+                        WHERE doctor_id = :doctor_id
+                        AND appointment_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 12 MONTH) AND CURDATE()
+                        GROUP BY DATE_FORMAT(appointment_date, '%Y-%m')
+                        ORDER BY month ASC";
+
+        $this->db->query($monthlySql);
+        $this->db->bind(':doctor_id', $doctorId);
+        $monthlyStats = $this->db->resultSet();
+
+        // Get visit types distribution
+        $typesSql = "SELECT 
+                            COALESCE(appointment_type, 'Checkup') as visit_type,
+                            COUNT(*) as count
+                        FROM {$this->table}
+                        WHERE doctor_id = :doctor_id
+                        AND status = 'completed'
+                        AND appointment_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 MONTH) AND CURDATE()
+                        GROUP BY appointment_type
+                        ORDER BY count DESC";
+
+        $this->db->query($typesSql);
+        $this->db->bind(':doctor_id', $doctorId);
+        $typesStats = $this->db->resultSet();
+
+        // Get daily distribution (which days are busiest)
+        $dailySql = "SELECT 
+                            DAYNAME(appointment_date) as day_name,
+                            COUNT(*) as count
+                        FROM {$this->table}
+                        WHERE doctor_id = :doctor_id
+                        AND appointment_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 MONTH) AND CURDATE()
+                        GROUP BY DAYNAME(appointment_date), DAYOFWEEK(appointment_date)
+                        ORDER BY DAYOFWEEK(appointment_date)";
+
+        $this->db->query($dailySql);
+        $this->db->bind(':doctor_id', $doctorId);
+        $dailyStats = $this->db->resultSet();
+
+        // Get time slot distribution (which hours are busiest)
+        $timeSql = "SELECT 
+                            HOUR(appointment_time) as hour,
+                            COUNT(*) as count
+                        FROM {$this->table}
+                        WHERE doctor_id = :doctor_id
+                        AND appointment_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 MONTH) AND CURDATE()
+                        GROUP BY HOUR(appointment_time)
+                        ORDER BY hour";
+
+        $this->db->query($timeSql);
+        $this->db->bind(':doctor_id', $doctorId);
+        $timeStats = $this->db->resultSet();
+
+        // Get summary statistics
+        $summarySql = "SELECT 
+                            COUNT(*) as total_appointments,
+                            SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_appointments,
+                            SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled_appointments,
+                            SUM(CASE WHEN status = 'no_show' THEN 1 ELSE 0 END) as no_show_appointments,
+                            ROUND(SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) / COUNT(*) * 100, 1) as completion_rate,
+                            COUNT(DISTINCT patient_id) as unique_patients
+                        FROM {$this->table}
+                        WHERE doctor_id = :doctor_id
+                        AND appointment_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 MONTH) AND CURDATE()";
+
+        $this->db->query($summarySql);
+        $this->db->bind(':doctor_id', $doctorId);
+        $summaryStats = $this->db->single();
+
+        return [
+            'monthly' => $monthlyStats,
+            'types' => $typesStats,
+            'daily' => $dailyStats,
+            'time_slots' => $timeStats,
+            'summary' => $summaryStats
+        ];
+    }
+
+    // ... existing code ...
+
     public function getAppointmentDetails($appointmentId)
     {
         $sql = $this->buildBaseQuery() . " WHERE a.id = :id";

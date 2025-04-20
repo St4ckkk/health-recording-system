@@ -58,8 +58,10 @@
                     <div class="mb-6">
                         <div id="inventory-tab" class="tab-content active">
                             <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100 fade-in">
-                                <h2 class="text-xl font-semibold text-gray-800 mb-4">Current Stock Levels</h2>
-                                <p class="text-sm text-gray-500 mb-4">Overview of medicine inventory status.</p>
+                                <h2 class="text-xl font-semibold text-gray-800 mb-4">Top 10 Medicines by Stock Level
+                                </h2>
+                                <p class="text-sm text-gray-500 mb-4">Overview of highest stocked medicines in
+                                    inventory.</p>
                                 <div style="height: 400px; width: 100%; position: relative;">
                                     <canvas id="stockLevelsChart"></canvas>
                                 </div>
@@ -68,8 +70,10 @@
 
                         <div id="usage-tab" class="tab-content hidden">
                             <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100 fade-in">
-                                <h2 class="text-xl font-semibold text-gray-800 mb-4">Monthly Usage Analysis</h2>
-                                <p class="text-sm text-gray-500 mb-4">Medicine dispensing patterns over time.</p>
+                                <h2 class="text-xl font-semibold text-gray-800 mb-4">Monthly Inventory Movement
+                                    (<?= date('Y') ?>)</h2>
+                                <p class="text-sm text-gray-500 mb-4">Medicine dispensing and restocking patterns over
+                                    time.</p>
                                 <div style="height: 400px; width: 100%; position: relative;">
                                     <canvas id="usageChart"></canvas>
                                 </div>
@@ -78,8 +82,9 @@
 
                         <div id="expiry-tab" class="tab-content hidden">
                             <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100 fade-in">
-                                <h2 class="text-xl font-semibold text-gray-800 mb-4">Expiry Timeline</h2>
-                                <p class="text-sm text-gray-500 mb-4">Medicines grouped by expiration dates.</p>
+                                <h2 class="text-xl font-semibold text-gray-800 mb-4">Medicines Expiring Soon</h2>
+                                <p class="text-sm text-gray-500 mb-4">Number of medicines expiring in upcoming periods.
+                                </p>
                                 <div style="height: 400px; width: 100%; position: relative;">
                                     <canvas id="expiryChart"></canvas>
                                 </div>
@@ -103,16 +108,45 @@
                                         label: 'Minimum Required',
                                         data: <?= json_encode($stockStats->minimum) ?>,
                                         backgroundColor: '#38BDF8',
-                                        borderRadius: 4
+                                        borderRadius: 4,
+                                        type: 'line',
+                                        borderColor: '#F97316',
+                                        borderWidth: 2,
+                                        fill: false,
+                                        pointBackgroundColor: '#F97316'
                                     }]
                                 },
                                 options: {
                                     responsive: true,
                                     maintainAspectRatio: false,
+                                    indexAxis: 'y',  // Horizontal bar chart for better readability
                                     scales: {
-                                        y: {
+                                        x: {
                                             beginAtZero: true,
-                                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                                            grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                                            title: {
+                                                display: true,
+                                                text: 'Quantity'
+                                            }
+                                        },
+                                        y: {
+                                            grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                                            title: {
+                                                display: true,
+                                                text: 'Medicine Name'
+                                            }
+                                        }
+                                    },
+                                    plugins: {
+                                        legend: {
+                                            position: 'top',
+                                        },
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function (context) {
+                                                    return context.dataset.label + ': ' + context.raw + ' units';
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -123,22 +157,53 @@
                                 data: {
                                     labels: <?= json_encode($usageStats->months) ?>,
                                     datasets: [{
-                                        label: 'dispense',
+                                        label: 'Dispensed',
                                         data: <?= json_encode($usageStats->dispensed) ?>,
                                         borderColor: '#0EA5E9',
+                                        backgroundColor: 'rgba(14, 165, 233, 0.1)',
                                         tension: 0.4,
-                                        fill: false
+                                        fill: true
                                     }, {
                                         label: 'Restocked',
                                         data: <?= json_encode($usageStats->restocked) ?>,
                                         borderColor: '#10B981',
+                                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
                                         tension: 0.4,
-                                        fill: false
+                                        fill: true
                                     }]
                                 },
                                 options: {
                                     responsive: true,
-                                    maintainAspectRatio: false
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                                            title: {
+                                                display: true,
+                                                text: 'Quantity'
+                                            }
+                                        },
+                                        x: {
+                                            grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                                            title: {
+                                                display: true,
+                                                text: 'Month'
+                                            }
+                                        }
+                                    },
+                                    plugins: {
+                                        legend: {
+                                            position: 'top',
+                                        },
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function (context) {
+                                                    return context.dataset.label + ': ' + context.raw + ' units';
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             });
 
@@ -149,13 +214,48 @@
                                     datasets: [{
                                         label: 'Expiring Items',
                                         data: <?= json_encode($expiryStats->counts) ?>,
-                                        backgroundColor: '#F59E0B',
+                                        backgroundColor: [
+                                            '#F87171', // Red for this week (urgent)
+                                            '#FB923C', // Orange for next week
+                                            '#FBBF24', // Yellow for this month
+                                            '#A3E635', // Light green for next month
+                                            '#34D399'  // Green for 3 months
+                                        ],
                                         borderRadius: 4
                                     }]
                                 },
                                 options: {
                                     responsive: true,
-                                    maintainAspectRatio: false
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                                            title: {
+                                                display: true,
+                                                text: 'Number of Items'
+                                            }
+                                        },
+                                        x: {
+                                            grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                                            title: {
+                                                display: true,
+                                                text: 'Time Period'
+                                            }
+                                        }
+                                    },
+                                    plugins: {
+                                        legend: {
+                                            display: false
+                                        },
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function (context) {
+                                                    return context.raw + ' medicines expiring';
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             });
 

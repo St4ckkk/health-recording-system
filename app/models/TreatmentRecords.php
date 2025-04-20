@@ -131,4 +131,28 @@ class TreatmentRecords extends Model
             throw new \Exception('Database error occurred');
         }
     }
+    
+    public function getTreatmentOutcomeStats($doctorId)
+    {
+        $sql = "SELECT 
+                    treatment_type as type,
+                    COUNT(*) as total_count,
+                    SUM(CASE WHEN outcome = 'Success' THEN 1 ELSE 0 END) as success_count,
+                    SUM(CASE WHEN outcome = 'Partial' THEN 1 ELSE 0 END) as partial_count,
+                    SUM(CASE WHEN outcome = 'Failure' THEN 1 ELSE 0 END) as failure_count,
+                    ROUND(SUM(CASE WHEN outcome = 'Success' THEN 1 ELSE 0 END) / COUNT(*) * 100, 1) as success_rate,
+                    ROUND(AVG(DATEDIFF(IFNULL(end_date, CURDATE()), start_date)), 0) as avg_duration,
+                    (SELECT diagnosis FROM diagnosis d 
+                     WHERE d.patient_id = tr.patient_id 
+                     ORDER BY d.diagnosed_at DESC LIMIT 1) as common_diagnosis
+                FROM {$this->table} tr
+                WHERE doctor_id = :doctor_id
+                GROUP BY treatment_type
+                ORDER BY total_count DESC";
+                
+        $this->db->query($sql);
+        $this->db->bind(':doctor_id', $doctorId);
+        
+        return $this->db->resultSet();
+    }
 }

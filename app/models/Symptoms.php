@@ -66,4 +66,23 @@ class Symptoms extends Model
         $this->db->bind(':id', $id);
         return $this->db->execute();
     }
+    
+    public function getCommonSymptoms($doctorId)
+    {
+        $sql = "SELECT 
+                    s.name, 
+                    COUNT(*) as count,
+                    AVG(s.severity_level) as avg_severity,
+                    MAX(s.created_at) as latest_date
+                FROM {$this->table} s
+                JOIN medical_records mr ON s.patient_id = mr.patient_id AND mr.doctor_id = :doctor_id
+                GROUP BY s.name
+                ORDER BY count DESC
+                LIMIT 10";
+                
+        $this->db->query($sql);
+        $this->db->bind(':doctor_id', $doctorId);
+        
+        return $this->db->resultSet();
+    }
 }

@@ -57,6 +57,43 @@ class PharmacistController extends Controller
         $medicineStats = $this->medicineInventoryModel->getMedicineStats();
         $medicineUsage = $this->medicineInventoryModel->getMedicineUsageStats();
 
+        // Get additional data for enhanced dashboard
+        $expiringMedicines = $this->medicineInventoryModel->getExpiringMedicineDetails();
+        $categoryDistribution = $this->medicineInventoryModel->getCategoryDistribution();
+        $inventoryValue = $this->medicineInventoryModel->getInventoryValueStats();
+        $recentTransactions = $this->medicineInventoryModel->getRecentTransactions();
+
+        // Format expiring items for display
+        $expiringItems = '';
+        if (!empty($expiringMedicines)) {
+            $expiringItems = implode(', ', array_map(function ($med) {
+                return $med->name . ' (' . date('M d, Y', strtotime($med->expiry_date)) . ')';
+            }, $expiringMedicines));
+        }
+
+        // Prepare category data for chart
+        $categoryData = [
+            'labels' => [],
+            'counts' => [],
+            'colors' => [
+                '#4F46E5',
+                '#10B981',
+                '#F59E0B',
+                '#EF4444',
+                '#8B5CF6',
+                '#EC4899',
+                '#06B6D4',
+                '#84CC16',
+                '#F97316',
+                '#6366F1'
+            ]
+        ];
+
+        foreach ($categoryDistribution as $index => $category) {
+            $categoryData['labels'][] = $category->category;
+            $categoryData['counts'][] = $category->count;
+        }
+
         $this->view('pages/pharmacist/dashboard.view', [
             'title' => 'Pharmacist Dashboard',
             'lowStockCount' => $lowStockMedicines['count'],
@@ -64,7 +101,13 @@ class PharmacistController extends Controller
             'lowStockItems' => $lowStockMedicines['items'],
             'totalMedicines' => $medicineStats->total_medicines,
             'expiringCount' => $medicineStats->expiring_soon,
-            'medicineUsage' => $medicineUsage
+            'expiringItems' => $expiringItems,
+            'expiringMedicines' => $expiringMedicines,
+            'medicineUsage' => $medicineUsage,
+            'categoryDistribution' => $categoryDistribution,
+            'categoryData' => $categoryData,
+            'inventoryValue' => $inventoryValue,
+            'recentTransactions' => $recentTransactions
         ]);
     }
 
@@ -196,36 +239,45 @@ class PharmacistController extends Controller
         $medicineStats = $this->medicineInventoryModel->getMedicineStats();
         $lowStockInfo = $this->medicineInventoryModel->getLowStockCount();
 
-        // Get stock statistics for the chart
+        // Get top 10 medicines for stock chart (instead of all medicines)
+        $topMedicines = $this->medicineInventoryModel->getTopMedicinesByStock(10);
         $stockStats = (object) [
             'labels' => [],
             'current' => [],
             'minimum' => []
         ];
 
-        $medicines = $this->medicineInventoryModel->getAllMedicines();
-        foreach ($medicines as $medicine) {
+        foreach ($topMedicines as $medicine) {
             $stockStats->labels[] = $medicine->name;
             $stockStats->current[] = $medicine->stock_level;
-            $stockStats->minimum[] = 10; // Minimum threshold
+            // Calculate minimum threshold based on medicine category or use default
+            $stockStats->minimum[] = $medicine->min_stock_level ?? 10;
         }
 
-        // Get usage statistics
+        // Get monthly usage statistics for the current year
+        $monthlyUsage = $this->medicineInventoryModel->getMonthlyUsageStats();
         $usageStats = (object) [
             'months' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            'dispensed' => [],
-            'restocked' => []
+            'dispensed' => array_fill(0, 12, 0),
+            'restocked' => array_fill(0, 12, 0)
         ];
 
-        // Get expiry statistics
+        // Fill in the actual data from database
+        foreach ($monthlyUsage as $usage) {
+            $monthIndex = $usage->month - 1; // Convert 1-based month to 0-based index
+            $usageStats->dispensed[$monthIndex] = $usage->dispensed;
+            $usageStats->restocked[$monthIndex] = $usage->restocked;
+        }
+
+        // Get expiry statistics with clearer time periods
         $expiryStats = (object) [
             'periods' => ['This Week', 'Next Week', 'This Month', 'Next Month', '3 Months'],
             'counts' => [
                 count($this->medicineInventoryModel->getExpiringSoonMedicines(7)),
-                count($this->medicineInventoryModel->getExpiringSoonMedicines(14)),
-                count($this->medicineInventoryModel->getExpiringSoonMedicines(30)),
-                count($this->medicineInventoryModel->getExpiringSoonMedicines(60)),
-                count($this->medicineInventoryModel->getExpiringSoonMedicines(90))
+                count($this->medicineInventoryModel->getExpiringSoonMedicines(14)) - count($this->medicineInventoryModel->getExpiringSoonMedicines(7)),
+                count($this->medicineInventoryModel->getExpiringSoonMedicines(30)) - count($this->medicineInventoryModel->getExpiringSoonMedicines(14)),
+                count($this->medicineInventoryModel->getExpiringSoonMedicines(60)) - count($this->medicineInventoryModel->getExpiringSoonMedicines(30)),
+                count($this->medicineInventoryModel->getExpiringSoonMedicines(90)) - count($this->medicineInventoryModel->getExpiringSoonMedicines(60))
             ]
         ];
 

@@ -102,4 +102,25 @@ class Immunization extends Model
 
         return false;
     }
+    
+    public function getImmunizationStats($doctorId)
+    {
+        $sql = "SELECT 
+                    v.name as vaccine_name,
+                    COUNT(*) as count,
+                    COUNT(DISTINCT im.patient_id) as unique_patients,
+                    MIN(im.immunization_date) as first_date,
+                    MAX(im.immunization_date) as latest_date,
+                    COUNT(CASE WHEN im.next_due IS NOT NULL AND im.next_due > CURDATE() THEN 1 END) as upcoming_count
+                FROM {$this->table} im
+                JOIN vaccines v ON im.vaccine_id = v.id
+                WHERE im.doctor_id = :doctor_id
+                GROUP BY v.name
+                ORDER BY count DESC";
+                
+        $this->db->query($sql);
+        $this->db->bind(':doctor_id', $doctorId);
+        
+        return $this->db->resultSet();
+    }
 }

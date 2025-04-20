@@ -209,4 +209,27 @@ class Vitals extends Model
 
         return $this->db->execute();
     }
+
+    public function getVitalsTrends($doctorId)
+    {
+        $sql = "SELECT 
+                    DATE_FORMAT(v.recorded_at, '%Y-%m-%d') as date,
+                    AVG(SUBSTRING_INDEX(v.blood_pressure, '/', 1)) as systolic,
+                    AVG(SUBSTRING_INDEX(v.blood_pressure, '/', -1)) as diastolic,
+                    AVG(v.temperature) as temperature,
+                    AVG(v.heart_rate) as heart_rate,
+                    AVG(v.respiratory_rate) as respiratory_rate,
+                    AVG(v.oxygen_saturation) as oxygen_saturation,
+                    AVG(v.glucose_level) as glucose_level
+                FROM {$this->table} v
+                JOIN medical_records mr ON v.patient_id = mr.patient_id AND mr.doctor_id = :doctor_id
+                GROUP BY DATE_FORMAT(v.recorded_at, '%Y-%m-%d')
+                ORDER BY date ASC
+                LIMIT 30";
+                
+        $this->db->query($sql);
+        $this->db->bind(':doctor_id', $doctorId);
+        
+        return $this->db->resultSet();
+    }
 }

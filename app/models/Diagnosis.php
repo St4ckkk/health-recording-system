@@ -81,6 +81,23 @@ class Diagnosis extends Model
         return $this->db->resultSet();
     }
 
+    public function getDoctorDiagnosisStats($doctorId)
+    {
+        $sql = "SELECT 
+                    diagnosis, 
+                    COUNT(*) as count,
+                    MAX(diagnosed_at) as latest_date,
+                    MIN(diagnosed_at) as first_date
+                FROM {$this->table}
+                WHERE doctor_id = :doctor_id
+                GROUP BY diagnosis
+                ORDER BY count DESC
+                LIMIT 10";
 
+        $this->db->query($sql);
+        $this->db->bind(':doctor_id', $doctorId);
+
+        return $this->db->resultSet();
+    }
 
 }

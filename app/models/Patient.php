@@ -121,6 +121,66 @@ class Patient extends Model
         return $this->db->resultSet();
     }
 
+    public function getPatientDemographics($doctorId)
+    {
+        // Age groups
+        $ageGroupsSql = "SELECT 
+                            CASE 
+                                WHEN age < 18 THEN 'Under 18'
+                                WHEN age BETWEEN 18 AND 30 THEN '18-30'
+                                WHEN age BETWEEN 31 AND 45 THEN '31-45'
+                                WHEN age BETWEEN 46 AND 60 THEN '46-60'
+                                WHEN age > 60 THEN 'Over 60'
+                            END as age_group,
+                            COUNT(*) as count
+                        FROM {$this->table} p
+                        JOIN medical_records mr ON p.id = mr.patient_id AND mr.doctor_id = :doctor_id
+                        GROUP BY age_group
+                        ORDER BY 
+                            CASE age_group
+                                WHEN 'Under 18' THEN 1
+                                WHEN '18-30' THEN 2
+                                WHEN '31-45' THEN 3
+                                WHEN '46-60' THEN 4
+                                WHEN 'Over 60' THEN 5
+                            END";
+        
+        $this->db->query($ageGroupsSql);
+        $this->db->bind(':doctor_id', $doctorId);
+        $ageGroups = $this->db->resultSet();
+        
+        // Gender distribution
+        $genderSql = "SELECT 
+                        gender,
+                        COUNT(*) as count
+                      FROM {$this->table} p
+                      JOIN medical_records mr ON p.id = mr.patient_id AND mr.doctor_id = :doctor_id
+                      GROUP BY gender";
+        
+        $this->db->query($genderSql);
+        $this->db->bind(':doctor_id', $doctorId);
+        $genderDistribution = $this->db->resultSet();
+        
+        // Insurance distribution
+        $insuranceSql = "SELECT 
+                            CASE WHEN insurance IS NULL OR insurance = '' THEN 'None' ELSE insurance END as insurance_type,
+                            COUNT(*) as count
+                         FROM {$this->table} p
+                         JOIN medical_records mr ON p.id = mr.patient_id AND mr.doctor_id = :doctor_id
+                         GROUP BY insurance_type
+                         ORDER BY count DESC";
+        
+        $this->db->query($insuranceSql);
+        $this->db->bind(':doctor_id', $doctorId);
+        $insuranceDistribution = $this->db->resultSet();
+        
+        return [
+            'age_groups' => $ageGroups,
+            'gender_distribution' => $genderDistribution,
+            'insurance_distribution' => $insuranceDistribution
+        ];
+    }
+    
     public function insert($data)
     {
         // Generate patient reference number

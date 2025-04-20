@@ -914,22 +914,51 @@ class DoctorController extends Controller
 
     public function reports()
     {
-        $doctorId = $_SESSION['doctor_id'] ?? null;
+        $doctorId = $_SESSION['doctor']['id'] ?? null;
 
         if (!$doctorId) {
             $this->redirect('/doctor');
             return;
         }
 
-        $visitStats = $this->appointmentModel->getMonthlyVisitStats($doctorId);
-        $diagnosisStats = $this->patientModel->getDiagnosisDistribution();
-        $medicineUsageStats = $this->medicineInventoryModel->getMedicineUsageStats();
+        // Get patient visit statistics
+        $visitStats = $this->appointmentModel->getDoctorVisitStats($doctorId);
+
+        // Get diagnosis distribution
+        $diagnosisStats = $this->diagnosisModel->getDoctorDiagnosisStats($doctorId);
+
+        // Get medicine usage statistics
+        $medicineUsageStats = $this->medicineInventoryModel->getDoctorMedicineUsageStats($doctorId);
+
+        // Get vital signs trends
+        $vitalsTrends = $this->vitalsModel->getVitalsTrends($doctorId);
+
+        // Get treatment outcomes
+        $treatmentOutcomes = $this->treatmentRecordsModel->getTreatmentOutcomeStats($doctorId);
+
+        // Get patient admission statistics
+        $admissionStats = $this->patientAdmissionModel->getAdmissionStats($doctorId);
+
+        // Get common symptoms
+        $commonSymptoms = $this->symptomsModel->getCommonSymptoms($doctorId);
+
+        // Get immunization statistics
+        $immunizationStats = $this->immunizationModel->getImmunizationStats($doctorId);
+
+        // Get patient demographics
+        $patientDemographics = $this->patientModel->getPatientDemographics($doctorId);
 
         $this->view('pages/doctor/reports.view', [
-            'title' => 'Reports',
+            'title' => 'Reports & Analytics',
             'visitStats' => $visitStats,
             'diagnosisStats' => $diagnosisStats,
-            'medicineUsageStats' => $medicineUsageStats
+            'medicineUsageStats' => $medicineUsageStats,
+            'vitalsTrends' => $vitalsTrends,
+            'treatmentOutcomes' => $treatmentOutcomes,
+            'admissionStats' => $admissionStats,
+            'commonSymptoms' => $commonSymptoms,
+            'immunizationStats' => $immunizationStats,
+            'patientDemographics' => $patientDemographics
         ]);
     }
 

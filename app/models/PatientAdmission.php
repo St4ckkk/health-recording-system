@@ -174,4 +174,124 @@ class PatientAdmission extends Model
         return $this->db->execute() ? true : ['error' => 'Failed to update status'];
     }
 
+    
+    public function getAdmissionStats($doctorId)
+    {
+        // Get monthly admission counts
+        $monthlySql = "SELECT 
+                        DATE_FORMAT(admission_date, '%Y-%m') as month,
+                        COUNT(*) as total_admissions,
+                        SUM(CASE WHEN status = 'discharged' THEN 1 ELSE 0 END) as discharged,
+                        SUM(CASE WHEN status = 'transferred' THEN 1 ELSE 0 END) as transferred,
+                        AVG(CASE 
+                            WHEN discharge_date IS NOT NULL 
+                            THEN DATEDIFF(discharge_date, admission_date) 
+                            ELSE NULL 
+                        END) as avg_stay_duration
+                    FROM {$this->table}
+                    WHERE admitted_by = :doctor_id
+                    AND admission_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 12 MONTH) AND CURDATE()
+                    GROUP BY DATE_FORMAT(admission_date, '%Y-%m')
+                    ORDER BY month ASC";
+        
+        $this->db->query($monthlySql);
+        $this->db->bind(':doctor_id', $doctorId);
+        $monthlyStats = $this->db->resultSet();
+        
+        // Get ward distribution
+        $wardSql = "SELECT 
+                    ward,
+                    COUNT(*) as count,
+                    ROUND(COUNT(*) * 100.0 / (
+                        SELECT COUNT(*) FROM {$this->table} 
+                        WHERE admitted_by = :doctor_id
+                        AND admission_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 MONTH) AND CURDATE()
+                    ), 1) as percentage
+                FROM {$this->table}
+                WHERE admitted_by = :doctor_id
+                AND admission_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 MONTH) AND CURDATE()
+                GROUP BY ward
+                ORDER BY count DESC";
+        
+        $this->db->query($wardSql);
+        $this->db->bind(':doctor_id', $doctorId);
+        $wardStats = $this->db->resultSet();
+        
+        // Get diagnosis distribution
+        $diagnosisSql = "SELECT 
+                        d.diagnosis,
+                        COUNT(*) as count
+                    FROM {$this->table} pa
+                    JOIN diagnosis d ON pa.diagnosis_id = d.id
+                    WHERE pa.admitted_by = :doctor_id
+                    AND pa.admission_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 MONTH) AND CURDATE()
+                    GROUP BY d.diagnosis
+                    ORDER BY count DESC
+                    LIMIT 10";
+        
+        $this->db->query($diagnosisSql);
+        $this->db->bind(':doctor_id', $doctorId);
+        $diagnosisStats = $this->db->resultSet();
+        
+        // Get length of stay distribution
+        $staySql = "SELECT 
+                    CASE 
+                        WHEN DATEDIFF(COALESCE(discharge_date, CURDATE()), admission_date) < 3 THEN 'Less than 3 days'
+                        WHEN DATEDIFF(COALESCE(discharge_date, CURDATE()), admission_date) BETWEEN 3 AND 7 THEN '3-7 days'
+                        WHEN DATEDIFF(COALESCE(discharge_date, CURDATE()), admission_date) BETWEEN 8 AND 14 THEN '8-14 days'
+                        WHEN DATEDIFF(COALESCE(discharge_date, CURDATE()), admission_date) BETWEEN 15 AND 30 THEN '15-30 days'
+                        ELSE 'More than 30 days'
+                    END as stay_duration,
+                    COUNT(*) as count
+                FROM {$this->table}
+                WHERE admitted_by = :doctor_id
+                AND admission_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 MONTH) AND CURDATE()
+                GROUP BY stay_duration
+                ORDER BY 
+                    CASE stay_duration
+                        WHEN 'Less than 3 days' THEN 1
+                        WHEN '3-7 days' THEN 2
+                        WHEN '8-14 days' THEN 3
+                        WHEN '15-30 days' THEN 4
+                        WHEN 'More than 30 days' THEN 5
+                    END";
+        
+        $this->db->query($staySql);
+        $this->db->bind(':doctor_id', $doctorId);
+        $stayStats = $this->db->resultSet();
+        
+        // Get summary statistics
+        $summarySql = "SELECT 
+                        COUNT(*) as total_admissions,
+                        COUNT(DISTINCT patient_id) as unique_patients,
+                        SUM(CASE WHEN status = 'admitted' THEN 1 ELSE 0 END) as current_admissions,
+                        SUM(CASE WHEN status = 'discharged' THEN 1 ELSE 0 END) as total_discharged,
+                        SUM(CASE WHEN status = 'transferred' THEN 1 ELSE 0 END) as total_transferred,
+                        ROUND(AVG(CASE 
+                            WHEN discharge_date IS NOT NULL 
+                            THEN DATEDIFF(discharge_date, admission_date) 
+                            ELSE NULL 
+                        END), 1) as avg_stay_duration,
+                        MAX(CASE 
+                            WHEN discharge_date IS NOT NULL 
+                            THEN DATEDIFF(discharge_date, admission_date) 
+                            ELSE NULL 
+                        END) as max_stay_duration
+                    FROM {$this->table}
+                    WHERE admitted_by = :doctor_id
+                    AND admission_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 MONTH) AND CURDATE()";
+        
+        $this->db->query($summarySql);
+        $this->db->bind(':doctor_id', $doctorId);
+        $summaryStats = $this->db->single();
+        
+        return [
+            'monthly' => $monthlyStats,
+            'wards' => $wardStats,
+            'diagnoses' => $diagnosisStats,
+            'stay_duration' => $stayStats,
+            'summary' => $summaryStats
+        ];
+    }
+    
 }

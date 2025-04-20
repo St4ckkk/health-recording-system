@@ -277,6 +277,92 @@ class MedicineInventory extends Model
         return $this->db->resultSet();
     }
 
+    // ... existing code ...
+
+    public function getDoctorMedicineUsageStats($doctorId)
+    {
+        // Get most prescribed medicines
+        $topMedicinesSql = "SELECT 
+                                mi.id,
+                                mi.name,
+                                mi.category,
+                                mi.form,
+                                mi.dosage,
+                                COUNT(ml.id) as prescription_count,
+                                SUM(ml.quantity) as total_quantity
+                            FROM medicine_logs ml
+                            JOIN {$this->table} mi ON ml.medicine_id = mi.id
+                            WHERE ml.doctor_id = :doctor_id
+                            AND ml.action_type = 'Prescribed'
+                            GROUP BY mi.id, mi.name, mi.category, mi.form, mi.dosage
+                            ORDER BY prescription_count DESC
+                            LIMIT 10";
+
+        $this->db->query($topMedicinesSql);
+        $this->db->bind(':doctor_id', $doctorId);
+        $topMedicines = $this->db->resultSet();
+
+        // Get medicine usage by category
+        $categorySql = "SELECT 
+                            mi.category,
+                            COUNT(ml.id) as prescription_count,
+                            SUM(ml.quantity) as total_quantity,
+                            COUNT(DISTINCT ml.patient_id) as patient_count
+                        FROM medicine_logs ml
+                        JOIN {$this->table} mi ON ml.medicine_id = mi.id
+                        WHERE ml.doctor_id = :doctor_id
+                        AND ml.action_type = 'Prescribed'
+                        GROUP BY mi.category
+                        ORDER BY prescription_count DESC";
+
+        $this->db->query($categorySql);
+        $this->db->bind(':doctor_id', $doctorId);
+        $categoryStats = $this->db->resultSet();
+
+        // Get monthly prescription trends
+        $monthlySql = "SELECT 
+                            DATE_FORMAT(ml.created_at, '%Y-%m') as month,
+                            COUNT(ml.id) as prescription_count,
+                            COUNT(DISTINCT ml.patient_id) as patient_count,
+                            COUNT(DISTINCT ml.medicine_id) as medicine_count
+                        FROM medicine_logs ml
+                        WHERE ml.doctor_id = :doctor_id
+                        AND ml.action_type = 'Prescribed'
+                        AND ml.created_at BETWEEN DATE_SUB(CURDATE(), INTERVAL 12 MONTH) AND CURDATE()
+                        GROUP BY DATE_FORMAT(ml.created_at, '%Y-%m')
+                        ORDER BY month ASC";
+
+        $this->db->query($monthlySql);
+        $this->db->bind(':doctor_id', $doctorId);
+        $monthlyStats = $this->db->resultSet();
+
+        // Get summary statistics
+        $summarySql = "SELECT 
+                            COUNT(ml.id) as total_prescriptions,
+                            COUNT(DISTINCT ml.patient_id) as total_patients,
+                            COUNT(DISTINCT ml.medicine_id) as total_medicines,
+                            SUM(ml.quantity) as total_quantity,
+                            ROUND(SUM(ml.quantity) / COUNT(ml.id), 2) as avg_quantity_per_prescription,
+                            ROUND(COUNT(ml.id) / COUNT(DISTINCT ml.patient_id), 2) as avg_prescriptions_per_patient
+                        FROM medicine_logs ml
+                        WHERE ml.doctor_id = :doctor_id
+                        AND ml.action_type = 'Prescribed'
+                        AND ml.created_at BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 MONTH) AND CURDATE()";
+
+        $this->db->query($summarySql);
+        $this->db->bind(':doctor_id', $doctorId);
+        $summaryStats = $this->db->single();
+
+        return [
+            'top_medicines' => $topMedicines,
+            'by_category' => $categoryStats,
+            'monthly_trends' => $monthlyStats,
+            'summary' => $summaryStats
+        ];
+    }
+
+    // ... existing code ...
+
 
 
 
@@ -289,5 +375,82 @@ class MedicineInventory extends Model
         return $this->db->execute();
     }
 
+    public function getTopMedicinesByStock($limit = 10)
+    {
+        $query = $this->buildBaseQuery() . " 
+            ORDER BY m.stock_level DESC 
+            LIMIT :limit";
+        $this->db->query($query);
+        $this->db->bind(':limit', $limit);
+        return $this->db->resultSet();
+    }
+
+
+    public function getExpiringMedicineDetails($daysThreshold = 30)
+    {
+        $query = $this->buildBaseQuery() . " 
+        WHERE m.expiry_date <= DATE_ADD(CURDATE(), INTERVAL :days DAY)
+        AND m.expiry_date >= CURDATE()
+        ORDER BY m.expiry_date ASC
+        LIMIT 5";
+        $this->db->query($query);
+        $this->db->bind(':days', $daysThreshold);
+        return $this->db->resultSet();
+    }
+
+    public function getCategoryDistribution()
+    {
+        $this->db->query("SELECT 
+        category, 
+        COUNT(*) as count,
+        SUM(stock_level) as total_stock,
+        SUM(unit_price * stock_level) as inventory_value
+        FROM {$this->table}
+        WHERE category IS NOT NULL AND category != ''
+        GROUP BY category
+        ORDER BY count DESC");
+        return $this->db->resultSet();
+    }
+
+    public function getInventoryValueStats()
+    {
+        $this->db->query("SELECT 
+        SUM(stock_level * unit_price) as total_value,
+        AVG(unit_price) as average_price,
+        MAX(unit_price) as max_price,
+        MIN(CASE WHEN unit_price > 0 THEN unit_price ELSE NULL END) as min_price
+        FROM {$this->table}
+        WHERE stock_level > 0");
+        return $this->db->single();
+    }
+
+    public function getRecentTransactions($limit = 5)
+    {
+        $this->db->query("SELECT 
+        ml.id,
+        m.name as medicine_name,
+        ml.action_type,
+        ml.quantity,
+        ml.previous_stock,
+        ml.new_stock,
+        CASE 
+            WHEN ml.doctor_id IS NOT NULL THEN CONCAT('Dr. ', d.first_name, ' ', d.last_name)
+            WHEN ml.staff_id IS NOT NULL THEN CONCAT(s.first_name, ' ', s.last_name)
+            ELSE 'System'
+        END as performed_by,
+        ml.created_at
+        FROM medicine_logs ml
+        JOIN {$this->table} m ON ml.medicine_id = m.id
+        LEFT JOIN staff s ON ml.staff_id = s.id
+        LEFT JOIN doctors d ON ml.doctor_id = d.id
+        ORDER BY ml.created_at DESC
+        LIMIT :limit");
+        $this->db->bind(':limit', $limit);
+        return $this->db->resultSet();
+    }
+
 
 }
+
+
+// Add these new methods to the MedicineInventory class
