@@ -257,70 +257,49 @@ function scheduleFollowUpAppointment(formData) {
 }
 
 // Centralized Toast notification function
-window.showToast = (type, title, message, stack = false) => {
-    // Remove existing toast of the same type if not stacking
-    if (!stack) {
-        document.querySelectorAll(`.toast-notification.toast-${type}`).forEach(t => t.remove());
+// Replace the existing showToast function with this one
+window.showToast = (type, title, message) => {
+    // Define toast function if not exists
+    if (typeof Toastify === 'function') {
+        Toastify({
+            text: message,
+            duration: 3000,
+            close: true,
+            gravity: "top",
+            position: "right",
+            backgroundColor: type === 'success' ? "#10B981" :
+                type === 'processing' ? "#6366F1" :
+                    type === 'info' ? "#3B82F6" : "#EF4444",
+            stopOnFocus: true,
+        }).showToast();
+    } else {
+        // Fallback toast implementation
+        const toast = document.createElement('div');
+        toast.className = `fixed top-4 right-4 ${type === 'success' ? 'bg-green-500' :
+                type === 'processing' ? 'bg-indigo-500' :
+                    type === 'info' ? 'bg-blue-500' : 'bg-red-500'
+            } text-white px-6 py-3 rounded-lg shadow-lg z-50`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
     }
-
-    const toast = document.createElement('div');
-    toast.className = `fixed z-50 flex items-start p-4 mb-4 w-full max-w-xs rounded-lg shadow-lg toast-notification toast-${type} ${type === 'success' ? 'bg-green-50 text-green-800' :
-        type === 'processing' ? 'bg-indigo-50 text-indigo-800' :
-            type === 'info' ? 'bg-blue-50 text-blue-800' :
-                'bg-red-50 text-red-800'
-        } fade-in`;
-
-    // Position toast based on existing toasts
-    const existingToasts = document.querySelectorAll('.toast-notification');
-    const topOffset = stack && existingToasts.length > 0
-        ? (existingToasts.length * 5) + 4 // Increase offset for each toast
-        : 4; // Default top position
-
-    toast.style.top = `${topOffset}rem`;
-    toast.style.right = '1rem';
-
-    toast.innerHTML = `
-        <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg ${type === 'success' ? 'bg-green-100 text-green-500' :
-            type === 'processing' ? 'bg-indigo-100 text-indigo-500' :
-                type === 'info' ? 'bg-blue-100 text-blue-500' :
-                    'bg-red-100 text-red-500'
-        }">
-            <i class="bx ${type === 'success' ? 'bx-check' :
-            type === 'processing' ? 'bx-loader-alt bx-spin' :
-                type === 'info' ? 'bx-info-circle' :
-                    'bx-x'
-        } text-xl"></i>
-        </div>
-        <div class="ml-3 text-sm font-normal">
-            <span class="mb-1 text-sm font-semibold">${title}</span>
-            <div class="mb-2 text-sm">${message}</div>
-        </div>
-        <button type="button" class="ml-auto -mx-1.5 -my-1.5 rounded-lg p-1.5 inline-flex h-8 w-8 ${type === 'success' ? 'text-green-500 hover:bg-green-100' :
-            type === 'processing' ? 'text-indigo-500 hover:bg-indigo-100' :
-                type === 'info' ? 'text-blue-500 hover:bg-blue-100' :
-                    'text-red-500 hover:bg-red-100'
-        }" aria-label="Close">
-            <i class="bx bx-x text-lg"></i>
-        </button>
-    `;
-
-    document.body.appendChild(toast);
-
-    // Add click event to close button
-    toast.querySelector('button').addEventListener('click', () => {
-        removeToast(toast);
-    });
-
-    // Auto remove after 5 seconds for non-processing toasts
-    // Processing toasts should remain until the process completes
-    if (type !== 'processing') {
-        setTimeout(() => {
-            removeToast(toast);
-        }, 5000);
-    }
-
-    return toast; // Return the toast element for potential future reference
 };
+
+// Update the toast calls in the code
+// Example updates:
+if (data.success) {
+    closeCompletedModalFunction();
+    showToast('success', 'Success', 'Appointment completed successfully');
+    // ... rest of the success handling
+} else {
+    showToast('error', 'Error', data.message || "Failed to complete appointment");
+}
+
+// Update the follow-up scheduling toast
+showToast('processing', 'Processing', 'Scheduling follow-up appointment...');
+
+// Update error handling toasts
+showToast('error', 'Error', "An error occurred. Please try again.");
 
 // Helper function to remove toast with animation
 function removeToast(toast) {
@@ -376,34 +355,34 @@ window.scheduleFollowUp = (appointmentId) => {
 };
 
 // Inside the form submit event listener
-    completedForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+completedForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-        const formData = new FormData(completedForm);
-        const appointmentId = document.getElementById("completedAppointmentId").value;
+    const formData = new FormData(completedForm);
+    const appointmentId = document.getElementById("completedAppointmentId").value;
 
-        try {
-            const response = await fetch(`${BASE_URL}/receptionist/complete-appointment/${appointmentId}`, {
-                method: "POST",
-                body: formData
-            });
+    try {
+        const response = await fetch(`${BASE_URL}/receptionist/complete-appointment/${appointmentId}`, {
+            method: "POST",
+            body: formData
+        });
 
-            const data = await response.json();
+        const data = await response.json();
 
-            if (data.success) {
-                // Close modal and show success message
-                closeCompletedModalFn();
-                showToast("Appointment completed successfully", "success");
-                
-                // Refresh the page after a short delay to show updated last_visit
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
-            } else {
-                showToast(data.message || "Failed to complete appointment", "error");
-            }
-        } catch (error) {
-            console.error("Error completing appointment:", error);
-            showToast("An error occurred while completing the appointment", "error");
+        if (data.success) {
+            // Close modal and show success message
+            closeCompletedModalFn();
+            showToast("Appointment completed successfully", "success");
+
+            // Refresh the page after a short delay to show updated last_visit
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            showToast(data.message || "Failed to complete appointment", "error");
         }
-    });
+    } catch (error) {
+        console.error("Error completing appointment:", error);
+        showToast("An error occurred while completing the appointment", "error");
+    }
+});

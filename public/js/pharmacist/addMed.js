@@ -1,14 +1,14 @@
-// Dispense modal functions
-function openDispenseModal(medicineId, medicineName) {
-    document.getElementById('medicineId').value = medicineId;
-    document.getElementById('medicineName').value = medicineName;
-    document.getElementById('dispenseModal').classList.remove('hidden');
-}
+// Remove these functions as they're now in dispenseMed.js
+// function openDispenseModal(medicineId, medicineName) {
+//     document.getElementById('medicineId').value = medicineId;
+//     document.getElementById('medicineName').value = medicineName;
+//     document.getElementById('dispenseModal').classList.remove('hidden');
+// }
 
-function closeDispenseModal() {
-    document.getElementById('dispenseForm').reset();
-    document.getElementById('dispenseModal').classList.add('hidden');
-}
+// function closeDispenseModal() {
+//     document.getElementById('dispenseForm').reset();
+//     document.getElementById('dispenseModal').classList.add('hidden');
+// }
 
 // Add Medicine Modal Functions
 function openAddMedicineModal() {

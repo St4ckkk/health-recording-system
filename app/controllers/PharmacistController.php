@@ -16,9 +16,11 @@ use app\models\MedicineLogs;
 use app\models\MedicalRecords;
 use app\models\Immunization;
 use app\models\Diagnosis;
+use app\models\TransactionRecord;
 
 class PharmacistController extends Controller
 {
+    private $transactionRecordModel;
     private $doctorModel;
     private $patientModel;
     private $appointmentModel;
@@ -44,6 +46,7 @@ class PharmacistController extends Controller
         $this->medicalRecordsModel = new MedicalRecords();
         $this->immunizationModel = new Immunization();
         $this->diagnosisModel = new Diagnosis();
+        $this->transactionRecordModel = new TransactionRecord();
     }
 
 
@@ -110,19 +113,26 @@ class PharmacistController extends Controller
         }
 
         $data = $this->getJsonRequestData();
+        error_log('Updating medicine with data: ' . print_r($data, true));
 
         // Get current medicine data for stock comparison
         $currentMedicine = $this->medicineInventoryModel->getMedicineById($data['medicineId']);
 
         try {
+            // Convert unit price to float with 2 decimal places
+            $data['unitPrice'] = number_format((float) $data['unitPrice'], 2, '.', '');
             $updated = $this->medicineInventoryModel->updateMed($data);
 
             if ($updated) {
+                $createTransaction = false;
+                $stockDifference = 0;
+
                 // Check if stock level has changed
                 if ($currentMedicine && $currentMedicine->stock_level != $data['stockLevel']) {
                     $stockDifference = $data['stockLevel'] - $currentMedicine->stock_level;
+                    $createTransaction = true;
 
-                    // Only create log if stock has changed
+                    // Create medicine log for stock change
                     if ($stockDifference != 0) {
                         $logData = [
                             'medicine_id' => $data['medicineId'],
@@ -135,8 +145,33 @@ class PharmacistController extends Controller
                             'patient_id' => null,
                             'remarks' => $stockDifference > 0 ? 'Stock restocked' : 'Stock adjusted'
                         ];
-
                         $this->medicineLogsModel->insert($logData);
+                    }
+                }
+
+                // Check if unit price has changed or if stock has changed
+                if ($createTransaction || ($currentMedicine && $currentMedicine->unit_price != $data['unitPrice'])) {
+                    // Create transaction record
+                    $transactionData = [
+                        'medicine_id' => $data['medicineId'],
+                        'transaction_type' => 'adjustment',
+                        'quantity' => $data['stockLevel'], // Use actual stock level
+                        'unit_price' => (float) $data['unitPrice'],
+                        'total_amount' => $data['stockLevel'] * (float) $data['unitPrice'],
+                        'transaction_date' => date('Y-m-d H:i:s'),
+                        'staff_id' => $_SESSION['staff_id'] ?? null,
+                        'supplier' => $data['supplier'],
+                        'manufacturer' => $data['manufacturer'],
+                        'payment_status' => 'completed',
+                        'remarks' => $stockDifference != 0 ? 'Stock update - Adjustment' : 'Price update - Adjustment',
+                        'created_at' => date('Y-m-d H:i:s')
+                    ];
+
+                    error_log('Creating transaction record: ' . print_r($transactionData, true));
+                    $transactionCreated = $this->transactionRecordModel->createTransaction($transactionData);
+
+                    if (!$transactionCreated) {
+                        error_log('Failed to create transaction record');
                     }
                 }
 
@@ -146,6 +181,7 @@ class PharmacistController extends Controller
             }
         } catch (\Exception $e) {
             error_log('Exception while updating medicine: ' . $e->getMessage());
+            error_log('Stack trace: ' . $e->getTraceAsString());
             $this->jsonResponse([
                 'success' => false,
                 'message' => 'Database error: ' . $e->getMessage()
@@ -269,7 +305,9 @@ class PharmacistController extends Controller
             'expiry_date' => $data['expiryDate'],
             'status' => 'Available',
             'supplier' => $data['supplier'],
-            'manufacturer' => $data['manufacturer']
+            'unit_price' => $data['unitPrice'] ?? 0.00,
+            'manufacturer' => $data['manufacturer'],
+            // 'selling_price' => $data['sellingPrice'] ?? 0.00
         ];
 
         try {
@@ -279,6 +317,21 @@ class PharmacistController extends Controller
             $medicineId = $this->medicineInventoryModel->insert($medicineData);
 
             if ($medicineId) {
+                // Create transaction record for initial stock
+                $transactionData = [
+                    'medicine_id' => $medicineId,
+                    'transaction_type' => 'purchase',
+                    'quantity' => $medicineData['stock_level'],
+                    'unit_price' => $medicineData['unit_price'],
+                    'total_amount' => $medicineData['stock_level'] * $medicineData['unit_price'],
+                    'staff_id' => $_SESSION['staff_id'] ?? null,
+                    'supplier' => $medicineData['supplier'],
+                    'payment_status' => 'completed',
+                    'remarks' => 'Initial stock purchase'
+                ];
+
+                $this->transactionRecordModel->createTransaction($transactionData);
+
                 $logData = [
                     'medicine_id' => $medicineId,
                     'action_type' => 'restock',
@@ -303,6 +356,76 @@ class PharmacistController extends Controller
         } catch (\Exception $e) {
             error_log('Exception while adding medicine: ' . $e->getMessage());
             error_log('Stack trace: ' . $e->getTraceAsString());
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Database error: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+
+    public function dispenseMedicine()
+    {
+        if (!$this->isAjaxRequest()) {
+            $this->jsonResponse(['success' => false, 'message' => 'Invalid request method']);
+        }
+
+        $data = $this->getJsonRequestData();
+        
+        // Get current medicine data
+        $currentMedicine = $this->medicineInventoryModel->getMedicineById($data['medicineId']);
+        
+        if (!$currentMedicine) {
+            $this->jsonResponse(['success' => false, 'message' => 'Medicine not found']);
+        }
+        
+        try {
+            // Calculate new stock level
+            $newStockLevel = $currentMedicine->stock_level - $data['quantity'];
+            
+            if ($newStockLevel < 0) {
+                $this->jsonResponse(['success' => false, 'message' => 'Insufficient stock']);
+            }
+
+            // Update stock level
+            $updated = $this->medicineInventoryModel->updateStock($data['medicineId'], $newStockLevel);
+
+            if ($updated) {
+                // Create medicine log
+                $logData = [
+                    'medicine_id' => $data['medicineId'],
+                    'action_type' => 'dispense',
+                    'quantity' => $data['quantity'],
+                    'previous_stock' => $currentMedicine->stock_level,
+                    'new_stock' => $newStockLevel,
+                    'staff_id' => $_SESSION['staff_id'] ?? null,
+                    'doctor_id' => null,
+                    'patient_id' => null,
+                    'remarks' => $data['remarks'] ?? 'Medicine dispensed'
+                ];
+                $this->medicineLogsModel->insert($logData);
+
+                // Create transaction record
+                $transactionData = [
+                    'medicine_id' => $data['medicineId'],
+                    'transaction_type' => 'dispense',
+                    'quantity' => $data['quantity'],
+                    'unit_price' => $currentMedicine->unit_price,
+                    'total_amount' => $data['quantity'] * $currentMedicine->unit_price,
+                    'transaction_date' => date('Y-m-d H:i:s'),
+                    'staff_id' => $_SESSION['staff_id'] ?? null,
+                    'payment_status' => 'completed',
+                    'notes' => $data['remarks'] ?? 'Medicine dispensed',
+                    'created_at' => date('Y-m-d H:i:s')
+                ];
+                $this->transactionRecordModel->createTransaction($transactionData);
+
+                $this->jsonResponse(['success' => true, 'message' => 'Medicine dispensed successfully']);
+            } else {
+                $this->jsonResponse(['success' => false, 'message' => 'Failed to dispense medicine']);
+            }
+        } catch (\Exception $e) {
+            error_log('Exception while dispensing medicine: ' . $e->getMessage());
             $this->jsonResponse([
                 'success' => false,
                 'message' => 'Database error: ' . $e->getMessage()
@@ -346,5 +469,5 @@ class PharmacistController extends Controller
         exit;
     }
 
-    
+
 }

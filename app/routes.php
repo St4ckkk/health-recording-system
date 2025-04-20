@@ -41,6 +41,7 @@ $router->post('/receptionist/send-reminder', 'ReceptionistController@sendReminde
 $router->post('/receptionist/schedule-follow-up', 'ReceptionistController@scheduleFollowUp');
 $router->get('/receptionist/appointments/records/{id}', 'ReceptionistController@viewPatientAppointmentRecords');
 $router->get('/receptionist/appointments/records', 'ReceptionistController@viewPatientAppointmentRecords');
+$router->get('/receptionist/appointment/details', 'ReceptionistController@appointmentDetails');
 
 // Doctor routes
 $router->get('/doctor/dashboard', 'DoctorController@dashboard');
@@ -66,6 +67,9 @@ $router->post('/doctor/updateAdmissionStatus', 'DoctorController@updateAdmission
 $router->post('/doctor/saveImmunization', 'DoctorController@saveImmunization');
 $router->post('/doctor/saveTreatment', 'DoctorController@saveTreatment');
 $router->post('/doctor/updateTreatment', 'DoctorController@updateTreatment');
+
+
+
 // Pharmacist routes
 $router->get('/pharmacist/dashboard', 'PharmacistController@dashboard');
 $router->get('/pharmacist/medicinesInventory', 'PharmacistController@medicineInventory');
@@ -74,7 +78,7 @@ $router->get('/pharmacist/reports', 'PharmacistController@reports');
 $router->post('/pharmacist/addMedicine', 'PharmacistController@addMedicine');
 $router->post('/pharmacist/deleteMedicine', 'PharmacistController@deleteMedicine');
 $router->post('/pharmacist/updateMedicine', 'PharmacistController@updateMedicine');
-
+$router->post('/pharmacist/dispenseMedicine', 'PharmacistController@dispenseMedicine');
 
 
 // Patient routes

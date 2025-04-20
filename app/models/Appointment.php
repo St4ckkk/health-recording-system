@@ -50,6 +50,22 @@ class Appointment extends Model
                 LEFT JOIN doctors d ON a.doctor_id = d.id";
     }
 
+    public function getAppointmentDetails($appointmentId)
+    {
+        $sql = $this->buildBaseQuery() . " WHERE a.id = :id";
+
+        try {
+            $this->db->query($sql);
+            $this->db->bind(':id', $appointmentId);
+            return $this->db->single();
+        } catch (\Exception $e) {
+            error_log("Error getting appointment details: " . $e->getMessage());
+            return null;
+        }
+    }
+
+
+
     public function getAppointmentByTrackingNumber($trackingNumber)
     {
         error_log("Looking for appointment with tracking number: $trackingNumber");

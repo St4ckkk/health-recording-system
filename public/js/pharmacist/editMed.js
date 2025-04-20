@@ -12,6 +12,9 @@ function openEditModal(medicine) {
     document.getElementById('editExpiryDate').value = medicine.expiry_date;
     document.getElementById('editManufacturer').value = medicine.manufacturer;
     document.getElementById('editSupplier').value = medicine.supplier;
+    const editUnitPrice = document.getElementById('editUnitPrice');
+    editUnitPrice.value = medicine.unit_price;
+    editUnitPrice.setAttribute('data-original-price', medicine.unit_price);
 
     modal.classList.remove('hidden');
     modal.classList.add('flex');
@@ -43,6 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('cancelEditMedicineBtn').addEventListener('click', closeEditModal);
 
     // Handle edit form submission
+    // In the form submission handler
     document.getElementById('editMedicineForm').addEventListener('submit', function (e) {
         e.preventDefault();
         const formData = new FormData(this);
@@ -55,8 +59,16 @@ document.addEventListener('DOMContentLoaded', function () {
             stockLevel: parseInt(formData.get('stockLevel')),
             expiryDate: formData.get('expiryDate'),
             supplier: formData.get('supplier'),
-            manufacturer: formData.get('manufacturer')
+            unitPrice: parseFloat(formData.get('unitPrice')), // Changed to parseFloat
+            manufacturer: formData.get('manufacturer'),
+            currentUnitPrice: parseFloat(document.getElementById('editUnitPrice').getAttribute('data-original-price')) // Add original price tracking
         };
+
+        // Validate unit price
+        if (isNaN(data.unitPrice)) {
+            showToast('error', 'Error', 'Invalid unit price');
+            return;
+        }
 
         fetch(`${BASE_URL}/pharmacist/updateMedicine`, {
             method: 'POST',

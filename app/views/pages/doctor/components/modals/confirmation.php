@@ -1,4 +1,5 @@
-<!-- Confirmation Modal -->
+<div id="toast-container" class="fixed top-4 right-4 z-50"></div>
+
 <div id="confirmationModal"
     class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
     <div class="w-full max-w-md transform rounded-lg bg-white shadow-xl transition-all duration-300 scale-95 opacity-0"

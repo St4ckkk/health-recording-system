@@ -309,7 +309,7 @@ function getStatusIcon($status)
     </style>
 </head>
 
-<body class="font-body">
+<body class="font-body bg-gray-50">
     <div class="flex">
         <?php include('components/sidebar.php') ?>
         <div class="flex-1 main-content">
@@ -462,42 +462,42 @@ function getStatusIcon($status)
                                                     // Determine the appropriate status class
                                                     switch ($status) {
                                                         case 'completed':
-                                                            $statusClass = 'border-success text-success';
+                                                            $statusClass = 'bg-green-100 text-green-800';
                                                             break;
                                                         case 'confirmed':
-                                                            $statusClass = 'border-success text-success';
+                                                            $statusClass = 'bg-green-100 text-green-800';
                                                             break;
                                                         case 'cancelled':
                                                         case 'cancelled_by_patient':
                                                         case 'cancelled_by_clinic':
                                                         case 'cancelled_auto':
-                                                            $statusClass = 'border-danger text-danger';
+                                                            $statusClass = 'bg-red-100 text-red-800';
                                                             $status = 'cancelled';
                                                             break;
                                                         case 'cancellation_requested':
-                                                            $statusClass = 'border-warning text-warning';
+                                                            $statusClass = 'bg-yellow-100 text-yellow-800';
                                                             break;
                                                         case 'no-show':
                                                         case 'no_show':
-                                                            $statusClass = 'border-danger text-danger';
+                                                            $statusClass = 'bg-red-100 text-red-800';
                                                             $status = 'no-show';
                                                             break;
                                                         case 'pending':
-                                                            $statusClass = 'border-info text-info';
+                                                            $statusClass = 'bg-blue-100 text-blue-800';
                                                             break;
                                                         case 'checked_in':
                                                         case 'check-in':
-                                                            $statusClass = 'border-primary text-primary';
+                                                            $statusClass = 'bg-blue-100 text-blue-800';
                                                             break;
                                                         case 'in_progress':
-                                                            $statusClass = 'border-primary text-primary';
+                                                            $statusClass = 'bg-blue-100 text-blue-800';
                                                             break;
                                                         case 'reschedule_requested':
                                                         case 'rescheduled':
-                                                            $statusClass = 'border-warning text-warning';
+                                                            $statusClass = 'bg-purple-100 text-purple-800';
                                                             break;
                                                         default:
-                                                            $statusClass = 'border-primary text-primary';
+                                                            $statusClass = 'bg-gray-100 text-gray-800';
                                                             break;
                                                     }
 
@@ -505,19 +505,18 @@ function getStatusIcon($status)
                                                     $displayStatus = ucwords(str_replace('_', ' ', $status));
                                                     ?>
                                                     <span
-                                                        class="status-badge border <?= $statusClass ?> px-1 py-1 rounded text-sm">
+                                                        class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize <?= $statusClass ?>">
                                                         <?= $displayStatus ?>
                                                     </span>
                                                 </td>
                                                 <td>
                                                     <div class="action-buttons-container">
                                                         <div class="tooltip">
-                                                            <button class="action-button view icon-only view-patient-btn"
-                                                                data-patient-id="<?= htmlspecialchars($appointment->patient_id) ?>"
-                                                                data-appointment-id="<?= htmlspecialchars($appointment->id) ?>">
+                                                            <a href="<?= BASE_URL ?>/receptionist/appointment/details?id=<?= htmlspecialchars($appointment->id) ?>"
+                                                                class="action-button view icon-only">
                                                                 <i class="bx bx-show"></i>
                                                                 <span class="tooltip-text">View Details</span>
-                                                            </button>
+                                                            </a>
                                                         </div>
 
                                                         <!-- Add delete button -->

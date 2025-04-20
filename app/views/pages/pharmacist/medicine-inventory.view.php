@@ -646,9 +646,13 @@
                                                                 <span class="tooltip-text">Delete</span>
                                                             </button>
                                                         </div>
+                                                        <!-- Find this section in the table actions -->
                                                         <div class="tooltip">
-                                                            <button class="p-2 text-blue-600 hover:text-blue-800"
-                                                                onclick="openDispenseModal(<?= $medicine->id ?>, '<?= htmlspecialchars($medicine->name) ?>')"
+                                                            <button class="p-2 text-blue-600 hover:text-blue-800" onclick="openDispenseModal({
+                                                                    id: <?= $medicine->id ?>,
+                                                                    name: '<?= htmlspecialchars($medicine->name, ENT_QUOTES) ?>',
+                                                                    stock_level: <?= $medicine->stock_level ?>
+                                                                })"
                                                                 data-medicine-id="<?= htmlspecialchars($medicine->id) ?>">
                                                                 <i class="bx bx-package text-lg"></i>
                                                                 <span class="tooltip-text">Dispense</span>
@@ -673,16 +677,20 @@
     </div>
 
 
+    <!-- Place this before closing body tag -->
+    <script>
+        const BASE_URL = '<?= BASE_URL ?>';
+    </script>
     <?php include(VIEW_ROOT . '/pages/pharmacist/components/modals/add-medicine.php') ?>
     <?php include(VIEW_ROOT . '/pages/pharmacist/components/modals/edit-medicine.php') ?>
     <?php include(VIEW_ROOT . '/pages/pharmacist/components/modals/delete-medicine.php') ?>
+    <?php include(VIEW_ROOT . '/pages/pharmacist/components/modals/dispense-medicine.php') ?>
+    <!-- Load dispenseMed.js first since it contains the dispense modal functionality -->
+    <script src="<?= BASE_URL ?>/js/pharmacist/dispenseMed.js"></script>
     <script src="<?= BASE_URL ?>/js/pharmacist/inventory.js"></script>
     <script src="<?= BASE_URL ?>/js/pharmacist/addMed.js"></script>
     <script src="<?= BASE_URL ?>/js/pharmacist/deleteMed.js"></script>
     <script src="<?= BASE_URL ?>/js/pharmacist/editMed.js"></script>
-    <script>
-        const BASE_URL = '<?= BASE_URL ?>';
-    </script>
 </body>
 
 </html>

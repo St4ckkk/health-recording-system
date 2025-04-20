@@ -25,6 +25,7 @@ class MedicineInventory extends Model
             'm.expiry_date',
             'm.status',
             'm.supplier',
+            'm.unit_price',
             'm.manufacturer',
             'm.created_at',
             'm.updated_at'
@@ -42,6 +43,7 @@ class MedicineInventory extends Model
             stock_level = :stock_level,
             expiry_date = :expiry_date,
             supplier = :supplier,
+            unit_price = :unit_price,
             manufacturer = :manufacturer,
             updated_at = :updated_at
             WHERE id = :id");
@@ -54,6 +56,7 @@ class MedicineInventory extends Model
         $this->db->bind(':stock_level', $data['stockLevel']);
         $this->db->bind(':expiry_date', $data['expiryDate']);
         $this->db->bind(':supplier', $data['supplier']);
+        $this->db->bind(':unit_price', $data['unitPrice']);
         $this->db->bind(':manufacturer', $data['manufacturer']);
         $this->db->bind(':updated_at', date('Y-m-d H:i:s'));
 
@@ -98,9 +101,9 @@ class MedicineInventory extends Model
     public function insert($data)
     {
         $this->db->query("INSERT INTO {$this->table} 
-            (name, category, form, dosage, stock_level, expiry_date, status, supplier, manufacturer, created_at, updated_at) 
+            (name, category, form, dosage, stock_level, expiry_date, status, supplier, unit_price, manufacturer,created_at, updated_at) 
             VALUES 
-            (:name, :category, :form, :dosage, :stock_level, :expiry_date, :status, :supplier, :manufacturer, :created_at, :updated_at)");
+            (:name, :category, :form, :dosage, :stock_level, :expiry_date, :status, :supplier, :unit_price, :manufacturer, :created_at, :updated_at)");
 
         $this->db->bind(':name', $data['name']);
         $this->db->bind(':category', $data['category']);
@@ -110,6 +113,7 @@ class MedicineInventory extends Model
         $this->db->bind(':expiry_date', $data['expiry_date']);
         $this->db->bind(':status', $data['status'] ?? 'active');
         $this->db->bind(':supplier', $data['supplier']);
+        $this->db->bind(':unit_price', $data['unit_price'] ?? 0.00);
         $this->db->bind(':manufacturer', $data['manufacturer']);
         $this->db->bind(':created_at', date('Y-m-d H:i:s'));
         $this->db->bind(':updated_at', date('Y-m-d H:i:s'));

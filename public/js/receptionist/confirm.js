@@ -154,23 +154,80 @@ document.addEventListener("DOMContentLoaded", () => {
                                 }
                             }
 
-                            // Show success message
-                            if (typeof showToast === 'function') {
-                                showToast("Appointment confirmed successfully", "success");
-                            } else {
-                                alert("Appointment confirmed successfully");
-                            }
+                            // Create toast notification
+                            const toast = document.createElement('div');
+                            toast.className = 'fixed top-4 right-4 z-50 flex items-start p-4 mb-4 w-full max-w-xs rounded-lg shadow-lg bg-green-50 text-green-800 fade-in';
+                            toast.innerHTML = `
+                                <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg bg-green-100 text-green-500">
+                                    <i class="bx bx-check text-xl"></i>
+                                </div>
+                                <div class="ml-3 text-sm font-normal">
+                                    <span class="mb-1 text-sm font-semibold">Success</span>
+                                    <div class="mb-2 text-sm">Appointment confirmed successfully</div>
+                                </div>
+                                <button type="button" class="ml-auto -mx-1.5 -my-1.5 rounded-lg p-1.5 inline-flex h-8 w-8 text-green-500 hover:bg-green-100" aria-label="Close">
+                                    <i class="bx bx-x text-lg"></i>
+                                </button>
+                            `;
 
-                            // Reload the page to reflect changes
+                            document.body.appendChild(toast);
+
+                            // Add click event to close button
+                            toast.querySelector('button').addEventListener('click', () => {
+                                toast.remove();
+                            });
+
+                            // Auto remove after 5 seconds
+                            setTimeout(() => {
+                                if (document.body.contains(toast)) {
+                                    toast.classList.add('fade-out');
+                                    setTimeout(() => {
+                                        if (document.body.contains(toast)) {
+                                            toast.remove();
+                                        }
+                                    }, 300);
+                                }
+                            }, 5000);
+
+                            // Reload the page after a delay
                             setTimeout(() => {
                                 window.location.reload();
                             }, 1500);
                         } else {
-                            if (typeof showToast === 'function') {
-                                showToast("Failed to confirm appointment: " + (data.message || "Unknown error"), "error");
-                            } else {
-                                alert("Failed to confirm appointment: " + (data.message || "Unknown error"));
-                            }
+                            // Error toast notification
+                            const toast = document.createElement('div');
+                            toast.className = 'fixed top-4 right-4 z-50 flex items-start p-4 mb-4 w-full max-w-xs rounded-lg shadow-lg bg-red-50 text-red-800 fade-in';
+                            toast.innerHTML = `
+                                <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg bg-red-100 text-red-500">
+                                    <i class="bx bx-x text-xl"></i>
+                                </div>
+                                <div class="ml-3 text-sm font-normal">
+                                    <span class="mb-1 text-sm font-semibold">Error</span>
+                                    <div class="mb-2 text-sm">${data.message || "Failed to confirm appointment"}</div>
+                                </div>
+                                <button type="button" class="ml-auto -mx-1.5 -my-1.5 rounded-lg p-1.5 inline-flex h-8 w-8 text-red-500 hover:bg-red-100" aria-label="Close">
+                                    <i class="bx bx-x text-lg"></i>
+                                </button>
+                            `;
+
+                            document.body.appendChild(toast);
+
+                            // Add click event to close button
+                            toast.querySelector('button').addEventListener('click', () => {
+                                toast.remove();
+                            });
+
+                            // Auto remove after 5 seconds
+                            setTimeout(() => {
+                                if (document.body.contains(toast)) {
+                                    toast.classList.add('fade-out');
+                                    setTimeout(() => {
+                                        if (document.body.contains(toast)) {
+                                            toast.remove();
+                                        }
+                                    }, 300);
+                                }
+                            }, 5000);
                         }
                     })
                     .catch((error) => {

@@ -16,7 +16,8 @@
             <form id="editMedicineForm" class="space-y-3">
                 <input type="hidden" id="editMedicineId" name="medicineId">
                 <div>
-                    <label for="editMedicineName" class="block text-sm font-medium text-gray-700 mb-1">Medicine Name</label>
+                    <label for="editMedicineName" class="block text-sm font-medium text-gray-700 mb-1">Medicine
+                        Name</label>
                     <input type="text" id="editMedicineName" name="medicineName" required
                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
                 </div>
@@ -49,12 +50,14 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label for="editStockLevel" class="block text-sm font-medium text-gray-700 mb-1">Stock Level</label>
+                        <label for="editStockLevel" class="block text-sm font-medium text-gray-700 mb-1">Stock
+                            Level</label>
                         <input type="number" id="editStockLevel" name="stockLevel" min="0" required
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
                     </div>
                     <div>
-                        <label for="editExpiryDate" class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                        <label for="editExpiryDate" class="block text-sm font-medium text-gray-700 mb-1">Expiry
+                            Date</label>
                         <input type="date" id="editExpiryDate" name="expiryDate" required
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
                     </div>
@@ -62,7 +65,8 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label for="editManufacturer" class="block text-sm font-medium text-gray-700 mb-1">Manufacturer</label>
+                        <label for="editManufacturer"
+                            class="block text-sm font-medium text-gray-700 mb-1">Manufacturer</label>
                         <input type="text" id="editManufacturer" name="manufacturer" required
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
                             placeholder="e.g., Pfizer, Johnson & Johnson">
@@ -73,6 +77,18 @@
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
                             placeholder="Enter supplier name">
                     </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="editUnitPrice" class="block text-sm font-medium text-gray-700 mb-1">Unit
+                            Price</label>
+                        <input type="number" id="editUnitPrice" name="unitPrice" step="0.01" min="0" required
+                            data-original-price=""
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                            placeholder="Enter unit price">
+                    </div>
+
                 </div>
             </form>
         </div>
