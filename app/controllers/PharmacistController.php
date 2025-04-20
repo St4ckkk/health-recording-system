@@ -371,18 +371,18 @@ class PharmacistController extends Controller
         }
 
         $data = $this->getJsonRequestData();
-        
+
         // Get current medicine data
         $currentMedicine = $this->medicineInventoryModel->getMedicineById($data['medicineId']);
-        
+
         if (!$currentMedicine) {
             $this->jsonResponse(['success' => false, 'message' => 'Medicine not found']);
         }
-        
+
         try {
             // Calculate new stock level
             $newStockLevel = $currentMedicine->stock_level - $data['quantity'];
-            
+
             if ($newStockLevel < 0) {
                 $this->jsonResponse(['success' => false, 'message' => 'Insufficient stock']);
             }
@@ -414,6 +414,8 @@ class PharmacistController extends Controller
                     'total_amount' => $data['quantity'] * $currentMedicine->unit_price,
                     'transaction_date' => date('Y-m-d H:i:s'),
                     'staff_id' => $_SESSION['staff_id'] ?? null,
+                    'supplier' => $currentMedicine->supplier,
+                    'manufacturer' => $currentMedicine->manufacturer,
                     'payment_status' => 'completed',
                     'notes' => $data['remarks'] ?? 'Medicine dispensed',
                     'created_at' => date('Y-m-d H:i:s')
