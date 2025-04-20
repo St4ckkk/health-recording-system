@@ -73,6 +73,8 @@ class DoctorController extends Controller
 
 
 
+    // ... existing code ...
+
     public function dashboard()
     {
         $doctorId = $_SESSION['doctor']['id'] ?? null;
@@ -89,6 +91,11 @@ class DoctorController extends Controller
         $recentAppointments = array_slice($todayAppointmentsData['appointments'], 0, 5);
         $lowStockMedicines = $this->medicineInventoryModel->getLowStockCount();
 
+        // Get additional data for enhanced dashboard
+        $visitStats = $appointmentModel->getDoctorVisitStats($doctorId);
+        $diagnosisStats = $this->diagnosisModel->getDoctorDiagnosisStats($doctorId);
+        $commonSymptoms = $this->symptomsModel->getCommonSymptoms($doctorId);
+        $patientDemographics = $this->patientModel->getPatientDemographics($doctorId);
 
         $this->view('pages/doctor/dashboard.view', [
             'title' => 'Doctor Dashboard',
@@ -99,9 +106,15 @@ class DoctorController extends Controller
             'upcomingAppointments' => $upcomingAppointmentsData['appointments'],
             'lowStockCount' => $lowStockMedicines['count'],
             'lowStockItems' => $lowStockMedicines['items'],
-
+            // Additional data for enhanced dashboard
+            'visitStats' => $visitStats,
+            'diagnosisStats' => $diagnosisStats,
+            'commonSymptoms' => $commonSymptoms,
+            'patientDemographics' => $patientDemographics
         ]);
     }
+
+    // ... existing code ...
 
     public function patientList()
     {
