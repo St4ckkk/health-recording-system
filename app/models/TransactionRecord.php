@@ -153,4 +153,18 @@ class TransactionRecord extends Model
         $this->db->bind(':patient_id', $patientId);
         return $this->db->resultSet();
     }
+
+    public function getRecentTransactions($limit = 5)
+    {
+        $query = $this->buildBaseQuery() . " ORDER BY t.transaction_date DESC LIMIT 10";
+        $this->db->query($query);
+        return $this->db->resultSet();
+    }
+
+    public function getAllTransactionRecords()
+    {
+        $query = $this->buildBaseQuery();
+        $this->db->query($query);
+        return $this->db->resultSet();
+    }
 }

@@ -70,7 +70,7 @@ class MedicineLogs extends Model
             :updated_at
         )";
 
-        $this->db->query($sql);                                                                         
+        $this->db->query($sql);
         $this->db->bind(':medicine_id', $data['medicine_id']);
         $this->db->bind(':patient_id', $data['patient_id'] ?? null);
         $this->db->bind(':doctor_id', $data['doctor_id'] ?? null);

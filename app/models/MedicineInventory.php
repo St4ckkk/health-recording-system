@@ -450,7 +450,31 @@ class MedicineInventory extends Model
     }
 
 
+    public function getInventoryStats()
+    {
+        $this->db->query("SELECT
+        COUNT(*) as total_medicines,
+        SUM(stock_level) as total_stock,
+        AVG(unit_price) as average_price,
+        MAX(unit_price) as max_price,
+        MIN(unit_price) as min_price
+        FROM {$this->table}");
+        return $this->db->single();
+    }
+
+    public function getTotalMedicinesCount()
+    {
+        $this->db->query("SELECT COUNT(*) as total_medicines FROM {$this->table}");
+        return $this->db->single()->total_medicines;
+    }
+
+    public function getTotalInventoryValue()
+    {
+        $this->db->query("SELECT SUM(stock_level * unit_price) as total_value FROM {$this->table}");
+        return $this->db->single()->total_value;
+    }
+
+
 }
 
 
-// Add these new methods to the MedicineInventory class

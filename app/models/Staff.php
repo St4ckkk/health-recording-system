@@ -81,38 +81,43 @@ class Staff extends Model
     public function insert($data)
     {
         try {
-            error_log("Staff::insert - Starting staff insertion");
+            error_log("Staff::insert - Starting staff insertion with data: " . json_encode($data));
+
+            // Check if email already exists
+            $existingStaff = $this->getStaffByEmail($data['email']);
+            if ($existingStaff) {
+                error_log("Staff::insert - Email already exists: " . $data['email']);
+                return false;
+            }
 
             $this->db->query('INSERT INTO staff (
-                staff_id,
                 first_name,
                 last_name,
                 email,
                 password,
                 phone,
-                profile_picture,
+                profile,
                 role_id,
                 created_at
             ) VALUES (
-                :staff_id,
                 :first_name,
                 :last_name,
                 :email,
                 :password,
                 :phone,
-                :profile_picture,
+                :profile,
                 :role_id,
                 :created_at
             )');
 
             // Bind values
-            $this->db->bind(':staff_id', $data['staff_id']);
+            // $this->db->bind(':staff_id', $data['staff_id']);
             $this->db->bind(':first_name', $data['first_name']);
             $this->db->bind(':last_name', $data['last_name']);
             $this->db->bind(':email', $data['email']);
             $this->db->bind(':password', $data['password']);
             $this->db->bind(':phone', $data['phone'] ?? null);
-            $this->db->bind(':profile_picture', $data['profile_picture'] ?? null);
+            $this->db->bind(':profile', $data['profile'] ?? null);
             $this->db->bind(':role_id', $data['role_id']);
             $this->db->bind(':created_at', $data['created_at'] ?? date('Y-m-d H:i:s'));
 
@@ -123,9 +128,10 @@ class Staff extends Model
                 $staffId = $this->db->lastInsertId();
                 error_log("Staff::insert - Staff inserted successfully with ID: $staffId");
                 return $staffId;
+            } else {
+                error_log("Staff::insert - Database execution failed: " . $this->db->error());
+                return false;
             }
-
-            return false;
         } catch (\Exception $e) {
             error_log("Staff::insert - Exception: " . $e->getMessage());
             error_log("Staff::insert - Stack trace: " . $e->getTraceAsString());
@@ -147,7 +153,7 @@ class Staff extends Model
             last_name = :last_name,
             email = :email,
             phone = :phone,
-            profile_picture = :profile_picture,
+            profile = :profile,
             role_id = :role_id,
             updated_at = :updated_at
         WHERE id = :id');
@@ -158,7 +164,7 @@ class Staff extends Model
         $this->db->bind(':last_name', $data['last_name']);
         $this->db->bind(':email', $data['email']);
         $this->db->bind(':phone', $data['phone'] ?? null);
-        $this->db->bind(':profile_picture', $data['profile_picture'] ?? null);
+        $this->db->bind(':profile', $data['profile'] ?? null);
         $this->db->bind(':role_id', $data['role_id']);
         $this->db->bind(':updated_at', $data['updated_at'] ?? date('Y-m-d H:i:s'));
 
@@ -179,4 +185,57 @@ class Staff extends Model
                          ORDER BY s.last_name, s.first_name');
         return $this->db->resultSet();
     }
+
+    public function getStaffCountByRole()
+    {
+        $this->db->query('SELECT r.role_name, COUNT(s.id) as count 
+                         FROM staff s
+                         JOIN roles r ON s.role_id = r.id
+                         GROUP BY r.role_name');
+        return $this->db->resultSet();
+    }
+
+
+
+
+    /**
+     * Get all roles
+     * 
+     * @return array The roles
+     */
+    public function getAllRoles()
+    {
+        $this->db->query('SELECT * FROM roles ORDER BY role_name');
+        return $this->db->resultSet();
+    }
+
+    /**
+     * Delete a staff member
+     * 
+     * @param int $id The staff ID
+     * @return bool True on success, false on failure
+     */
+    public function delete($id)
+    {
+        $this->db->query('DELETE FROM staff WHERE id = :id');
+        $this->db->bind(':id', $id);
+        return $this->db->execute();
+    }
+
+    /**
+     * Get staff statistics
+     * 
+     * @return object The staff statistics
+     */
+    public function getStaffStats()
+    {
+        $this->db->query('SELECT 
+                     COUNT(*) as total_staff,
+                     COUNT(DISTINCT role_id) as unique_roles,
+                     MAX(created_at) as latest_joined
+                     FROM staff');
+        return $this->db->single();
+    }
+
+
 }

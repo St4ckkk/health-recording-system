@@ -88,3 +88,21 @@ $router->get('/patient/dashboard', 'PatientController@dashboard');
 $router->get('/symptoms-checker', 'HomeController@symptomsChecker');
 $router->post('/analyze-symptoms', 'HomeController@analyzeSymptoms');
 
+
+// Admin routes
+$router->get('/admin/dashboard', 'AdminController@dashboard');
+$router->get('/admin/staff', 'AdminController@staffManagement');
+$router->post('/admin/addStaff', 'AdminController@addStaff');
+$router->get('/admin/transactions', 'AdminController@transactionRecords');
+$router->get('/admin/billing-records', 'AdminController@billingRecords');
+$router->post('/admin/deleteStaff', 'AdminController@deleteStaff');
+$router->get('/admin/doctors', 'AdminController@doctorManagement');
+$router->get('/admin/medicine-inventory', 'AdminController@medicineInventory');
+$router->get('/admin/medicine-logs', 'AdminController@medicineLogs');
+$router->get('/admin/billing-records', 'AdminController@billingRecords');
+$router->get('/admin/medical-records', 'AdminController@medicalRecords');
+$router->get('/admin/patients', 'AdminController@patientManagement');
+$router->get('/admin/appointments', 'AdminController@appointmentManagement');
+$router->get('/admin/reports', 'AdminController@reports');
+$router->get('/admin/settings', 'AdminController@systemSettings');
+$router->post('/admin/settings', 'AdminController@saveSystemSettings');

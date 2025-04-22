@@ -162,10 +162,10 @@ class BillingRecords extends Model
     {
         $sql = "SELECT 
                 COUNT(*) as total_billings,
-                SUM(CASE WHEN status = 'Pending' THEN 1 ELSE 0 END) as pending_count,
-                SUM(CASE WHEN status = 'Paid' THEN 1 ELSE 0 END) as paid_count,
+                SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending_count,
+                SUM(CASE WHEN status = 'paid' THEN 1 ELSE 0 END) as paid_count,
                 SUM(amount) as total_amount,
-                SUM(CASE WHEN status = 'Paid' THEN amount ELSE 0 END) as paid_amount
+                SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) as paid_amount
                 FROM {$this->table}
                 WHERE staff_id = :staff_id";
 
@@ -175,5 +175,59 @@ class BillingRecords extends Model
     }
 
 
+    public function getBillingStats()
+    {
+        $sql = "SELECT 
+                COUNT(*) as total_billings,
+                SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending_count,
+                SUM(CASE WHEN status = 'paid' THEN 1 ELSE 0 END) as paid_count,
+                SUM(amount) as total_amount,
+                SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) as paid_amount
+                FROM {$this->table}";
+
+        $this->db->query($sql);
+        return $this->db->single();
+    }
+
+    public function getRecentBillings($limit = 5)
+    {
+        $sql = "SELECT br.*,
+                p.first_name as patient_first_name,
+                p.last_name as patient_last_name,
+                s.first_name as staff_first_name,
+                s.last_name as staff_last_name,
+                a.appointment_date,
+                a.appointment_time
+                FROM {$this->table} br
+                LEFT JOIN appointments a ON br.appointment_id = a.id
+                LEFT JOIN patients p ON br.patient_id = p.id
+                LEFT JOIN staff s ON br.staff_id = s.id
+                ORDER BY br.billing_date DESC
+                LIMIT 10";
+
+        $this->db->query($sql);
+        return $this->db->resultSet();
+    }
+
+
+    public function getAllBillingRecords()
+    {
+        $sql = "SELECT br.*,
+                p.first_name as patient_first_name,
+                p.last_name as patient_last_name,
+                s.first_name as staff_first_name,
+                s.last_name as staff_last_name,
+                a.appointment_date,
+                a.appointment_time,
+                a.status as appointment_status
+                FROM {$this->table} br
+                LEFT JOIN appointments a ON br.appointment_id = a.id
+                LEFT JOIN patients p ON br.patient_id = p.id
+                LEFT JOIN staff s ON br.staff_id = s.id
+                ORDER BY br.billing_date DESC";
+
+        $this->db->query($sql);
+        return $this->db->resultSet();
+    }
 
 }

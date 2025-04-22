@@ -243,5 +243,22 @@ class Doctor extends Model
         $this->db->bind(':doctor_id', $doctorId);
         return $this->db->resultSet();
     }
+
+    public function getTotalDoctorCount()
+    {
+        $sql = "SELECT COUNT(*) as total_doctors FROM doctors";
+        $this->db->query($sql);
+        $result = $this->db->single();
+        return $result ? $result->total_doctors : 0;
+    }
+
+    public function getDoctorCountBySpecialization()
+    {
+        $sql = "SELECT specialization, COUNT(*) as doctor_count
+                FROM doctors
+                GROUP BY specialization";
+        $this->db->query($sql);
+        return $this->db->resultSet();
+    }
 }
 

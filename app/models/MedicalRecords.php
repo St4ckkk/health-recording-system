@@ -173,4 +173,45 @@ class MedicalRecords extends Model
 
         return $visits;
     }
+
+
+    public function getMedicalRecordsStats()
+    {
+        $this->db->query("SELECT
+            COUNT(*) as total_records,
+            COUNT(DISTINCT patient_id) as unique_patients,
+            COUNT(DISTINCT doctor_id) as unique_doctors,
+            COUNT(DISTINCT appointment_id) as unique_appointments,
+            COUNT(DISTINCT medication_id) as unique_medications,
+            COUNT(DISTINCT diagnosis_id) as unique_diagnoses,
+            COUNT(DISTINCT symptoms_id) as unique_symptoms,
+            COUNT(DISTINCT treatment_records_id) as unique_treatment_records,
+            COUNT(DISTINCT admission_id) as unique_admissions,
+            COUNT(DISTINCT e_prescription_id) as unique_e_prescriptions,
+            COUNT(DISTINCT immunization_id) as unique_immunizations,
+            COUNT(DISTINCT vitals_id) as unique_vitals,
+            COUNT(DISTINCT lab_result_id) as unique_lab_results 
+            FROM {$this->table}");
+
+        return $this->db->single();
+    }
+
+    public function getRecentMedicalRecords($limit = 5)
+    {
+        $query = "SELECT mr.*, 
+                CONCAT(p.first_name, ' ', p.last_name) as patient_name,
+                CONCAT(d.first_name, ' ', d.last_name) as doctor_name,
+                diag.diagnosis as diagnosis
+                FROM {$this->table} mr
+                LEFT JOIN patients p ON mr.patient_id = p.id
+                LEFT JOIN doctors d ON mr.doctor_id = d.id
+                LEFT JOIN diagnosis diag ON mr.diagnosis_id = diag.id
+                ORDER BY mr.created_at DESC
+                LIMIT :limit";
+
+        $this->db->query($query);
+        $this->db->bind(':limit', $limit);
+
+        return $this->db->resultSet();
+    }
 }
