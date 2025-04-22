@@ -210,24 +210,68 @@ class BillingRecords extends Model
     }
 
 
-    public function getAllBillingRecords()
+    public function getAllBillingRecordsWithDetails()
     {
-        $sql = "SELECT br.*,
-                p.first_name as patient_first_name,
+        try {
+            $sql = "SELECT br.*, 
+                    p.first_name as patient_first_name, 
+                    p.last_name as patient_last_name,
+                    s.first_name as staff_first_name, 
+                    s.last_name as staff_last_name,
+                    a.appointment_date,
+                    a.appointment_time
+                    FROM {$this->table} br
+                    LEFT JOIN appointments a ON br.appointment_id = a.id
+                    LEFT JOIN patients p ON br.patient_id = p.id
+                    LEFT JOIN staff s ON br.staff_id = s.id
+                    ORDER BY br.billing_date DESC";
+
+            $this->db->query($sql);
+            return $this->db->resultSet();
+        } catch (\PDOException $e) {
+            error_log('Error in getAllBillingRecordsWithDetails: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function getBillingDetailsById($id)
+    {
+        $sql = "SELECT br.*, 
+                p.first_name as patient_first_name, 
                 p.last_name as patient_last_name,
-                s.first_name as staff_first_name,
+                s.first_name as staff_first_name, 
                 s.last_name as staff_last_name,
                 a.appointment_date,
-                a.appointment_time,
-                a.status as appointment_status
+                a.appointment_time
                 FROM {$this->table} br
                 LEFT JOIN appointments a ON br.appointment_id = a.id
                 LEFT JOIN patients p ON br.patient_id = p.id
                 LEFT JOIN staff s ON br.staff_id = s.id
-                ORDER BY br.billing_date DESC";
+                WHERE br.id = :id";
 
         $this->db->query($sql);
-        return $this->db->resultSet();
+        $this->db->bind(':id', $id);
+        return $this->db->single();
     }
+
+
+
+    // public function updateBillingStatus($id, $status)
+    // {
+    //     try {
+    //         $sql = "UPDATE {$this->table} 
+    //                 SET status = :status, updated_at = NOW() 
+    //                 WHERE id = :id";
+
+    //         $this->db->query($sql);
+    //         $this->db->bind(':id', $id);
+    //         $this->db->bind(':status', $status);
+
+    //         return $this->db->execute();
+    //     } catch (\PDOException $e) {
+    //         error_log('Error in updateBillingStatus: ' . $e->getMessage());
+    //         throw new \Exception('Database error: ' . $e->getMessage());
+    //     }
+    // }
 
 }

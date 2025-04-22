@@ -336,12 +336,104 @@ class AdminController extends Controller
 
     public function billingRecords()
     {
-        $billingRecords = $this->billingRecordsModel->getAllBillingRecords();
+        $billingRecords = $this->billingRecordsModel->getAllBillingRecordsWithDetails();
 
         $this->view('pages/admin/billing.view', [
             'title' => 'Billing Records',
             'billingRecords' => $billingRecords
         ]);
+    }
+
+    public function getBillingDetails()
+    {
+        // Set content type to JSON
+        header('Content-Type: application/json');
+
+        try {
+            // Disable error output to prevent it from corrupting JSON
+            ini_set('display_errors', 0);       
+            error_reporting(0);
+
+            // Start output buffering to capture any unexpected output
+            ob_start();
+
+            // Get ID from query parameter instead of route parameter
+            $id = isset($_GET['id']) ? $_GET['id'] : null;
+
+            // Validate ID
+            if (!$id || !is_numeric($id)) {
+                echo json_encode(['success' => false, 'message' => 'Invalid billing ID']);
+                exit;
+            }
+
+            $billing = $this->billingRecordsModel->getBillingDetailsById($id);
+
+            // Clear any previous output that might corrupt the JSON
+            if (ob_get_length()) {
+                ob_clean();
+            }
+
+            if ($billing) {
+                echo json_encode(['success' => true, 'billing' => $billing]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Billing record not found']);
+            }
+        } catch (\Exception $e) {
+            // Clear buffer
+            if (ob_get_length()) {
+                ob_clean();
+            }
+
+            // Return a user-friendly error message
+            echo json_encode([
+                'success' => false,
+                'message' => 'An error occurred while retrieving billing details',
+                'error' => $e->getMessage()
+            ]);
+        }
+
+        // End output buffering
+        if (ob_get_length()) {
+            ob_end_flush();
+        }
+
+        // Stop execution to prevent any additional output
+        exit;
+    }
+
+    public function updateBillingStatus()
+    {
+        // Set content type to JSON
+        header('Content-Type: application/json');
+
+        try {
+            // Get JSON input
+            $jsonInput = file_get_contents('php://input');
+            $data = json_decode($jsonInput, true);
+
+            // Validate input
+            if (!isset($data['id']) || !isset($data['status'])) {
+                echo json_encode(['success' => false, 'message' => 'Missing required fields']);
+                exit;
+            }
+
+            // Update status
+            $result = $this->billingRecordsModel->updateBillingStatus($data['id'], $data['status']);
+
+            if ($result) {
+                echo json_encode(['success' => true, 'message' => 'Billing status updated successfully']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Failed to update billing status']);
+            }
+        } catch (\Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'An error occurred while updating the billing status',
+                'error' => $e->getMessage()
+            ]);
+        }
+
+        exit;
     }
 
     public function medicalRecords()
@@ -428,5 +520,64 @@ class AdminController extends Controller
 
         // Redirect back to settings page with success message
         $this->redirect('/admin/system-settings?success=1');
+    }
+
+
+    private function isAjaxRequest()
+    {
+        return isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+    }
+
+
+
+    private function prepareJsonResponse()
+    {
+        // Disable error output to prevent it from corrupting JSON
+        ini_set('display_errors', 0);
+        error_reporting(0);
+
+        // Start output buffering to capture any unexpected output
+
+        ob_start();
+    }
+
+    /**
+     * Get JSON request data
+     */
+    private function getJsonRequestData()
+    {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
+        error_log('Received data: ' . print_r($data, true));
+        return $data;
+    }
+
+    /**
+     * JSON response helper
+     */
+    private function jsonResponse($data)
+    {
+        // Clear any previous output that might corrupt the JSON
+        if (ob_get_length()) {
+            ob_clean();
+        }
+
+        // Discard any output that might have been generated
+        ob_end_clean();
+
+        // Start a new buffer
+        ob_start();
+
+        // Set proper headers
+        header('Content-Type: application/json');
+        header('Cache-Control: no-cache, must-revalidate');
+
+        // Output JSON data
+        echo json_encode($data);
+
+        // Flush the buffer and end the script
+        ob_end_flush();
+        exit;
     }
 }

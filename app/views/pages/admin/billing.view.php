@@ -342,9 +342,28 @@
                 modal.querySelector('.transform').classList.add('scale-100', 'opacity-100');
             }, 10);
 
-            // Load billing details
-            fetch(`${BASE_URL}/admin/getBillingDetails/${id}`)
-                .then(response => response.json())
+            // Show loading spinner
+            detailsContainer.innerHTML = `
+                <div class="flex justify-center">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
+                </div>
+            `;
+
+            // Load billing details - Change this line to use query parameter
+            fetch(`${BASE_URL}/admin/getBillingDetails?id=${id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+                    }
+                    return response.text().then(text => {
+                        try {
+                            return JSON.parse(text);
+                        } catch (e) {
+                            console.error('Invalid JSON response:', text);
+                            throw new Error('Server returned invalid JSON. See console for details.');
+                        }
+                    });
+                })
                 .then(data => {
                     if (data.success) {
                         const billing = data.billing;
@@ -415,7 +434,14 @@
                     }
                 })
                 .catch(error => {
-                    detailsContainer.innerHTML = `<p class="text-center text-red-500">Error loading billing details: ${error.message}</p>`;
+                    detailsContainer.innerHTML = `
+                        <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
+                            <div class="font-medium">Error loading billing details</div>
+                            <div>${error.message}</div>
+                            <div class="mt-2 text-xs">Please try again or contact the system administrator.</div>
+                        </div>
+                    `;
+                    console.error('Error fetching billing details:', error);
                 });
         }
 
@@ -501,4 +527,4 @@
     </script>
 </body>
 
-</html>
+</html
