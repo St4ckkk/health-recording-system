@@ -83,3 +83,8 @@ $router->post('/pharmacist/dispenseMedicine', 'PharmacistController@dispenseMedi
 
 // Patient routes
 $router->get('/patient/dashboard', 'PatientController@dashboard');
+
+
+$router->get('/symptoms-checker', 'HomeController@symptomsChecker');
+$router->post('/analyze-symptoms', 'HomeController@analyzeSymptoms');
+

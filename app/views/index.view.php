@@ -116,7 +116,7 @@
                 <div class="absolute -bottom-2 right-5 w-4 h-4 bg-white transform rotate-45"></div>
             </div>
         </div>
-        <a href="<?= BASE_URL ?>/symptom-checker"
+        <a href="<?= BASE_URL ?>/symptoms-checker" 
             class="bot-icon flex items-center justify-center w-14 h-14 bg-primary rounded-full shadow-lg hover:scale-110 hover:shadow-xl transition-all duration-300">
             <img src="<?= BASE_URL ?>/images/icons/bot.png" alt="AI Bot" class="w-8 h-8">
         </a>

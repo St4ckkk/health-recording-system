@@ -6,6 +6,11 @@ use app\models\Doctor;
 use app\models\DoctorTimeSlot;
 use app\models\Appointment;
 use app\models\Patient;
+// Add RubixML imports
+use Rubix\ML\Datasets\Labeled;
+use Rubix\ML\Classifiers\KNearestNeighbors;
+use Rubix\ML\CrossValidation\Metrics\Accuracy;
+require_once dirname(dirname(__DIR__)) . '/public/vendor/autoload.php';
 
 class HomeController extends Controller
 {
@@ -730,5 +735,141 @@ class HomeController extends Controller
         $this->view('rpm.view', [
             'title' => 'RPM' 
         ]);
+    }
+
+    /**
+     * Display the TB symptoms checker page
+     */
+    public function symptomsChecker()
+    {
+        $this->view('symptom-checker.view', [
+            'title' => 'TB Symptoms Checker'
+        ]);
+    }
+
+    /**
+     * Analyze the symptoms using a simple algorithm instead of RubixML
+     */
+    public function analyzeSymptoms()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . 'symptom-checker.view');
+            exit;
+        }
+
+        // Get the symptoms from the form
+        $symptoms = [
+            isset($_POST['fever_two_weeks']) ? 1 : 0,
+            isset($_POST['coughing_blood']) ? 1 : 0,
+            isset($_POST['sputum_blood']) ? 1 : 0,
+            isset($_POST['night_sweats']) ? 1 : 0,
+            isset($_POST['chest_pain']) ? 1 : 0,
+            isset($_POST['back_pain']) ? 1 : 0,
+            isset($_POST['shortness_breath']) ? 1 : 0,
+            isset($_POST['weight_loss']) ? 1 : 0,
+            isset($_POST['body_tired']) ? 1 : 0,
+            isset($_POST['lumps']) ? 1 : 0,
+            isset($_POST['cough_phlegm']) ? 1 : 0,
+            isset($_POST['swollen_lymph']) ? 1 : 0,
+            isset($_POST['loss_appetite']) ? 1 : 0
+        ];
+
+        // Simple prediction logic instead of using RubixML
+        $symptomCount = array_sum($symptoms);
+        $prediction = $symptomCount > 6 ? 'High Risk' : 'Low Risk';
+        $probability = $this->calculateTbProbability($symptoms);
+        
+        // Count symptoms for visualization
+        $totalSymptoms = count($symptoms);
+        
+        // Prepare symptom names for chart
+        $symptomNames = [
+            'Fever for two weeks',
+            'Coughing blood',
+            'Sputum mixed with blood',
+            'Night sweats',
+            'Chest pain',
+            'Back pain in certain parts',
+            'Shortness of breath',
+            'Weight loss',
+            'Body feels tired',
+            'Lumps around armpits/neck',
+            'Cough and phlegm (2-4 weeks)',
+            'Swollen lymph nodes',
+            'Loss of appetite'
+        ];
+        
+        // Create data for the chart
+        $selectedSymptoms = [];
+        foreach ($symptoms as $index => $value) {
+            if ($value == 1) {
+                $selectedSymptoms[] = $symptomNames[$index];
+            }
+        }
+        
+        // Return the results
+        $this->view('symptoms-result.view', [
+            'title' => 'TB Symptoms Analysis',
+            'prediction' => $prediction,
+            'probability' => $probability,
+            'symptomCount' => $symptomCount,
+            'totalSymptoms' => $totalSymptoms,
+            'symptoms' => $symptoms,
+            'symptomNames' => $symptomNames,
+            'selectedSymptoms' => $selectedSymptoms
+        ]);
+    }
+    
+    /**
+     * Load the TB dataset from CSV
+     */
+    private function loadTbDataset()
+    {
+        $csvPath = __DIR__ . '/../../public/csv/tb.csv';
+        $samples = [];
+        $labels = [];
+        
+        if (($handle = fopen($csvPath, "r")) !== FALSE) {
+            // Skip the header row
+            fgetcsv($handle, 1000, ",", "\"", "\\");
+            
+            while (($data = fgetcsv($handle, 1000, ",", "\"", "\\")) !== FALSE) {
+                // Extract features (symptoms) from columns 6-18
+                $features = array_slice($data, 6, 13);
+                $samples[] = array_map('intval', $features);
+                
+                // For simplicity, we'll use a binary classification:
+                // If more than 6 symptoms are present, consider it high risk
+                $symptomCount = array_sum($features);
+                $labels[] = $symptomCount > 6 ? 'High Risk' : 'Low Risk';
+            }
+            fclose($handle);
+        }
+        
+        // Return a simple array instead of using RubixML Labeled class
+        return ['samples' => $samples, 'labels' => $labels];
+    }
+    
+    /**
+     * Calculate TB probability based on symptoms
+     */
+    private function calculateTbProbability($symptoms)
+    {
+        // Simple probability calculation based on symptom count
+        $symptomCount = array_sum($symptoms);
+        $totalSymptoms = count($symptoms);
+        
+        // Weight certain symptoms more heavily
+        $weightedSum = 0;
+        $weights = [1.5, 2.0, 2.0, 1.2, 1.0, 0.8, 1.3, 1.5, 0.7, 1.8, 1.5, 1.2, 1.0];
+        
+        foreach ($symptoms as $i => $symptom) {
+            $weightedSum += $symptom * $weights[$i];
+        }
+        
+        $maxWeightedSum = array_sum($weights);
+        $probability = min(($weightedSum / $maxWeightedSum) * 100, 100);
+        
+        return round($probability, 1);
     }
 }
