@@ -372,4 +372,101 @@ class AppointmentConfirmation
             return false;
         }
     }
+
+
+
+    public function sendTrackingNumberConfirmation($data)
+    {
+        try {
+            $this->mailer->clearAllRecipients();
+            $this->mailer->clearAttachments();
+
+            $this->mailer->addAddress($data['email'], $data['first_name'] . ' ' . $data['last_name']);
+
+            // Add embedded images
+            $logoPath = dirname(dirname(dirname(__DIR__))) . '/public/images/logo.png';
+            $checkIconPath = dirname(dirname(dirname(__DIR__))) . '/public/images/icons/check.png';
+            $calendarIconPath = dirname(dirname(dirname(__DIR__))) . '/public/images/icons/calendar-icon.png';
+            $timeIconPath = dirname(dirname(dirname(__DIR__))) . '/public/images/icons/time-icon.png';
+            $idCardIconPath = dirname(dirname(dirname(__DIR__))) . '/public/images/icons/id-card-icon.png';
+
+            $this->mailer->addEmbeddedImage($logoPath, 'logo', 'logo.png');
+            $this->mailer->addEmbeddedImage($checkIconPath, 'check-icon', 'check.png');
+            $this->mailer->addEmbeddedImage($calendarIconPath, 'calendar-icon', 'calendar-icon.png');
+            $this->mailer->addEmbeddedImage($timeIconPath, 'time-icon', 'time-icon.png');
+            $this->mailer->addEmbeddedImage($idCardIconPath, 'id-card-icon', 'id-card-icon.png');
+
+            $this->mailer->isHTML(true);
+            $this->mailer->Subject = 'Your Appointment Tracking Number';
+
+            // Format date and time
+            $formattedDate = date('l, F j, Y', strtotime($data['appointment_date']));
+            $formattedTime = date('h:i A', strtotime($data['appointment_time']));
+
+            // Email template
+            $emailContent = '
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <div style="text-align: center; padding: 20px;">
+                    <img src="cid:logo" alt="Logo" style="max-width: 150px;">
+                </div>
+                
+                <div style="background-color: #f8f9fa; padding: 30px; border-radius: 10px; margin-top: 20px;">
+                    <div style="text-align: center;">
+                        <img src="cid:check-icon" alt="Success" style="width: 60px; margin-bottom: 20px;">
+                        <h1 style="color: #28a745; margin: 0;">Appointment Booked!</h1>
+                        <p style="color: #6c757d; margin-top: 10px;">Your appointment has been successfully booked.</p>
+                    </div>
+
+                    <div style="background-color: #e9ecef; padding: 20px; border-radius: 5px; margin: 20px 0; text-align: center;">
+                        <h2 style="color: #495057; margin: 0;">Your Tracking Number</h2>
+                        <div style="font-family: monospace; font-size: 24px; color: #212529; margin: 10px 0; padding: 10px; background-color: #fff; border-radius: 5px;">
+                            ' . $data['tracking_number'] . '
+                        </div>
+                        <p style="color: #6c757d; margin: 0; font-size: 14px;">Please save this number to track your appointment</p>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <h3 style="color: #495057;">Appointment Details</h3>
+                        <div style="background-color: #fff; padding: 20px; border-radius: 5px;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="padding: 10px; color: #6c757d;"><img src="cid:calendar-icon" alt="Date" style="width: 20px; vertical-align: middle;"> Date</td>
+                                    <td style="padding: 10px;">' . $formattedDate . '</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; color: #6c757d;"><img src="cid:time-icon" alt="Time" style="width: 20px; vertical-align: middle;"> Time</td>
+                                    <td style="padding: 10px;">' . $formattedTime . '</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; color: #6c757d;"><img src="cid:id-card-icon" alt="Doctor" style="width: 20px; vertical-align: middle;"> Doctor</td>
+                                    <td style="padding: 10px;">Dr. ' . $data['doctor_name'] . '</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; color: #6c757d;">Type</td>
+                                    <td style="padding: 10px;">' . ucfirst($data['appointment_type']) . '</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px; padding: 20px; background-color: #f8f9fa; border-radius: 10px;">
+                    <h3 style="color: #495057;">What happens next?</h3>
+                    <p style="color: #6c757d;">Our staff will review your appointment request and confirm it shortly.<br>You\'ll receive a confirmation email once approved.</p>
+                </div>
+
+                <div style="text-align: center; margin-top: 20px; color: #6c757d; font-size: 14px;">
+                    <p>If you have any questions, please contact us at support@testclinic.com</p>
+                </div>
+            </div>';
+
+            $this->mailer->Body = $emailContent;
+            $this->mailer->AltBody = strip_tags(str_replace(['<br>', '</p>'], ["\n", "\n\n"], $emailContent));
+
+            return $this->mailer->send();
+        } catch (\Exception $e) {
+            error_log("Error sending tracking number confirmation email: " . $e->getMessage());
+            return false;
+        }
+    }
 }

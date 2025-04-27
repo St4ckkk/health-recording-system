@@ -104,6 +104,10 @@
                     <p class="text-sm text-gray-500 mb-2">Your Tracking Number</p>
                     <div class="tracking-number"><?= $tracking_number ?></div>
                     <p class="text-sm text-gray-500 mt-2">Please save this number to track your appointment</p>
+                    <p class="text-sm text-blue-600 mt-2">
+                        <i class="bx bx-envelope align-middle"></i>
+                        A copy of your tracking number has been sent to your registered email
+                    </p>
                 </div>
 
                 <div class="bg-gray-50 rounded-lg p-6 text-left mb-6">

@@ -391,6 +391,26 @@ class HomeController extends Controller
     /**
      * Book an appointment
      */
+    private function getDoctorFullName($doctorId)
+    {
+        $doctor = $this->doctorModel->getDoctorById($doctorId);
+        if (!$doctor) {
+            return 'Unknown Doctor';
+        }
+
+        $fullName = $doctor->first_name;
+        if (!empty($doctor->middle_name)) {
+            $fullName .= ' ' . $doctor->middle_name;
+        }
+        $fullName .= ' ' . $doctor->last_name;
+        if (!empty($doctor->suffix)) {
+            $fullName .= ', ' . $doctor->suffix;
+        }
+
+        return $fullName;
+    }
+
+    // Example usage in book_appointment:
     public function book_appointment()
     {
 
@@ -554,15 +574,6 @@ class HomeController extends Controller
                 'updated_at' => date('Y-m-d H:i:s')
             ];
 
-            // If booking as guardian, log it but don't try to save to non-existent columns
-            if ($isGuardian && !empty($guardianName) && !empty($relationship)) {
-                error_log("Guardian information provided but not saved (columns don't exist): Guardian: $guardianName, Relationship: $relationship");
-                // Store in session for display purposes if needed
-                $_SESSION['guardian_info'] = [
-                    'name' => $guardianName,
-                    'relationship' => $relationship
-                ];
-            }
 
             error_log("Creating appointment with data: " . json_encode($appointmentData));
 
@@ -611,25 +622,28 @@ class HomeController extends Controller
             // Get patient details
             $patient = $this->patientModel->getPatientById($createdAppointment->patient_id);
 
-            if (!$patient) {
-                error_log("Could not find patient with ID: " . $createdAppointment->patient_id);
 
-                // Create a dummy patient object with the form data
-                $patient = (object) [
-                    'id' => $patientId,
-                    'first_name' => $firstName,
-                    'middle_name' => $middleName,
-                    'last_name' => $surname,
-                    'suffix' => $suffix,
+
+            try {
+                $appointmentConfirmation = new \app\helpers\email\AppointmentConfirmation();
+                $emailSent = $appointmentConfirmation->sendTrackingNumberConfirmation([
                     'email' => $email,
-                    'contact_number' => $contactNumber,
-                    'profile' => $profileImagePath
-                ];
+                    'first_name' => $firstName,
+                    'last_name' => $surname,
+                    'tracking_number' => $trackingNumber,
+                    'appointment_date' => $appointmentDate,
+                    'appointment_time' => $appointmentTime,
+                    'doctor_name' => $this->getDoctorFullName($doctorId),
+                    'appointment_type' => $appointmentType
+                ]);
 
-                error_log("Created dummy patient object with first_name: " . $patient->first_name);
+                if (!$emailSent) {
+                    error_log("Failed to send tracking number email");
+                }
+            } catch (\Exception $e) {
+                error_log("Error sending tracking number email: " . $e->getMessage());
             }
 
-            // Render confirmation view directly
             $this->view('pages/appointment/confirmation.view', [
                 'title' => 'Appointment Confirmation',
                 'appointment' => $createdAppointment,
