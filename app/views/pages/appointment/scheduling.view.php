@@ -390,7 +390,6 @@
                 </div>
                 <form id="patientForm" action="<?= BASE_URL ?>/appointment/book" method="POST" class="space-y-6"
                     enctype="multipart/form-data">
-                    <!-- Hidden fields for appointment data -->
                     <input type="hidden" id="doctor_id" name="doctor_id" value="<?= $doctor->id ?>">
                     <input type="hidden" id="appointment_date" name="appointment_date">
                     <input type="hidden" id="appointment_time" name="appointment_time">
@@ -469,6 +468,21 @@
                                 </select>
                             </div>
                             <div>
+                                <label for="bloodType" class="block text-sm font-medium text-gray-700 mb-1">Blood
+                                    Type</label>
+                                <select id="bloodType" name="bloodType" class="form-input w-full">
+                                    <option value="">Select Blood Type</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                </select>
+                            </div>
+                            <div>
                                 <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email
                                     Address*</label>
                                 <input type="email" id="email" name="email" required class="form-input w-full"
@@ -485,6 +499,19 @@
                                     class="block text-sm font-medium text-gray-700 mb-1">Address*</label>
                                 <textarea id="address" name="address" required rows="3"
                                     class="form-input w-full"></textarea>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="insurance" class="block text-sm font-medium text-gray-700 mb-1">Health
+                                    Insurance</label>
+                                <select id="insurance" name="insurance" class="form-input w-full">
+                                    <option value="">None</option>
+                                    <option value="PhilHealth">PhilHealth</option>
+                                    <option value="HMO">HMO</option>
+                                    <option value="Private Insurance">Private Insurance</option>
+                                    <option value="SSS">SSS</option>
+                                    <option value="GSIS">GSIS</option>
+                                    <option value="ECC">ECC</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -520,39 +547,6 @@
 
 
 
-                    <!-- Guardian Information -->
-                    <div class="space-y-4">
-                        <div class="flex items-center">
-                            <input type="checkbox" id="isGuardian" name="isGuardian"
-                                class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
-                            <label for="isGuardian" class="ml-2 block text-sm text-gray-700">I am not the patient
-                                (booking for someone else)</label>
-                        </div>
-
-                        <div id="guardianFields" class="hidden space-y-4 fade-in">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label for="guardianName"
-                                        class="block text-sm font-medium text-gray-700 mb-1">Guardian Name*</label>
-                                    <input type="text" id="guardianName" name="guardianName" class="form-input w-full">
-                                </div>
-                                <div>
-                                    <label for="relationship"
-                                        class="block text-sm font-medium text-gray-700 mb-1">Relationship to
-                                        Patient*</label>
-                                    <select id="relationship" name="relationship" class="form-input w-full">
-                                        <option value="">Select</option>
-                                        <option value="Parent">Parent</option>
-                                        <option value="Spouse">Spouse</option>
-                                        <option value="Child">Child</option>
-                                        <option value="Sibling">Sibling</option>
-                                        <option value="Caregiver">Caregiver</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Submit Button -->
                     <div class="pt-4">

@@ -32,10 +32,8 @@ class Patient extends Model
             'p.updated_at',
             'p.patient_reference_number',
             'p.status',
+            'p.blood_type',
             'p.insurance',
-            // 'd.diagnosis',
-            // 'd.notes',
-            // 'a.allergy_name'
         ];
 
         $query = "SELECT " . implode(', ', $fields) . " FROM {$this->table} p";
@@ -86,9 +84,6 @@ class Patient extends Model
         return $this->db->single();
     }
 
-    // Remove the duplicate getAllPatients method at the bottom
-
-
     public function getPatientWithVitals($id)
     {
         $this->db->query('SELECT p.*, 
@@ -110,7 +105,7 @@ class Patient extends Model
         return $this->db->single();
     }
 
-    // Update the diagnosis distribution method
+
     public function getDiagnosisDistribution()
     {
         $query = "SELECT d.diagnosis, COUNT(*) as count 
@@ -123,7 +118,6 @@ class Patient extends Model
 
     public function getPatientDemographics($doctorId)
     {
-        // Age groups
         $ageGroupsSql = "SELECT 
                             CASE 
                                 WHEN age < 18 THEN 'Under 18'
@@ -144,23 +138,23 @@ class Patient extends Model
                                 WHEN '46-60' THEN 4
                                 WHEN 'Over 60' THEN 5
                             END";
-        
+
         $this->db->query($ageGroupsSql);
         $this->db->bind(':doctor_id', $doctorId);
         $ageGroups = $this->db->resultSet();
-        
-        // Gender distribution
+
+
         $genderSql = "SELECT 
                         gender,
                         COUNT(*) as count
                       FROM {$this->table} p
                       JOIN medical_records mr ON p.id = mr.patient_id AND mr.doctor_id = :doctor_id
                       GROUP BY gender";
-        
+
         $this->db->query($genderSql);
         $this->db->bind(':doctor_id', $doctorId);
         $genderDistribution = $this->db->resultSet();
-        
+
         // Insurance distribution
         $insuranceSql = "SELECT 
                             CASE WHEN insurance IS NULL OR insurance = '' THEN 'None' ELSE insurance END as insurance_type,
@@ -169,21 +163,20 @@ class Patient extends Model
                          JOIN medical_records mr ON p.id = mr.patient_id AND mr.doctor_id = :doctor_id
                          GROUP BY insurance_type
                          ORDER BY count DESC";
-        
+
         $this->db->query($insuranceSql);
         $this->db->bind(':doctor_id', $doctorId);
         $insuranceDistribution = $this->db->resultSet();
-        
+
         return [
             'age_groups' => $ageGroups,
             'gender_distribution' => $genderDistribution,
             'insurance_distribution' => $insuranceDistribution
         ];
     }
-    
+
     public function insert($data)
     {
-        // Generate patient reference number
         $referenceNumber = 'PAT-' . date('Ymd') . '-' . strtoupper(substr(md5(uniqid()), 0, 6));
 
         $sql = "INSERT INTO {$this->table} (
@@ -198,11 +191,12 @@ class Patient extends Model
             contact_number,
             email,
             address,
+            created_at,
+            updated_at,
             patient_reference_number,
             status,
-            insurance,
-            created_at,
-            updated_at
+            blood_type,
+            insurance
         ) VALUES (
             :first_name,
             :middle_name,
@@ -215,11 +209,12 @@ class Patient extends Model
             :contact_number,
             :email,
             :address,
+            :created_at,
+            :updated_at,
             :patient_reference_number,
             'Active',
-            :insurance,
-            :created_at,
-            :updated_at
+            :blood_type,
+            :insurance
         )";
 
         try {
@@ -238,11 +233,12 @@ class Patient extends Model
             $this->db->bind(':email', $data['email']);
             $this->db->bind(':address', $data['address']);
             $this->db->bind(':patient_reference_number', $referenceNumber);
+            $this->db->bind(':blood_type', $data['blood_type'] ?? null);
             $this->db->bind(':insurance', $data['insurance'] ?? null);
             $this->db->bind(':created_at', $data['created_at'] ?? date('Y-m-d H:i:s'));
             $this->db->bind(':updated_at', $data['updated_at'] ?? date('Y-m-d H:i:s'));
 
-            // Execute
+
             if ($this->db->execute()) {
                 return $this->db->lastInsertId();
             }

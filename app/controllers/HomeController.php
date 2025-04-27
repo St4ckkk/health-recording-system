@@ -65,28 +65,27 @@ class HomeController extends Controller
         $this->view('pages/appointment/doctor-availability.view', $data);
     }
 
-    // Updated to use query parameters
+
     public function scheduling()
     {
-        // Get doctor ID from query parameter
+
         $doctorId = isset($_GET['doctor_id']) ? $_GET['doctor_id'] : null;
 
-        // If no doctor ID is provided, redirect to doctor availability page
+
         if (!$doctorId) {
             header('Location: ' . BASE_URL . '/appointment/doctor-availability');
             exit;
         }
 
-        // Get doctor details
+
         $doctor = $this->doctorModel->getDoctorById($doctorId);
 
         if (!$doctor) {
-            // Doctor not found, redirect to doctor availability page
             header('Location: ' . BASE_URL . '/appointment/doctor-availability');
             exit;
         }
 
-        // Get doctor's available days and time slots
+
         $doctor->available_days = $this->timeSlotModel->getDoctorAvailableDays($doctorId);
         $doctor->time_slots = $this->timeSlotModel->getTimeSlotsByDoctorId($doctorId);
 
@@ -233,11 +232,6 @@ class HomeController extends Controller
         echo json_encode($data);
         exit;
     }
-
-    /**
-     * Get available time slots for a specific doctor on a specific date
-     * Updated to use query parameters
-     */
     public function get_available_time_slots()
     {
         // Check if this is an AJAX request
@@ -386,13 +380,6 @@ class HomeController extends Controller
         // Return the relative path for database storage
         return 'uploads/patients/' . $filename;
     }
-
-    /**
-     * Calculate age from date of birth
-     * 
-     * @param string $dateOfBirth Date of birth in Y-m-d format
-     * @return int Age in years
-     */
     private function calculateAge($dateOfBirth)
     {
         $dob = new \DateTime($dateOfBirth);
@@ -406,19 +393,18 @@ class HomeController extends Controller
      */
     public function book_appointment()
     {
-        // Ensure session is started
+
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
 
-        // Check if this is a POST request
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL . '/appointment/doctor-availability');
             exit;
         }
 
         try {
-            // Get form data
             $doctorId = isset($_POST['doctor_id']) ? trim($_POST['doctor_id']) : '';
             $appointmentDate = isset($_POST['appointment_date']) ? trim($_POST['appointment_date']) : '';
             $appointmentTime = isset($_POST['appointment_time']) ? trim($_POST['appointment_time']) : '';
@@ -434,11 +420,12 @@ class HomeController extends Controller
             $email = isset($_POST['email']) ? trim($_POST['email']) : '';
             $contactNumber = isset($_POST['contactNumber']) ? trim($_POST['contactNumber']) : '';
             $address = isset($_POST['address']) ? trim($_POST['address']) : '';
+            $blood_type = isset($_POST['bloodType']) ? trim($_POST['bloodType']) : '';
+            $insurance = isset($_POST['insurance']) ? trim($_POST['insurance']) : '';
             $isGuardian = isset($_POST['isGuardian']) ? true : false;
             $guardianName = isset($_POST['guardianName']) ? trim($_POST['guardianName']) : '';
             $relationship = isset($_POST['relationship']) ? trim($_POST['relationship']) : '';
 
-            // Debug log
             error_log("Booking appointment with data: " . json_encode([
                 'doctor_id' => $doctorId,
                 'appointment_date' => $appointmentDate,
@@ -509,7 +496,9 @@ class HomeController extends Controller
                     'email' => $email,
                     'contact_number' => $contactNumber,
                     'address' => $address,
-                    'created_at' => date('Y-m-d H:i:s')
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'blood_type' => $blood_type,
+                    'insurance' => $insurance
                 ];
 
                 // Add profile image path if available
@@ -561,7 +550,6 @@ class HomeController extends Controller
                 'status' => 'pending',
                 'tracking_number' => $trackingNumber,
                 'special_instructions' => '',
-                // Remove guardian fields as they don't exist in the database
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             ];
@@ -738,9 +726,6 @@ class HomeController extends Controller
         ]);
     }
 
-    /**
-     * Display the TB symptoms checker page
-     */
     public function symptomsChecker()
     {
         $this->view('symptom-checker.view', [
@@ -748,9 +733,6 @@ class HomeController extends Controller
         ]);
     }
 
-    /**
-     * Analyze the symptoms using a simple algorithm instead of RubixML
-     */
     public function analyzeSymptoms()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -821,9 +803,7 @@ class HomeController extends Controller
         ]);
     }
 
-    /**
-     * Load the TB dataset from CSV
-     */
+
     private function loadTbDataset()
     {
         $csvPath = __DIR__ . '/../../public/csv/tb.csv';
@@ -851,9 +831,6 @@ class HomeController extends Controller
         return ['samples' => $samples, 'labels' => $labels];
     }
 
-    /**
-     * Calculate TB probability based on symptoms
-     */
     private function calculateTbProbability($symptoms)
     {
         // Simple probability calculation based on symptom count

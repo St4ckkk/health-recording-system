@@ -172,8 +172,6 @@ document.addEventListener('DOMContentLoaded', function () {
             calendarView.classList.add('hidden');
             patientFormView.classList.remove('hidden');
 
-            // Set appointment date in the form
-            // FIX: Use local date formatting instead of ISO to prevent timezone issues
             const year = selectedYear;
             const month = String(selectedMonth + 1).padStart(2, '0');
             const day = String(selectedDay).padStart(2, '0');
