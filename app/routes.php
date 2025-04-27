@@ -85,8 +85,8 @@ $router->post('/pharmacist/dispenseMedicine', 'PharmacistController@dispenseMedi
 $router->get('/patient/dashboard', 'PatientController@dashboard');
 
 
-$router->get('/symptoms-checker', 'HomeController@symptomsChecker');
-$router->post('/analyze-symptoms', 'HomeController@analyzeSymptoms');
+$router->get('/symptoms-checker', 'PatientController@symptomsChecker');
+$router->post('/analyze-symptoms', 'PatientController@analyzeSymptoms');
 
 
 // Admin routes
@@ -95,7 +95,7 @@ $router->get('/admin/staff', 'AdminController@staffManagement');
 $router->post('/admin/addStaff', 'AdminController@addStaff');
 $router->get('/admin/transactions', 'AdminController@transactionRecords');
 $router->get('/admin/billing-records', 'AdminController@billingRecords');
-$router->get('/admin/getBillingDetails', 'AdminController@getBillingDetails'); 
+$router->get('/admin/getBillingDetails', 'AdminController@getBillingDetails');
 $router->post('/admin/updateBillingStatus', 'AdminController@updateBillingStatus');
 $router->post('/admin/deleteStaff', 'AdminController@deleteStaff');
 $router->get('/admin/doctors', 'AdminController@doctorManagement');

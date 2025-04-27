@@ -88,14 +88,14 @@
 
 <body>
     <div class="p-5">
-        <div class="w-64 h-16 mb-8">
-            <div class="logo-container text-white p-4 inline-flex items-center">
-                <div class="mr-2">
-                    <div class="logo">
-                        <div class="w-12 h-12 flex justify-center items-center font-bold text-white">TC</div>
+        <div class="w-full mb-12">
+            <div class="inline-flex items-center">
+                <div class="mr-3">
+                    <div class="w-24 h-24">
+                        <img src="<?= BASE_URL ?>/images/logo.png" alt="Test Clinic Logo"
+                            class="w-full h-full object-contain">
                     </div>
                 </div>
-                <span class="text-2xl font-bold">Test Clinic</span>
             </div>
         </div>
 

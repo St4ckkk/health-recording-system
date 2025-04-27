@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,38 +10,9 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/globals.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/output.css">
-    <!-- Google Fonts - Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/result.css">
+
     <style>
-        :root {
-            --primary-color: #6366f1;
-            --primary-hover: #4f46e5;
-            --respiratory-bg: #f0f7ff;
-            --respiratory-accent: #4361ee;
-            --general-bg: #f0fff4;
-            --general-accent: #38b2ac;
-            --other-bg: #faf5ff;
-            --other-accent: #805ad5;
-            --info-bg: #f7fafc;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            --transition-fast: 0.15s ease-in-out;
-            --transition-normal: 0.3s ease-in-out;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f9fafb;
-            color: #374151;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-        }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -525,29 +497,8 @@
         }
     </style>
 </head>
-<body>
-    <!-- Modern Header with Glassmorphism -->
-    <header>
-        <div class="header-content">
-            <div class="header-container container">
-                <div class="logo-container">
-                    <div class="logo-icon">
-                        <i class='bx bx-plus-medical text-2xl text-indigo-600'></i>
-                    </div>
-                    <h1 class="logo-text">Health Recording System</h1>
-                </div>
-                <nav>
-                    <ul>
-                        <li><a href="<?= BASE_URL ?>/" class="nav-link"><i class='bx bx-home-alt'></i> Home</a></li>
-                        <li><a href="<?= BASE_URL ?>/appointment/doctor-availability" class="nav-link"><i class='bx bx-calendar-check'></i> Appointments</a></li>
-                        <li><a href="<?= BASE_URL ?>/symptoms-checker" class="nav-link active"><i class='bx bx-check-shield'></i> TB Checker</a></li>
-                        <li><a href="<?= BASE_URL ?>/appointment-tracking" class="nav-link"><i class='bx bx-radar'></i> Track</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </header>
 
+<body>
     <main class="container">
         <!-- Page Title -->
         <div class="page-title-container fade-in">
@@ -578,16 +529,16 @@
                 <div class="progress-text">Results</div>
             </div>
         </div>
-        
+
         <div class="grid-3 fade-in">
             <!-- Risk Assessment Card -->
-            <div class="card" style="grid-column: span 2;">
+            <div class="card card-span-2">
                 <div class="card-body">
                     <h2 class="category-title" style="color: #4f46e5; font-size: 1.5rem;">
                         <i class='bx bx-shield-quarter text-2xl mr-3'></i>
                         Risk Assessment
                     </h2>
-                    
+
                     <div class="grid">
                         <!-- Risk Level -->
                         <div>
@@ -600,12 +551,13 @@
                                         <h3 class="ml-3 text-xl font-bold text-red-700">High Risk</h3>
                                     </div>
                                     <p class="text-red-700">
-                                        Based on your symptoms, you may be at high risk for TB. 
+                                        Based on your symptoms, you may be at high risk for TB.
                                         Please consult a healthcare professional as soon as possible.
                                     </p>
                                     <div class="risk-indicator">
                                         <span class="risk-dot high"></span>
-                                        <span class="text-sm font-medium text-red-700">Immediate attention recommended</span>
+                                        <span class="text-sm font-medium text-red-700">Immediate attention
+                                            recommended</span>
                                     </div>
                                 </div>
                             <?php else: ?>
@@ -622,11 +574,12 @@
                                     </p>
                                     <div class="risk-indicator">
                                         <span class="risk-dot low"></span>
-                                        <span class="text-sm font-medium text-green-700">Continue monitoring your health</span>
+                                        <span class="text-sm font-medium text-green-700">Continue monitoring your
+                                            health</span>
                                     </div>
                                 </div>
                             <?php endif; ?>
-                            
+
                             <!-- Next Steps -->
                             <div class="info-box mt-6">
                                 <h3 class="category-title" style="color: #64748b; margin-bottom: 0.75rem;">
@@ -641,7 +594,8 @@
                                         </li>
                                         <li class="flex items-start">
                                             <i class='bx bx-right-arrow-alt text-indigo-600 mt-1 mr-2'></i>
-                                            <span class="text-gray-700">Mention this TB risk assessment to your healthcare provider</span>
+                                            <span class="text-gray-700">Mention this TB risk assessment to your healthcare
+                                                provider</span>
                                         </li>
                                         <li class="flex items-start">
                                             <i class='bx bx-right-arrow-alt text-indigo-600 mt-1 mr-2'></i>
@@ -654,17 +608,19 @@
                                         </li>
                                         <li class="flex items-start">
                                             <i class='bx bx-right-arrow-alt text-indigo-600 mt-1 mr-2'></i>
-                                            <span class="text-gray-700">If symptoms persist or worsen, consult a healthcare provider</span>
+                                            <span class="text-gray-700">If symptoms persist or worsen, consult a healthcare
+                                                provider</span>
                                         </li>
                                         <li class="flex items-start">
                                             <i class='bx bx-right-arrow-alt text-indigo-600 mt-1 mr-2'></i>
-                                            <span class="text-gray-700">Maintain good respiratory hygiene and a healthy lifestyle</span>
+                                            <span class="text-gray-700">Maintain good respiratory hygiene and a healthy
+                                                lifestyle</span>
                                         </li>
                                     <?php endif; ?>
                                 </ul>
                             </div>
                         </div>
-                        
+
                         <!-- Probability Analysis -->
                         <div>
                             <div class="info-box h-full">
@@ -672,48 +628,52 @@
                                     <i class='bx bx-line-chart text-xl mr-2'></i>
                                     Probability Analysis
                                 </h3>
-                                
+
                                 <div class="mb-6">
                                     <div class="flex justify-between items-center mb-2">
                                         <div>
                                             <span class="text-3xl font-bold 
-                                                <?= $probability < 30 ? 'text-green-600' : 
-                                                   ($probability < 70 ? 'text-yellow-600' : 'text-red-600') ?>">
+                                                <?= $probability < 30 ? 'text-green-600' :
+                                                    ($probability < 70 ? 'text-yellow-600' : 'text-red-600') ?>">
                                                 <?= $probability ?>%
                                             </span>
                                             <span class="text-gray-500 text-sm ml-1">Probability</span>
                                         </div>
                                         <div class="text-right">
-                                            <span class="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                                            <span
+                                                class="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
                                                 <?= $symptomCount ?> of <?= $totalSymptoms ?> symptoms
                                             </span>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="h-3 relative max-w-xl rounded-full overflow-hidden bg-gray-200">
                                         <div class="absolute h-full rounded-full transition-all duration-500 ease-out
-                                            <?= $probability < 30 ? 'bg-green-500' : 
-                                               ($probability < 70 ? 'bg-yellow-500' : 'bg-red-500') ?>"
-                                             style="width: <?= $probability ?>%">
+                                            <?= $probability < 30 ? 'bg-green-500' :
+                                                ($probability < 70 ? 'bg-yellow-500' : 'bg-red-500') ?>"
+                                            style="width: <?= $probability ?>%">
                                         </div>
                                     </div>
-                                    
+
                                     <div class="flex justify-between text-xs text-gray-500 mt-1">
                                         <span>Low</span>
                                         <span>Medium</span>
                                         <span>High</span>
                                     </div>
                                 </div>
-                                
+
                                 <div class="mt-6">
                                     <h4 class="font-medium text-gray-700 mb-2">Risk Interpretation</h4>
                                     <p class="text-sm text-gray-600">
                                         <?php if ($probability < 30): ?>
-                                            Your symptom profile suggests a lower probability of TB. However, this does not rule out the possibility completely.
+                                            Your symptom profile suggests a lower probability of TB. However, this does not
+                                            rule out the possibility completely.
                                         <?php elseif ($probability < 70): ?>
-                                            Your symptom profile suggests a moderate probability of TB. It's advisable to consult with a healthcare professional.
+                                            Your symptom profile suggests a moderate probability of TB. It's advisable to
+                                            consult with a healthcare professional.
                                         <?php else: ?>
-                                            Your symptom profile suggests a higher probability of TB. Please seek medical attention promptly.
+                                            Your symptom profile suggests a higher probability of TB. Please seek medical
+                                            attention promptly.
                                         <?php endif; ?>
                                     </p>
                                 </div>
@@ -722,7 +682,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Symptom Distribution Chart -->
             <div class="card">
                 <div class="card-body">
@@ -730,291 +690,419 @@
                         <i class='bx bx-pie-chart-alt-2 text-2xl mr-3'></i>
                         Symptom Distribution
                     </h2>
-                    
+
                     <div class="chart-container">
                         <canvas id="symptomsChart"></canvas>
                     </div>
-                    
+
                     <div class="mt-4">
                         <div class="flex items-center justify-between text-sm">
                             <div class="flex items-center">
                                 <span class="inline-block w-3 h-3 rounded-full mr-2
-                                    <?= $probability < 30 ? 'bg-green-500' : 
-                                       ($probability < 70 ? 'bg-yellow-500' : 'bg-red-500') ?>"></span>
+                                    <?= $probability < 30 ? 'bg-green-500' :
+                                        ($probability < 70 ? 'bg-yellow-500' : 'bg-red-500') ?>"></span>
                                 <span class="text-gray-700">Present Symptoms (<?= $symptomCount ?>)</span>
                             </div>
                             <div class="flex items-center">
                                 <span class="inline-block w-3 h-3 bg-gray-300 rounded-full mr-2"></span>
-                                <span class="text-gray-700">Absent Symptoms (<?= $totalSymptoms - $symptomCount ?>)</span>
+                                <span class="text-gray-700">Absent Symptoms
+                                    (<?= $totalSymptoms - $symptomCount ?>)</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Selected Symptoms -->
-        <div class="card fade-in">
-            <div class="card-body">
-                <h2 class="category-title" style="color: #4f46e5; font-size: 1.5rem;">
-                    <i class='bx bx-list-ul text-2xl mr-3'></i>
-                    Your Selected Symptoms
+
+        <div class="card fade-in mt-8">
+            <div class="card-header">
+                <h2 class="category-title" style="color: #4f46e5; font-size: 1.5rem; margin-bottom: 0;">
+                    <i class='bx bx-plus-medical text-2xl mr-3'></i>
+                    Treatment Recommendations
                 </h2>
-                
-                <?php if (empty($selectedSymptoms)): ?>
-                    <div class="bg-gray-50 p-6 rounded-lg text-center">
-                        <i class='bx bx-info-circle text-4xl text-gray-400 mb-2'></i>
-                        <p class="text-gray-600">No symptoms were selected.</p>
-                    </div>
-                <?php else: ?>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                        <?php 
-                        // Define symptom categories and their colors
-                        $symptomCategories = [
-                            'respiratory' => [
-                                'symptoms' => ['coughing_blood', 'sputum_blood', 'shortness_breath', 'cough_phlegm', 'chest_pain'],
-                                'bg' => 'bg-blue-50',
-                                'border' => 'border-blue-200',
-                                'text' => 'text-blue-700',
-                                'icon' => 'bx-lungs'
-                            ],
-                            'general' => [
-                                'symptoms' => ['fever_two_weeks', 'night_sweats', 'weight_loss', 'body_tired', 'loss_appetite'],
-                                'bg' => 'bg-violet-50',
-                                'border' => 'border-violet-200',
-                                'text' => 'text-violet-700',
-                                'icon' => 'bx-body'
-                            ],
-                            'other' => [
-                                'symptoms' => ['back_pain', 'lumps', 'swollen_lymph'],
-                                'bg' => 'bg-fuchsia-50',
-                                'border' => 'border-fuchsia-200',
-                                'text' => 'text-fuchsia-700',
-                                'icon' => 'bx-pulse'
-                            ]
-                        ];
-                        
-                        // Helper function to get symptom category
-                        function getSymptomCategory($symptom, $categories) {
-                            foreach ($categories as $category => $data) {
-                                if (in_array($symptom, $data['symptoms'])) {
-                                    return $category;
-                                }
-                            }
-                            return 'other';
-                        }
-                        
-                        foreach ($selectedSymptoms as $symptomKey => $symptomLabel):
-                            $category = getSymptomCategory($symptomKey, $symptomCategories);
-                            $categoryData = $symptomCategories[$category];
-                        ?>
-                            <div class="symptom-tag <?= $categoryData['bg'] ?> border <?= $categoryData['border'] ?> p-3 rounded-lg flex items-center">
-                                <i class='bx <?= $categoryData['icon'] ?> <?= $categoryData['text'] ?> mr-2'></i>
-                                <span class="text-gray-700"><?= $symptomLabel ?></span>
+            </div>
+            <div class="card-body">
+                <div class="grid-3">
+                    <!-- Treatment Overview -->
+                    <div class="info-box">
+                        <h3 class="category-title" style="color: #64748b; margin-bottom: 0.75rem;">
+                            <i class='bx bx-capsule text-xl mr-2'></i>
+                            Treatment Overview
+                        </h3>
+
+                        <div class="mb-4">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-medium text-gray-700">Symptom Severity</span>
+                                <span class="text-sm font-medium text-gray-700">
+                                    <?= $treatmentData['symptom_severity_score'] ?>/10
+                                </span>
                             </div>
-                        <?php endforeach; ?>
+                            <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div id="severityGauge" class="h-full rounded-full transition-all duration-1000 ease-out
+                                    <?php if ($treatmentData['symptom_severity_score'] < 4): ?>
+                                    bg-green-500
+                                    <?php elseif ($treatmentData['symptom_severity_score'] < 7): ?>
+                                    bg-yellow-500
+                                    <?php else: ?>
+                                    bg-red-500
+                                    <?php endif; ?>" style="width: 0%">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 mt-4">
+                            <div>
+                                <span class="text-sm font-medium text-gray-500">Diagnosis Probability:</span>
+                                <span class="text-sm font-medium ml-2 <?php if ($probability < 30): ?>
+                                    text-green-600
+                                    <?php elseif ($probability < 70): ?>
+                                    text-yellow-600
+                                    <?php else: ?>
+                                    text-red-600
+                                    <?php endif; ?>">
+                                    <?= $probability ?>%
+                                </span>
+                            </div>
+
+                            <div>
+                                <span class="text-sm font-medium text-gray-500">Diagnosis Status:</span>
+                                <span
+                                    class="text-sm font-medium ml-2 <?= $treatmentData['diagnosis_confirmed'] ? 'text-red-600' : 'text-gray-600' ?>">
+                                    <?= $treatmentData['diagnosis_confirmed'] ? 'Likely TB' : 'Requires Confirmation' ?>
+                                </span>
+                            </div>
+
+                            <div>
+                                <span class="text-sm font-medium text-gray-500">Treatment Duration:</span>
+                                <span class="text-sm font-medium ml-2 text-gray-700">
+                                    <?= $treatmentData['treatment_duration_weeks'] > 0 ? $treatmentData['treatment_duration_weeks'] . ' weeks' : 'N/A' ?>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommended Tests -->
+                    <div class="info-box">
+                        <h3 class="category-title" style="color: #64748b; margin-bottom: 0.75rem;">
+                            <i class='bx bx-test-tube text-xl mr-2'></i>
+                            Recommended Tests
+                        </h3>
+
+                        <?php if (empty($treatmentData['recommended_tests'])): ?>
+                            <p class="text-gray-600 text-sm">No specific tests recommended at this time.</p>
+                        <?php else: ?>
+                            <ul class="space-y-2">
+                                <?php foreach ($treatmentData['recommended_tests'] as $test): ?>
+                                    <li class="flex items-start">
+                                        <i class='bx bx-check-circle text-indigo-600 mt-0.5 mr-2'></i>
+                                        <span class="text-gray-700 text-sm">
+                                            <?= $test ?>
+                                        </span>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php endif; ?>
+
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <h4 class="text-sm font-medium text-gray-700 mb-2">Why These Tests?</h4>
+                            <p class="text-xs text-gray-600">
+                                These tests are recommended based on your symptom profile and risk assessment.
+                                They help healthcare providers confirm a TB diagnosis and determine the most
+                                effective treatment approach.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Treatment Regimen -->
+                    <div class="info-box">
+                        <h3 class="category-title" style="color: #64748b; margin-bottom: 0.75rem;">
+                            <i class='bx bx-calendar-check text-xl mr-2'></i>
+                            Treatment Plan
+                        </h3>
+
+                        <div class="space-y-3">
+                            <div>
+                                <span class="text-sm font-medium text-gray-700">Recommended Regimen:</span>
+                                <p class=" text-sm text-gray-600 mt-1">
+                                    <?= $treatmentData['treatment_regimen'] ?>
+                                </p>
+                            </div>
+
+                            <div>
+                                <span class="text-sm font-medium text-gray-700">Follow-up Schedule:</span>
+                                <p class=" text-sm text-gray-600 mt-1">
+                                    <?= $treatmentData['follow_up_schedule'] ?>
+                                </p>
+                            </div>
+
+                            <div>
+                                <span class="text-sm font-medium text-gray-700">Special Considerations:</span>
+                                <div class="flex flex-wrap gap-2 mt-2">
+                                    <?php if ($treatmentData['isolation_required']): ?>
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <i class='bx bx-shield-quarter mr-1'></i> Isolation Recommended
+                                        </span>
+                                    <?php endif; ?>
+
+                                    <?php if ($treatmentData['hospitalization_needed']): ?>
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <i class='bx bx-building-house mr-1'></i> Hospitalization Advised
+                                        </span>
+                                    <?php endif; ?>
+
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <i class='bx bx-food-menu mr-1'></i> Nutritional Support
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Treatment Timeline Chart -->
+                <?php if ($treatmentData['treatment_duration_weeks'] > 0): ?>
+                    <div class="mt-6">
+                        <h3 class="text-lg font-medium text-gray-800 mb-3">Treatment Timeline</h3>
+                        <div class="chart-container" style="height: 12rem;">
+                            <canvas id="treatmentTimelineChart"></canvas>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-500">
+                            <p>Standard TB treatment consists of an intensive phase (typically 2 months) followed by a
+                                continuation phase (4-7 months).</p>
+                        </div>
                     </div>
                 <?php endif; ?>
-        </div>
-        
-        <!-- Important Note -->
-        <div class="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-2xl shadow-md p-6 border border-yellow-100 mb-10">
-            <div class="flex items-start">
-                <div class="flex-shrink-0 bg-amber-100 p-2 rounded-full">
-                    <i class='bx bx-info-circle text-2xl text-amber-600'></i>
-                </div>
-                <div class="ml-4">
-                    <h3 class="text-lg font-semibold text-amber-800 mb-2">Important Note</h3>
-                    <div class="text-amber-700 space-y-2">
-                        <p>
-                            This analysis is based on the symptoms you've reported and uses machine learning to estimate risk.
-                            It is not a medical diagnosis. TB can only be diagnosed by a healthcare professional through proper testing.
-                        </p>
-                        <p>
-                            If you're experiencing concerning symptoms, please consult with a healthcare provider regardless of the results shown here.
-                        </p>
+
+                <!-- Nutritional Support -->
+                <div class="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 bg-blue-100 p-2 rounded-full">
+                            <i class='bx bx-food-menu text-xl text-blue-600'></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-md font-medium text-blue-800 mb-1">Nutritional Recommendations</h3>
+                            <p class="text-sm text-blue-700">
+                                <?= $treatmentData['nutritional_support'] ?>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Action Buttons -->
-        <div class="flex flex-col sm:flex-row justify-between gap-4">
-            <a href="<?= BASE_URL ?>/symptoms-checker" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center">
-                <i class='bx bx-left-arrow-alt mr-2'></i> Back to Checker
-            </a>
-            
-            <div class="flex flex-col sm:flex-row gap-4">
-                <a href="<?= BASE_URL ?>/learn-about-tb" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-bold py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center">
-                    <i class='bx bx-book-open mr-2'></i> Learn About TB
-                </a>
-                
-                <a href="<?= BASE_URL ?>/appointment/doctor-availability" class="bg-gradient-to-r from-violet-600 to-indigo-700 hover:from-violet-700 hover:to-indigo-800 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 flex items-center justify-center">
-                    <i class='bx bx-calendar-plus mr-2'></i> Book an Appointment
-                </a>
+
+        <!-- Symptom Category Analysis -->
+        <div class="card fade-in mt-8">
+            <div class="card-header">
+                <h2 class="category-title" style="color: #4f46e5; font-size: 1.5rem; margin-bottom: 0;">
+                    <i class='bx bx-analyse text-2xl mr-3'></i>
+                    Detailed Symptom Analysis
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="grid">
+                    <!-- Symptom Categories Chart -->
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-800 mb-3">Symptom Categories</h3>
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                        <div class="mt-4 text-sm text-gray-600">
+                            <p>This chart shows the distribution of your symptoms across different categories.</p>
+                        </div>
+                    </div>
+
+                    <!-- Category Breakdown -->
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-800 mb-3">Category Breakdown</h3>
+
+                        <div class="space-y-4">
+                            <!-- Respiratory Symptoms -->
+                            <div class="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="font-medium text-blue-800">Respiratory Symptoms</h4>
+                                    <span class="text-sm font-medium text-blue-700">
+                                        <?= $symptomCategories['respiratory']['count'] ?>/
+                                        <?= $symptomCategories['respiratory']['total'] ?>
+                                    </span>
+                                </div>
+                                <div class="h-2 bg-blue-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-blue-500 rounded-full"
+                                        style=" width: <?= $symptomCategories['respiratory']['percentage'] ?>%">
+                                    </div>
+                                </div>
+                                <p class="mt-2 text-xs text-blue-700">
+                                    Respiratory symptoms are directly related to the lungs and breathing system.
+                                </p>
+                            </div>
+
+                            <!-- General Symptoms -->
+                            <div class="bg-violet-50 rounded-lg p-4 border border-violet-100">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="font-medium text-violet-800">General Symptoms</h4>
+                                    <span class="text-sm font-medium text-violet-700">
+                                        <?= $symptomCategories['general']['count'] ?>/
+                                        <?= $symptomCategories['general']['total'] ?>
+                                    </span>
+                                </div>
+                                <div class="h-2 bg-violet-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-violet-500 rounded-full"
+                                        style=" width: <?= $symptomCategories['general']['percentage'] ?>%">
+                                    </div>
+                                </div>
+                                <p class="mt-2 text-xs text-violet-700">
+                                    General symptoms affect the whole body and overall health.
+                                </p>
+                            </div>
+
+                            <!-- Other Symptoms -->
+                            <div class="bg-fuchsia-50 rounded-lg p-4 border border-fuchsia-100">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="font-medium text-fuchsia-800">Other Symptoms</h4>
+                                    <span class="text-sm font-medium text-fuchsia-700">
+                                        <?= $symptomCategories['other']['count'] ?>/
+                                        <?= $symptomCategories['other']['total'] ?>
+                                    </span>
+                                </div>
+                                <div class="h-2 bg-fuchsia-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-fuchsia-500 rounded-full"
+                                        style=" width: <?= $symptomCategories['other']['percentage'] ?>%">
+                                    </div>
+                                </div>
+                                <p class="mt-2 text-xs text-fuchsia-700">
+                                    Other symptoms may include lymphatic or musculoskeletal manifestations.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <input type="hidden" id="symptomCount" value="<?= $symptomCount ?>">
+        <input type="hidden" id="totalSymptoms" value="<?= $totalSymptoms ?>">
+        <input type="hidden" id="probability" value="<?= $probability ?>">
+        <input type="hidden" id="respiratoryPercentage" value="<?= $symptomCategories['respiratory']['percentage'] ?>">
+        <input type="hidden" id="generalPercentage" value="<?= $symptomCategories['general']['percentage'] ?>">
+        <input type="hidden" id="otherPercentage" value="<?= $symptomCategories['other']['percentage'] ?>">
+        <input type="hidden" id="treatmentDuration" value="<?= $treatmentData['treatment_duration_weeks'] ?>">
+        <input type="hidden" id="severityScore" value="<?= $treatmentData['symptom_severity_score'] ?>">
+        <div class="mb-10">
+            <div class="card fade-in">
+                <div class="card-body">
+                    <h2 class="category-title" style="color: #4f46e5; font-size: 1.5rem;">
+                        <i class='bx bx-list-ul text-2xl mr-3'></i>
+                        Your Selected Symptoms
+                    </h2>
+
+                    <?php if (empty($selectedSymptoms)): ?>
+                        <div class="bg-gray-50 p-6 rounded-lg text-center">
+                            <i class='bx bx-info-circle text-4xl text-gray-400 mb-2'></i>
+                            <p class="text-gray-600">No symptoms were selected.</p>
+                        </div>
+                    <?php else: ?>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                            <?php
+                            // Define symptom categories and their colors
+                            $symptomCategories = [
+                                'respiratory' => [
+                                    'symptoms' => ['coughing_blood', 'sputum_blood', 'shortness_breath', 'cough_phlegm', 'chest_pain'],
+                                    'bg' => 'bg-blue-50',
+                                    'border' => 'border-blue-200',
+                                    'text' => 'text-blue-700',
+                                    'icon' => 'bx-lungs'
+                                ],
+                                'general' => [
+                                    'symptoms' => ['fever_two_weeks', 'night_sweats', 'weight_loss', 'body_tired', 'loss_appetite'],
+                                    'bg' => 'bg-violet-50',
+                                    'border' => 'border-violet-200',
+                                    'text' => 'text-violet-700',
+                                    'icon' => 'bx-body'
+                                ],
+                                'other' => [
+                                    'symptoms' => ['back_pain', 'lumps', 'swollen_lymph'],
+                                    'bg' => 'bg-fuchsia-50',
+                                    'border' => 'border-fuchsia-200',
+                                    'text' => 'text-fuchsia-700',
+                                    'icon' => 'bx-pulse'
+                                ]
+                            ];
+
+                            // Helper function to get symptom category
+                            function getSymptomCategory($symptom, $categories)
+                            {
+                                foreach ($categories as $category => $data) {
+                                    if (in_array($symptom, $data['symptoms'])) {
+                                        return $category;
+                                    }
+                                }
+                                return 'other';
+                            }
+
+                            foreach ($selectedSymptoms as $symptomKey => $symptomLabel):
+                                $category = getSymptomCategory($symptomKey, $symptomCategories);
+                                $categoryData = $symptomCategories[$category];
+                                ?>
+                                <div
+                                    class="symptom-tag <?= $categoryData['bg'] ?> border <?= $categoryData['border'] ?> p-3 rounded-lg flex items-center">
+                                    <i class='bx <?= $categoryData['icon'] ?> <?= $categoryData['text'] ?> mr-2'></i>
+                                    <span class="text-gray-700"><?= $symptomLabel ?></span>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Important Note -->
+                <div
+                    class="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-2xl shadow-md p-6 border border-yellow-100 mb-10">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 bg-amber-100 p-2 rounded-full">
+                            <i class='bx bx-info-circle text-2xl text-amber-600'></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-semibold text-amber-800 mb-2">Important Note</h3>
+                            <div class="text-amber-700 space-y-2">
+                                <p>
+                                    This analysis is based on the symptoms you've reported and uses machine learning to
+                                    estimate risk.
+                                    It is not a medical diagnosis. TB can only be diagnosed by a healthcare professional
+                                    through proper testing.
+                                </p>
+                                <p>
+                                    If you're experiencing concerning symptoms, please consult with a healthcare
+                                    provider
+                                    regardless of the results shown here.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <a href="<?= BASE_URL ?>/symptoms-checker" class="btn-back">
+                        <i class='bx bx-left-arrow-alt mr-2'></i> Back to Checker
+                    </a>
+
+                    <div class="action-group">
+                        <a href="<?= BASE_URL ?>/learn-about-tb" class="btn-learn">
+                            <i class='bx bx-book-open mr-2'></i> Learn About TB
+                        </a>
+
+                        <a href="<?= BASE_URL ?>/appointment/doctor-availability" class="btn-appointment">
+                            <i class='bx bx-calendar-plus mr-2'></i> Book an Appointment
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
 
-    <!-- Modern Footer -->
-    <footer class="bg-gray-900 text-white mt-16">
-        <div class="container mx-auto px-4 pt-12 pb-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div class="md:col-span-2">
-                    <div class="flex items-center mb-4">
-                        <div class="bg-white p-2 rounded-full shadow-md mr-3">
-                            <i class='bx bx-plus-medical text-xl text-indigo-600'></i>
-                        </div>
-                        <h3 class="text-xl font-bold">Health Recording System</h3>
-                    </div>
-                    <p class="text-gray-400 mb-4 max-w-md">
-                        Providing advanced health monitoring and diagnostic tools to help you stay informed about your health and make better healthcare decisions.
-                    </p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="bg-gray-800 hover:bg-gray-700 h-10 w-10 rounded-full flex items-center justify-center transition duration-300">
-                            <i class='bx bxl-facebook text-xl'></i>
-                        </a>
-                        <a href="#" class="bg-gray-800 hover:bg-gray-700 h-10 w-10 rounded-full flex items-center justify-center transition duration-300">
-                            <i class='bx bxl-twitter text-xl'></i>
-                        </a>
-                        <a href="#" class="bg-gray-800 hover:bg-gray-700 h-10 w-10 rounded-full flex items-center justify-center transition duration-300">
-                            <i class='bx bxl-instagram text-xl'></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <div>
-                    <h3 class="text-lg font-semibold mb-4 border-b border-gray-800 pb-2">Quick Links</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="<?= BASE_URL ?>/" class="hover:text-white transition duration-300 flex items-center"><i class='bx bx-chevron-right text-sm mr-2'></i> Home</a></li>
-                        <li><a href="<?= BASE_URL ?>/appointment/doctor-availability" class="hover:text-white transition duration-300 flex items-center"><i class='bx bx-chevron-right text-sm mr-2'></i> Book Appointment</a></li>
-                        <li><a href="<?= BASE_URL ?>/symptoms-checker" class="hover:text-white transition duration-300 flex items-center"><i class='bx bx-chevron-right text-sm mr-2'></i> TB Symptoms Checker</a></li>
-                        <li><a href="<?= BASE_URL ?>/appointment-tracking" class="hover:text-white transition duration-300 flex items-center"><i class='bx bx-chevron-right text-sm mr-2'></i> Track Appointment</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h3 class="text-lg font-semibold mb-4 border-b border-gray-800 pb-2">Contact</h3>
-                    <ul class="space-y-3 text-gray-400">
-                        <li class="flex items-start">
-                            <i class='bx bx-envelope text-indigo-400 mt-1 mr-3'></i> 
-                            <span>support@healthsystem.com</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class='bx bx-phone text-indigo-400 mt-1 mr-3'></i> 
-                            <span>+1 (555) 123-4567</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class='bx bx-map text-indigo-400 mt-1 mr-3'></i> 
-                            <span>123 Medical Center Dr, Health City</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="border-t border-gray-800 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
-                <p class="text-gray-500 text-sm">&copy; <?= date('Y') ?> Health Recording System. All rights reserved.</p>
-                <div class="mt-4 md:mt-0">
-                    <ul class="flex space-x-6 text-sm text-gray-500">
-                        <li><a href="#" class="hover:text-white transition duration-300">Privacy Policy</a></li>
-                        <li><a href="#" class="hover:text-white transition duration-300">Terms of Service</a></li>
-                        <li><a href="#" class="hover:text-white transition duration-300">Cookie Policy</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </footer>
-    
     <script src="<?= BASE_URL ?>/node_modules/chart.js/dist/chart.umd.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Prepare data for the chart
-            const ctx = document.getElementById('symptomsChart').getContext('2d');
-            
-            <?php
-            // Prepare data for the doughnut chart
-            $presentCount = $symptomCount;
-            $absentCount = $totalSymptoms - $symptomCount;
-            ?>
-            
-            const data = {
-                labels: ['Present Symptoms', 'Absent Symptoms'],
-                datasets: [{
-                    data: [<?= $presentCount ?>, <?= $absentCount ?>],
-                    backgroundColor: [
-                        '<?= $probability < 30 ? "rgba(16, 185, 129, 0.8)" : 
-                            ($probability < 70 ? "rgba(245, 158, 11, 0.8)" : "rgba(239, 68, 68, 0.8)") ?>',
-                        'rgba(209, 213, 219, 0.8)'
-                    ],
-                    borderColor: [
-                        '<?= $probability < 30 ? "rgb(16, 185, 129)" : 
-                            ($probability < 70 ? "rgb(245, 158, 11)" : "rgb(239, 68, 68)") ?>',
-                        'rgb(209, 213, 219)'
-                    ],
-                    borderWidth: 1,
-                    hoverOffset: 4
-                }]
-            };
-            
-            const config = {
-                type: 'doughnut',
-                data: data,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '70%',
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 20,
-                                boxWidth: 12,
-                                font: {
-                                    family: "'Inter', sans-serif",
-                                    size: 12
-                                }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.raw || 0;
-                                    const total = context.dataset.data.reduce((acc, val) => acc + val, 0);
-                                    const percentage = Math.round((value / total) * 100);
-                                    return `${label}: ${value} (${percentage}%)`;
-                                }
-                            },
-                            titleFont: {
-                                family: "'Inter', sans-serif"
-                            },
-                            bodyFont: {
-                                family: "'Inter', sans-serif"
-                            },
-                            padding: 12,
-                            boxPadding: 6
-                        }
-                    },
-                    animation: {
-                        animateScale: true,
-                        animateRotate: true,
-                        duration: 2000,
-                        easing: 'easeOutQuart'
-                    }
-                }
-            };
-            
-            new Chart(ctx, config);
-            
-            // Animate the probability bar on load
-            const probabilityBar = document.querySelector('.h-3 .absolute');
-            if (probabilityBar) {
-                probabilityBar.style.width = '0%';
-                setTimeout(() => {
-                    probabilityBar.style.width = '<?= $probability ?>%';
-                }, 300);
-            }
-        });
-    </script>
+    <script src="<?= BASE_URL ?>/js/symptoms-chart.js"></script>
+
+
 </body>
-</html>

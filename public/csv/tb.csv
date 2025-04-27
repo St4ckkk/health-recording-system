@@ -1,4 +1,4 @@
-no,id,name,gender,date,time,fever for two weeks,coughing blood,sputum mixed with blood,night sweats ,chest pain,back pain in certain parts ,shortness of breath,weight loss ,body feels tired,lumps that appear around the armpits and neck,cough and phlegm continuously for two weeks to four weeks,swollen lymph nodes,loss of appetite
+no,id,name,gender,date,time,fever for two weeks,coughing blood,sputum mixed with blood,night sweats,chest pain,back pain in certain parts,shortness of breath,weight loss,body feels tired,lumps that appear around the armpits and neck,cough and phlegm continuously for two weeks to four weeks,swollen lymph nodes,loss of appetite,tb_diagnosis_probability,recommended_test,diagnosis_confirmed,treatment_regimen,treatment_duration_weeks,follow_up_schedule,isolation_required,hospitalization_needed,nutritional_support,symptom_severity_score
 1,8048761033,Noe,Male,12/10/2020,4:51 pm,0,1,1,1,1,1,1,1,0,0,1,0,1
 2,793846900,Genna,Male,11/16/2020,9:35 am,1,1,1,0,0,1,1,0,0,0,1,1,1
 3,5619727459,Leesa,Male,1/18/2020,8:38 pm,0,0,1,1,0,1,0,0,0,1,1,1,1

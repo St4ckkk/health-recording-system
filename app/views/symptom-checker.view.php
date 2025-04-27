@@ -50,8 +50,8 @@
 
         /* Header Styles */
         header {
-            background: linear-gradient(to right, #6366f1, #4f46e5);
-            color: white;
+            background: white;
+            color: #1e293b;
             box-shadow: var(--shadow-lg);
             position: sticky;
             top: 0;
@@ -59,16 +59,85 @@
         }
 
         .header-content {
+            background-color: white;
+        }
+
+        .nav-link {
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all var(--transition-normal);
+        }
+
+        .nav-link:hover {
+            background-color: #f1f5f9;
+        }
+
+        .nav-link.active {
+            background-color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        .header-content {
             backdrop-filter: blur(8px);
-            background-color: rgba(99, 102, 241, 0.3);
+            background-color: rgba(99, 102, 241, 0.1);
         }
 
         .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
             display: flex;
-            flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 1.5rem;
+        }
+
+        .header-right ul {
+            display: flex;
+            gap: 1rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            color: white;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all var(--transition-normal);
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+
+        .nav-link i {
+            font-size: 1.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header-right ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
         }
 
         @media (min-width: 768px) {
@@ -533,35 +602,63 @@
             margin-right: 0.25rem;
             font-size: 1rem;
         }
+
+        /* Loader Styles */
+        .circular-loader {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            animation: rotate 2s linear infinite;
+        }
+
+        .loader-path {
+            stroke-dasharray: 150, 200;
+            stroke-dashoffset: -10;
+            stroke-linecap: round;
+            stroke-width: 4px;
+            stroke: #6366f1;
+            fill: none;
+            animation: dash 1.5s ease-in-out infinite;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 4px solid transparent;
+            border-top-color: #6366f1;
+            border-radius: 50%;
+        }
+
+        @keyframes rotate {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes dash {
+            0% {
+                stroke-dasharray: 1, 150;
+                stroke-dashoffset: 0;
+            }
+
+            50% {
+                stroke-dasharray: 90, 150;
+                stroke-dashoffset: -35;
+            }
+
+            100% {
+                stroke-dasharray: 90, 150;
+                stroke-dashoffset: -124;
+            }
+        }
+
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
     </style>
 </head>
 
 <body>
-    <!-- Modern Header with Glassmorphism -->
-    <header>
-        <div class="header-content">
-            <div class="header-container container">
-                <div class="logo-container">
-                    <div class="logo-icon">
-                        <i class='bx bx-plus-medical text-2xl text-indigo-600'></i>
-                    </div>
-                    <h1 class="logo-text">Health Recording System</h1>
-                </div>
-                <nav>
-                    <ul>
-                        <li><a href="<?= BASE_URL ?>/" class="nav-link"><i class='bx bx-home-alt'></i> Home</a></li>
-                        <li><a href="<?= BASE_URL ?>/appointment/doctor-availability" class="nav-link"><i
-                                    class='bx bx-calendar-check'></i> Appointments</a></li>
-                        <li><a href="<?= BASE_URL ?>/symptoms-checker" class="nav-link active"><i
-                                    class='bx bx-check-shield'></i> TB Checker</a></li>
-                        <li><a href="<?= BASE_URL ?>/appointment-tracking" class="nav-link"><i class='bx bx-radar'></i>
-                                Track</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </header>
-
     <main class="container">
         <!-- Page Title -->
         <div class="page-title-container fade-in">
@@ -771,7 +868,7 @@
                     </div>
 
                     <div class="flex justify-center mt-8">
-                        <button type="submit" class="btn btn-primary btn-lg pulse">
+                        <button type="submit" class="btn btn-primary btn-lg pulse" id="analyzeBtn">
                             <i class='bx bx-search-alt btn-icon'></i>
                             Analyze Symptoms
                         </button>
@@ -781,12 +878,46 @@
         </div>
     </main>
 
+    <!-- Analysis Loader (Hidden by default) -->
+    <div id="analysisLoader" class="card fade-in" style="display: none;">
+        <div class="card-body text-center py-16">
+            <div class="flex flex-col items-center justify-center">
+                <!-- Animated Loader -->
+                <div class="loader-container mb-8">
+                    <img src="<?= BASE_URL ?>/images/loader.gif" alt="Loading..." width="150" height="150"
+                        class="mx-auto">
+                </div>
+
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Analyzing Your Symptoms</h2>
+                <p class="text-gray-600 max-w-md mx-auto mb-6">
+                    Our AI system is processing your symptoms and calculating your TB risk profile.
+                    This will only take a few moments.
+                </p>
+
+                <!-- Progress Indicator -->
+                <div class="w-full max-w-md bg-gray-200 rounded-full h-2.5 mb-6">
+                    <div class="bg-indigo-600 h-2.5 rounded-full progress-bar" style="width: 0%"></div>
+                </div>
+
+                <!-- Status Messages -->
+                <div class="text-sm text-gray-500 status-message">Collecting symptom data...</div>
+            </div>
+        </div>
+    </div>
+    </main>
+
     <script src="<?= BASE_URL ?>/node_modules/chart.js/dist/chart.umd.js"></script>
     <script>
         // Simple script to show selected symptoms
         document.addEventListener('DOMContentLoaded', function () {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             const selectedSymptomsContainer = document.getElementById('selectedSymptoms');
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const analysisLoader = document.getElementById('analysisLoader');
+            const form = document.querySelector('form');
+            const progressBar = document.querySelector('.progress-bar');
+            const statusMessage = document.querySelector('.status-message');
+            const mainCard = document.querySelector('.card:not(#analysisLoader)');
 
             checkboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', updateSelectedSymptoms);
@@ -822,8 +953,63 @@
                     selectedSymptomsContainer.appendChild(tag);
                 });
             }
+
+            // Add form submission handler with 5-second loader
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    const selectedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+                    if (selectedCheckboxes.length > 0) {
+                        e.preventDefault(); // Prevent immediate form submission
+
+                        // Update progress steps
+                        const progressSteps = document.querySelectorAll('.progress-step');
+                        progressSteps[0].classList.remove('active');
+                        progressSteps[1].classList.add('active');
+
+                        // Hide the main card and show the loader
+                        mainCard.style.display = 'none';
+                        analysisLoader.style.display = 'block';
+
+                        // Animate the progress bar over 5 seconds
+                        let progress = 0;
+                        const totalTime = 5000; // 5 seconds
+                        const interval = 50; // Update every 50ms
+                        const increment = (interval / totalTime) * 100;
+
+                        const progressInterval = setInterval(() => {
+                            progress += increment;
+                            if (progress > 100) progress = 100;
+                            progressBar.style.width = `${progress}%`;
+
+                            // Update status messages based on progress
+                            if (progress < 25) {
+                                statusMessage.textContent = 'Collecting symptom data...';
+                            } else if (progress < 50) {
+                                statusMessage.textContent = 'Running TB risk assessment algorithm...';
+                            } else if (progress < 75) {
+                                statusMessage.textContent = 'Analyzing symptom patterns...';
+                            } else {
+                                statusMessage.textContent = 'Finalizing results...';
+                            }
+
+                            if (progress >= 100) {
+                                clearInterval(progressInterval);
+                                // Submit the form after reaching 100%
+                                setTimeout(() => {
+                                    form.submit();
+                                }, 300); // Small delay to show 100% completion
+                            }
+                        }, interval);
+                    }
+                });
+            }
         });
     </script>
+
+    <!-- Add these styles to the existing style section in the head -->
+    <style>
+
+    </style>
 </body>
 
 </html>
