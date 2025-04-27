@@ -660,7 +660,10 @@
 
 <body>
     <main class="container">
-        <!-- Page Title -->
+        <div class="flex justify-center mb-2">
+            <img src="<?= BASE_URL ?>/images/logo.png" alt="TB Health Recording System" class="object-contain"
+                style="height: 100px; width: 100px">
+        </div>
         <div class="page-title-container fade-in">
             <span class="page-badge">Health Assessment</span>
             <h1 class="page-title">TB Symptoms Checker</h1>
