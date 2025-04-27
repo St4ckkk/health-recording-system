@@ -219,6 +219,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Function to preview uploaded image
+    // Move these functions outside of DOMContentLoaded
     function previewImage(input) {
         const preview = document.getElementById('profilePreview');
         const removeBtn = document.getElementById('removeImageBtn');
@@ -227,7 +228,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const reader = new FileReader();
 
             reader.onload = function (e) {
-                preview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                // Create a new image element
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = 'w-full h-full object-cover rounded-full';
+
+                // Clear the preview and add the new image
+                preview.innerHTML = '';
+                preview.appendChild(img);
                 preview.appendChild(removeBtn);
                 removeBtn.style.display = 'flex';
             }
@@ -238,25 +246,26 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Function to remove profile image
     function removeProfileImage() {
         const input = document.getElementById('profileImage');
         input.value = '';
         resetProfilePreview();
     }
 
-    // Function to reset profile preview
     function resetProfilePreview() {
         const preview = document.getElementById('profilePreview');
         const removeBtn = document.getElementById('removeImageBtn');
 
-        preview.innerHTML = `<i class="bx bx-user text-4xl text-gray-400"></i>`;
+        preview.innerHTML = '<i class="bx bx-user text-4xl text-gray-400"></i>';
         preview.appendChild(removeBtn);
         removeBtn.style.display = 'none';
     }
 
     // Add event listener for remove button
-    document.getElementById('removeImageBtn').addEventListener('click', removeProfileImage);
+    const removeBtn = document.getElementById('removeImageBtn');
+    if (removeBtn) {
+        removeBtn.addEventListener('click', removeProfileImage);
+    }
 
     // Make these functions available globally
     window.calculateAge = calculateAge;

@@ -5,26 +5,32 @@
         <div class="flex items-center">
             <i class="bx bx-droplet text-red-500 mr-2"></i>
             <span class="text-2xl font-bold">
-                <?= isset($vitals->blood_pressure) ? $vitals->blood_pressure : '138/88' ?>
+                <?php if (isset($vitals->blood_pressure)): ?>
+                    <?= $vitals->blood_pressure ?>
+                <?php else: ?>
+                    <span class="text-gray-500 text-lg font-normal">No record</span>
+                <?php endif; ?>
             </span>
 
-            <?php
-            $bp = $vitals->blood_pressure ?? '138/88';
-            $systolic = explode('/', $bp)[0];
-            $diastolic = explode('/', $bp)[1];
-            $bpCategory = getBPCategory($systolic, $diastolic);
+            <?php if (isset($vitals->blood_pressure)): ?>
+                <?php
+                $bp = $vitals->blood_pressure;
+                $systolic = explode('/', $bp)[0];
+                $diastolic = explode('/', $bp)[1];
+                $bpCategory = getBPCategory($systolic, $diastolic);
 
-            echo '<span class="ml-2 px-2 py-1 bg-' . $bpCategory['class'] . '-100 text-' . $bpCategory['class'] . '-700 text-xs rounded-full">' . $bpCategory['category'] . '</span>';
+                echo '<span class="ml-2 px-2 py-1 bg-' . $bpCategory['class'] . '-100 text-' . $bpCategory['class'] . '-700 text-xs rounded-full">' . $bpCategory['category'] . '</span>';
 
-            if ($bpCategory['class'] != 'green') {
-                echo '<div class="absolute top-0 right-0 m-2 text-' . $bpCategory['class'] . '-500 cursor-help" title="' . $bpCategory['advice'] . '">
-                        <i class="bx bx-info-circle"></i>
-                      </div>';
-            }
-            ?>
+                if ($bpCategory['class'] != 'green') {
+                    echo '<div class="absolute top-0 right-0 m-2 text-' . $bpCategory['class'] . '-500 cursor-help" title="' . $bpCategory['advice'] . '">
+                            <i class="bx bx-info-circle"></i>
+                        </div>';
+                }
+                ?>
+            <?php endif; ?>
         </div>
-        <div class="mt-2 text-xs">
-            <?php if (isset($vitals->bp_trend)): ?>
+        <?php if (isset($vitals->bp_trend)): ?>
+            <div class="mt-2 text-xs">
                 <div class="flex items-center">
                     <?php if ($vitals->bp_trend === 'up'): ?>
                         <i class="bx bx-trending-up text-red-500"></i>
@@ -34,10 +40,10 @@
                         <span class="text-green-500 ml-1">Improving from last visit</span>
                     <?php endif; ?>
                 </div>
-            <?php endif; ?>
-        </div>
+            </div>
+        <?php endif; ?>
         <p class="text-xs text-gray-500 mt-2">
-            Last checked: <?= isset($vitals->bp_date) ? $vitals->blood_pressure_date : date('Y-m-d') ?>
+            Last checked: <?= isset($vitals->bp_date) ? $vitals->blood_pressure_date : 'No record' ?>
         </p>
     </div>
 
@@ -47,21 +53,27 @@
         <div class="flex items-center">
             <i class="bx bx-droplet text-purple-500 mr-2"></i>
             <span class="text-2xl font-bold">
-                <?= isset($vitals->glucose_level) ? $vitals->glucose_level : '126' ?> mg/dL
+                <?php if (isset($vitals->glucose_level)): ?>
+                    <?= $vitals->glucose_level ?> mg/dL
+                <?php else: ?>
+                    <span class="text-gray-500 text-lg font-normal">No record</span>
+                <?php endif; ?>
             </span>
-            <?php
-            $glucose = $vitals->glucose_level ?? 126;
-            $isFasting = $vitals->glucose_fasting ?? true;
-            $glucoseCategory = getGlucoseCategory($glucose, $isFasting);
+            <?php if (isset($vitals->glucose_level)): ?>
+                <?php
+                $glucose = $vitals->glucose_level;
+                $isFasting = $vitals->glucose_fasting ?? true;
+                $glucoseCategory = getGlucoseCategory($glucose, $isFasting);
 
-            echo '<span class="ml-2 px-2 py-1 bg-' . $glucoseCategory['class'] . '-100 text-' . $glucoseCategory['class'] . '-700 text-xs rounded-full">' . $glucoseCategory['category'] . '</span>';
+                echo '<span class="ml-2 px-2 py-1 bg-' . $glucoseCategory['class'] . '-100 text-' . $glucoseCategory['class'] . '-700 text-xs rounded-full">' . $glucoseCategory['category'] . '</span>';
 
-            if ($glucoseCategory['class'] != 'green') {
-                echo '<div class="absolute top-0 right-0 m-2 text-' . $glucoseCategory['class'] . '-500 cursor-help" title="' . $glucoseCategory['advice'] . '">
-                     <i class="bx bx-info-circle px-1"></i>
-                     </div>';
-            }
-            ?>
+                if ($glucoseCategory['class'] != 'green') {
+                    echo '<div class="absolute top-0 right-0 m-2 text-' . $glucoseCategory['class'] . '-500 cursor-help" title="' . $glucoseCategory['advice'] . '">
+                         <i class="bx bx-info-circle px-1"></i>
+                         </div>';
+                }
+                ?>
+            <?php endif; ?>
         </div>
         <?php if (isset($vitals->glucose_trend)): ?>
             <div class="mt-2 text-xs">
@@ -77,9 +89,9 @@
             </div>
         <?php endif; ?>
         <p class="text-xs text-gray-500 mt-2">
-            <?= $isFasting ? '<span class="text-blue-500 font-medium">Fasting</span> • ' : '' ?>
+            <?= isset($vitals->glucose_fasting) && $vitals->glucose_fasting ? '<span class="text-blue-500 font-medium">Fasting</span> • ' : '' ?>
             Last checked:
-            <?= isset($vitals->glucose_date) ? $vitals->glucose_date : date('Y-m-d', strtotime('-3 days')) ?>
+            <?= isset($vitals->glucose_date) ? $vitals->glucose_date : 'No record' ?>
         </p>
     </div>
 
@@ -89,21 +101,27 @@
         <div class="flex items-center">
             <i class="bx bx-heart text-red-500 mr-2"></i>
             <span class="text-2xl font-bold">
-                <?= isset($vitals->heart_rate) ? $vitals->heart_rate : '72' ?> bpm
+                <?php if (isset($vitals->heart_rate)): ?>
+                    <?= $vitals->heart_rate ?> bpm
+                <?php else: ?>
+                    <span class="text-gray-500 text-lg font-normal">No record</span>
+                <?php endif; ?>
             </span>
-            <?php
-            $heartRate = $vitals->heart_rate ?? 72;
-            $patientAge = $patient->age ?? 50;
-            $hrCategory = getHeartRateCategory($heartRate, $patientAge);
+            <?php if (isset($vitals->heart_rate)): ?>
+                <?php
+                $heartRate = $vitals->heart_rate;
+                $patientAge = $patient->age ?? 50;
+                $hrCategory = getHeartRateCategory($heartRate, $patientAge);
 
-            echo '<span class="ml-2 px-2 py-1 bg-' . $hrCategory['class'] . '-100 text-' . $hrCategory['class'] . '-700 text-xs rounded-full">' . $hrCategory['category'] . '</span>';
+                echo '<span class="ml-2 px-2 py-1 bg-' . $hrCategory['class'] . '-100 text-' . $hrCategory['class'] . '-700 text-xs rounded-full">' . $hrCategory['category'] . '</span>';
 
-            if ($hrCategory['class'] != 'green') {
-                echo '<div class="absolute top-0 right-0 m-2 text-' . $hrCategory['class'] . '-500 cursor-help" title="' . $hrCategory['advice'] . '">
-                     <i class="bx bx-info-circle"></i>
-                     </div>';
-            }
-            ?>
+                if ($hrCategory['class'] != 'green') {
+                    echo '<div class="absolute top-0 right-0 m-2 text-' . $hrCategory['class'] . '-500 cursor-help" title="' . $hrCategory['advice'] . '">
+                         <i class="bx bx-info-circle"></i>
+                         </div>';
+                }
+                ?>
+            <?php endif; ?>
         </div>
         <?php if (isset($vitals->heart_rate_trend) || isset($vitals->heart_rhythm)): ?>
             <div class="mt-2 text-xs">
@@ -129,7 +147,7 @@
         <?php endif; ?>
         <p class="text-xs text-gray-500 mt-2">
             Last checked:
-            <?= isset($vitals->heart_rate_date) ? $vitals->heart_rate_date : date('Y-m-d', strtotime('-3 days')) ?>
+            <?= isset($vitals->heart_rate_date) ? $vitals->heart_rate_date : 'No record' ?>
         </p>
     </div>
 
@@ -139,67 +157,82 @@
         <div class="flex items-center">
             <i class="bx bx-trending-up text-blue-500 mr-2"></i>
             <span class="text-2xl font-bold">
-                <?php
-                $weight = floatval($vitals->weight ?? '70');
-                echo $weight . 'kg';
-                ?>
+                <?php if (isset($vitals->weight)): ?>
+                    <?= $vitals->weight ?>kg
+                <?php else: ?>
+                    <span class="text-gray-500 text-lg font-normal">No record</span>
+                <?php endif; ?>
             </span>
-            <?php
-            $height = $vitals->height ?? "5'10\"";
-            $bmi = calculateBMI($weight, $height);
+            <?php if (isset($vitals->weight)): ?>
+                <?php
+                $weight = floatval($vitals->weight);
+                $height = $vitals->height ?? null;
 
-            if ($bmi >= 40) {
-                echo '<span class="ml-2 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">Class III Obesity</span>';
-                echo '<div class="absolute top-0 right-0 m-2 text-red-500 cursor-help" title="Consider bariatric surgery evaluation and intensive weight management program">
-                     <i class="bx bx-info-circle"></i>
-                     </div>';
-            } elseif ($bmi >= 35) {
-                echo '<span class="ml-2 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">Class II Obesity</span>';
-                echo '<div class="absolute top-0 right-0 m-2 text-red-500 cursor-help" title="Consider weight management program and evaluate for comorbidities">
-                     <i class="bx bx-info-circle"></i>
-                     </div>';
-            } elseif ($bmi >= 30) {
-                echo '<span class="ml-2 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">Class I Obesity</span>';
-                echo '<div class="absolute top-0 right-0 m-2 text-red-500 cursor-help" title="Consider referral to nutritionist and weight management program">
-                     <i class="bx bx-info-circle"></i>
-                     </div>';
-            } elseif ($bmi >= 25) {
-                echo '<span class="ml-2 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">Overweight</span>';
-                echo '<div class="absolute top-0 right-0 m-2 text-yellow-500 cursor-help" title="Consider lifestyle modifications and dietary counseling">
-                     <i class="bx bx-info-circle"></i>
-                     </div>';
-            } elseif ($bmi >= 18.5 && $bmi < 25) {
-                echo '<span class="ml-2 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Normal</span>';
-            } elseif ($bmi >= 17 && $bmi < 18.5) {
-                echo '<span class="ml-2 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">Mild Underweight</span>';
-                echo '<div class="absolute top-0 right-0 m-2 text-yellow-500 cursor-help" title="Consider nutritional assessment and supplementation">
-                     <i class="bx bx-info-circle"></i>
-                     </div>';
-            } else {
-                echo '<span class="ml-2 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">Severe Underweight</span>';
-                echo '<div class="absolute top-0 right-0 m-2 text-red-500 cursor-help" title="Evaluate for underlying conditions and consider nutritional intervention">
-                     <i class="bx bx-info-circle"></i>
-                     </div>';
-            }
-            ?>
+                if ($height) {
+                    $bmi = calculateBMI($weight, $height);
+
+                    if ($bmi >= 40) {
+                        echo '<span class="ml-2 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">Class III Obesity</span>';
+                        echo '<div class="absolute top-0 right-0 m-2 text-red-500 cursor-help" title="Consider bariatric surgery evaluation and intensive weight management program">
+                             <i class="bx bx-info-circle"></i>
+                             </div>';
+                    } elseif ($bmi >= 35) {
+                        echo '<span class="ml-2 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">Class II Obesity</span>';
+                        echo '<div class="absolute top-0 right-0 m-2 text-red-500 cursor-help" title="Consider weight management program and evaluate for comorbidities">
+                             <i class="bx bx-info-circle"></i>
+                             </div>';
+                    } elseif ($bmi >= 30) {
+                        echo '<span class="ml-2 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">Class I Obesity</span>';
+                        echo '<div class="absolute top-0 right-0 m-2 text-red-500 cursor-help" title="Consider referral to nutritionist and weight management program">
+                             <i class="bx bx-info-circle"></i>
+                             </div>';
+                    } elseif ($bmi >= 25) {
+                        echo '<span class="ml-2 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">Overweight</span>';
+                        echo '<div class="absolute top-0 right-0 m-2 text-yellow-500 cursor-help" title="Consider lifestyle modifications and dietary counseling">
+                             <i class="bx bx-info-circle"></i>
+                             </div>';
+                    } elseif ($bmi >= 18.5 && $bmi < 25) {
+                        echo '<span class="ml-2 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Normal</span>';
+                    } elseif ($bmi >= 17 && $bmi < 18.5) {
+                        echo '<span class="ml-2 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">Mild Underweight</span>';
+                        echo '<div class="absolute top-0 right-0 m-2 text-yellow-500 cursor-help" title="Consider nutritional assessment and supplementation">
+                             <i class="bx bx-info-circle"></i>
+                             </div>';
+                    } else {
+                        echo '<span class="ml-2 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">Severe Underweight</span>';
+                        echo '<div class="absolute top-0 right-0 m-2 text-red-500 cursor-help" title="Evaluate for underlying conditions and consider nutritional intervention">
+                             <i class="bx bx-info-circle"></i>
+                             </div>';
+                    }
+
+                    echo '</div>';
+                    echo '<p class="text-xs text-gray-500 mt-2">BMI: ' . number_format($bmi, 1) . '</p>';
+                }
+                ?>
+                <p class="text-xs text-gray-500 mt-2">BMI: <?= number_format($bmi, 1) ?></p>
+            <?php endif; ?>
         </div>
-        <p class="text-xs text-gray-500 mt-2">BMI: <?= number_format($bmi, 1) ?></p>
-        <?php if (isset($vitals->weight_trend)): ?>
+        <?php if (isset($vitals->weight_trend) && isset($vitals->weight)): ?>
             <div class="mt-1 text-xs">
                 <div class="flex items-center">
-                    <?php if ($vitals->weight_trend === 'up' && $bmi >= 25): ?>
+                    <?php
+                    $weight = floatval($vitals->weight);
+                    $height = $vitals->height ?? null;
+                    $bmi = $height ? calculateBMI($weight, $height) : null;
+
+                    if ($vitals->weight_trend === 'up' && $bmi && $bmi >= 25): ?>
                         <i class="bx bx-trending-up text-red-500"></i>
                         <span class="text-red-500 ml-1">Weight increasing - Consider intervention</span>
-                    <?php elseif ($vitals->weight_trend === 'down' && $bmi < 18.5): ?>
+                    <?php elseif ($vitals->weight_trend === 'down' && $bmi && $bmi < 18.5): ?>
                         <i class="bx bx-trending-down text-red-500"></i>
                         <span class="text-red-500 ml-1">Weight decreasing - Monitor closely</span>
-                    <?php elseif ($vitals->weight_trend === 'up' && $bmi < 18.5): ?>
+                    <?php elseif ($vitals->weight_trend === 'up' && $bmi && $bmi < 18.5): ?>
                         <i class="bx bx-trending-up text-green-500"></i>
                         <span class="text-green-500 ml-1">Weight improving</span>
-                    <?php elseif ($vitals->weight_trend === 'down' && $bmi >= 25): ?>
+                    <?php elseif ($vitals->weight_trend === 'down' && $bmi && $bmi >= 25): ?>
                         <i class="bx bx-trending-down text-green-500"></i>
                         <span class="text-green-500 ml-1">Weight improving</span>
-                    <?php elseif ($vitals->weight_trend === 'down' && $bmi >= 18.5 && $bmi < 25): ?>
+                    <?php elseif ($vitals->weight_trend === 'down' && $bmi && $bmi >= 18.5 && $bmi < 25): ?>
                         <i class="bx bx-trending-down text-yellow-500"></i>
                         <span class="text-yellow-500 ml-1">Weight loss in TB patient - Monitor closely</span>
                     <?php endif; ?>
@@ -208,9 +241,10 @@
         <?php endif; ?>
 
         <!-- TB-specific weight monitoring -->
-        <?php if (isset($tbTreatmentData)): ?>
+        <?php if (isset($tbTreatmentData) && isset($vitals->weight)): ?>
             <div class="mt-1 text-xs">
                 <?php
+                $weight = floatval($vitals->weight);
                 $weightAtDiagnosis = $tbTreatmentData->weight_at_diagnosis ?? null;
                 if ($weightAtDiagnosis && $weight < $weightAtDiagnosis * 0.95): ?>
                     <div class="flex items-center">
@@ -225,6 +259,11 @@
                 <?php endif; ?>
             </div>
         <?php endif; ?>
+
+        <p class="text-xs text-gray-500 mt-2">
+            Last checked:
+            <?= isset($vitals->weight_date) ? $vitals->weight_date : 'No record' ?>
+        </p>
     </div>
 
     <div class="border border-gray-200 rounded-lg p-4 relative">
@@ -232,12 +271,16 @@
         <div class="flex items-center">
             <i class="bx bx-ruler text-green-500 mr-2"></i>
             <span class="text-2xl font-bold">
-                <?= isset($vitals->height) ? $vitals->height : "5'10\"" ?>
+                <?php if (isset($vitals->height)): ?>
+                    <?= $vitals->height ?>
+                <?php else: ?>
+                    <span class="text-gray-500 text-lg font-normal">No record</span>
+                <?php endif; ?>
             </span>
         </div>
         <p class="text-xs text-gray-500 mt-2">
             Last checked:
-            <?= isset($vitals->height_date) ? $vitals->height_date : date('Y-m-d', strtotime('-3 days')) ?>
+            <?= isset($vitals->height_date) ? $vitals->height_date : 'No record' ?>
         </p>
     </div>
 
@@ -247,25 +290,33 @@
         <div class="flex items-center">
             <i class="bx bx-thermometer text-orange-500 mr-2"></i>
             <span class="text-2xl font-bold">
-                <?= isset($vitals->temperature) ? $vitals->temperature : '37.0' ?>°C
+                <?php if (isset($vitals->temperature)): ?>
+                    <?= $vitals->temperature ?>°C
+                <?php else: ?>
+                    <span class="text-gray-500 text-lg font-normal">No record</span>
+                <?php endif; ?>
             </span>
-            <?php
-            $temp = $vitals->temperature ?? 37.0;
-            $tempCategory = getTemperatureCategory($temp);
+            <?php if (isset($vitals->temperature)): ?>
+                <?php
+                $temp = $vitals->temperature;
+                $tempCategory = getTemperatureCategory($temp);
 
-            echo '<span class="ml-2 px-2 py-1 bg-' . $tempCategory['class'] . '-100 text-' . $tempCategory['class'] . '-700 text-xs rounded-full">' . $tempCategory['category'] . '</span>';
+                echo '<span class="ml-2 px-2 py-1 bg-' . $tempCategory['class'] . '-100 text-' . $tempCategory['class'] . '-700 text-xs rounded-full">' . $tempCategory['category'] . '</span>';
 
-            if ($tempCategory['class'] != 'green') {
-                echo '<div class="absolute top-0 right-0 m-2 text-' . $tempCategory['class'] . '-500 cursor-help" title="' . $tempCategory['advice'] . '">
-                     <i class="bx bx-info-circle"></i>
-                     </div>';
-            }
-            ?>
+                if ($tempCategory['class'] != 'green') {
+                    echo '<div class="absolute top-0 right-0 m-2 text-' . $tempCategory['class'] . '-500 cursor-help" title="' . $tempCategory['advice'] . '">
+                         <i class="bx bx-info-circle"></i>
+                         </div>';
+                }
+                ?>
+            <?php endif; ?>
         </div>
-        <?php if (isset($vitals->temperature_trend)): ?>
+        <?php if (isset($vitals->temperature_trend) && isset($vitals->temperature)): ?>
             <div class="mt-2 text-xs">
                 <div class="flex items-center">
-                    <?php if ($vitals->temperature_trend === 'up' && $temp >= 37.8): ?>
+                    <?php
+                    $temp = $vitals->temperature;
+                    if ($vitals->temperature_trend === 'up' && $temp >= 37.8): ?>
                         <i class="bx bx-trending-up text-red-500"></i>
                         <span class="text-red-500 ml-1">Temperature rising - Monitor closely</span>
                     <?php elseif ($vitals->temperature_trend === 'down' && $temp >= 37.8): ?>
@@ -283,7 +334,7 @@
         <?php endif; ?>
 
         <!-- TB-specific temperature monitoring -->
-        <?php if (isset($tbTreatmentData) && $temp >= 37.8): ?>
+        <?php if (isset($tbTreatmentData) && isset($vitals->temperature) && $vitals->temperature >= 37.8): ?>
             <div class="mt-1 text-xs">
                 <div class="flex items-center">
                     <i class="bx bx-error-circle text-red-500"></i>
@@ -300,7 +351,7 @@
 
         <p class="text-xs text-gray-500 mt-2">
             Last checked:
-            <?= isset($vitals->temperature_date) ? $vitals->temperature_date : date('Y-m-d', strtotime('-3 days')) ?>
+            <?= isset($vitals->temperature_date) ? $vitals->temperature_date : 'No record' ?>
         </p>
     </div>
 
@@ -310,27 +361,35 @@
         <div class="flex items-center">
             <i class="bx bx-wind text-blue-500 mr-2"></i>
             <span class="text-2xl font-bold">
-                <?= isset($vitals->respiratory_rate) ? $vitals->respiratory_rate : '16' ?> /min
+                <?php if (isset($vitals->respiratory_rate)): ?>
+                    <?= $vitals->respiratory_rate ?> /min
+                <?php else: ?>
+                    <span class="text-gray-500 text-lg font-normal">No record</span>
+                <?php endif; ?>
             </span>
-            <?php
-            $respRate = $vitals->respiratory_rate ?? 16;
-            $patientAge = $patient->age_category ?? 'adult';
-            $rrCategory = getRespiratoryRateCategory($respRate, $patientAge);
+            <?php if (isset($vitals->respiratory_rate)): ?>
+                <?php
+                $respRate = $vitals->respiratory_rate;
+                $patientAge = $patient->age_category ?? 'adult';
+                $rrCategory = getRespiratoryRateCategory($respRate, $patientAge);
 
-            echo '<span class="ml-2 px-2 py-1 bg-' . $rrCategory['class'] . '-100 text-' . $rrCategory['class'] . '-700 text-xs rounded-full">' . $rrCategory['category'] . '</span>';
+                echo '<span class="ml-2 px-2 py-1 bg-' . $rrCategory['class'] . '-100 text-' . $rrCategory['class'] . '-700 text-xs rounded-full">' . $rrCategory['category'] . '</span>';
 
-            if ($rrCategory['class'] != 'green') {
-                echo '<div class="absolute top-0 right-0 m-2 text-' . $rrCategory['class'] . '-500 cursor-help" title="' . $rrCategory['advice'] . '">
-                     <i class="bx bx-info-circle"></i>
-                     </div>';
-            }
-            ?>
+                if ($rrCategory['class'] != 'green') {
+                    echo '<div class="absolute top-0 right-0 m-2 text-' . $rrCategory['class'] . '-500 cursor-help" title="' . $rrCategory['advice'] . '">
+                         <i class="bx bx-info-circle"></i>
+                         </div>';
+                }
+                ?>
+            <?php endif; ?>
         </div>
-        <?php if (isset($vitals->respiratory_trend) || isset($vitals->respiratory_effort)): ?>
+        <?php if ((isset($vitals->respiratory_trend) || isset($vitals->respiratory_effort)) && isset($vitals->respiratory_rate)): ?>
             <div class="mt-2 text-xs">
                 <?php if (isset($vitals->respiratory_trend)): ?>
                     <div class="flex items-center">
-                        <?php if ($vitals->respiratory_trend === 'up' && $respRate > 20): ?>
+                        <?php
+                        $respRate = $vitals->respiratory_rate;
+                        if ($vitals->respiratory_trend === 'up' && $respRate > 20): ?>
                             <i class="bx bx-trending-up text-red-500"></i>
                             <span class="text-red-500 ml-1">Rate increasing - Monitor closely</span>
                         <?php elseif ($vitals->respiratory_trend === 'down' && $respRate > 20): ?>
@@ -356,7 +415,7 @@
         <?php endif; ?>
 
         <!-- TB-specific respiratory monitoring -->
-        <?php if (isset($tbTreatmentData) && $respRate > 20): ?>
+        <?php if (isset($tbTreatmentData) && isset($vitals->respiratory_rate) && $vitals->respiratory_rate > 20): ?>
             <div class="mt-1 text-xs">
                 <div class="flex items-center">
                     <i class="bx bx-error-circle text-red-500"></i>
@@ -369,7 +428,7 @@
 
         <p class="text-xs text-gray-500 mt-2">
             Last checked:
-            <?= isset($vitals->respiratory_rate_date) ? $vitals->respiratory_rate_date : date('Y-m-d', strtotime('-3 days')) ?>
+            <?= isset($vitals->respiratory_rate_date) ? $vitals->respiratory_rate_date : 'No record' ?>
         </p>
     </div>
 
@@ -379,26 +438,34 @@
         <div class="flex items-center">
             <i class="bx bx-water text-cyan-500 mr-2"></i>
             <span class="text-2xl font-bold">
-                <?= isset($vitals->oxygen_saturation) ? $vitals->oxygen_saturation : '98' ?>%
+                <?php if (isset($vitals->oxygen_saturation)): ?>
+                    <?= $vitals->oxygen_saturation ?>%
+                <?php else: ?>
+                    <span class="text-gray-500 text-lg font-normal">No record</span>
+                <?php endif; ?>
             </span>
-            <?php
-            $o2sat = $vitals->oxygen_saturation ?? 98;
-            $hasRespiratoryCondition = $patient->has_respiratory_condition ?? false;
-            $o2Category = getO2SatCategory($o2sat, $hasRespiratoryCondition);
+            <?php if (isset($vitals->oxygen_saturation)): ?>
+                <?php
+                $o2sat = $vitals->oxygen_saturation;
+                $hasRespiratoryCondition = $patient->has_respiratory_condition ?? false;
+                $o2Category = getO2SatCategory($o2sat, $hasRespiratoryCondition);
 
-            echo '<span class="ml-2 px-2 py-1 bg-' . $o2Category['class'] . '-100 text-' . $o2Category['class'] . '-700 text-xs rounded-full">' . $o2Category['category'] . '</span>';
+                echo '<span class="ml-2 px-2 py-1 bg-' . $o2Category['class'] . '-100 text-' . $o2Category['class'] . '-700 text-xs rounded-full">' . $o2Category['category'] . '</span>';
 
-            if ($o2Category['class'] != 'green') {
-                echo '<div class="absolute top-0 right-0 m-2 text-' . $o2Category['class'] . '-500 cursor-help" title="' . $o2Category['advice'] . '">
-                     <i class="bx bx-info-circle"></i>
-                     </div>';
-            }
-            ?>
+                if ($o2Category['class'] != 'green') {
+                    echo '<div class="absolute top-0 right-0 m-2 text-' . $o2Category['class'] . '-500 cursor-help" title="' . $o2Category['advice'] . '">
+                         <i class="bx bx-info-circle"></i>
+                         </div>';
+                }
+                ?>
+            <?php endif; ?>
         </div>
-        <?php if (isset($vitals->oxygen_trend)): ?>
+        <?php if (isset($vitals->oxygen_trend) && isset($vitals->oxygen_saturation)): ?>
             <div class="mt-2 text-xs">
                 <div class="flex items-center">
-                    <?php if ($vitals->oxygen_trend === 'down' && $o2sat < 95): ?>
+                    <?php
+                    $o2sat = $vitals->oxygen_saturation;
+                    if ($vitals->oxygen_trend === 'down' && $o2sat < 95): ?>
                         <i class="bx bx-trending-down text-red-500"></i>
                         <span class="text-red-500 ml-1">Saturation decreasing - Monitor closely</span>
                     <?php elseif ($vitals->oxygen_trend === 'up' && $o2sat < 95): ?>
@@ -410,7 +477,7 @@
         <?php endif; ?>
 
         <!-- TB-specific O2 saturation monitoring -->
-        <?php if (isset($tbTreatmentData) && $o2sat < 95): ?>
+        <?php if (isset($tbTreatmentData) && isset($vitals->oxygen_saturation) && $vitals->oxygen_saturation < 95): ?>
             <div class="mt-1 text-xs">
                 <div class="flex items-center">
                     <i class="bx bx-error-circle text-red-500"></i>
@@ -423,77 +490,10 @@
 
         <p class="text-xs text-gray-500 mt-2">
             Last checked:
-            <?= isset($vitals->oxygen_saturation_date) ? $vitals->oxygen_saturation_date : date('Y-m-d', strtotime('-3 days')) ?>
+            <?= isset($vitals->oxygen_saturation_date) ? $vitals->oxygen_saturation_date : 'No record' ?>
         </p>
     </div>
 
-    <!-- TB Sputum Status Card - New card specifically for TB patients -->
-    <?php if (isset($tbTreatmentData)): ?>
-        <div class="border border-gray-200 rounded-lg p-4 relative bg-amber-50">
-            <h4 class="text-md font-medium mb-2">TB Sputum Status</h4>
-            <div class="flex items-center">
-                <i class="bx bx-vial text-amber-500 mr-2"></i>
-                <span class="text-2xl font-bold">
-                    <?= isset($tbTreatmentData->latest_smear_result) ? ucfirst($tbTreatmentData->latest_smear_result) : 'Pending' ?>
-                </span>
-
-                <?php
-                $smearResult = $tbTreatmentData->latest_smear_result ?? 'unknown';
-                $smearClass = 'yellow';
-                $smearCategory = 'Pending';
-
-                if ($smearResult === 'positive') {
-                    $smearClass = 'red';
-                    $smearCategory = 'Positive';
-                } elseif ($smearResult === 'negative') {
-                    $smearClass = 'green';
-                    $smearCategory = 'Negative';
-                } elseif ($smearResult === 'scanty') {
-                    $smearClass = 'yellow';
-                    $smearCategory = 'Scanty';
-                }
-
-                echo '<span class="ml-2 px-2 py-1 bg-' . $smearClass . '-100 text-' . $smearClass . '-700 text-xs rounded-full">' . $smearCategory . '</span>';
-
-                if ($smearClass === 'red') {
-                    echo '<div class="absolute top-0 right-0 m-2 text-red-500 cursor-help" title="Positive sputum indicates active TB. Evaluate treatment efficacy if on therapy.">
-                     <i class="bx bx-info-circle"></i>
-                     </div>';
-                } elseif ($smearClass === 'yellow') {
-                    echo '<div class="absolute top-0 right-0 m-2 text-yellow-500 cursor-help" title="Scanty results may indicate early treatment response. Continue monitoring.">
-                     <i class="bx bx-info-circle"></i>
-                     </div>';
-                }
-                ?>
-            </div>
-
-            <div class="mt-2 text-xs">
-                <?php if (isset($tbTreatmentData->initial_smear_result) && isset($tbTreatmentData->latest_smear_result)): ?>
-                    <div class="flex items-center">
-                        <?php if ($tbTreatmentData->initial_smear_result === 'positive' && $tbTreatmentData->latest_smear_result === 'negative'): ?>
-                            <i class="bx bx-check-circle text-green-500"></i>
-                            <span class="text-green-500 ml-1">Sputum conversion achieved</span>
-                        <?php elseif ($tbTreatmentData->initial_smear_result === 'positive' && $tbTreatmentData->latest_smear_result === 'positive' && $tbTreatmentData->weeks_on_treatment >= 8): ?>
-                            <i class="bx bx-error-circle text-red-500"></i>
-                            <span class="text-red-500 ml-1">No sputum conversion after <?= $tbTreatmentData->weeks_on_treatment ?>
-                                weeks - Evaluate for drug resistance</span>
-                        <?php elseif ($tbTreatmentData->initial_smear_result === 'positive' && $tbTreatmentData->latest_smear_result === 'scanty'): ?>
-                            <i class="bx bx-trending-down text-yellow-500"></i>
-                            <span class="text-yellow-500 ml-1">Partial sputum conversion - Continue monitoring</span>
-                        <?php endif; ?>
-                    </div>
-                <?php endif; ?>
-            </div>
-
-            <p class="text-xs text-gray-500 mt-2">
-                Last tested:
-                <?= isset($tbTreatmentData->latest_smear_date) ? $tbTreatmentData->latest_smear_date : date('Y-m-d', strtotime('-14 days')) ?>
-                <?php if (isset($tbTreatmentData->next_sputum_due_date)): ?>
-                    • Next test due: <?= $tbTreatmentData->next_sputum_due_date ?>
-                <?php endif; ?>
-            </p>
-        </div>
-    <?php endif; ?>
 </div>
 
 

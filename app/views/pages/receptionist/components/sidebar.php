@@ -10,14 +10,12 @@ $notification_count = 3;
     <div class=" p-4 mb-6 bg-primary rounded-lg">
         <div class="flex items-center">
             <div class="logo">
-                <div
-                    class="w-12 h-12 flex justify-center items-center font-bold text-white border-2 border-white rounded-lg">
-                    <span class="text-xl">TC</span>
-                </div>
+                <img src="<?= BASE_URL ?>/images/icons/receptionist.png" alt="TB Health Recording System"
+                    class="object-contain" style="height: 50px; width: 50px">
             </div>
             <div class="ml-3 text-white">
-                <div class="text-lg font-semibold">TeleCure</div>
-                <div class="text-xs opacity-80">Doctor Portal</div>
+                <div class="text-lg font-semibold">HRS</div>
+                <div class="text-xs opacity-80">Receptionist Dashboard</div>
             </div>
         </div>
     </div>

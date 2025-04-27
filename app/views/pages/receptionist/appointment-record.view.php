@@ -141,12 +141,13 @@
             flex-direction: column;
             height: 100%;
         }
-        
+
         .equal-height-content {
             flex: 1;
             overflow-y: auto;
             scrollbar-width: thin;
-            max-height: none; /* Remove the max height to prevent scrolling */
+            max-height: none;
+            /* Remove the max height to prevent scrolling */
         }
 
         /* Remove scrollbar styling since we don't need it anymore */
@@ -163,26 +164,28 @@
             background: transparent;
             border-radius: 0;
         }
-        
+
         /* Add consistent padding to both cards */
         .card {
-            padding: 1.5rem !important; /* Override any existing padding */
+            padding: 1.5rem !important;
+            /* Override any existing padding */
         }
-        
+
         /* Ensure consistent spacing between elements */
         .patient-info-item {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0; 
+            padding: 10px 0;
             border-bottom: 1px solid #f3f4f6;
             margin-bottom: 5px;
         }
-        
+
         /* Add more space between timeline items */
         .timeline-item {
             position: relative;
             padding-left: 48px;
-            margin-bottom: 24px; /* Increase margin between timeline items */
+            margin-bottom: 24px;
+            /* Increase margin between timeline items */
             transition: transform 0.2s ease;
         }
 
@@ -253,7 +256,7 @@
     </style>
 </head>
 
-<body class="font-body">    
+<body class="font-body bg-gray-50">
     <div class="flex">
         <?php include('components/sidebar.php') ?>
         <div class="flex-1 main-content">
@@ -273,7 +276,9 @@
                     <div>
                         <div class="">
                             <div class="flex justify-between items-center mb-6">
-                                <h2 class="text-3xl font-bold text-gray-900"><?= $patient->first_name . ' ' . $patient->middle_name . ' ' . $patient->last_name . ' ' . $patient->suffix ?></h2>
+                                <h2 class="text-3xl font-bold text-gray-900">
+                                    <?= $patient->first_name . ' ' . $patient->middle_name . ' ' . $patient->last_name . ' ' . $patient->suffix ?>
+                                </h2>
                             </div>
                         </div>
                     </div>
@@ -283,10 +288,9 @@
                                 <h2 class="text-xl font-semibold text-gray-900 mb-4">Patient Information</h2>
                                 <div class="flex flex-col items-center mb-6">
                                     <div class="patient-avatar">
-                                    <?php if (!empty($patient->profile)): ?>
+                                        <?php if (!empty($patient->profile)): ?>
                                             <img src="<?= BASE_URL . '/' . $patient->profile ?>"
-                                                class="w-full h-full object-cover rounded-full"
-                                                >
+                                                class="w-full h-full object-cover rounded-full">
                                         <?php else: ?>
                                             <i class="bx bx-user text-3xl"></i>
                                         <?php endif; ?>
@@ -296,72 +300,87 @@
                                 <div class="space-y-1 equal-height-content">
                                     <div class="patient-info-item">
                                         <span class="patient-info-label">Age:</span>
-                                        <span class="patient-info-value"><?= isset($patient->age) ? $patient->age : '45' ?></span>
+                                        <span
+                                            class="patient-info-value"><?= isset($patient->age) ? $patient->age : '45' ?></span>
                                     </div>
                                     <div class="patient-info-item">
                                         <span class="patient-info-label">Gender:</span>
-                                        <span class="patient-info-value capitalize"><?= isset($patient->gender) ? $patient->gender : 'Male' ?></span>
+                                        <span
+                                            class="patient-info-value capitalize"><?= isset($patient->gender) ? $patient->gender : 'Male' ?></span>
                                     </div>
                                     <div class="patient-info-item">
                                         <span class="patient-info-label">Date of Birth:</span>
-                                        <span class="patient-info-value"><?= isset($patient->date_of_birth) ? $patient->date_of_birth : '1979-03-15' ?></span>
-                                    </div>        
+                                        <span
+                                            class="patient-info-value"><?= isset($patient->date_of_birth) ? $patient->date_of_birth : '1979-03-15' ?></span>
+                                    </div>
                                     <div class="patient-info-item">
                                         <span class="patient-info-label">Contact:</span>
-                                        <span class="patient-info-value"><?= isset($patient->contact_number) ? $patient->contact_number : '(123) 456-7890' ?></span>
+                                        <span
+                                            class="patient-info-value"><?= isset($patient->contact_number) ? $patient->contact_number : '(123) 456-7890' ?></span>
                                     </div>
-                                    
+
                                     <div class="patient-info-item">
                                         <span class="patient-info-label">Email:</span>
-                                        <span class="patient-info-value break-words"><?= isset($patient->email) ? $patient->email : 'john.doe@example.com' ?></span>
+                                        <span
+                                            class="patient-info-value break-words"><?= isset($patient->email) ? $patient->email : 'john.doe@example.com' ?></span>
                                     </div>
-                                    
+
                                     <div class="patient-info-item">
                                         <span class="patient-info-label">Address:</span>
-                                        <span class="patient-info-value"><?= isset($patient->address) ? $patient->address : '123 Main St, Tupi, South Cotabato' ?></span>
+                                        <span
+                                            class="patient-info-value"><?= isset($patient->address) ? $patient->address : '123 Main St, Tupi, South Cotabato' ?></span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Right column - Appointment History -->
                         <div class="w-full md:flex-1">
                             <div class="card bg-white shadow-sm rounded-lg w-full p-6 fade-in equal-height-columns">
                                 <div class="flex justify-between items-center mb-6">
                                     <h2 class="text-xl font-semibold text-gray-900">Appointment History</h2>
                                 </div>
-                                
-                                <p class="text-sm text-gray-500 mb-4">Chronological view of patient's appointment history.</p>
+
+                                <p class="text-sm text-gray-500 mb-4">Chronological view of patient's appointment
+                                    history.</p>
                                 <div class="appointment-timeline equal-height-content">
                                     <div class="timeline-connector"></div>
-                                    
+
                                     <?php if (!empty($appointments)): ?>
                                         <?php foreach ($appointments as $index => $appointment): ?>
                                             <!-- Timeline Item -->
-                                            <div class="timeline-item <?= $index === 0 ? 'timeline-current' : 'timeline-past' ?>">
+                                            <div
+                                                class="timeline-item <?= $index === 0 ? 'timeline-current' : 'timeline-past' ?>">
                                                 <div class="timeline-icon">
-                                                    <i class="bx <?= $index === 0 ? 'bx-calendar-check' : 'bx-check-circle' ?>"></i>
+                                                    <i
+                                                        class="bx <?= $index === 0 ? 'bx-calendar-check' : 'bx-check-circle' ?>"></i>
                                                 </div>
-                                                <div class="timeline-content cursor-pointer hover:bg-<?= $index === 0 ? 'blue' : 'green' ?>-50 transition-colors" onclick="viewAppointmentDetails(<?= $appointment->id ?>)">
+                                                <div class="timeline-content cursor-pointer hover:bg-<?= $index === 0 ? 'blue' : 'green' ?>-50 transition-colors"
+                                                    onclick="viewAppointmentDetails(<?= $appointment->id ?>)">
                                                     <span class="timeline-date">
                                                         <?= date('M d, Y', strtotime($appointment->appointment_date)) ?>
                                                     </span>
                                                     <div class="flex justify-between items-start mb-2">
                                                         <div>
-                                                            <h4 class="font-medium capitalize text-<?= $index === 0 ? 'blue' : 'green' ?>-700">
+                                                            <h4
+                                                                class="font-medium capitalize text-<?= $index === 0 ? 'blue' : 'green' ?>-700">
                                                                 <?= htmlspecialchars(str_replace('_', ' ', $appointment->appointment_type ?? 'Regular Checkup')) ?>
                                                             </h4>
                                                             <p class="text-sm text-gray-600">
-                                                                <i class="bx bx-user-circle mr-1"></i> Dr. <?= htmlspecialchars($appointment->doctor_first_name . ' ' . $appointment->doctor_last_name) ?>
+                                                                <i class="bx bx-user-circle mr-1"></i> Dr.
+                                                                <?= htmlspecialchars($appointment->doctor_first_name . ' ' . $appointment->doctor_last_name) ?>
                                                             </p>
                                                         </div>
-                                                        <span class="text-sm font-medium text-<?= $index === 0 ? 'blue' : 'green' ?>-600">
-                                                            <i class="bx bx-time mr-1"></i> <?= date('g:i A', strtotime($appointment->appointment_time)) ?>
+                                                        <span
+                                                            class="text-sm font-medium text-<?= $index === 0 ? 'blue' : 'green' ?>-600">
+                                                            <i class="bx bx-time mr-1"></i>
+                                                            <?= date('g:i A', strtotime($appointment->appointment_time)) ?>
                                                         </span>
                                                     </div>
                                                     <?php if (!empty($appointment->notes)): ?>
                                                         <p class="text-sm text-gray-700 mt-2 bg-gray-50 p-2 rounded-md">
-                                                            <i class="bx bx-note mr-1"></i> <?= htmlspecialchars($appointment->notes) ?>
+                                                            <i class="bx bx-note mr-1"></i>
+                                                            <?= htmlspecialchars($appointment->notes) ?>
                                                         </p>
                                                     <?php endif; ?>
                                                 </div>
@@ -396,7 +415,7 @@
                     </button>
                 </div>
                 <div id="appointmentDetailsContent">
-                   <!-- Content will be loaded dynamically -->
+                    <!-- Content will be loaded dynamically -->
                 </div>
             </div>
         </div>
@@ -413,7 +432,7 @@
             timelineItems.forEach((item, index) => {
                 item.style.opacity = '0';
                 item.style.transform = 'translateY(20px)';
-                
+
                 setTimeout(() => {
                     item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
                     item.style.opacity = '1';
@@ -428,12 +447,12 @@
             const modal = document.getElementById('appointmentDetailsModal');
             modal.style.opacity = '0';
             modal.classList.remove('hidden');
-            
+
             setTimeout(() => {
                 modal.style.transition = 'opacity 0.3s ease';
                 modal.style.opacity = '1';
             }, 10);
-            
+
             document.body.style.overflow = 'hidden';
 
             // Show loading state with animation
@@ -452,10 +471,10 @@
                 },
                 body: `appointmentId=${appointmentId}`
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    document.getElementById('appointmentDetailsContent').innerHTML = `
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        document.getElementById('appointmentDetailsContent').innerHTML = `
                         <div class="text-center py-6">
                             <div class="text-red-500 mb-2">
                                 <i class="bx bx-error-circle text-4xl"></i>
@@ -463,45 +482,45 @@
                             <p class="text-red-500">${data.error}</p>
                         </div>
                     `;
-                    return;
-                }
-                
-                const appointment = data.appointment;
-                const patient = data.patient;
-                const doctor = data.doctor;
-                
-                // Format date and time
-                const appointmentDate = new Date(appointment.appointment_date);
-                const formattedDate = appointmentDate.toLocaleDateString('en-US', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                });
-                
-                const appointmentTime = new Date(`${appointment.appointment_date}T${appointment.appointment_time}`);
-                const formattedTime = appointmentTime.toLocaleTimeString('en-US', { 
-                    hour: 'numeric', 
-                    minute: '2-digit' 
-                });
-                
-                // Determine status class and icon
-                let statusClass = 'bg-gray-100 text-gray-800';
-                let statusIcon = 'bx-time';
-                
-                if (appointment.status === 'completed') {
-                    statusClass = 'bg-green-100 text-green-800';
-                    statusIcon = 'bx-check-circle';
-                } else if (appointment.status === 'cancelled' || appointment.status === 'cancelled_by_clinic' || appointment.status === 'no-show') {
-                    statusClass = 'bg-red-100 text-red-800';
-                    statusIcon = 'bx-x-circle';
-                } else if (appointment.status === 'confirmed') {
-                    statusClass = 'bg-blue-100 text-blue-800';
-                    statusIcon = 'bx-calendar-check';
-                }
-                
-                // Populate modal with appointment details
-                document.getElementById('appointmentDetailsContent').innerHTML = `
+                        return;
+                    }
+
+                    const appointment = data.appointment;
+                    const patient = data.patient;
+                    const doctor = data.doctor;
+
+                    // Format date and time
+                    const appointmentDate = new Date(appointment.appointment_date);
+                    const formattedDate = appointmentDate.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+
+                    const appointmentTime = new Date(`${appointment.appointment_date}T${appointment.appointment_time}`);
+                    const formattedTime = appointmentTime.toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit'
+                    });
+
+                    // Determine status class and icon
+                    let statusClass = 'bg-gray-100 text-gray-800';
+                    let statusIcon = 'bx-time';
+
+                    if (appointment.status === 'completed') {
+                        statusClass = 'bg-green-100 text-green-800';
+                        statusIcon = 'bx-check-circle';
+                    } else if (appointment.status === 'cancelled' || appointment.status === 'cancelled_by_clinic' || appointment.status === 'no-show') {
+                        statusClass = 'bg-red-100 text-red-800';
+                        statusIcon = 'bx-x-circle';
+                    } else if (appointment.status === 'confirmed') {
+                        statusClass = 'bg-blue-100 text-blue-800';
+                        statusIcon = 'bx-calendar-check';
+                    }
+
+                    // Populate modal with appointment details
+                    document.getElementById('appointmentDetailsContent').innerHTML = `
                     <div class="border-b pb-4 mb-4">
                         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
                             <div>
@@ -572,9 +591,9 @@
                         </div>
                     </div>
                 `;
-            })
-            .catch(error => {
-                document.getElementById('appointmentDetailsContent').innerHTML = `
+                })
+                .catch(error => {
+                    document.getElementById('appointmentDetailsContent').innerHTML = `
                     <div class="text-center py-6">
                         <div class="text-red-500 mb-2">
                             <i class="bx bx-error-circle text-4xl"></i>
@@ -582,8 +601,8 @@
                         <p class="text-red-500">Error loading appointment details. Please try again.</p>
                     </div>
                 `;
-                console.error('Error:', error);
-            });
+                    console.error('Error:', error);
+                });
         }
 
         // Close appointment details modal
@@ -591,7 +610,7 @@
             const modal = document.getElementById('appointmentDetailsModal');
             modal.style.transition = 'opacity 0.3s ease';
             modal.style.opacity = '0';
-            
+
             setTimeout(() => {
                 modal.classList.add('hidden');
                 document.body.style.overflow = 'auto';
@@ -599,7 +618,7 @@
         }
 
         // Close modal when clicking outside
-        document.getElementById('appointmentDetailsModal').addEventListener('click', function(e) {
+        document.getElementById('appointmentDetailsModal').addEventListener('click', function (e) {
             if (e.target === this) {
                 closeAppointmentDetailsModal();
             }

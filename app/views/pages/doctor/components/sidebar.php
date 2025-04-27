@@ -10,14 +10,12 @@ $notification_count = 3;
     <div class=" p-4 mb-6 bg-green-600 rounded-lg">
         <div class="flex items-center">
             <div class="logo">
-                <div
-                    class="w-12 h-12 flex justify-center items-center font-bold text-white border-2 border-white rounded-lg">
-                    <span class="text-xl">TC</span>
-                </div>
+                <img src="<?= BASE_URL ?>/images/icons/health-staff.png" alt="TB Health Recording System"
+                    class="object-contain" style="height: 50px; width: 50px">
             </div>
             <div class="ml-3 text-white">
-                <div class="text-lg font-semibold">TeleCure</div>
-                <div class="text-xs opacity-80">Doctor Portal</div>
+                <div class="text-lg font-semibold">HRS</div>
+                <div class="text-xs opacity-80">Doctor Dashboard</div>
             </div>
         </div>
     </div>
@@ -32,12 +30,12 @@ $notification_count = 3;
 
             <a href="<?= BASE_URL ?>/doctor/patients">
                 <li class="px-sm py-2 rounded-md hover:bg-green-600 hover:text-white flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1 mb-2"
-                    style="<?php echo (strpos($request_uri, '/doctor/patients') !== false || 
-                                    strpos($request_uri, '/doctor/patientView') !== false ||
-                                    strpos($request_uri, '/doctor/prescriptions') !== false ||
-                                    strpos($request_uri, '/doctor/preview-prescription') !== false ||
-                                    strpos($request_uri, '/doctor/treatment-records/view') !== false) 
-                            ? 'background-color: rgb(22 163 74); color: white;' : ''; ?>">
+                    style="<?php echo (strpos($request_uri, '/doctor/patients') !== false ||
+                        strpos($request_uri, '/doctor/patientView') !== false ||
+                        strpos($request_uri, '/doctor/prescriptions') !== false ||
+                        strpos($request_uri, '/doctor/preview-prescription') !== false ||
+                        strpos($request_uri, '/doctor/treatment-records/view') !== false)
+                        ? 'background-color: rgb(22 163 74); color: white;' : ''; ?>">
                     <i class='bx bx-user-circle text-lg mr-2 ml-1'></i> Patients
                 </li>
             </a>
