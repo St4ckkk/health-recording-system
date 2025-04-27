@@ -33,7 +33,7 @@ class HomeController extends Controller
     public function index()
     {
         $this->view('index.view', [
-            'title' => 'Health Recording System'
+            'title' => 'TB Health Recording System'
         ]);
     }
 
@@ -662,7 +662,7 @@ class HomeController extends Controller
         }
     }
 
-  
+
     public function confirmation()
     {
         // Ensure session is started
@@ -731,9 +731,10 @@ class HomeController extends Controller
     }
 
 
-    public function rpm() {
+    public function rpm()
+    {
         $this->view('rpm.view', [
-            'title' => 'RPM' 
+            'title' => 'RPM'
         ]);
     }
 
@@ -778,10 +779,10 @@ class HomeController extends Controller
         $symptomCount = array_sum($symptoms);
         $prediction = $symptomCount > 6 ? 'High Risk' : 'Low Risk';
         $probability = $this->calculateTbProbability($symptoms);
-        
+
         // Count symptoms for visualization
         $totalSymptoms = count($symptoms);
-        
+
         // Prepare symptom names for chart
         $symptomNames = [
             'Fever for two weeks',
@@ -798,7 +799,7 @@ class HomeController extends Controller
             'Swollen lymph nodes',
             'Loss of appetite'
         ];
-        
+
         // Create data for the chart
         $selectedSymptoms = [];
         foreach ($symptoms as $index => $value) {
@@ -806,7 +807,7 @@ class HomeController extends Controller
                 $selectedSymptoms[] = $symptomNames[$index];
             }
         }
-        
+
         // Return the results
         $this->view('symptoms-result.view', [
             'title' => 'TB Symptoms Analysis',
@@ -819,7 +820,7 @@ class HomeController extends Controller
             'selectedSymptoms' => $selectedSymptoms
         ]);
     }
-    
+
     /**
      * Load the TB dataset from CSV
      */
@@ -828,16 +829,16 @@ class HomeController extends Controller
         $csvPath = __DIR__ . '/../../public/csv/tb.csv';
         $samples = [];
         $labels = [];
-        
+
         if (($handle = fopen($csvPath, "r")) !== FALSE) {
             // Skip the header row
             fgetcsv($handle, 1000, ",", "\"", "\\");
-            
+
             while (($data = fgetcsv($handle, 1000, ",", "\"", "\\")) !== FALSE) {
                 // Extract features (symptoms) from columns 6-18
                 $features = array_slice($data, 6, 13);
                 $samples[] = array_map('intval', $features);
-                
+
                 // For simplicity, we'll use a binary classification:
                 // If more than 6 symptoms are present, consider it high risk
                 $symptomCount = array_sum($features);
@@ -845,11 +846,11 @@ class HomeController extends Controller
             }
             fclose($handle);
         }
-        
+
         // Return a simple array instead of using RubixML Labeled class
         return ['samples' => $samples, 'labels' => $labels];
     }
-    
+
     /**
      * Calculate TB probability based on symptoms
      */
@@ -858,18 +859,18 @@ class HomeController extends Controller
         // Simple probability calculation based on symptom count
         $symptomCount = array_sum($symptoms);
         $totalSymptoms = count($symptoms);
-        
+
         // Weight certain symptoms more heavily
         $weightedSum = 0;
         $weights = [1.5, 2.0, 2.0, 1.2, 1.0, 0.8, 1.3, 1.5, 0.7, 1.8, 1.5, 1.2, 1.0];
-        
+
         foreach ($symptoms as $i => $symptom) {
             $weightedSum += $symptom * $weights[$i];
         }
-        
+
         $maxWeightedSum = array_sum($weights);
         $probability = min(($weightedSum / $maxWeightedSum) * 100, 100);
-        
+
         return round($probability, 1);
     }
 }

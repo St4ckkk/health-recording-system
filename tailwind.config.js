@@ -5,7 +5,6 @@ module.exports = {
     "./app/views/components/**/*.php",
     "./app/views/pages/**/*.php",
     "./public/**/*.php",
-    // More specific pattern for JS files    avoid matching node_modules
     "./public/js/**/*.js"
   ],
   theme: {

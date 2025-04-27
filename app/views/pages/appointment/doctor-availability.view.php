@@ -121,14 +121,7 @@
             border: 3px solid white;
         }
 
-        .logo-container {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
+
 
         .fade-in {
             animation: fadeIn 0.3s ease-in-out;
@@ -146,7 +139,6 @@
             }
         }
 
-        /* Modified doctor card header - solid primary color instead of image */
         .doctor-card-header {
             height: 100px;
             position: relative;
@@ -341,27 +333,26 @@
 </head>
 
 <body class="p-5">
-    <div class="w-64 h-16 mb-12">
-        <div class="logo-container text-white p-4 inline-flex items-center">
-            <div class="mr-2">
-                <div class="logo">
-                    <div class="w-12 h-12 flex justify-center items-center font-bold text-white">TC</div>
+    <div class="inline-flex items-center mb-6">
+        <div class="mr-2">
+            <div class="w-20 h-20">
+                <div class="flex justify-center items-center">
+                    <img src="<?= BASE_URL ?>/images/logo.png" alt="Health Recording System Logo"
+                        class="w-full h-full object-contain">
                 </div>
             </div>
-            <span class="text-2xl font-bold">Test Clinic</span>
         </div>
     </div>
 
     <div class="max-w-7xl mx-auto">
-        <!-- Image Header Section -->
-        <!-- Image Header Section -->
         <div class="image-header">
             <img src="<?= BASE_URL ?>/images/image-header.jpg" class="image-header-bg" alt="Doctors Team">
             <div class="image-header-overlay"></div>
             <div class="image-header-pattern"></div>
             <div class="image-header-content mt-2">
                 <h1 class="image-header-title">Expert Medical Care From Our Professional Doctors</h1>
-                <p class="image-header-subtitle">Schedule appointments with top specialists in various medical fields
+                <p class="image-header-subtitle">Schedule appointments with top specialists in various medical
+                    fields
                 </p>
 
                 <div class="flex gap-8 mt-4">

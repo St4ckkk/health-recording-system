@@ -6,4 +6,5 @@ composer.json
 .qodo
 public/uploads/doctors/
 public/uploads/patients/
+public/uploads/staff/
 public/php_errors.log

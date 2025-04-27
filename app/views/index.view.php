@@ -77,9 +77,17 @@
 <body>
     <header>
         <div class="logo">
-            <div
-                style="border: 2px solid #333; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; font-weight: bold;">
-                LOGO</div>
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-[65px] h-[65px] flex justify-center items-center rounded-xl shadow-md hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-500/30">
+                    <img src="<?= BASE_URL ?>/images/logo.png" alt="TB Health Recording System"
+                        class="w-full h-full object-contain p-2.5">
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-2xl font-bold text-emerald-800">Health Recording</span>
+                    <span class="text-sm text-emerald-600">System</span>
+                </div>
+            </div>
         </div>
         <div class="header-right">
             <a href="<?= BASE_URL ?>/onBoarding" class="login-link"><i class='bx bx-user'></i>Log in</a>
@@ -116,7 +124,7 @@
                 <div class="absolute -bottom-2 right-5 w-4 h-4 bg-white transform rotate-45"></div>
             </div>
         </div>
-        <a href="<?= BASE_URL ?>/symptoms-checker" 
+        <a href="<?= BASE_URL ?>/symptoms-checker"
             class="bot-icon flex items-center justify-center w-14 h-14 bg-primary rounded-full shadow-lg hover:scale-110 hover:shadow-xl transition-all duration-300">
             <img src="<?= BASE_URL ?>/images/icons/bot.png" alt="AI Bot" class="w-8 h-8">
         </a>
