@@ -10,10 +10,8 @@ $notification_count = 3;
     <div class="p-4 mb-6 bg-purple-600 rounded-lg">
         <div class="flex items-center">
             <div class="logo">
-                <div
-                    class="w-12 h-12 flex justify-center items-center font-bold text-white border-2 border-white rounded-lg">
-                    <i class='bx bx-plus-medical text-2xl'></i>
-                </div>
+                <img src="<?= BASE_URL ?>/images/icons/health-staff.png" alt="TB Health Recording System"
+                    class="object-contain" style="height: 50px; width: 50px">
             </div>
             <div class="ml-3 text-white">
                 <div class="text-lg font-semibold">HRS</div>
@@ -68,7 +66,7 @@ $notification_count = 3;
         </button>
     </div>
 
- 
+
 
     </div>
 </nav>

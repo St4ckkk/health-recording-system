@@ -33,16 +33,38 @@ class TreatmentRecords extends Model
         return "SELECT " . implode(', ', $fields) . " FROM $this->table im";
     }
 
+    public static function calculateAdherencePercentage($status)
+    {
+        switch (strtolower($status)) {
+            case 'good':
+                return 95;
+            case 'irregular':
+                return 60;
+            case 'poor':
+                return 30;
+            default:
+                return 0;
+        }
+    }
+
     public function getPatientTreatmentRecords($patientId)
     {
         $sql = "SELECT tr.*, 
-                           d.first_name as doctor_first_name, 
-                           d.last_name as doctor_last_name,
-                           d.specialization as doctor_specialization
-                        FROM {$this->table} tr
-                        LEFT JOIN doctors d ON tr.doctor_id = d.id
-                        WHERE tr.patient_id = :patient_id
-                        ORDER BY tr.created_at DESC";
+                       d.first_name as doctor_first_name, 
+                       d.last_name as doctor_last_name,
+                       d.specialization as doctor_specialization,
+                       diag.diagnosis as diagnosis_name,
+                       CASE 
+                           WHEN tr.adherence_status = 'good' THEN 95
+                           WHEN tr.adherence_status = 'irregular' THEN 60
+                           WHEN tr.adherence_status = 'poor' THEN 30
+                           ELSE 0
+                       END as adherence_percentage
+                FROM {$this->table} tr
+                LEFT JOIN doctors d ON tr.doctor_id = d.id
+                LEFT JOIN diagnosis diag ON tr.diagnosis_id = diag.id
+                WHERE tr.patient_id = :patient_id
+                ORDER BY tr.created_at DESC";
 
         $this->db->query($sql);
         $this->db->bind(':patient_id', $patientId);
@@ -55,9 +77,17 @@ class TreatmentRecords extends Model
         $sql = "SELECT tr.*, 
                        d.first_name as doctor_first_name, 
                        d.last_name as doctor_last_name,
-                       d.specialization as doctor_specialization
+                       d.specialization as doctor_specialization,
+                       diag.diagnosis as diagnosis_name,
+                       CASE 
+                           WHEN tr.adherence_status = 'good' THEN 95
+                           WHEN tr.adherence_status = 'irregular' THEN 60
+                           WHEN tr.adherence_status = 'poor' THEN 30
+                           ELSE 0
+                       END as adherence_percentage
                 FROM {$this->table} tr
                 LEFT JOIN doctors d ON tr.doctor_id = d.id
+                LEFT JOIN diagnosis diag ON tr.diagnosis_id = diag.id
                 WHERE tr.id = :treatment_id";
 
         $this->db->query($sql);
@@ -131,7 +161,7 @@ class TreatmentRecords extends Model
             throw new \Exception('Database error occurred');
         }
     }
-    
+
     public function getTreatmentOutcomeStats($doctorId)
     {
         $sql = "SELECT 
@@ -149,10 +179,10 @@ class TreatmentRecords extends Model
                 WHERE doctor_id = :doctor_id
                 GROUP BY treatment_type
                 ORDER BY total_count DESC";
-                
+
         $this->db->query($sql);
         $this->db->bind(':doctor_id', $doctorId);
-        
+
         return $this->db->resultSet();
     }
 }

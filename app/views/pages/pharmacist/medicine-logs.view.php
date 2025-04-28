@@ -393,7 +393,7 @@
                                         <th>Action Type</th>
                                         <th>Quantity</th>
                                         <th>Stock Change</th>
-                                        <th>Patient</th>
+                                        <!-- <th>Patient</th> -->
                                         <th>User</th>
                                         <th>Remarks</th>
                                         <th>Timestamp</th>
@@ -440,7 +440,7 @@
                                                         <span><?= $log->previous_stock ?> → <?= $log->new_stock ?></span>
                                                     </div>
                                                 </td>
-                                                <td class="py-3 px-4">
+                                                <!-- <td class="py-3 px-4">
                                                     <?php if ($log->patient_id): ?>
                                                         <div class="flex flex-col">
                                                             <span class="font-medium text-md">
@@ -453,7 +453,7 @@
                                                     <?php else: ?>
                                                         <span class="text-gray-500">N/A</span>
                                                     <?php endif; ?>
-                                                </td>
+                                                </td> -->
                                                 <td class="py-3 px-4">
                                                     <?php if (!empty($log->staff_id) && !empty($log->staff_name)): ?>
                                                         <div class="flex flex-col">

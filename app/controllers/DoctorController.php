@@ -114,7 +114,7 @@ class DoctorController extends Controller
         ]);
     }
 
-    // ... existing code ...
+
 
     public function patientList()
     {
@@ -505,6 +505,84 @@ class DoctorController extends Controller
             'immunizationHistory' => $immunizationHistory,
             'stats' => $stats
         ]);
+    }
+
+    public function saveTreatment()
+    {
+        try {
+            // Prevent any PHP errors from being output
+            error_reporting(0);
+
+            // Clear any previous output
+            while (ob_get_level()) {
+                ob_end_clean();
+            }
+
+            // Set JSON headers
+            header('Content-Type: application/json');
+            header('Cache-Control: no-cache, must-revalidate');
+
+            // Validate session
+            if (!isset($_SESSION['doctor']['id'])) {
+                throw new \Exception('Unauthorized access');
+            }
+
+            // Prepare treatment data with validation
+            $treatmentData = [
+                'patient_id' => filter_var($_POST['patient_id'], FILTER_SANITIZE_NUMBER_INT),
+                'doctor_id' => $_SESSION['doctor']['id'],
+                'treatment_type' => filter_var($_POST['treatment_type'] ?? '', FILTER_SANITIZE_STRING),
+                'regimen_summary' => filter_var($_POST['regimen_summary'] ?? '', FILTER_SANITIZE_STRING),
+                'start_date' => filter_var($_POST['start_date'] ?? '', FILTER_SANITIZE_STRING),
+                'end_date' => !empty($_POST['end_date']) ? filter_var($_POST['end_date'], FILTER_SANITIZE_STRING) : null,
+                'status' => filter_var($_POST['status'] ?? '', FILTER_SANITIZE_STRING),
+                'adherence_status' => filter_var($_POST['adherence_status'] ?? '', FILTER_SANITIZE_STRING),
+                'outcome' => filter_var($_POST['outcome'] ?? '', FILTER_SANITIZE_STRING),
+                'follow_up_notes' => filter_var($_POST['follow_up_notes'] ?? '', FILTER_SANITIZE_STRING)
+            ];
+
+            // Additional validation
+            if (
+                empty($treatmentData['patient_id']) ||
+                empty($treatmentData['treatment_type']) ||
+                empty($treatmentData['regimen_summary']) ||
+                empty($treatmentData['start_date']) ||
+                empty($treatmentData['status'])
+            ) {
+                throw new \Exception('Missing required fields');
+            }
+
+            // Insert treatment record
+            $treatmentId = $this->treatmentRecordsModel->insert($treatmentData);
+
+            if (!$treatmentId) {
+                throw new \Exception('Failed to save treatment record');
+            }
+
+            // Create medical record entry
+            $this->medicalRecordsModel->insert([
+                'patient_id' => $treatmentData['patient_id'],
+                'doctor_id' => $treatmentData['doctor_id'],
+                'treatment_id' => $treatmentId,
+                'record_type' => 'Treatment',
+                'notes' => "New treatment started: {$treatmentData['treatment_type']}",
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Treatment saved successfully',
+                'treatmentId' => $treatmentId
+            ]);
+
+        } catch (\Exception $e) {
+            error_log('Treatment Save Error: ' . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
+        exit;
     }
 
     public function prescriptionDetails()

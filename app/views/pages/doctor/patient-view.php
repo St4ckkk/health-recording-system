@@ -223,7 +223,7 @@
                             <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden h-full">
                                 <!-- Tabs -->
                                 <div class="flex border-b border-gray-200">
-                                    <button class="tab-button px-6 py-3 text-gray-500 hover:text-gray-700"
+                                    <button class="tab-button px-6 py-3 text-gray-500 hover:text-gray-700 active"
                                         data-tab="overview" id="tab-overview">Overview</button>
                                     <button class="tab-button px-6 py-3 text-gray-500 hover:text-gray-700"
                                         data-tab="admission" id="tab-admission">Admission</button>
@@ -235,36 +235,29 @@
                                         data-tab="treatment-records" id="tab-treatment-records">Treatment</button>
                                 </div>
 
-                                <div class="tab-content p-6" id="tab-content-overview">
-                                    <?php include('components/tab/overview.php'); ?>
-                                </div>
+                                <!-- Tab Content Container -->
+                                <div class="tab-content-container">
+                                    <div class="tab-content p-6" id="tab-content-overview">
+                                        <?php include('components/tab/overview.php'); ?>
+                                    </div>
 
-                                <div class="tab-content p-6 hidden" id="tab-content-admission">
-                                    <?php include('components/tab/admission.php'); ?>
-                                </div>
+                                    <div class="tab-content p-6 hidden" id="tab-content-admission">
+                                        <?php include('components/tab/admission.php'); ?>
+                                    </div>
 
-                                <!-- Visits Tab Content -->
-                                <!-- <div class="tab-content p-6 hidden" id="tab-content-visits">
-                                    <?php include('components/tab/visits.php'); ?>
-                                </div> -->
+                                    <!-- Medications Tab Content -->
+                                    <div class="tab-content p-6 hidden" id="tab-content-medications">
+                                        <?php include('components/tab/medications.php'); ?>
+                                    </div>
 
-                                <!-- Lab Results Tab Content -->
-                                <!-- <div class="tab-content p-6 hidden" id="tab-content-lab-results">
-                                    <?php include('components/tab/lab-results.php'); ?>
-                                </div> -->
+                                    <!-- Immunizations Tab Content -->
+                                    <div class="tab-content p-6 hidden" id="tab-content-immunizations">
+                                        <?php include('components/tab/immunizations.php'); ?>
+                                    </div>
 
-                                <!-- Medications Tab Content -->
-                                <div class="tab-content p-6 hidden" id="tab-content-medications">
-                                    <?php include('components/tab/medications.php'); ?>
-                                </div>
-
-                                <!-- Immunizations Tab Content -->
-                                <div class="tab-content p-6 hidden" id="tab-content-immunizations">
-                                    <?php include('components/tab/immunizations.php'); ?>
-                                </div>
-
-                                <div class="tab-content p-6 hidden" id="tab-content-treatment-records">
-                                    <?php include('components/tab/treatment-records.php'); ?>
+                                    <div class="tab-content p-6 hidden" id="tab-content-treatment-records">
+                                        <?php include('components/tab/treatment-records.php'); ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -291,13 +284,17 @@
         </a>
     </div>
 
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Tab functionality
+            const tabs = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            // Set the first tab as active by default
             document.getElementById('tab-overview').classList.add('border-b-2', 'border-blue-500', 'text-blue-600', 'font-medium');
             document.getElementById('tab-content-overview').classList.remove('hidden');
 
-            const tabs = document.querySelectorAll('.tab-button');
             tabs.forEach(tab => {
                 tab.addEventListener('click', function () {
                     // Remove active class from all tabs
@@ -311,7 +308,6 @@
                     this.classList.remove('text-gray-500');
 
                     // Hide all tab content
-                    const tabContents = document.querySelectorAll('.tab-content');
                     tabContents.forEach(content => {
                         content.classList.add('hidden');
                     });
