@@ -9,10 +9,8 @@ $notification_count = 3;
     <div class="p-4 mb-6 bg-blue-600 rounded-lg">
         <div class="flex items-center">
             <div class="logo">
-                <div
-                    class="w-12 h-12 flex justify-center items-center font-bold text-white border-2 border-white rounded-lg">
-                    <i class='bx bx-plus-medical text-2xl'></i>
-                </div>
+                <img src="<?= BASE_URL ?>/images/icons/admin-logo.png" alt="TB Health Recording System"
+                    class="object-contain" style="height: 50px; width: 50px">
             </div>
             <div class="ml-3 text-white">
                 <div class="text-lg font-semibold">HRS</div>
@@ -46,9 +44,9 @@ $notification_count = 3;
                     <i class='bx bx-transfer text-lg mr-2 ml-1'></i> Transaction Records
                 </li>
             </a>
-            <a href="<?= BASE_URL ?>/admin/billing">
+            <a href="<?= BASE_URL ?>/admin/billing-records">
                 <li class="px-sm py-2 rounded-md hover:bg-blue-600 hover:text-white flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1 mb-2"
-                    style="<?php echo strpos($request_uri, '/admin/billing') !== false ? 'background-color: rgb(37 99 235); color: white;' : ''; ?>">
+                    style="<?php echo strpos($request_uri, '/admin/billing-records') !== false ? 'background-color: rgb(37 99 235); color: white;' : ''; ?>">
                     <i class='bx bx-dollar text-lg mr-2 ml-1'></i> Billing Records
                 </li>
             </a>

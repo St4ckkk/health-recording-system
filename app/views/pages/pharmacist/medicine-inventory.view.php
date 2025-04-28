@@ -450,7 +450,7 @@
     </style>
 </head>
 
-<body class="font-body">
+<body class="font-body bg-gray-50">
     <div class="flex">
         <?php include(VIEW_ROOT . '/pages/pharmacist/components/sidebar.php') ?>
         <main class="flex-1 main-content">
@@ -542,6 +542,7 @@
                                         <th>Category</th>
                                         <th>Form</th>
                                         <th>Dosage</th>
+                                        <th>Unit Price</th>
                                         <th>Stock Level</th>
                                         <th>Expiry Date</th>
                                         <th>Manufacturer</th>
@@ -585,6 +586,7 @@
                                                 </td>
                                                 <td class="py-3 px-4"><?= htmlspecialchars($medicine->form) ?></td>
                                                 <td class="py-3 px-4"><?= htmlspecialchars($medicine->dosage) ?></td>
+                                                <td class="py-3 px-4">₱<?= htmlspecialchars($medicine->unit_price) ?></td>
                                                 <td class="py-3 px-4">
                                                     <div class="stock-level-container">
                                                         <div class="stock-level-info">
@@ -628,6 +630,7 @@
                                                                     category: '<?= htmlspecialchars($medicine->category, ENT_QUOTES) ?>',
                                                                     form: '<?= htmlspecialchars($medicine->form, ENT_QUOTES) ?>',
                                                                     dosage: '<?= htmlspecialchars($medicine->dosage, ENT_QUOTES) ?>',
+                                                                    unit_price: <?= $medicine->unit_price ?>,
                                                                     stock_level: <?= $medicine->stock_level ?>,
                                                                     expiry_date: '<?= date('Y-m-d', strtotime($medicine->expiry_date)) ?>',
                                                                     manufacturer: '<?= htmlspecialchars($medicine->manufacturer ?? '', ENT_QUOTES) ?>',

@@ -178,120 +178,101 @@
                     </div>
 
                     <!-- Transaction Table -->
-                    <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                    <div class="card bg-white shadow-sm rounded-lg w-full fade-in">
+                        <div class="p-4">
+                            <table class="appointments-table">
+                                <thead>
                                     <tr>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            ID
-                                        </th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Medicine
-                                        </th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Type
-                                        </th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Quantity
-                                        </th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Amount
-                                        </th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Date
-                                        </th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Status
-                                        </th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Actions
-                                        </th>
+                                        <!-- <th>ID</th> -->
+                                        <th>Medicine</th>
+                                        <th>Type</th>
+                                        <th>Quantity</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
+                                <tbody>
                                     <?php if (empty($transactionRecords)): ?>
                                         <tr>
-                                            <td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500">
-                                                No transaction records found
-                                            </td>
+                                            <td colspan="8" class="text-center py-4">No transaction records found</td>
                                         </tr>
                                     <?php else: ?>
                                         <?php foreach ($transactionRecords as $transaction): ?>
-                                            <tr>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            <tr class="border-b border-gray-200">
+                                                <!-- <td class="py-3 px-4">
                                                     <?= htmlspecialchars($transaction->id) ?>
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    <?= htmlspecialchars($transaction->medicine_name) ?>
-                                                    <div class="text-xs text-gray-500">
-                                                        <?= htmlspecialchars($transaction->medicine_form . ' ' . $transaction->medicine_dosage) ?>
+                                                </td> -->
+                                                <td class="py-3 px-4">
+                                                    <div class="flex flex-col">
+                                                        <span class="font-medium text-md">
+                                                            <?= htmlspecialchars($transaction->medicine_name) ?>
+                                                        </span>
+                                                        <span class="text-xs text-gray-500">
+                                                            <?= htmlspecialchars($transaction->medicine_form . ' ' . $transaction->medicine_dosage) ?>
+                                                        </span>
                                                     </div>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                                <td class="py-3 px-4">
                                                     <span
                                                         class="status-badge <?= $transaction->transaction_type === 'purchase' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' ?>">
                                                         <?= ucfirst(htmlspecialchars($transaction->transaction_type)) ?>
                                                     </span>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    <?= htmlspecialchars($transaction->quantity) ?>
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    ₱<?= number_format($transaction->total_amount, 2) ?>
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    <?= date('M d, Y', strtotime($transaction->transaction_date)) ?>
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                                    <span class="status-badge 
-                                                        <?php
-                                                        switch ($transaction->payment_status) {
-                                                            case 'completed':
-                                                                echo 'bg-green-100 text-green-800 border border-green-200';
-                                                                break;
-                                                            case 'pending':
-                                                                echo 'bg-yellow-100 text-yellow-800 border border-yellow-200';
-                                                                break;
-                                                            case 'cancelled':
-                                                                echo 'bg-red-100 text-red-800 border border-red-200';
-                                                                break;
-                                                            case 'processing':
-                                                                echo 'bg-indigo-100 text-indigo-800 border border-indigo-200';
-                                                                break;
-                                                            case 'refunded':
-                                                                echo 'bg-orange-100 text-orange-800 border border-orange-200';
-                                                                break;
-                                                            default:
-                                                                echo 'bg-gray-100 text-gray-800 border border-gray-200';
-                                                        }
-                                                        ?>">
+                                                <td class="py-3 px-4"><?= htmlspecialchars($transaction->quantity) ?></td>
+                                                <td class="py-3 px-4">₱<?= number_format($transaction->total_amount, 2) ?></td>
+                                                <td class="py-3 px-4">
+                                                    <?= date('M d, Y', strtotime($transaction->transaction_date)) ?></td>
+                                                <td class="py-3 px-4">
+                                                    <span class="status-badge <?php
+                                                    switch ($transaction->payment_status) {
+                                                        case 'completed':
+                                                            echo 'bg-green-100 text-green-800 border border-green-200';
+                                                            break;
+                                                        case 'pending':
+                                                            echo 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+                                                            break;
+                                                        case 'cancelled':
+                                                            echo 'bg-red-100 text-red-800 border border-red-200';
+                                                            break;
+                                                        case 'processing':
+                                                            echo 'bg-indigo-100 text-indigo-800 border border-indigo-200';
+                                                            break;
+                                                        case 'refunded':
+                                                            echo 'bg-orange-100 text-orange-800 border border-orange-200';
+                                                            break;
+                                                        default:
+                                                            echo 'bg-gray-100 text-gray-800 border border-gray-200';
+                                                    }
+                                                    ?>">
                                                         <?= ucfirst(htmlspecialchars($transaction->payment_status)) ?>
                                                     </span>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <td class="py-3 px-4">
                                                     <div class="action-buttons-container">
-                                                        <button class="action-button view px-2 py-1 rounded-md text-xs"
-                                                            onclick="viewTransaction(<?= $transaction->id ?>)">
-                                                            <i class='bx bx-show'></i> View
-                                                        </button>
+                                                        <div class="tooltip">
+                                                            <button class="p-2 text-blue-600 hover:text-blue-800"
+                                                                onclick="viewTransaction(<?= $transaction->id ?>)">
+                                                                <i class="bx bx-show text-lg"></i>
+                                                                <span class="tooltip-text">View Details</span>
+                                                            </button>
+                                                        </div>
                                                         <?php if ($transaction->payment_status === 'pending'): ?>
-                                                            <button class="action-button edit px-2 py-1 rounded-md text-xs"
-                                                                onclick="updateTransactionStatus(<?= $transaction->id ?>, 'completed')">
-                                                                <i class='bx bx-check'></i> Complete
-                                                            </button>
-                                                            <button class="action-button delete px-2 py-1 rounded-md text-xs"
-                                                                onclick="updateTransactionStatus(<?= $transaction->id ?>, 'cancelled')">
-                                                                <i class='bx bx-x'></i> Cancel
-                                                            </button>
+                                                            <div class="tooltip">
+                                                                <button class="p-2 text-yellow-600 hover:text-yellow-800"
+                                                                    onclick="updateTransactionStatus(<?= $transaction->id ?>, 'completed')">
+                                                                    <i class="bx bx-check text-lg"></i>
+                                                                    <span class="tooltip-text">Complete</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="tooltip">
+                                                                <button class="p-2 text-red-600 hover:text-red-800"
+                                                                    onclick="updateTransactionStatus(<?= $transaction->id ?>, 'cancelled')">
+                                                                    <i class="bx bx-x text-lg"></i>
+                                                                    <span class="tooltip-text">Cancel</span>
+                                                                </button>
+                                                            </div>
                                                         <?php endif; ?>
                                                     </div>
                                                 </td>
@@ -302,56 +283,93 @@
                             </table>
                         </div>
                     </div>
-                </section>
-            </div>
-        </main>
-    </div>
 
-    <!-- View Transaction Modal (Hidden by default) -->
-    <div id="viewTransactionModal"
-        class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
-        <div
-            class="w-full max-w-2xl transform rounded-lg bg-white shadow-xl transition-all duration-300 scale-95 opacity-0">
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold text-gray-900">Transaction Details</h3>
-                    <button type="button" class="close-modal text-gray-400 hover:text-gray-500">
-                        <i class='bx bx-x text-2xl'></i>
-                    </button>
-                </div>
-                <div id="transactionDetails" class="space-y-4">
-                    <!-- Transaction details will be loaded here via JavaScript -->
-                    <div class="flex justify-center">
-                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
+                    <!-- Add this CSS to your existing styles section -->
+                    <style>
+                        .appointments-table {
+                            width: 100%;
+                        }
+
+                        .appointments-table thead th {
+                            background-color: rgb(37 99 235);
+                            color: white;
+                            font-weight: 500;
+                            padding: 0.75rem 1rem;
+                            text-align: left;
+                            border-bottom: 1px solid #e5e7eb;
+                        }
+
+                        .appointments-table tbody td {
+                            vertical-align: middle;
+                        }
+
+                        .card {
+                            transition: all 0.3s ease;
+                        }
+
+                        .fade-in {
+                            animation: fadeIn 0.5s ease-in;
+                        }
+
+                        @keyframes fadeIn {
+                            from {
+                                opacity: 0;
+                                transform: translateY(10px);
+                            }
+
+                            to {
+                                opacity: 1;
+                                transform: translateY(0);
+                            }
+                        }
+                    </style>
+
+                    <!-- View Transaction Modal (Hidden by default) -->
+                    <div id="viewTransactionModal"
+                        class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
+                        <div
+                            class="w-full max-w-2xl transform rounded-lg bg-white shadow-xl transition-all duration-300 scale-95 opacity-0">
+                            <div class="p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-xl font-bold text-gray-900">Transaction Details</h3>
+                                    <button type="button" class="close-modal text-gray-400 hover:text-gray-500">
+                                        <i class='bx bx-x text-2xl'></i>
+                                    </button>
+                                </div>
+                                <div id="transactionDetails" class="space-y-4">
+                                    <!-- Transaction details will be loaded here via JavaScript -->
+                                    <div class="flex justify-center">
+                                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <script>
-        const BASE_URL = '<?= BASE_URL ?>';
+                    <script>
+                        const BASE_URL = '<?= BASE_URL ?>';
 
-        // Function to view transaction details
-        function viewTransaction(id) {
-            const modal = document.getElementById('viewTransactionModal');
-            const detailsContainer = document.getElementById('transactionDetails');
+                        // Function to view transaction details
+                        function viewTransaction(id) {
+                            const modal = document.getElementById('viewTransactionModal');
+                            const detailsContainer = document.getElementById('transactionDetails');
 
-            // Show modal
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            setTimeout(() => {
-                modal.querySelector('.transform').classList.remove('scale-95', 'opacity-0');
-                modal.querySelector('.transform').classList.add('scale-100', 'opacity-100');
-            }, 10);
+                            // Show modal
+                            modal.classList.remove('hidden');
+                            modal.classList.add('flex');
+                            setTimeout(() => {
+                                modal.querySelector('.transform').classList.remove('scale-95', 'opacity-0');
+                                modal.querySelector('.transform').classList.add('scale-100', 'opacity-100');
+                            }, 10);
 
-            // Load transaction details
-            fetch(`${BASE_URL}/admin/getTransactionDetails/${id}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const transaction = data.transaction;
-                        detailsContainer.innerHTML = `
+                            // Load transaction details
+                            fetch(`${BASE_URL}/admin/getTransactionDetails/${id}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        const transaction = data.transaction;
+                                        detailsContainer.innerHTML = `
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <p class="text-sm text-gray-500">Transaction ID</p>
@@ -402,63 +420,63 @@
                                 </div>` : ''}
                             </div>
                         `;
-                    } else {
-                        detailsContainer.innerHTML = `<p class="text-center text-red-500">${data.message}</p>`;
-                    }
-                })
-                .catch(error => {
-                    detailsContainer.innerHTML = `<p class="text-center text-red-500">Error loading transaction details: ${error.message}</p>`;
-                });
-        }
+                                    } else {
+                                        detailsContainer.innerHTML = `<p class="text-center text-red-500">${data.message}</p>`;
+                                    }
+                                })
+                                .catch(error => {
+                                    detailsContainer.innerHTML = `<p class="text-center text-red-500">Error loading transaction details: ${error.message}</p>`;
+                                });
+                        }
 
-        // Function to update transaction status
-        function updateTransactionStatus(id, status) {
-            if (!confirm(`Are you sure you want to mark this transaction as ${status}?`)) {
-                return;
-            }
+                        // Function to update transaction status
+                        function updateTransactionStatus(id, status) {
+                            if (!confirm(`Are you sure you want to mark this transaction as ${status}?`)) {
+                                return;
+                            }
 
-            fetch(`${BASE_URL}/admin/updateTransactionStatus`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ id, status })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showToast('success', 'Success', data.message);
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1500);
-                    } else {
-                        showToast('error', 'Error', data.message);
-                    }
-                })
-                .catch(error => {
-                    showToast('error', 'Error', `Failed to update status: ${error.message}`);
-                });
-        }
+                            fetch(`${BASE_URL}/admin/updateTransactionStatus`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ id, status })
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        showToast('success', 'Success', data.message);
+                                        setTimeout(() => {
+                                            window.location.reload();
+                                        }, 1500);
+                                    } else {
+                                        showToast('error', 'Error', data.message);
+                                    }
+                                })
+                                .catch(error => {
+                                    showToast('error', 'Error', `Failed to update status: ${error.message}`);
+                                });
+                        }
 
-        // Close modal when clicking the close button or outside the modal
-        document.querySelectorAll('.close-modal').forEach(button => {
-            button.addEventListener('click', () => {
-                const modal = document.getElementById('viewTransactionModal');
-                modal.querySelector('.transform').classList.add('scale-95', 'opacity-0');
-                modal.querySelector('.transform').classList.remove('scale-100', 'opacity-100');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                    modal.classList.remove('flex');
-                }, 300);
-            });
-        });
+                        // Close modal when clicking the close button or outside the modal
+                        document.querySelectorAll('.close-modal').forEach(button => {
+                            button.addEventListener('click', () => {
+                                const modal = document.getElementById('viewTransactionModal');
+                                modal.querySelector('.transform').classList.add('scale-95', 'opacity-0');
+                                modal.querySelector('.transform').classList.remove('scale-100', 'opacity-100');
+                                setTimeout(() => {
+                                    modal.classList.add('hidden');
+                                    modal.classList.remove('flex');
+                                }, 300);
+                            });
+                        });
 
-        // Toast notification function
-        window.showToast = (type, title, message) => {
-            const toast = document.createElement('div')
-            toast.className = `fixed top-4 right-4 z-50 flex items-start p-4 mb-4 w-full max-w-xs rounded-lg shadow-lg ${type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'} fade-in`
+                        // Toast notification function
+                        window.showToast = (type, title, message) => {
+                            const toast = document.createElement('div')
+                            toast.className = `fixed top-4 right-4 z-50 flex items-start p-4 mb-4 w-full max-w-xs rounded-lg shadow-lg ${type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'} fade-in`
 
-            toast.innerHTML = `
+                            toast.innerHTML = `
                 <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg ${type === 'success' ? 'bg-green-100 text-green-500' : 'bg-red-100 text-red-800'}">
                     <i class="bx ${type === 'success' ? 'bx-check' : 'bx-x'} text-xl"></i>
                 </div>
@@ -471,26 +489,26 @@
                 </button>
             `
 
-            document.body.appendChild(toast)
+                            document.body.appendChild(toast)
 
-            // Add click event to close button
-            toast.querySelector('button').addEventListener('click', () => {
-                toast.remove()
-            })
+                            // Add click event to close button
+                            toast.querySelector('button').addEventListener('click', () => {
+                                toast.remove()
+                            })
 
-            // Auto remove after 5 seconds
-            setTimeout(() => {
-                if (document.body.contains(toast)) {
-                    toast.classList.add('fade-out')
-                    setTimeout(() => {
-                        if (document.body.contains(toast)) {
-                            toast.remove()
+                            // Auto remove after 5 seconds
+                            setTimeout(() => {
+                                if (document.body.contains(toast)) {
+                                    toast.classList.add('fade-out')
+                                    setTimeout(() => {
+                                        if (document.body.contains(toast)) {
+                                            toast.remove()
+                                        }
+                                    }, 300)
+                                }
+                            }, 5000)
                         }
-                    }, 300)
-                }
-            }, 5000)
-        }
-    </script>
+                    </script>
 </body>
 
 </html>

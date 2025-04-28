@@ -20,7 +20,7 @@
     <script src="<?= BASE_URL ?>/node_modules/chart.js/dist/chart.umd.js"></script>
 </head>
 
-<body class="font-body">
+<body class="font-body bg-gray-50">
     <div class="flex">
         <?php include(VIEW_ROOT . '/pages/pharmacist/components/sidebar.php') ?>
         <main class="flex-1 main-content">

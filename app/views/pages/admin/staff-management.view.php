@@ -168,71 +168,63 @@
                     </div>
 
                     <!-- Staff Table -->
-                    <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                    <div class="card bg-white shadow-sm rounded-lg w-full fade-in">
+                        <div class="p-4">
+                            <table class="appointments-table">
+                                <thead>
                                     <tr>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Name
-                                        </th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Role
-                                        </th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Email
-                                        </th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Phone
-                                        </th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Actions
-                                        </th>
+                                        <th>Name</th>
+                                        <th>Role</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
+                                <tbody>
                                     <?php if (empty($staffList)): ?>
                                         <tr>
-                                            <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
-                                                No staff members found
-                                            </td>
+                                            <td colspan="5" class="text-center py-4">No staff members found</td>
                                         </tr>
                                     <?php else: ?>
                                         <?php foreach ($staffList as $staff): ?>
-                                            <tr>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    <?= htmlspecialchars($staff->first_name . ' ' . $staff->last_name) ?>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-3 px-4">
+                                                    <div class="flex flex-col">
+                                                        <span class="font-medium text-md">
+                                                            <?= htmlspecialchars($staff->first_name . ' ' . $staff->last_name) ?>
+                                                        </span>
+                                                    </div>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    <span class="status-badge bg-indigo-100 text-indigo-800">
+                                                <td class="py-3 px-4">
+                                                    <span class="status-badge border border-indigo-500 text-indigo-800">
                                                         <?= htmlspecialchars($staff->role_name ?? 'Unknown') ?>
                                                     </span>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    <?= htmlspecialchars($staff->email) ?>
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    <?= htmlspecialchars($staff->phone ?? 'N/A') ?>
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <td class="py-3 px-4"><?= htmlspecialchars($staff->email) ?></td>
+                                                <td class="py-3 px-4"><?= htmlspecialchars($staff->phone ?? 'N/A') ?></td>
+                                                <td class="py-3 px-4">
                                                     <div class="action-buttons-container">
-                                                        <button class="action-button view px-2 py-1 rounded-md text-xs"
-                                                            onclick="viewStaff(<?= $staff->id ?>)">
-                                                            <i class='bx bx-show'></i> View
-                                                        </button>
-                                                        <button class="action-button edit px-2 py-1 rounded-md text-xs"
-                                                            onclick="editStaff(<?= $staff->id ?>)">
-                                                            <i class='bx bx-edit'></i> Edit
-                                                        </button>
-                                                        <button class="action-button delete px-2 py-1 rounded-md text-xs"
-                                                            onclick="deleteStaff(<?= $staff->id ?>, '<?= htmlspecialchars($staff->first_name . ' ' . $staff->last_name) ?>')">
-                                                            <i class='bx bx-trash'></i> Delete
-                                                        </button>
+                                                        <div class="tooltip">
+                                                            <button class="p-2 text-blue-600 hover:text-blue-800"
+                                                                onclick="viewStaff(<?= $staff->id ?>)">
+                                                                <i class="bx bx-show text-lg"></i>
+                                                                <span class="tooltip-text">View Details</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="tooltip">
+                                                            <button class="p-2 text-yellow-600 hover:text-yellow-800"
+                                                                onclick="editStaff(<?= $staff->id ?>)">
+                                                                <i class="bx bx-edit text-lg"></i>
+                                                                <span class="tooltip-text">Edit Staff</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="tooltip">
+                                                            <button class="p-2 text-red-600 hover:text-red-800"
+                                                                onclick="deleteStaff(<?= $staff->id ?>, '<?= htmlspecialchars($staff->first_name . ' ' . $staff->last_name) ?>')">
+                                                                <i class="bx bx-trash text-lg"></i>
+                                                                <span class="tooltip-text">Delete Staff</span>
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -256,3 +248,39 @@
 </body>
 
 </html>
+
+<style>
+    .appointments-table thead th {
+        background-color: rgb(37 99 235);
+        /* Changed from rgba(22, 163, 74) to match admin theme */
+        color: white;
+        font-weight: 500;
+        padding: 0.75rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .appointments-table tbody td {
+        vertical-align: middle;
+    }
+
+    .card {
+        transition: all 0.3s ease;
+    }
+
+    .fade-in {
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
