@@ -174,67 +174,49 @@
                     </div>
 
                     <!-- Billing Records Table -->
-                    <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                    <div class="card bg-white shadow-sm rounded-lg w-full fade-in">
+                        <div class="p-4">
+                            <table class="appointments-table">
+                                <thead>
                                     <tr>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Patient
-                                        </th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Service
-                                        </th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Amount
-                                        </th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Billing Date
-                                        </th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Due Date
-                                        </th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Status
-                                        </th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Actions
-                                        </th>
+                                        <th>Patient</th>
+                                        <th>Service</th>
+                                        <th>Amount</th>
+                                        <th>Billing Date</th>
+                                        <th>Due Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
+                                <tbody>
                                     <?php if (empty($billingRecords)): ?>
                                         <tr>
-                                            <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">
-                                                No billing records found
-                                            </td>
+                                            <td colspan="7" class="text-center py-4">No billing records found</td>
                                         </tr>
                                     <?php else: ?>
                                         <?php foreach ($billingRecords as $billing): ?>
-                                            <tr>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    <?= htmlspecialchars($billing->patient_first_name . ' ' . $billing->patient_last_name) ?>
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    <?= htmlspecialchars($billing->service_type) ?>
-                                                    <div class="text-xs text-gray-500">
-                                                        <?= htmlspecialchars($billing->description) ?>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-3 px-4">
+                                                    <div class="flex flex-col">
+                                                        <span class="font-medium text-md">
+                                                            <?= htmlspecialchars($billing->patient_first_name . ' ' . $billing->patient_last_name) ?>
+                                                        </span>
                                                     </div>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                                                    ₱<?= number_format($billing->amount, 2) ?>
+                                                <td class="py-3 px-4">
+                                                    <div class="flex flex-col">
+                                                        <span class="font-medium text-md">
+                                                            <?= htmlspecialchars($billing->service_type) ?>
+                                                        </span>
+                                                        <span class="text-xs text-gray-500">
+                                                            <?= htmlspecialchars($billing->description) ?>
+                                                        </span>
+                                                    </div>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    <?= date('M d, Y', strtotime($billing->billing_date)) ?>
+                                                <td class="py-3 px-4">₱<?= number_format($billing->amount, 2) ?></td>
+                                                <td class="py-3 px-4"><?= date('M d, Y', strtotime($billing->billing_date)) ?>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <td class="py-3 px-4">
                                                     <?= date('M d, Y', strtotime($billing->due_date)) ?>
                                                     <?php
                                                     $today = new DateTime();
@@ -248,47 +230,55 @@
                                                     }
                                                     ?>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                                    <span class="status-badge 
-                                                        <?php
-                                                        switch (strtolower($billing->status)) {
-                                                            case 'paid':
-                                                                echo 'bg-green-100 text-green-800 border border-green-200';
-                                                                break;
-                                                            case 'pending':
-                                                                echo 'bg-yellow-100 text-yellow-800 border border-yellow-200';
-                                                                break;
-                                                            case 'cancelled':
-                                                                echo 'bg-red-100 text-red-800 border border-red-200';
-                                                                break;
-                                                            case 'partial':
-                                                                echo 'bg-blue-100 text-blue-800 border border-blue-200';
-                                                                break;
-                                                            case 'refunded':
-                                                                echo 'bg-purple-100 text-purple-800 border border-purple-200';
-                                                                break;
-                                                            default:
-                                                                echo 'bg-gray-100 text-gray-800 border border-gray-200';
-                                                        }
-                                                        ?>">
+                                                <td class="py-3 px-4">
+                                                    <span class="status-badge <?php
+                                                    switch (strtolower($billing->status)) {
+                                                        case 'paid':
+                                                            echo 'bg-green-100 text-green-800 border border-green-200';
+                                                            break;
+                                                        case 'pending':
+                                                            echo 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+                                                            break;
+                                                        case 'cancelled':
+                                                            echo 'bg-red-100 text-red-800 border border-red-200';
+                                                            break;
+                                                        case 'partial':
+                                                            echo 'bg-blue-100 text-blue-800 border border-blue-200';
+                                                            break;
+                                                        case 'refunded':
+                                                            echo 'bg-purple-100 text-purple-800 border border-purple-200';
+                                                            break;
+                                                        default:
+                                                            echo 'bg-gray-100 text-gray-800 border border-gray-200';
+                                                    }
+                                                    ?>">
                                                         <?= ucfirst(htmlspecialchars($billing->status)) ?>
                                                     </span>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <td class="py-3 px-4">
                                                     <div class="action-buttons-container">
-                                                        <button class="action-button view px-2 py-1 rounded-md text-xs"
-                                                            onclick="viewBilling(<?= $billing->id ?>)">
-                                                            <i class='bx bx-show'></i> View
-                                                        </button>
+                                                        <div class="tooltip">
+                                                            <button class="p-2 text-blue-600 hover:text-blue-800"
+                                                                onclick="viewBilling(<?= $billing->id ?>)">
+                                                                <i class="bx bx-show text-lg"></i>
+                                                                <span class="tooltip-text">View Details</span>
+                                                            </button>
+                                                        </div>
                                                         <?php if (strtolower($billing->status) === 'pending'): ?>
-                                                            <button class="action-button edit px-2 py-1 rounded-md text-xs"
-                                                                onclick="updateBillingStatus(<?= $billing->id ?>, 'paid')">
-                                                                <i class='bx bx-check'></i> Mark Paid
-                                                            </button>
-                                                            <button class="action-button delete px-2 py-1 rounded-md text-xs"
-                                                                onclick="updateBillingStatus(<?= $billing->id ?>, 'cancelled')">
-                                                                <i class='bx bx-x'></i> Cancel
-                                                            </button>
+                                                            <div class="tooltip">
+                                                                <button class="p-2 text-yellow-600 hover:text-yellow-800"
+                                                                    onclick="updateBillingStatus(<?= $billing->id ?>, 'paid')">
+                                                                    <i class="bx bx-check text-lg"></i>
+                                                                    <span class="tooltip-text">Mark Paid</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="tooltip">
+                                                                <button class="p-2 text-red-600 hover:text-red-800"
+                                                                    onclick="updateBillingStatus(<?= $billing->id ?>, 'cancelled')">
+                                                                    <i class="bx bx-x text-lg"></i>
+                                                                    <span class="tooltip-text">Cancel</span>
+                                                                </button>
+                                                            </div>
                                                         <?php endif; ?>
                                                     </div>
                                                 </td>
@@ -299,6 +289,46 @@
                             </table>
                         </div>
                     </div>
+
+                    <!-- Add this CSS to your existing styles section -->
+                    <style>
+                        .appointments-table {
+                            width: 100%;
+                        }
+
+                        .appointments-table thead th {
+                            background-color: rgb(37 99 235);
+                            color: white;
+                            font-weight: 500;
+                            padding: 0.75rem 1rem;
+                            text-align: left;
+                            border-bottom: 1px solid #e5e7eb;
+                        }
+
+                        .appointments-table tbody td {
+                            vertical-align: middle;
+                        }
+
+                        .card {
+                            transition: all 0.3s ease;
+                        }
+
+                        .fade-in {
+                            animation: fadeIn 0.5s ease-in;
+                        }
+
+                        @keyframes fadeIn {
+                            from {
+                                opacity: 0;
+                                transform: translateY(10px);
+                            }
+
+                            to {
+                                opacity: 1;
+                                transform: translateY(0);
+                            }
+                        }
+                    </style>
                 </section>
             </div>
         </main>

@@ -83,10 +83,14 @@ $router->post('/pharmacist/dispenseMedicine', 'PharmacistController@dispenseMedi
 
 // Patient routes
 $router->get('/patient/dashboard', 'PatientController@dashboard');
-
-
+$router->post('/api/monitoring/send-request', 'PatientController@sendMonitoringRequest');
+$router->get('/patient/monitoring', 'PatientController@monitoring');
+$router->get('/patient/monitoring/dashboard', 'PatientController@monitoringDashboard');
 $router->get('/symptoms-checker', 'PatientController@symptomsChecker');
 $router->post('/analyze-symptoms', 'PatientController@analyzeSymptoms');
+$router->get('/patient/verify/:token', 'PatientController@showVerification');
+$router->post('/patient/verify/:token', 'PatientController@verifyCode');
+
 
 
 // Admin routes

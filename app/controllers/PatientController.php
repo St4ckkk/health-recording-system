@@ -4,16 +4,34 @@ namespace app\controllers;
 use Rubix\ML\Datasets\Labeled;
 use Rubix\ML\Classifiers\KNearestNeighbors;
 use Rubix\ML\CrossValidation\Metrics\Accuracy;
+use app\helpers\email\MonitoringEmail;
+use app\models\Patient;
+use app\models\Doctor;
+use app\models\PatientMonitoringLog;
+use app\models\PatientWellnessResponse;
+use app\models\MonitoringRequest;
+use app\helpers\email\EmailTemplate;
 require_once dirname(dirname(__DIR__)) . '/public/vendor/autoload.php';
 
 
 
 class PatientController extends Controller
 {
+    private $monitoringEmailHelper;
+    private $patientWellnessResponseModel;
+    private $patientMonitoringLogModel;
+    private $monitoringRequestModel;
+    private $patientModel;
+    private $doctorModel;
 
     public function __construct()
     {
-
+        $this->monitoringEmailHelper = new MonitoringEmail();
+        $this->patientModel = new Patient();
+        $this->doctorModel = new Doctor();
+        $this->monitoringRequestModel = new MonitoringRequest();
+        $this->patientMonitoringLogModel = new PatientMonitoringLog();
+        $this->patientWellnessResponseModel = new PatientWellnessResponse();
     }
 
     public function dashboard()
@@ -122,7 +140,7 @@ class PatientController extends Controller
         // Basic screening tests for all suspected TB cases
         if ($probability > 20) {
             $recommendedTests[] = "Tuberculin Skin Test (TST)";
-            $recommendedTests[] = "Complete Blood Count (CBC)"; 
+            $recommendedTests[] = "Complete Blood Count (CBC)";
         }
 
         // Sputum tests for respiratory symptoms
@@ -376,4 +394,344 @@ class PatientController extends Controller
         return $finalProbability;
     }
 
+    public function sendMonitoringRequest()
+    {
+        header('Content-Type: application/json');
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+            return;
+        }
+
+        try {
+            $data = json_decode(file_get_contents('php://input'), true);
+
+            // Generate a unique token
+            $token = bin2hex(random_bytes(32));
+
+            // Get patient and doctor details
+            $patient = $this->patientModel->getPatientById($data['patient_id']);
+            $doctor = $this->doctorModel->getDoctorById($_SESSION['doctor']['id']);
+
+            if (!$patient || !$doctor) {
+                throw new \Exception('Invalid patient or doctor data');
+            }
+
+            // Generate verification code once
+            $verificationCode = $this->patientModel->generateVerificationCode($patient->id);
+            if (!$verificationCode) {
+                throw new \Exception('Failed to generate verification code');
+            }
+
+            // Save monitoring request to database
+            $monitoringData = [
+                'patient_id' => $data['patient_id'],
+                'doctor_id' => $_SESSION['doctor']['id'],
+                'token' => $token,
+                'duration' => $data['duration'] ?? 7,
+                'include_symptoms' => $data['include_symptoms'] ?? true,
+                'include_wellness' => $data['include_wellness'] ?? true,
+                'status' => 'pending',
+                'expires_at' => date('Y-m-d H:i:s', strtotime('+' . ($data['duration'] ?? 7) . ' days'))
+            ];
+
+            $requestId = $this->monitoringRequestModel->create($monitoringData);
+
+            if (!$requestId) {
+                throw new \Exception('Failed to create monitoring request');
+            }
+
+            // Use existing monitoringEmailHelper instance
+            $emailSent = $this->monitoringEmailHelper->sendMonitoringRequest(
+                $patient->email,
+                $patient->first_name . ' ' . $patient->last_name,
+                $token,
+                $doctor->first_name . ' ' . $doctor->last_name,
+                $data['duration'] ?? 7,
+                $verificationCode
+            );
+
+            if (!$emailSent) {
+                throw new \Exception('Failed to send email');
+            }
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Monitoring request sent successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            error_log('Error sending monitoring request: ' . $e->getMessage());
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to send monitoring request: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function monitoring()
+    {
+        $token = $_GET['token'] ?? '';
+
+        if (empty($token)) {
+            $_SESSION['flash_message'] = 'Invalid monitoring link.';
+            $this->redirect('/');
+            return;
+        }
+
+        try {
+            // Get monitoring request by token
+            $monitoringRequest = $this->monitoringRequestModel->getByToken($token);
+
+            if (!$monitoringRequest || $monitoringRequest->status === 'expired') {
+                $_SESSION['flash_message'] = 'This monitoring link has expired.';
+                $this->redirect('/');
+                return;
+            }
+
+            // Get patient and doctor details
+            $patient = $this->patientModel->getPatientById($monitoringRequest->patient_id);
+            $doctor = $this->doctorModel->getDoctorById($monitoringRequest->doctor_id);
+
+            if (!$patient || !$doctor) {
+                throw new \Exception('Invalid patient or doctor data');
+            }
+
+            // Generate verification code
+            $verificationCode = $this->patientModel->generateVerificationCode($patient->id);
+
+            if (!$verificationCode) {
+                throw new \Exception('Failed to generate verification code');
+            }
+
+            // Send verification code via email
+            $emailSent = $this->monitoringEmailHelper->sendMonitoringRequest(
+                $patient->email,
+                $patient->first_name . ' ' . $patient->last_name,
+                $token,
+                $doctor->first_name . ' ' . $doctor->last_name,
+                $monitoringRequest->duration,
+                $verificationCode
+            );
+
+            if (!$emailSent) {
+                throw new \Exception('Failed to send verification code');
+            }
+
+            // Store temporary data
+            $_SESSION['temp_monitoring'] = [
+                'token' => $token,
+                'patient_id' => $patient->id,
+                'request_id' => $monitoringRequest->id
+            ];
+
+            // Show verification page
+            $this->view('pages/patient/verify-code', [
+                'title' => 'Verify Access - TeleCure',
+                'patient_email' => $patient->email
+            ]);
+
+        } catch (\Exception $e) {
+            error_log('Monitoring access error: ' . $e->getMessage());
+            $_SESSION['flash_message'] = 'An error occurred while accessing monitoring.';
+            $this->redirect('/');
+        }
+    }
+
+    public function showVerification($params)
+    {
+        $token = $params[0] ?? ''; // Get the token from the parameters array
+
+        try {
+            // Get monitoring request by token
+            $monitoringRequest = $this->monitoringRequestModel->getByToken($token);
+
+            if (!$monitoringRequest || $monitoringRequest->status === 'expired') {
+                $_SESSION['flash_message'] = 'This monitoring link has expired.';
+                $this->redirect('/');
+                return;
+            }
+
+            // Get patient details
+            $patient = $this->patientModel->getPatientById($monitoringRequest->patient_id);
+            if (!$patient) {
+                throw new \Exception('Patient not found');
+            }
+
+            $_SESSION['verify_token'] = $token;
+
+            $this->view('pages/patient/verify', [
+                'title' => 'Verify Access - TeleCure',
+                'patient_email' => $patient->email,
+                'token' => $token
+            ]);
+
+        } catch (\Exception $e) {
+            error_log('Verification page error: ' . $e->getMessage());
+            $_SESSION['flash_message'] = 'An error occurred while accessing verification.';
+            $this->redirect('/');
+        }
+    }
+
+    public function verifyCode($params)
+    {
+        $token = $params[0] ?? '';
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('/patient/verify/' . $token);
+            return;
+        }
+
+        try {
+            $code = $_POST['verification_code'] ?? '';
+
+            if (!$code || !$token || $token !== $_SESSION['verify_token']) {
+                throw new \Exception('Invalid verification attempt');
+            }
+
+            $monitoringRequest = $this->monitoringRequestModel->getByToken($token);
+            if (!$monitoringRequest) {
+                throw new \Exception('Invalid monitoring request');
+            }
+
+            // Get patient details
+            $patient = $this->patientModel->getPatientById($monitoringRequest->patient_id);
+            if (!$patient) {
+                throw new \Exception('Patient not found');
+            }
+
+            $verified = $this->patientModel->verifyCode($monitoringRequest->patient_id, $code);
+
+            if (!$verified) {
+                $_SESSION['flash_message'] = 'Invalid or expired verification code';
+                $this->redirect('/patient/verify/' . $token);
+                return;
+            }
+
+            $this->patientModel->clearVerificationCode($monitoringRequest->patient_id);
+
+            // Create complete patient session
+            $_SESSION['patient'] = [
+                'id' => $patient->id,
+                'first_name' => $patient->first_name,
+                'last_name' => $patient->last_name,
+                'email' => $patient->email,
+                'profile' => $patient->profile ?? null,
+                'type' => 'monitoring_patient',
+                'request_id' => $monitoringRequest->id,
+                'expires_at' => $monitoringRequest->expires_at
+            ];
+
+            unset($_SESSION['verify_token']);
+            $this->redirect('/patient/monitoring/dashboard');
+
+        } catch (\Exception $e) {
+            error_log('Code verification error: ' . $e->getMessage());
+            $_SESSION['flash_message'] = 'An error occurred during verification';
+            $this->redirect('/patient/verify/' . $token);
+        }
+    }
+
+
+    public function monitoringDashboard()
+    {
+        if (!isset($_SESSION['patient']) || $_SESSION['patient']['type'] !== 'monitoring_patient') {
+            $_SESSION['flash_message'] = 'Please verify your access first';
+            $this->redirect('/');
+            return;
+        }
+
+        // Get monitoring data
+        $monitoringData = [
+            'logs' => $this->patientMonitoringLogModel->getPatientLogs(
+                $_SESSION['patient']['id'],
+                $_SESSION['patient']['request_id']
+            ),
+            'request' => $this->monitoringRequestModel->getById($_SESSION['patient']['request_id']),
+            'patient' => $this->patientModel->getPatientById($_SESSION['patient']['id'])
+        ];
+
+        $this->view('pages/patient/dashboard.view', [
+            'title' => 'TeleCure - Patient Monitoring Dashboard',
+            'monitoring_data' => $monitoringData
+        ]);
+    }
+
+    private function checkMonitoringSession()
+    {
+        if (!isset($_SESSION['monitoring_patient'])) {
+            if (isset($_GET['token'])) {
+                $this->monitoring();
+                return;
+            }
+            http_response_code(401);
+            echo json_encode(['success' => false, 'message' => 'Access denied']);
+            exit;
+        }
+
+        if (strtotime($_SESSION['monitoring_patient']['expires_at']) < time()) {
+            $this->monitoringRequestModel->updateStatus(
+                $_SESSION['monitoring_patient']['request_id'],
+                'expired'
+            );
+            unset($_SESSION['monitoring_patient']);
+            http_response_code(401);
+            echo json_encode(['success' => false, 'message' => 'Monitoring session has expired']);
+            exit;
+        }
+    }
+
+    // Update saveMonitoringLog to use the middleware
+    public function saveMonitoringLog()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+            return;
+        }
+
+        // Check monitoring session before proceeding
+        $this->checkMonitoringSession();
+
+        try {
+            $data = json_decode(file_get_contents('php://input'), true);
+
+            $logData = [
+                'monitoring_request_id' => $_SESSION['monitoring_patient']['request_id'],
+                'patient_id' => $_SESSION['monitoring_patient']['id'],
+                'log_date' => date('Y-m-d'),
+                'log_time' => date('H:i:s'),
+                'temperature' => $data['temperature'] ?? null,
+                'blood_pressure' => $data['blood_pressure'] ?? null,
+                'heart_rate' => $data['heart_rate'] ?? null,
+                'fatigue_level' => $data['fatigue_level'] ?? null,
+                'additional_symptoms' => $data['additional_symptoms'] ?? null,
+                'notes' => $data['notes'] ?? null
+            ];
+
+            $logId = $this->patientMonitoringLogModel->create($logData);
+
+            if (!$logId) {
+                throw new \Exception('Failed to save monitoring log');
+            }
+
+            // Save wellness data if included
+            if (isset($data['wellness_data'])) {
+                $wellnessData = array_merge(['monitoring_log_id' => $logId], $data['wellness_data']);
+                $this->patientWellnessResponseModel->create($wellnessData);
+            }
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Monitoring log saved successfully',
+                'log_id' => $logId
+            ]);
+        } catch (\Exception $e) {
+            error_log('Error saving monitoring log: ' . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Failed to save monitoring log']);
+        }
+    }
 }

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace app\core;
 
 class Router
@@ -50,13 +49,34 @@ class Router
 
     public function direct($uri, $requestType)
     {
+        // First try exact match
         if (array_key_exists($uri, $this->routes[$requestType])) {
             return $this->callAction(
                 ...explode('@', $this->routes[$requestType][$uri])
             );
         }
 
-        // Change from app\core\Exception to \Exception
+        // If no exact match, try to match patterns with parameters
+        foreach ($this->routes[$requestType] as $route => $action) {
+            // Check if route contains a parameter placeholder (e.g., :token)
+            if (strpos($route, ':') !== false) {
+                $pattern = preg_replace('#:[^/]+#', '([^/]+)', $route);
+                $pattern = '#^' . $pattern . '$#';
+
+                if (preg_match($pattern, $uri, $matches)) {
+                    // Extract parameter values
+                    array_shift($matches); // Remove the full match
+
+                    // Call the action with parameters
+                    return $this->callActionWithParams(
+                        explode('@', $action),
+                        $matches
+                    );
+                }
+            }
+        }
+
+        // No route found
         throw new \Exception('No route defined for this URI: ' . $uri);
     }
 
@@ -66,7 +86,6 @@ class Router
         $controller = new $controller();
 
         if (!method_exists($controller, $action)) {
-            // Change from app\core\Exception to \Exception
             throw new \Exception(
                 "{$controller} does not respond to the {$action} action."
             );
@@ -74,7 +93,20 @@ class Router
 
         return $controller->$action();
     }
+
+    protected function callActionWithParams($controllerAction, $params)
+    {
+        list($controller, $action) = $controllerAction;
+
+        $controller = "app\\controllers\\{$controller}";
+        $controller = new $controller();
+
+        if (!method_exists($controller, $action)) {
+            throw new \Exception(
+                "{$controller} does not respond to the {$action} action."
+            );
+        }
+
+        return $controller->$action($params);
+    }
 }
-
-
-// Add this route to your routes array or registration method

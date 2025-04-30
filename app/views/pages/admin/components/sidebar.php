@@ -32,12 +32,12 @@ $notification_count = 3;
                     <i class='bx bx-user text-lg mr-2 ml-1'></i> Staff Management
                 </li>
             </a>
-            <a href="<?= BASE_URL ?>/admin/doctors">
+            <!-- <a href="<?= BASE_URL ?>/admin/doctors">
                 <li class="px-sm py-2 rounded-md hover:bg-blue-600 hover:text-white flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1 mb-2"
                     style="<?php echo strpos($request_uri, '/admin/doctors') !== false ? 'background-color: rgb(37 99 235); color: white;' : ''; ?>">
                     <i class='bx bx-plus-medical text-lg mr-2 ml-1'></i> Doctor Management
                 </li>
-            </a>
+            </a> -->
             <a href="<?= BASE_URL ?>/admin/transactions">
                 <li class="px-sm py-2 rounded-md hover:bg-blue-600 hover:text-white flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1 mb-2"
                     style="<?php echo strpos($request_uri, '/admin/transactions') !== false ? 'background-color: rgb(37 99 235); color: white;' : ''; ?>">
@@ -50,18 +50,18 @@ $notification_count = 3;
                     <i class='bx bx-dollar text-lg mr-2 ml-1'></i> Billing Records
                 </li>
             </a>
-            <a href="<?= BASE_URL ?>/admin/medicine-logs">
+            <!-- <a href="<?= BASE_URL ?>/admin/medicine-logs">
                 <li class="px-sm py-2 rounded-md hover:bg-blue-600 hover:text-white flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1 mb-2"
                     style="<?php echo strpos($request_uri, '/admin/medicine-logs') !== false ? 'background-color: rgb(37 99 235); color: white;' : ''; ?>">
                     <i class='bx bx-capsule text-lg mr-2 ml-1'></i> Medicine Logs
                 </li>
-            </a>
-            <a href="<?= BASE_URL ?>/admin/medical-records">
+            </a> -->
+            <!-- <a href="<?= BASE_URL ?>/admin/medical-records">
                 <li class="px-sm py-2 rounded-md hover:bg-blue-600 hover:text-white flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1 mb-2"
                     style="<?php echo strpos($request_uri, '/admin/medical-records') !== false ? 'background-color: rgb(37 99 235); color: white;' : ''; ?>">
                     <i class='bx bx-file text-lg mr-2 ml-1'></i> Medical Records
                 </li>
-            </a>
+            </a> -->
             <a href="<?= BASE_URL ?>/admin/reports">
                 <li class="px-sm py-2 rounded-md hover:bg-blue-600 hover:text-white flex items-center text-gray-900 cursor-pointer transition-all duration-200 hover:translate-x-1 mb-2"
                     style="<?php echo strpos($request_uri, '/admin/reports') !== false ? 'background-color: rgb(37 99 235); color: white;' : ''; ?>">

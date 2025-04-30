@@ -267,6 +267,9 @@
         </div>
     </div>
 
+    <!-- Include the monitoring request modal -->
+    <?php include('components/modals/monitoring-request.php'); ?>
+
     <!-- Floating Action Buttons Container -->
     <div class="fab-container">
         <!-- E-Prescriptions FAB -->
@@ -282,7 +285,73 @@
             <div class="fab-tooltip">Let's Checkup</div>
             <i class="bx bx-plus-medical"></i>
         </a>
+
+        <!-- Monitor Patient FAB -->
+        <button onclick="openMonitoringRequestModal(<?= $patient->id ?>)"
+            class="floating-action-button fab-monitor pulse bg-primary">
+            <div class="fab-tooltip">Send Monitoring Request</div>
+            <i class="bx bx-heart-circle"></i>
+        </button>
     </div>
+
+    <script>
+        function openMonitoringRequestModal(patientId) {
+            const modal = document.getElementById('monitoringRequestModal');
+            const modalContent = document.getElementById('monitoringRequestModalContent');
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 50);
+
+            // Setup close handlers
+            const closeModal = () => {
+                modalContent.classList.add('scale-95', 'opacity-0');
+                modalContent.classList.remove('scale-100', 'opacity-100');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 300);
+            };
+
+            document.getElementById('closeMonitoringRequestModal').onclick = closeModal;
+            document.getElementById('cancelMonitoringRequestBtn').onclick = closeModal;
+
+            // Setup confirm handler
+            document.getElementById('confirmMonitoringRequestBtn').onclick = () => {
+                const data = {
+                    patient_id: patientId,
+                    include_symptoms: document.getElementById('include_symptoms').checked,
+                    include_wellness: document.getElementById('include_wellness').checked,
+                    duration: document.getElementById('monitoring_duration').value,
+                    message: document.getElementById('monitoring_message').value
+                };
+
+                fetch(`${document.querySelector('meta[name="base-url"]').content}/api/monitoring/send-request`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Monitoring request sent successfully!');
+                            closeModal();
+                        } else {
+                            alert('Failed to send monitoring request.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while sending the request.');
+                    });
+            };
+        }
+    </script>
 
 
     <script>

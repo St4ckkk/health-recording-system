@@ -249,4 +249,81 @@ class Patient extends Model
             return false;
         }
     }
+
+    public function createMonitoringSession($patientId)
+    {
+        $patient = $this->getPatientById($patientId);
+        if (!$patient) {
+            return false;
+        }
+
+        $_SESSION['patient'] = [
+            'id' => $patient->id,
+            'first_name' => $patient->first_name,
+            'last_name' => $patient->last_name,
+            'email' => $patient->email,
+            'type' => 'monitoring_patient',
+            'profile' => $patient->profile ?? null
+        ];
+
+        return true;
+    }
+
+    public function isMonitoringSession()
+    {
+        return isset($_SESSION['patient']) && $_SESSION['patient']['type'] === 'monitoring_patient';
+    }
+
+    public function generateVerificationCode($patientId)
+    {
+        $code = sprintf('%06d', mt_rand(100000, 999999));
+        $expiresAt = date('Y-m-d H:i:s', strtotime('+3 days'));
+
+        $sql = "UPDATE patients SET 
+                verification_code = :code,
+                code_expires_at = :expires_at 
+                WHERE id = :id";
+
+        try {
+            $this->db->query($sql);
+            $this->db->bind(':code', $code);
+            $this->db->bind(':expires_at', $expiresAt);
+            $this->db->bind(':id', $patientId);
+
+            if ($this->db->execute()) {
+                return $code;
+            }
+            return false;
+        } catch (\PDOException $e) {
+            error_log('Error generating verification code: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function verifyCode($patientId, $code)
+    {
+        $sql = "SELECT verification_code, code_expires_at 
+                FROM patients 
+                WHERE id = :id 
+                AND verification_code = :code 
+                AND code_expires_at > NOW()";
+
+        $this->db->query($sql);
+        $this->db->bind(':id', $patientId);
+        $this->db->bind(':code', $code);
+
+        return $this->db->single();
+    }
+
+    public function clearVerificationCode($patientId)
+    {
+        $sql = "UPDATE patients SET 
+                verification_code = NULL,
+                code_expires_at = NULL 
+                WHERE id = :id";
+
+        $this->db->query($sql);
+        $this->db->bind(':id', $patientId);
+        return $this->db->execute();
+    }
 }
