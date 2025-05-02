@@ -292,4 +292,146 @@ class PatientMonitoringLog extends Model
             'next_appointment' => $nextAppointment
         ];
     }
+
+    public function getPatientLogs($patientId, $requestId)
+    {
+        $sql = "SELECT * FROM {$this->table} 
+                WHERE patient_id = :patient_id 
+                AND monitoring_request_id = :request_id 
+                ORDER BY log_date DESC, log_time DESC";
+
+        $this->db->query($sql);
+        $this->db->bind(':patient_id', $patientId);
+        $this->db->bind(':request_id', $requestId);
+
+        return $this->db->resultSet();
+    }
+
+    /**
+     * Get vital trends data for a patient's monitoring session
+     * 
+     * @param int $patientId Patient ID
+     * @param int $requestId Monitoring request ID
+     * @return array Vital signs trend data
+     */
+    public function getVitalTrends($patientId, $requestId)
+    {
+        $sql = "SELECT 
+                log_date,
+                temperature,
+                blood_pressure,
+                heart_rate
+                FROM {$this->table} 
+                WHERE patient_id = :patient_id 
+                AND monitoring_request_id = :request_id 
+                ORDER BY log_date ASC, log_time ASC";
+
+        $this->db->query($sql);
+        $this->db->bind(':patient_id', $patientId);
+        $this->db->bind(':request_id', $requestId);
+
+        $results = $this->db->resultSet();
+
+        // Format data for charts
+        $dates = [];
+        $temperature = [];
+        $bloodPressure = [];
+        $heartRate = [];
+
+        foreach ($results as $row) {
+            $dates[] = date('M d', strtotime($row->log_date));
+            $temperature[] = $row->temperature ?? null;
+            $bloodPressure[] = $row->blood_pressure ?? null;
+            $heartRate[] = $row->heart_rate ?? null;
+        }
+
+        return [
+            'dates' => $dates,
+            'temperature' => $temperature,
+            'blood_pressure' => $bloodPressure,
+            'heart_rate' => $heartRate
+        ];
+    }
+
+    /**
+     * Get symptom summary data for a patient's monitoring session
+     * 
+     * @param int $patientId Patient ID
+     * @param int $requestId Monitoring request ID
+     * @return array Symptom summary data
+     */
+    // public function getSymptomSummary($patientId, $requestId)
+    // {
+    //     $sql = "SELECT 
+    //             log_date,
+    //             pain_level,
+    //             fatigue_level,
+    //             cough_severity,
+    //             shortness_of_breath,
+    //             dizziness,
+    //             other_symptoms
+    //             FROM {$this->table} 
+    //             WHERE patient_id = :patient_id 
+    //             AND monitoring_request_id = :request_id 
+    //             ORDER BY log_date ASC, log_time ASC";
+
+    //     $this->db->query($sql);
+    //     $this->db->bind(':patient_id', $patientId);
+    //     $this->db->bind(':request_id', $requestId);
+
+    //     $results = $this->db->resultSet();
+
+    //     // Format data for charts
+    //     $dates = [];
+    //     $painLevel = [];
+    //     $fatigueLevel = [];
+    //     $coughSeverity = [];
+    //     $shortnessOfBreath = [];
+    //     $dizziness = [];
+    //     $otherSymptoms = [];
+
+    //     foreach ($results as $row) {
+    //         $dates[] = date('M d', strtotime($row->log_date));
+    //         $painLevel[] = $row->pain_level ?? 0;
+    //         $fatigueLevel[] = $row->fatigue_level ?? 0;
+    //         $coughSeverity[] = $row->cough_severity ?? 0;
+    //         $shortnessOfBreath[] = $row->shortness_of_breath ?? 0;
+    //         $dizziness[] = $row->dizziness ?? 0;
+    //         $otherSymptoms[] = $row->other_symptoms ?? null;
+    //     }
+
+    //     // Calculate average symptom levels
+    //     $avgPain = !empty($painLevel) ? array_sum($painLevel) / count($painLevel) : 0;
+    //     $avgFatigue = !empty($fatigueLevel) ? array_sum($fatigueLevel) / count($fatigueLevel) : 0;
+    //     $avgCough = !empty($coughSeverity) ? array_sum($coughSeverity) / count($coughSeverity) : 0;
+
+    //     // Determine if symptoms are improving, stable or worsening
+    //     $trend = 'stable';
+    //     if (count($painLevel) >= 3 && count($fatigueLevel) >= 3) {
+    //         $recentPain = array_slice($painLevel, -3);
+    //         $recentFatigue = array_slice($fatigueLevel, -3);
+
+    //         if (array_sum($recentPain) < $avgPain * 3 * 0.8 && array_sum($recentFatigue) < $avgFatigue * 3 * 0.8) {
+    //             $trend = 'improving';
+    //         } elseif (array_sum($recentPain) > $avgPain * 3 * 1.2 && array_sum($recentFatigue) > $avgFatigue * 3 * 1.2) {
+    //             $trend = 'worsening';
+    //         }
+    //     }
+
+    //     return [
+    //         'dates' => $dates,
+    //         'pain_level' => $painLevel,
+    //         'fatigue_level' => $fatigueLevel,
+    //         'cough_severity' => $coughSeverity,
+    //         'shortness_of_breath' => $shortnessOfBreath,
+    //         'dizziness' => $dizziness,
+    //         'other_symptoms' => $otherSymptoms,
+    //         'averages' => [
+    //             'pain' => round($avgPain, 1),
+    //             'fatigue' => round($avgFatigue, 1),
+    //             'cough' => round($avgCough, 1)
+    //         ],
+    //         'trend' => $trend
+    //     ];
+    // }
 }

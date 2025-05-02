@@ -270,6 +270,9 @@
     <!-- Include the monitoring request modal -->
     <?php include('components/modals/monitoring-request.php'); ?>
 
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50"></div>
+
     <!-- Floating Action Buttons Container -->
     <div class="fab-container">
         <!-- E-Prescriptions FAB -->
@@ -295,6 +298,34 @@
     </div>
 
     <script>
+        function showToast(type, title, message) {
+            const toast = document.createElement('div');
+
+            toast.className = `flex items-center p-4 mb-4 w-full max-w-xs text-gray-500 bg-white rounded-lg shadow`;
+
+            toast.innerHTML = type === 'success'
+                ? `<div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg">
+                    <i class="bx bx-check text-xl"></i>
+                   </div>`
+                : `<div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg">
+                    <i class="bx bx-x text-xl"></i>
+                   </div>`;
+
+            toast.innerHTML += `
+                <div class="ml-3 text-sm font-normal">
+                    <span class="mb-1 text-sm font-semibold text-gray-900">${title}</span>
+                    <div class="mb-2 text-sm">${message}</div>
+                </div>
+                <button type="button" class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8">
+                    <i class="bx bx-x text-lg"></i>
+                </button>`;
+
+            document.getElementById('toastContainer').appendChild(toast);
+
+            toast.querySelector('button').addEventListener('click', () => toast.remove());
+            setTimeout(() => toast.remove(), 5000);
+        }
+
         function openMonitoringRequestModal(patientId) {
             const modal = document.getElementById('monitoringRequestModal');
             const modalContent = document.getElementById('monitoringRequestModalContent');
@@ -329,6 +360,12 @@
                     message: document.getElementById('monitoring_message').value
                 };
 
+                // Show loading state on button
+                const confirmBtn = document.getElementById('confirmMonitoringRequestBtn');
+                const originalBtnText = confirmBtn.innerHTML;
+                confirmBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin mr-2"></i> Sending...';
+                confirmBtn.disabled = true;
+
                 fetch(`${document.querySelector('meta[name="base-url"]').content}/api/monitoring/send-request`, {
                     method: 'POST',
                     headers: {
@@ -339,15 +376,22 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            alert('Monitoring request sent successfully!');
+                            showToast('success', 'Request Sent', 'Monitoring request has been sent to the patient successfully.');
                             closeModal();
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
                         } else {
-                            alert('Failed to send monitoring request.');
+                            showToast('error', 'Failed', data.message || 'Failed to send monitoring request.');
+                            confirmBtn.innerHTML = originalBtnText;
+                            confirmBtn.disabled = false;
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('An error occurred while sending the request.');
+                        showToast('error', 'Error', 'An unexpected error occurred while sending the request.');
+                        confirmBtn.innerHTML = originalBtnText;
+                        confirmBtn.disabled = false;
                     });
             };
         }

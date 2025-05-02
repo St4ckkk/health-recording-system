@@ -1,13 +1,11 @@
 <header class="p-8 flex justify-around gap-20 items-center border-b border-gray-200 bg-white">
     <div class="flex items-center">
         <div class="logo">
-            <div
-                class="w-12 h-12 flex justify-center items-center font-bold text-blue-600 border-2 border-blue-600 rounded-lg">
-                <i class='bx bx-plus-medical text-2xl'></i>
-            </div>
+            <img src="<?= BASE_URL ?>/images/icons/patient.png" alt="TB Health Recording System" class="object-contain"
+                style="height: 50px; width: 50px">
         </div>
         <div class="ml-3">
-            <div class="text-lg font-semibold text-gray-900">TeleCure</div>
+            <div class="text-lg font-semibold text-gray-900">HRS</div>
             <div class="text-xs text-gray-500">Patient Portal</div>
         </div>
     </div>

@@ -29,8 +29,10 @@ class MedicationLog extends Model
 
     public function addLog($data)
     {
-        $sql = "INSERT INTO {$this->table} (patient_id, medication_name, dosage, frequency, taken_at, status, notes) 
-                VALUES (:patient_id, :medication_name, :dosage, :frequency, :taken_at, :status, :notes)";
+        $sql = "INSERT INTO {$this->table} 
+                (patient_id, medication_name, dosage, frequency, taken_at, status, notes) 
+                VALUES 
+                (:patient_id, :medication_name, :dosage, :frequency, :taken_at, :status, :notes)";
 
         $this->db->query($sql);
         $this->db->bind(':patient_id', $data['patient_id']);
@@ -42,5 +44,31 @@ class MedicationLog extends Model
         $this->db->bind(':notes', $data['notes'] ?? null);
 
         return $this->db->execute();
+    }
+
+    public function updateLog($id, $data)
+    {
+        $sql = "UPDATE {$this->table} 
+                SET status = :status, 
+                    notes = :notes, 
+                    updated_at = CURRENT_TIMESTAMP 
+                WHERE id = :id";
+
+        $this->db->query($sql);
+        $this->db->bind(':id', $id);
+        $this->db->bind(':status', $data['status']);
+        $this->db->bind(':notes', $data['notes'] ?? null);
+
+        return $this->db->execute();
+    }
+
+    public function getLogById($id)
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE id = :id";
+
+        $this->db->query($sql);
+        $this->db->bind(':id', $id);
+
+        return $this->db->single();
     }
 }

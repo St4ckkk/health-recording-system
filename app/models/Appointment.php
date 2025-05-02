@@ -140,7 +140,6 @@ class Appointment extends Model
         ];
     }
 
-    // ... existing code ...
 
     public function getAppointmentDetails($appointmentId)
     {
@@ -152,6 +151,21 @@ class Appointment extends Model
             return $this->db->single();
         } catch (\Exception $e) {
             error_log("Error getting appointment details: " . $e->getMessage());
+            return null;
+        }
+    }
+
+
+    public function getUpcoming($patientId)
+    {
+        $sql = $this->buildBaseQuery() . " WHERE a.patient_id = :patient_id AND a.appointment_date >= CURDATE() ORDER BY a.appointment_date ASC, a.appointment_time ASC";
+
+        try {
+            $this->db->query($sql);
+            $this->db->bind(':patient_id', $patientId);
+            return $this->db->resultSet();
+        } catch (\Exception $e) {
+            error_log("Error getting upcoming appointments: " . $e->getMessage());
             return null;
         }
     }

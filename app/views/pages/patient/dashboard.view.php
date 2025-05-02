@@ -28,11 +28,15 @@
                     <div class="mb-8">
                         <div class="flex flex-col md:flex-row md:items-center md:justify-between">
                             <div>
-                                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Health Monitoring Dashboard</h1>
-                                <p class="text-gray-600">Welcome back, <?= htmlspecialchars($patient_name ?? 'Patient') ?>! Track your health journey here.</p>
+                                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Health Monitoring
+                                    Dashboard</h1>
+                                <p class="text-gray-600">Welcome back,
+                                    <?= htmlspecialchars($patient_name ?? 'Patient') ?>! Track your health journey here.
+                                </p>
                             </div>
                             <div class="mt-4 md:mt-0">
-                                <button class="px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white rounded-lg text-sm flex items-center transition-colors">
+                                <button
+                                    class="px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white rounded-lg text-sm flex items-center transition-colors">
                                     <i class="bx bx-download mr-2"></i> Export Health Data
                                 </button>
                             </div>
@@ -40,38 +44,38 @@
                     </div>
 
                     <!-- Quick Stats -->
-                  <?php include(VIEW_ROOT. '/pages/patient/components/dashboard/quick-stats.php')?>
+                    <?php include(VIEW_ROOT . '/pages/patient/components/dashboard/quick-stats.php') ?>
 
                     <!-- Main Dashboard Content -->
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <!-- Left Column -->
                         <div class="lg:col-span-2 space-y-6">
                             <!-- Symptom Tracker Chart -->
-                            <?php include(VIEW_ROOT. '/pages/patient/components/dashboard/symptom-chart.php')?>
+                            <?php include(VIEW_ROOT . '/pages/patient/components/dashboard/symptom-chart.php') ?>
 
                             <!-- Medication Log -->
-                            <?php include(VIEW_ROOT. '/pages/patient/components/dashboard/medication-log.php')?>
+                            <?php include(VIEW_ROOT . '/pages/patient/components/dashboard/medication-log.php') ?>
 
                             <!-- Symptom Log Form -->
-                            <?php include(VIEW_ROOT. '/pages/patient/components/dashboard/symptom-log.php')?>
+                            <?php include(VIEW_ROOT . '/pages/patient/components/dashboard/symptom-log.php') ?>
 
                             <!-- Wellness Survey -->
-                            <?php include(VIEW_ROOT. '/pages/patient/components/dashboard/wellness-survey.php')?>
+                            <?php include(VIEW_ROOT . '/pages/patient/components/dashboard/wellness-survey.php') ?>
                         </div>
 
                         <!-- Right Column -->
                         <div class="space-y-6">
                             <!-- Notifications -->
-                            <?php include(VIEW_ROOT. '/pages/patient/components/dashboard/notifications.php')?>
+                            <?php include(VIEW_ROOT . '/pages/patient/components/dashboard/notifications.php') ?>
 
                             <!-- Achievement Badges -->
-                            <?php include(VIEW_ROOT. '/pages/patient/components/dashboard/achievement-badges.php')?>
+                            <?php include(VIEW_ROOT . '/pages/patient/components/dashboard/achievement-badges.php') ?>
 
                             <!-- Consultation Request -->
-                            <?php include(VIEW_ROOT. '/pages/patient/components/dashboard/consultation-request.php')?>
+                            <?php include(VIEW_ROOT . '/pages/patient/components/dashboard/consultation-request.php') ?>
 
                             <!-- Upcoming Appointments -->
-                            <?php include(VIEW_ROOT. '/pages/patient/components/dashboard/upcoming-appointments.php')?>
+                            <?php include(VIEW_ROOT . '/pages/patient/components/dashboard/upcoming-appointments.php') ?>
                         </div>
                     </div>
                 </section>
@@ -81,7 +85,7 @@
 
     <script>
         // Initialize symptom chart
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const ctx = document.getElementById('symptomChart').getContext('2d');
             const symptomChart = new Chart(ctx, {
                 type: 'line',
